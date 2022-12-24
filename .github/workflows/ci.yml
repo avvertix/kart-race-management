@@ -19,7 +19,7 @@ jobs:
       mariadb:
         image: mariadb:10.8.2
         env:
-          MYSQL_DATABASE: forge
+          MYSQL_DATABASE: testing
           MYSQL_USER: forge
           MYSQL_PASSWORD: forge
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
@@ -69,5 +69,4 @@ jobs:
         php artisan view:clear
         php artisan config:clear
         php artisan route:clear
-        php artisan migrate --env=testing --seed --force
         vendor/bin/phpunit --verbose

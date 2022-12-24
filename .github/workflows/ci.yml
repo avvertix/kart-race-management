@@ -57,7 +57,7 @@ jobs:
         composer install --prefer-dist
         yarn config set cache-folder ~/.yarn/
         yarn
-        yarn run production
+        yarn build
         
     - name: Run Testsuite
       env:

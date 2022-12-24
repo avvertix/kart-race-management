@@ -19,7 +19,7 @@ jobs:
       mariadb:
         image: mariadb:10.8.2
         env:
-          MYSQL_DATABASE: testing
+          MYSQL_DATABASE: forge
           MYSQL_USER: forge
           MYSQL_PASSWORD: forge
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes

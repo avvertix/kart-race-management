@@ -21,7 +21,7 @@ jobs:
         env:
           MYSQL_DATABASE: testing
           MYSQL_USER: forge
-          MYSQL_PASSWORD: 
+          MYSQL_PASSWORD: forge
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_INITDB_SKIP_TZINFO: 1

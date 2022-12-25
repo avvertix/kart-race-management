@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ChampionshipController;
+use App\Http\Controllers\RaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,3 +28,19 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+// Championships and Races management
+
+Route::middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'verified'
+    ])
+    ->prefix('m')
+    ->group(function () {
+
+        Route::resource('/championships', ChampionshipController::class);
+
+        Route::resource('/races', RaceController::class);
+
+    });

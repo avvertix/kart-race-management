@@ -2,11 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use Laravel\Jetstream\Features;
 
 class UserFactory extends Factory
 {
@@ -48,22 +46,69 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the user should have a personal team.
+     * Indicate that the user's role is admin.
      *
-     * @return $this
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function withPersonalTeam()
+    public function admin()
     {
-        if (! Features::hasTeamFeatures()) {
-            return $this->state([]);
-        }
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'admin',
+            ];
+        });
+    }
 
-        return $this->has(
-            Team::factory()
-                ->state(function (array $attributes, User $user) {
-                    return ['name' => $user->name.'\'s Team', 'user_id' => $user->id, 'personal_team' => true];
-                }),
-            'ownedTeams'
-        );
+    /**
+     * Indicate that the user's role is organizer.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function organizer()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'organizer',
+            ];
+        });
+    }
+    /**
+     * Indicate that the user's role is racemanager.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function racemanager()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'racemanager',
+            ];
+        });
+    }
+    /**
+     * Indicate that the user's role is tireagent.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function tireagent()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'tireagent',
+            ];
+        });
+    }
+    /**
+     * Indicate that the user's role is timekeeper.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function timekeeper()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'timekeeper',
+            ];
+        });
     }
 }

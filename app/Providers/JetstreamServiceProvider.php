@@ -47,23 +47,24 @@ class JetstreamServiceProvider extends ServiceProvider
         ]);
 
         Jetstream::role('admin', 'Administrator', [
-            '',
-        ])->description('');
+            '*',
+        ])->description('Platform administrator');
         
         Jetstream::role('organizer', 'Organizer', [
             '',
-        ])->description('');
+        ])->description('Race and Championship organizer');
         
-        Jetstream::role('race-control', 'Race control', [
+        Jetstream::role('racemanager', 'Race manager', [
             '',
-        ])->description('');
+        ])->description('Responsible of the race');
 
-        Jetstream::role('tire-responsible', 'Tire responsible', [
+        Jetstream::role('tireagent', 'Tire responsible', [
             '',
-        ])->description('');
+        ])->description('Responsible of tire management');
         
         Jetstream::role('timekeeper', 'Timekeeper', [
             '',
-        ])->description('');
+        ])->description('Time-keeping service');
+
     }
 }

@@ -9,7 +9,7 @@ Kart Race Management (KRM) is a web application designed to allow organizers of 
 
 ## Installation
 
-> Requires [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) and a [MariaDB 10.10](https://mariadb.org/) database.
+> Requires [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) and a [MariaDB 10.8](https://mariadb.org/) database.
 
 _to be documented_
 
@@ -33,7 +33,7 @@ Given the selected stack the development requires:
 - [PHP 8.1](https://www.php.net/) or above
 - [Composer](https://getcomposer.org/)
 - [NodeJS](https://nodejs.org/en/) version 14 or above with [Yarn](https://yarnpkg.com/getting-started/install) package manager (tested with v1.x)
-- [MariaDB](https://mariadb.org/) version 10.10 or above
+- [MariaDB](https://mariadb.org/) version 10.8 or above
 - [Docker](https://www.docker.com/)
 
 ### Testing

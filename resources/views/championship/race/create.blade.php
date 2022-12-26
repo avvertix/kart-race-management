@@ -1,34 +1,111 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
-            {{ $championship->title }}
+        <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
+            <span><a href="{{ route('championships.show', $championship) }}">{{ $championship->title }}</a></span>
+            <span>/</span>
+            <span>{{ __('Add new race') }}</span>
         </h2>
-        @can('create', \App\Model\Race::class)
-            <div>
-                <x-button-link href="{{ route('championships.races.create', $championship) }}">
-                    {{ __('Add race') }}
-                </x-button-link>
-            </div>
-        @endcan
-
-        <div class="flex-1">
-        <div class="mt-2 flex items-center text-sm text-gray-500">
-        <!-- Heroicon name: mini/calendar -->
-        <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" clip-rule="evenodd" />
-        </svg>
-        Period {{ $championship->period }}
-      </div>
-        </div>
-        
     </x-slot>
 
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+<form method="POST" action="{{ route('championships.races.store', $championship) }}">
+@csrf
         
-        
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                <x-jet-section-title>
+                    <x-slot name="title">{{ __('Event period') }}</x-slot>
+                    <x-slot name="description">
+                        {{ __('When the race takes place.') }}
+                        {{ __('For single day event specify only the "start date".') }}
+                    </x-slot>
+                </x-jet-section-title>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    
+                        <div class="px-4 py-5">
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-jet-label for="start" value="{{ __('Start date') }}*" />
+                                    <x-jet-input id="start" type="date" name="start" class="mt-1 block w-full" required autofocus pattern="\d{4}-\d{2}-\d{2}" />
+                                    <x-jet-input-error for="start" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-jet-label for="end" value="{{ __('End Date') }}" />
+                                    <x-jet-input id="end" type="date" name="end" class="mt-1 block w-full" pattern="\d{4}-\d{2}-\d{2}" />
+                                    <x-jet-input-error for="end" class="mt-2" />
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+            <x-jet-section-border />
+
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                <x-jet-section-title>
+                    <x-slot name="title">{{ __('Details') }}</x-slot>
+                    <x-slot name="description">{{ __('The race details, like title and description.') }}</x-slot>
+                </x-jet-section-title>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    
+                        <div class="px-4 py-5">
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-jet-label for="title" value="{{ __('Title') }}*" />
+                                    <x-jet-input id="title" type="text" name="title" class="mt-1 block w-full" required autocomplete="title" />
+                                    <x-jet-input-error for="title" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-jet-label for="description" value="{{ __('Description') }}" />
+                                    <x-jet-input id="description" type="text" name="description" class="mt-1 block w-full" autocomplete="description" />
+                                    <x-jet-input-error for="description" class="mt-2" />
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+            <x-jet-section-border />
+
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                <x-jet-section-title>
+                    <x-slot name="title">{{ __('Track') }}</x-slot>
+                    <x-slot name="description">{{ __('The race track where the race takes place.') }}</x-slot>
+                </x-jet-section-title>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    
+                        <div class="px-4 py-5">
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-jet-label for="track" value="{{ __('Track') }}*" />
+                                    <x-jet-input id="track" type="text" name="track" class="mt-1 block w-full" required autocomplete="track" />
+                                    <x-jet-input-error for="track" class="mt-2" />
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                
+                <div></div>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    
+                        <div class="px-4 py-5">
+                            <x-jet-button class="">
+                                {{ __('Create race') }}
+                            </x-jet-button>
+                        </div>
+                </div>
+            </div>
+
+</form>
         </div>
     </div>
 </x-app-layout>

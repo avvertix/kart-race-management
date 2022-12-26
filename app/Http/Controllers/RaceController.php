@@ -39,7 +39,9 @@ class RaceController extends Controller
      */
     public function create(Championship $championship)
     {
-        //
+        return view('championship.race.create', [
+            'championship' => $championship,
+        ]);
     }
 
     /**

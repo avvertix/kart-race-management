@@ -40,7 +40,7 @@ class ChampionshipController extends Controller
      */
     public function create()
     {
-        //
+        return view('championship.create');
     }
 
     /**
@@ -82,7 +82,7 @@ class ChampionshipController extends Controller
      */
     public function show(Championship $championship)
     {
-        //
+        return view('championship.show', ['championship' => $championship]);
     }
 
     /**

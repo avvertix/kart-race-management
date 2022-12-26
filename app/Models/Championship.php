@@ -51,4 +51,20 @@ class Championship extends Model
     {
         return ['uuid'];
     }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+
+    public function getPeriodAttribute()
+    {
+        return $this->start_at->toDateString() . ' — ' . (optional($this->end_at)->toDateString() ?? '...');
+    }
 }

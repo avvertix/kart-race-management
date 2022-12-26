@@ -4,9 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Championship;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 
 class ChampionshipController extends Controller
 {
+    /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Championship::class, 'championship');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +26,11 @@ class ChampionshipController extends Controller
      */
     public function index()
     {
-        //
+        $championships = Championship::query()->orderByDesc('start_at')->paginate();
+
+        return view('championship.index', [
+            'championships' => $championships,
+        ]);
     }
 
     /**
@@ -35,7 +51,27 @@ class ChampionshipController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $this->validate($request, [
+            'start' => 'required|date|after:yesterday',
+            'end' => 'nullable|date|after:start',
+            'title' => 'nullable|string|max:250|unique:' . Championship::class .',title',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        $start_date = Carbon::parse($validated['start']);
+        $end_date = $validated['end'] ? Carbon::parse($validated['end']) : null;
+
+        $championship = Championship::create([
+            'title' => $validated['title'] ?? __(':year Championship', ['year' => $start_date->year]),
+            'description' => $validated['description'],
+            'start_at' => $start_date,
+            'end_at' => $end_date,
+        ]);
+
+        return to_route('championships.index')
+            ->with('message', __(':championship created.', [
+                'championship' => $championship->title
+            ]));
     }
 
     /**

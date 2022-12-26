@@ -18,7 +18,7 @@ class ChampionshipPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->hasPermission('championship:list');
     }
 
     /**
@@ -30,7 +30,7 @@ class ChampionshipPolicy
      */
     public function view(User $user, Championship $championship)
     {
-        //
+        return $user->hasPermission('championship:list');
     }
 
     /**
@@ -41,7 +41,7 @@ class ChampionshipPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->hasPermission('championship:create');
     }
 
     /**
@@ -53,7 +53,7 @@ class ChampionshipPolicy
      */
     public function update(User $user, Championship $championship)
     {
-        //
+        return $user->hasPermission('championship:update');
     }
 
     /**
@@ -65,7 +65,7 @@ class ChampionshipPolicy
      */
     public function delete(User $user, Championship $championship)
     {
-        //
+        return $user->hasPermission('championship:delete');
     }
 
     /**
@@ -77,7 +77,7 @@ class ChampionshipPolicy
      */
     public function restore(User $user, Championship $championship)
     {
-        //
+        return $user->hasPermission('championship:restore');
     }
 
     /**
@@ -89,6 +89,6 @@ class ChampionshipPolicy
      */
     public function forceDelete(User $user, Championship $championship)
     {
-        //
+        return $user->hasPermission('championship:delete');
     }
 }

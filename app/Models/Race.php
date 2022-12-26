@@ -56,6 +56,24 @@ class Race extends Model
      */
     public function uniqueIds()
     {
-        return [$this->getKeyName(), 'uuid'];
+        return ['uuid'];
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * Get the championship that contains the race.
+     */
+    public function championship()
+    {
+        return $this->belongsTo(Championship::class);
     }
 }

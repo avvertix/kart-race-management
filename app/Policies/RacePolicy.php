@@ -18,7 +18,7 @@ class RacePolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->hasPermission('race:list');
     }
 
     /**
@@ -30,7 +30,7 @@ class RacePolicy
      */
     public function view(User $user, Race $race)
     {
-        //
+        return $user->hasPermission('race:list');
     }
 
     /**
@@ -41,7 +41,7 @@ class RacePolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->hasPermission('race:create');
     }
 
     /**
@@ -53,7 +53,7 @@ class RacePolicy
      */
     public function update(User $user, Race $race)
     {
-        //
+        return $user->hasPermission('race:update');
     }
 
     /**
@@ -65,7 +65,7 @@ class RacePolicy
      */
     public function delete(User $user, Race $race)
     {
-        //
+        return $user->hasPermission('race:delete');
     }
 
     /**
@@ -77,7 +77,7 @@ class RacePolicy
      */
     public function restore(User $user, Race $race)
     {
-        //
+        return $user->hasPermission('race:restore');
     }
 
     /**
@@ -89,6 +89,6 @@ class RacePolicy
      */
     public function forceDelete(User $user, Race $race)
     {
-        //
+        return $user->hasPermission('race:delete');
     }
 }

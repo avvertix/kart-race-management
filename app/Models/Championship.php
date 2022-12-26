@@ -67,4 +67,13 @@ class Championship extends Model
     {
         return $this->start_at->toDateString() . ' — ' . (optional($this->end_at)->toDateString() ?? '...');
     }
+
+
+    /**
+     * Get the races within the championship.
+     */
+    public function races()
+    {
+        return $this->hasMany(Race::class)->orderByDesc('event_start_at');
+    }
 }

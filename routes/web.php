@@ -39,8 +39,8 @@ Route::middleware([
     ->prefix('m')
     ->group(function () {
 
-        Route::resource('/championships', ChampionshipController::class);
+        Route::resource('championships', ChampionshipController::class);
 
-        Route::resource('/races', RaceController::class);
+        Route::resource('championships.races', RaceController::class)->shallow();
 
     });

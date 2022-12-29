@@ -70,4 +70,38 @@ class RaceTest extends TestCase
         $this->assertEquals(Carbon::parse('2023-03-05'), $race->event_end_at);
     }
 
+    public function test_race_can_be_updated()
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.update', $existingRace), [
+                'start' => '2023-03-05',
+                'end' => '2023-03-05',
+                'track' => 'Franciacorta',
+                'title' => 'First Updated Race',
+                'description' => 'a little description',
+            ]);
+
+        $response->assertRedirectToRoute('races.show', $existingRace);
+        
+        $response->assertSessionHasNoErrors();
+
+        $response->assertSessionHas('message', 'First Updated Race saved.');
+
+        $race = Race::first();
+
+        $this->assertInstanceOf(Race::class, $race);
+        $this->assertEquals('First Updated Race', $race->title);
+        $this->assertEquals('a little description', $race->description);
+        $this->assertEquals('Franciacorta', $race->track);
+        $this->assertTrue($race->championship->is($existingRace->championship));
+        $this->assertEquals(Carbon::parse('2023-03-05'), $race->event_start_at);
+        $this->assertEquals(Carbon::parse('2023-03-05'), $race->event_end_at);
+    }
+
 }

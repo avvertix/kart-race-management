@@ -6,6 +6,7 @@ use App\Models\Championship;
 use App\Models\Race;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RaceController extends Controller
 {
@@ -86,7 +87,9 @@ class RaceController extends Controller
      */
     public function show(Race $race)
     {
-        //
+        return view('championship.race.show', [
+            'race' => $race,
+        ]);
     }
 
     /**
@@ -97,7 +100,10 @@ class RaceController extends Controller
      */
     public function edit(Race $race)
     {
-        //
+        return view('championship.race.edit', [
+            'championship' => $race->championship,
+            'race' => $race,
+        ]);
     }
 
     /**
@@ -109,7 +115,30 @@ class RaceController extends Controller
      */
     public function update(Request $request, Race $race)
     {
-        //
+        $validated = $this->validate($request, [
+            'start' => 'required|date|after:today',
+            'end' => 'nullable|date|after:event_start',
+            'title' => ['required', 'string', 'max:250', Rule::unique((new Race())->getTable(), 'title')->ignore($race)],
+            'description' => 'nullable|string|max:1000',
+            'track' => 'required|string|max:250',
+        ]);
+
+        $start_date = Carbon::parse($validated['start']);
+        $end_date = $validated['end'] ? Carbon::parse($validated['end']) : $start_date->copy()->endOfDay();
+
+
+        $race->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'event_start_at' => $start_date,
+            'event_end_at' => $end_date,
+            'track' => $validated['track'],
+        ]);
+
+        return to_route('races.show', $race)
+            ->with('message', __(':race saved.', [
+                'race' => $validated['title']
+            ]));
     }
 
     /**

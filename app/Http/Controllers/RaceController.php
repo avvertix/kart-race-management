@@ -89,6 +89,7 @@ class RaceController extends Controller
     {
         return view('championship.race.show', [
             'race' => $race,
+            'championship' => $race->championship,
         ]);
     }
 

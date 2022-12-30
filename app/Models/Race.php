@@ -76,4 +76,67 @@ class Race extends Model
     {
         return $this->belongsTo(Championship::class);
     }
+
+    public function getPeriodAttribute()
+    {
+        return $this->event_start_at->toDateString() . ' — ' . (optional($this->event_start_at)->toDateString() ?? '...');
+    }
+
+
+    public function getIsRegistrationOpenAttribute()
+    {
+        $now = now();
+
+        return 
+            $this->event_start_at->greaterThanOrEqualTo($now->copy()->subHours(config('races.registration.opens'))) &&
+            $this->event_start_at->subHours(config('races.registration.closes'))->lessThanOrEqualTo($now);
+    }
+
+    public function getStatusAttribute()
+    {
+        $todayStartOfDay = today();
+        $todayEndOfDay = today()->endOfDay();
+        
+        if($this->event_start_at->betweenIncluded($todayStartOfDay, $todayEndOfDay) || $this->event_end_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)){
+            return 'active';
+        };
+
+        if($this->isRegistrationOpen){
+            return 'open_for_registration';
+        }
+
+        
+        if($todayEndOfDay->greaterThan($this->event_end_at)){
+            return 'concluded';
+        };
+
+        return 'scheduled';
+    }
+
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithRegistrationOpen($query)
+    {
+        $now = now();
+
+        return $query
+            ->where('event_start_at', '>=', $now->copy()->subHours(config('races.registration.opens')))
+            ->where('event_end_at', '<=', $now->copy()->subHours(config('races.registration.closes')));
+    }
+    
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
+    {
+        $today = today();
+
+        return $query
+            ->where('event_start_at', '<=', now())
+            ->where('event_end_at', '<=', $today->copy()->endOfDay());
+    }
 }

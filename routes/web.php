@@ -42,6 +42,8 @@ Route::middleware([
 
         Route::resource('championships', ChampionshipController::class);
 
+        Route::get('races', [RaceController::class, 'index'])->name('races.index');
+
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
         
         Route::post('championships/{championship}/races/import', [RaceImportController::class, 'store'])->name('championships.races.import.store');

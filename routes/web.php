@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ChampionshipController;
+use App\Http\Controllers\RaceController;
+use App\Http\Controllers\RaceImportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,3 +29,23 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+// Championships and Races management
+
+Route::middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'verified'
+    ])
+    ->prefix('m')
+    ->group(function () {
+
+        Route::resource('championships', ChampionshipController::class);
+
+        Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
+        
+        Route::post('championships/{championship}/races/import', [RaceImportController::class, 'store'])->name('championships.races.import.store');
+        
+        Route::resource('championships.races', RaceController::class)->shallow();
+
+    });

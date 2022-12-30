@@ -74,6 +74,6 @@ class Championship extends Model
      */
     public function races()
     {
-        return $this->hasMany(Race::class)->orderByDesc('event_start_at');
+        return $this->hasMany(Race::class)->orderBy('event_start_at');
     }
 }

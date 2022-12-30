@@ -10,6 +10,12 @@
                             {{ __('Add race') }}
                         </x-button-link>
                     @endcan
+                    
+                    @can('create', \App\Model\Race::class)
+                        <x-button-link href="{{ route('championships.races.import.create', $championship) }}">
+                            {{ __('Import races') }}
+                        </x-button-link>
+                    @endcan
 
                     @can('update', $championship)
                         <x-button-link href="{{ route('championships.edit', $championship) }}">
@@ -39,3 +45,9 @@
                 </div>
             </div>       
         </div>
+
+        @if (session('message'))
+        <div class="mb-4 font-medium text-sm text-green-600">
+            {{ session('message') }}
+        </div>
+    @endif

@@ -107,7 +107,7 @@ class RaceImportController extends Controller
                 'description' => $d['description'],
                 'track' => $d['track'],
                 'registration_opens_at' => $start_date->copy()->subHours(config('races.registration.opens')),
-            'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
+                'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
             ];
         });
 

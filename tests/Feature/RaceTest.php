@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Championship;
 use App\Models\Race;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
@@ -66,8 +65,10 @@ class RaceTest extends TestCase
         $this->assertEquals('a little description', $race->description);
         $this->assertEquals('Franciacorta', $race->track);
         $this->assertTrue($race->championship->is($championship));
-        $this->assertEquals(Carbon::parse('2023-03-05'), $race->event_start_at);
-        $this->assertEquals(Carbon::parse('2023-03-05'), $race->event_end_at);
+        $this->assertEquals('2023-03-05 09:00:00', $race->event_start_at->toDateTimeString());
+        $this->assertEquals('2023-03-05 18:00:00', $race->event_end_at->toDateTimeString());
+        $this->assertEquals('2023-02-26 09:00:00', $race->registration_opens_at->toDateTimeString());
+        $this->assertEquals('2023-03-05 08:00:00', $race->registration_closes_at->toDateTimeString());
     }
 
     public function test_race_can_be_updated()
@@ -100,8 +101,10 @@ class RaceTest extends TestCase
         $this->assertEquals('a little description', $race->description);
         $this->assertEquals('Franciacorta', $race->track);
         $this->assertTrue($race->championship->is($existingRace->championship));
-        $this->assertEquals(Carbon::parse('2023-03-05'), $race->event_start_at);
-        $this->assertEquals(Carbon::parse('2023-03-05'), $race->event_end_at);
+        $this->assertEquals('2023-03-05 09:00:00', $race->event_start_at->toDateTimeString());
+        $this->assertEquals('2023-03-05 18:00:00', $race->event_end_at->toDateTimeString());
+        $this->assertEquals('2023-02-26 09:00:00', $race->registration_opens_at->toDateTimeString());
+        $this->assertEquals('2023-03-05 08:00:00', $race->registration_closes_at->toDateTimeString());
     }
 
 }

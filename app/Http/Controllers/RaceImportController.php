@@ -97,12 +97,17 @@ class RaceImportController extends Controller
         }
 
         $toCreate = collect($validator->validated()['races'])->map(function($d) use($request){
+
+            $start_date = Str::contains($d['start'], ':') ? Carbon::parse($d['start']) : Carbon::parse("{$d['start']} 09:00");
+
             return [
-                'event_start_at' => Str::contains($d['start'], ':') ? Carbon::parse($d['start']) : Carbon::parse("{$d['start']} 09:00"),
+                'event_start_at' => $start_date,
                 'event_end_at' => Str::contains($d['end'], ':') ? Carbon::parse($d['end']) : Carbon::parse("{$d['end']} 18:00"),
                 'title' => $d['title'],
                 'description' => $d['description'],
                 'track' => $d['track'],
+                'registration_opens_at' => $start_date->copy()->subHours(config('races.registration.opens')),
+            'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
             ];
         });
 

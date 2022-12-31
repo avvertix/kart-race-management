@@ -61,8 +61,11 @@ class RaceController extends Controller
             'track' => 'required|string|max:250',
         ]);
 
-        $start_date = Carbon::parse($validated['start']);
-        $end_date = $validated['end'] ? Carbon::parse($validated['end']) : $start_date->copy()->endOfDay();
+        $configuredStartTime = config('races.start_time');
+        $configuredEndTime = config('races.end_time');
+
+        $start_date = Carbon::parse("{$validated['start']} {$configuredStartTime}");
+        $end_date = $validated['end'] ? Carbon::parse("{$validated['end']} {$configuredEndTime}") : $start_date->copy()->setTimeFromTimeString($configuredEndTime);
 
 
         $race = $championship->races()->create([
@@ -71,6 +74,8 @@ class RaceController extends Controller
             'event_start_at' => $start_date,
             'event_end_at' => $end_date,
             'track' => $validated['track'],
+            'registration_opens_at' => $start_date->copy()->subHours(config('races.registration.opens')),
+            'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
         ]);
 
         return to_route('championships.races.index', $championship)
@@ -124,8 +129,11 @@ class RaceController extends Controller
             'track' => 'required|string|max:250',
         ]);
 
-        $start_date = Carbon::parse($validated['start']);
-        $end_date = $validated['end'] ? Carbon::parse($validated['end']) : $start_date->copy()->endOfDay();
+        $configuredStartTime = config('races.start_time');
+        $configuredEndTime = config('races.end_time');
+
+        $start_date = Carbon::parse("{$validated['start']} {$configuredStartTime}");
+        $end_date = $validated['end'] ? Carbon::parse("{$validated['end']} {$configuredEndTime}") : $start_date->copy()->setTimeFromTimeString($configuredEndTime);
 
 
         $race->update([
@@ -134,6 +142,8 @@ class RaceController extends Controller
             'event_start_at' => $start_date,
             'event_end_at' => $end_date,
             'track' => $validated['track'],
+            'registration_opens_at' => $start_date->copy()->subHours(config('races.registration.opens')),
+            'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
         ]);
 
         return to_route('races.show', $race)

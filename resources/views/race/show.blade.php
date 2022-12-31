@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        @include('championship.race.partials.heading')
+        @include('race.partials.heading')
     </x-slot>
 
 

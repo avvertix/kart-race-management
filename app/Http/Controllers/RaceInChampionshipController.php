@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class RaceController extends Controller
+class RaceInChampionshipController extends Controller
 {
     /**
      * Create the controller instance.
@@ -25,54 +25,38 @@ class RaceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Championship $championship)
     {
-        return view('race.index', [
-            'races' => Race::all(),
+        return view('championship.race.index', [
+            'championship' => $championship,
+            'races' => $championship->races,
         ]);
     }
 
     /**
-     * Display the specified resource.
+     * Show the form for creating a new resource.
      *
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
-    public function show(Race $race)
+    public function create(Championship $championship)
     {
-        return view('race.show', [
-            'race' => $race,
-            'championship' => $race->championship,
+        return view('championship.race.create', [
+            'championship' => $championship,
         ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Race  $race
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Race $race)
-    {
-        return view('race.edit', [
-            'championship' => $race->championship,
-            'race' => $race,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Race $race)
+    public function store(Championship $championship, Request $request)
     {
         $validated = $this->validate($request, [
             'start' => 'required|date|after:today',
             'end' => 'nullable|date|after:event_start',
-            'title' => ['required', 'string', 'max:250', Rule::unique((new Race())->getTable(), 'title')->ignore($race)],
+            'title' => 'required|string|max:250|unique:' . Race::class .',title',
             'description' => 'nullable|string|max:1000',
             'track' => 'required|string|max:250',
         ]);
@@ -84,7 +68,7 @@ class RaceController extends Controller
         $end_date = $validated['end'] ? Carbon::parse("{$validated['end']} {$configuredEndTime}") : $start_date->copy()->setTimeFromTimeString($configuredEndTime);
 
 
-        $race->update([
+        $race = $championship->races()->create([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'event_start_at' => $start_date,
@@ -94,20 +78,11 @@ class RaceController extends Controller
             'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
         ]);
 
-        return to_route('races.show', $race)
-            ->with('message', __(':race saved.', [
-                'race' => $validated['title']
+        return to_route('championships.races.index', $championship)
+            ->with('message', __(':race created.', [
+                'race' => $race->title
             ]));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Race  $race
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Race $race)
-    {
-        //
-    }
+    
 }

@@ -21,6 +21,8 @@ class Race extends Model
     protected $fillable = [
         'event_start_at',
         'event_end_at',
+        'registration_opens_at',
+        'registration_closes_at',
         'track',
         'title',
         'description',
@@ -45,6 +47,8 @@ class Race extends Model
     protected $casts = [
         'event_start_at' => 'datetime',
         'event_end_at' => 'datetime',
+        'registration_opens_at' => 'datetime',
+        'registration_closes_at' => 'datetime',
         'tags' => AsCollection::class,
         'properties' => AsArrayObject::class,
     ];
@@ -82,14 +86,16 @@ class Race extends Model
         return $this->event_start_at->toDateString() . ' — ' . (optional($this->event_start_at)->toDateString() ?? '...');
     }
 
-
+    /**
+     * Is the registration open for the race?
+     */
     public function getIsRegistrationOpenAttribute()
     {
         $now = now();
 
         return 
-            $this->event_start_at->greaterThanOrEqualTo($now->copy()->subHours(config('races.registration.opens'))) &&
-            $this->event_start_at->subHours(config('races.registration.closes'))->lessThanOrEqualTo($now);
+            $this->registration_opens_at->lessThanOrEqualTo($now) &&
+            $this->registration_closes_at->greaterThanOrEqualTo($now);
     }
 
     public function getStatusAttribute()
@@ -97,24 +103,26 @@ class Race extends Model
         $todayStartOfDay = today();
         $todayEndOfDay = today()->endOfDay();
         
-        if($this->event_start_at->betweenIncluded($todayStartOfDay, $todayEndOfDay) || $this->event_end_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)){
+        if($this->event_start_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)
+           || $this->event_end_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)){
             return 'active';
         };
 
         if($this->isRegistrationOpen){
-            return 'open_for_registration';
+            return 'registration_open';
         }
 
-        
-        if($todayEndOfDay->greaterThan($this->event_end_at)){
-            return 'concluded';
+        if($todayStartOfDay->lessThan($this->event_start_at)){
+            return 'scheduled';
         };
-
-        return 'scheduled';
+        
+        return 'concluded';
     }
 
 
     /**
+     * Filter races available for registration
+     * 
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -123,20 +131,22 @@ class Race extends Model
         $now = now();
 
         return $query
-            ->where('event_start_at', '>=', $now->copy()->subHours(config('races.registration.opens')))
-            ->where('event_end_at', '<=', $now->copy()->subHours(config('races.registration.closes')));
+            ->where('registration_opens_at', '<=', $now)
+            ->where('registration_closes_at', '>=', $now);
     }
     
     /**
+     * Filter races that happens today
+     * 
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
     {
-        $today = today();
+        $now = now();
 
         return $query
-            ->where('event_start_at', '<=', now())
-            ->where('event_end_at', '<=', $today->copy()->endOfDay());
+            ->where('event_start_at', '<=', $now)
+            ->where('event_end_at', '>=', $now);
     }
 }

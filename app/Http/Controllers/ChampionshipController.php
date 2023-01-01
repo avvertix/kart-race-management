@@ -86,18 +86,18 @@ class ChampionshipController extends Controller
     public function show(Championship $championship)
     {
 
-        $nextRaces = $championship
-            ->races()
-            ->withRegistrationOpen()
-            ->orWhere(function (Builder $query) {
-                $query->active();
-            })
-            ->orderBy('event_start_at')
-            ->get();
+        // $nextRaces = $championship
+        //     ->races()
+        //     ->withRegistrationOpen()
+        //     ->orWhere(function (Builder $query) {
+        //         $query->active();
+        //     })
+        //     ->orderBy('event_start_at')
+        //     ->get();
 
         return view('championship.show', [
             'championship' => $championship,
-            'nextRaces' => $nextRaces,
+            // 'nextRaces' => $nextRaces,
         ]);
     }
 

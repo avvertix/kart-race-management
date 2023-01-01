@@ -9,6 +9,8 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+        <x-highlighted-races class="mb-6" />
+
         <x-table>
             <x-slot name="head">
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">Title</th>

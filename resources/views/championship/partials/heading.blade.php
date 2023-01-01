@@ -1,4 +1,4 @@
-<div class="relative border-b border-zinc-200 pb-5 sm:pb-0">
+<div class="relative border-b-2 border-zinc-200 pb-5 sm:pb-0">
             <div class="md:flex md:items-center md:justify-between">
                 <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
                     {{ $championship->title }}
@@ -35,11 +35,11 @@
             <div class="mt-6">
                     
                 <div class="hidden sm:block">
-                    <nav class="-mb-px flex space-x-8">
+                    <nav class="-mb-0.5 flex space-x-8">
                         
-                        <a href="{{ route('championships.show', $championship) }}" @class(['whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm', 'border-orange-500 text-orange-600' => request()->routeIs('championships.show', $championship), 'text-zinc-500 hover:text-zinc-700 hover:border-zinc-300' => !request()->routeIs('championships.show', $championship)]) @if(request()->routeIs('championships.show', $championship)) aria-current="page" @endif>Details</a>
+                        <x-tab-link href="{{ route('championships.show', $championship) }}" :active="request()->routeIs('championships.show', $championship)">{{ __('Details') }}</x-tab-link>
 
-                        <a href="{{ route('championships.races.index', $championship) }}" @class(['whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm', 'border-orange-500 text-orange-600' => request()->routeIs('championships.races.index', $championship), 'text-zinc-500 hover:text-zinc-700 hover:border-zinc-300' => !request()->routeIs('championships.races.index', $championship)]) @if(request()->routeIs('championships.races.index', $championship)) aria-current="page" @endif>Races</a>
+                        <x-tab-link href="{{ route('championships.races.index', $championship) }}" :active="request()->routeIs('championships.races.index', $championship)">{{ __('Races') }}</x-tab-link>
 
                     </nav>
                 </div>

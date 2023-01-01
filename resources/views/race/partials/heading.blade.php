@@ -1,4 +1,4 @@
-<div class="relative border-b border-zinc-200 pb-5 sm:pb-0">
+<div class="relative border-b-2 border-zinc-200 pb-5 sm:pb-0">
             <div class="md:flex md:items-center md:justify-between">
                 <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
                     {{ $race->title }}
@@ -28,9 +28,8 @@
                 {{ $race->period }}
 
                 <div class="ml-4">
-                    <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-zinc-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />  
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-1.5 h-5 w-5 flex-shrink-0 text-zinc-400">
+                        <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
                     </svg>
                 </div>
                 {{ $race->track }}
@@ -38,14 +37,16 @@
             <div class="mt-6">
                     
                 <div class="hidden sm:block">
-                    <nav class="-mb-px flex space-x-8">
-                        
-                        <a href="#" @class(['whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm', 'border-orange-500 text-orange-600' => request()->routeIs('championships.show', $championship), 'text-zinc-500 hover:text-zinc-700 hover:border-zinc-300' => !request()->routeIs('championships.show', $championship)]) >Participants</a>
-                        
-                        <a href="#" @class(['whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm', 'border-orange-500 text-orange-600' => request()->routeIs('championships.races.index', $championship), 'text-zinc-500 hover:text-zinc-700 hover:border-zinc-300' => !request()->routeIs('championships.races.index', $championship)]) >Tires</a>
+                    <nav class="-mb-0.5 flex space-x-8">
 
-                        <a href="#" @class(['whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm', 'border-orange-500 text-orange-600' => request()->routeIs('championships.races.index', $championship), 'text-zinc-500 hover:text-zinc-700 hover:border-zinc-300' => !request()->routeIs('championships.races.index', $championship)]) >Results</a>
-
+                        <x-tab-link href="{{ route('races.show', $race) }}" :active="request()->routeIs('races.show', $race)">{{ __('Summary') }}</x-tab-link>
+                        
+                        <x-tab-link href="#">{{ __('Participants') }}</x-tab-link>
+                        
+                        <x-tab-link href="#">{{ __('Tires') }}</x-tab-link>
+                        
+                        <x-tab-link href="#">{{ __('Results') }}</x-tab-link>
+                        
                     </nav>
                 </div>
             </div>

@@ -45,6 +45,8 @@ class RaceImportTest extends TestCase
         $this->assertTrue($race->championship->is($championship));
         $this->assertEquals('2023-03-05 09:00:00', $race->event_start_at->toDateTimeString());
         $this->assertEquals('2023-03-05 18:00:00', $race->event_end_at->toDateTimeString());
+        $this->assertEquals('2023-02-26 09:00:00', $race->registration_opens_at->toDateTimeString());
+        $this->assertEquals('2023-03-05 08:00:00', $race->registration_closes_at->toDateTimeString());
     }
     
     public function test_invalid_race_cannot_be_imported()

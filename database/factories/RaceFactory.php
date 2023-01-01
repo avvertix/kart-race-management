@@ -19,12 +19,14 @@ class RaceFactory extends Factory
      */
     public function definition()
     {
-        $start = fake()->dateTimeBetween('today', '+1 month');
+        $start = (new Carbon(fake()->dateTimeBetween('today', '+1 month')))->startOfDay();
 
         return [
             'uuid' => Str::ulid(),
-            'event_start_at' => (new Carbon($start))->startOfDay(),
-            'event_end_at' => (new Carbon($start))->endOfDay(),
+            'event_start_at' => $start,
+            'event_end_at' => $start->copy()->endOfDay(),
+            'registration_opens_at' => $start->copy()->subHours(config('races.registration.opens'))->startOfDay(),
+            'registration_closes_at' => $start->copy()->subHours(config('races.registration.opens'))->endOfDay(),
             'track' => fake()->city(),
             'title' => fake()->sentence(3),
             'description' => fake()->paragraph(),

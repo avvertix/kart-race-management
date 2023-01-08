@@ -34,7 +34,7 @@ class Competitor extends Model
      * @var array
      */
     protected $casts = [
-        'licence_type' => LicenceType::class,
+        'licence_type' => CompetitorLicence::class,
         'licence_renewed_at' => 'datetime',
         'licence_number' => 'encrypted',
         'name' => 'encrypted',
@@ -48,4 +48,9 @@ class Competitor extends Model
         'sex' => 'encrypted',
     ];
 
+    
+    public function championship()
+    {
+        return $this->belongsTo(Championship::class);
+    }
 }

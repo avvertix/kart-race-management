@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,13 +22,17 @@ class Participant extends Model
     protected $fillable = [
         'bib',
         'category',
-        'name',
-        'surname',
+        'first_name',
+        'last_name',
         'added_by',
         'confirmed_at',
         'consents',
         'race_id',
         'championship_id',
+        'driver_id',
+        'competitor_id',
+        'mechanic',
+        'vehicles',
     ];
 
     /**
@@ -45,6 +50,9 @@ class Participant extends Model
      * @var array
      */
     protected $casts = [
+        'licence_type' => DriverLicence::class,
+        'mechanic' => 'encrypted:json',
+        'vehicles' => AsCollection::class,
         'confirmed_at' => 'datetime',
         'consents' => AsArrayObject::class,
     ];
@@ -60,43 +68,11 @@ class Participant extends Model
     }
 
     /**
-     * Get the drivers details.
-     */
-    public function drivers()
-    {
-        return $this->hasMany(Driver::class);
-    }
-
-    /**
-     * Get the competitors details.
-     */
-    public function competitors()
-    {
-        return $this->hasMany(Competitor::class);
-    }
-    
-    /**
-     * Get the vehicles details.
-     */
-    public function mechanics()
-    {
-        return $this->hasMany(Mechanic::class);
-    }
-
-    /**
-     * Get the vehicles details.
-     */
-    public function vehicles()
-    {
-        return $this->hasMany(Vehicle::class)->orderBy('created_at');
-    }
-
-    /**
      * Get the first driver details.
      */
     public function driver()
     {
-        return $this->hasOne(Driver::class)->oldestOfMany();
+        return $this->belongsTo(Driver::class);
     }
 
     /**
@@ -104,24 +80,9 @@ class Participant extends Model
      */
     public function competitor()
     {
-        return $this->hasOne(Competitor::class)->oldestOfMany();
+        return $this->belongsTo(Competitor::class);
     }
-    
-    /**
-     * Get the first mechanic details.
-     */
-    public function mechanic()
-    {
-        return $this->hasOne(Mechanic::class)->oldestOfMany();
-    }
-    
-    /**
-     * Get the first vehicle details.
-     */
-    public function vehicle()
-    {
-        return $this->hasOne(Vehicle::class)->oldestOfMany();
-    }
+
     
     
 }

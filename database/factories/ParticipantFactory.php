@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Championship;
+use App\Models\Competitor;
+use App\Models\Driver;
 use App\Models\Race;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,10 +23,18 @@ class ParticipantFactory extends Factory
     {
         return [
             'uuid' => Str::ulid(),
+            'driver_id' => Driver::factory(),
+            'competitor_id' => Competitor::factory(),
             'bib' => fake()->numberBetween(0, 200),
-            'category' => 'mini',
-            'name' => fake()->name(),
-            'surname' => fake()->lastName(),
+            'category' => function (array $attributes) {
+                return Driver::find($attributes['driver_id'])->category;
+            },
+            'first_name' => function (array $attributes) {
+                return Driver::find($attributes['driver_id'])->first_name;
+            },
+            'last_name' => function (array $attributes) {
+                return Driver::find($attributes['driver_id'])->last_name;
+            },
             'championship_id' => Championship::factory(),
             'race_id' => function (array $attributes) {
                 return Race::factory(null, [

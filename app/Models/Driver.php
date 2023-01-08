@@ -37,7 +37,7 @@ class Driver extends Model
      */
     protected $casts = [
         'licence_renewed_at' => 'datetime',
-        'licence_type' => LicenceType::class,
+        'licence_type' => DriverLicence::class,
         'sex' => Sex::class,
         'licence_number' => 'encrypted',
         'email' => 'encrypted',
@@ -52,8 +52,13 @@ class Driver extends Model
     /**
      * Get the participant.
      */
-    public function participant()
+    public function participants()
     {
         return $this->belongsTo(Participant::class);
+    }
+
+    public function championship()
+    {
+        return $this->belongsTo(Championship::class);
     }
 }

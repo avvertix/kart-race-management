@@ -3,12 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Competitor;
+use App\Models\CompetitorLicence;
 use App\Models\Driver;
-use App\Models\LicenceType;
+use App\Models\DriverLicence;
 use App\Models\Mechanic;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -17,13 +19,25 @@ class RaceParticipantTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setAvailableCategories()
+    {
+        config([
+            'categories.default' => [
+                'category_key' => [
+                    'name' => 'CAT 1',
+                    'tires' => 'T1',
+                ],
+            ],
+        ]);
+    }
+
     protected function generateValidDriver()
     {
         return [
             'driver_name' => 'John',
             'driver_surname' => 'Racer',
             'driver_licence_number' => 'D0001',
-            'driver_licence_type' => LicenceType::LOCAL_CLUB->value,
+            'driver_licence_type' => DriverLicence::LOCAL_CLUB->value,
             'driver_licence_renewed_at' => null,
             'driver_nationality' => 'Italy',
             'driver_email' => 'john@racer.local',
@@ -46,7 +60,7 @@ class RaceParticipantTest extends TestCase
             'competitor_name' => 'Parent',
             'competitor_surname' => 'Racer',
             'competitor_licence_number' => 'C0002',
-            'competitor_licence_type' => LicenceType::COMPETITOR->value,
+            'competitor_licence_type' => CompetitorLicence::LOCAL->value,
             'competitor_licence_renewed_at' => null,
             'competitor_nationality' => 'Italy',
             'competitor_email' => 'parent@racer.local',
@@ -65,35 +79,61 @@ class RaceParticipantTest extends TestCase
     protected function generateValidMechanic()
     {
         return [
-            'mechanic_name' => 'Mechanic',
-            'mechanic_surname' => 'Racer',
+            'mechanic_name' => 'Mechanic Racer',
             'mechanic_licence_number' => 'M0003',
-            'mechanic_licence_type' => LicenceType::MECHANIC->value,
-            'mechanic_nationality' => 'Italy',
         ];
     }
 
     protected function generateValidVehicle()
     {
         return [
-
+            'vehicles' => [
+                [
+                    'chassis_manufacturer' => 'Chassis',
+                    'engine_manufacturer' => 'Engine Manufacturer',
+                    'engine_model' => 'Engine Model',
+                    'oil_manufacturer' => 'Oil Manufacturer',
+                    'oil_type' => 'Oil Type',
+                    'oil_percentage' => '4',
+                ],
+            ],
         ];
     }
 
     public function test_participant_can_be_registered()
     {
+        $this->setAvailableCategories();
+
         $user = User::factory()->racemanager()->create();
 
         $race = Race::factory()->create();
+
+        $driver = Driver::factory()
+            ->for($race->championship)
+            ->create([
+                'bib' => 100,
+                'first_name' => 'John',
+                'last_name' => 'Racer',
+            ]);
+
+        $competitor = Competitor::factory()
+            ->for($race->championship)
+            ->create();
 
         $response = $this->actingAs($user)
             ->from(route('races.participants.create', $race))
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
-                'category' => 'mini',
+                'category' => 'category_key',
 
-                ...$this->generateValidDriver(),
-                ...$this->generateValidCompetitor(),
+                'licence_type' => DriverLicence::LOCAL_CLUB->value,
+
+                'first_name' => 'John',
+                'last_name' => 'Racer',
+
+                'driver' => $driver->getKey(),
+                'competitor' => $competitor->getKey(),
+
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
 
@@ -112,62 +152,45 @@ class RaceParticipantTest extends TestCase
         $participant = Participant::with([
                 'driver',
                 'competitor',
-                'vehicle',
             ])
             ->first();
 
         $this->assertInstanceOf(Participant::class, $participant);
         
-        $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('mini', $participant->category);
-        $this->assertEquals('John', $participant->name);
-        $this->assertEquals('Racer', $participant->surname);
+        $this->assertEquals($driver->bib, $participant->bib);
+        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
 
         $this->assertInstanceOf(Driver::class, $participant->driver);
-
-        $this->assertEquals('John', $participant->driver->name);
-        $this->assertEquals('Racer', $participant->driver->surname);
-        $this->assertEquals('D0001', $participant->driver->licence_number);
-        $this->assertEquals(LicenceType::LOCAL_CLUB, $participant->driver->licence_type);
-        $this->assertEquals(null, $participant->driver->licence_renewed_at);
-        $this->assertEquals('Italy', $participant->driver->nationality);
-        $this->assertEquals('john@racer.local', $participant->driver->email);
-        $this->assertEquals('555555555', $participant->driver->phone);
-        $this->assertEquals('1999-11-11', $participant->driver->birth_date);
-        $this->assertEquals('Milan', $participant->driver->birth_place);
-        $this->assertEquals(today()->addYear()->toDateString(), $participant->driver->medical_certificate_expiration_date);
-        $this->assertEquals('via dei Platani, 40 Milan Milan 20146', $participant->driver->residence_address);
-
+        $this->assertTrue($participant->driver->is($driver));
+        
         $this->assertInstanceOf(Competitor::class, $participant->competitor);
+        $this->assertTrue($participant->competitor->is($competitor));
 
-        $this->assertEquals('Parent', $participant->competitor->name);
-        $this->assertEquals('Racer', $participant->competitor->surname);
-        $this->assertEquals('C0002', $participant->competitor->licence_number);
-        $this->assertEquals(LicenceType::COMPETITOR, $participant->competitor->licence_type);
-        $this->assertEquals(null, $participant->competitor->licence_renewed_at);
-        $this->assertEquals('Italy', $participant->competitor->nationality);
-        $this->assertEquals('parent@racer.local', $participant->competitor->email);
-        $this->assertEquals('54444444', $participant->competitor->phone);
-        $this->assertEquals('1979-11-11', $participant->competitor->birth_date);
-        $this->assertEquals('Milan', $participant->competitor->birth_place);
-        $this->assertEquals('via dei Platani, 40 Milan Milan 20146', $participant->competitor->residence_address);
+        $this->assertEquals('Mechanic Racer', $participant->mechanic['name']);
+        $this->assertEquals('M0003', $participant->mechanic['licence_number']);
 
-        $this->assertInstanceOf(Mechanic::class, $participant->mechanic);
+        $this->assertCount(1, $participant->vehicles);
 
-        $this->assertEquals('Mechanic', $participant->mechanic->name);
-        $this->assertEquals('Racer', $participant->mechanic->surname);
-        $this->assertEquals('M0003', $participant->mechanic->licence_number);
-        $this->assertEquals(LicenceType::MECHANIC, $participant->mechanic->licence_type);
-        $this->assertEquals('Italy', $participant->mechanic->nationality);
+        $this->assertEquals('Chassis', $participant->vehicles[0]['chassis_manufacturer']);
+        $this->assertEquals('Engine Manufacturer', $participant->vehicles[0]['engine_manufacturer']);
+        $this->assertEquals('Engine Model', $participant->vehicles[0]['engine_model']);
+        $this->assertEquals('Oil Manufacturer', $participant->vehicles[0]['oil_manufacturer']);
+        $this->assertEquals('Oil Type', $participant->vehicles[0]['oil_type']);
+        $this->assertEquals('4', $participant->vehicles[0]['oil_percentage']);
+
     }
 
     public function test_participant_cannot_register_using_existing_bib()
     {
+        $this->setAvailableCategories();
+
         $user = User::factory()->racemanager()->create();
 
         $race = Race::factory()->create();
 
-        Participant::factory()->create([
+        $existingParticipant = Participant::factory()->create([
             'bib' => 100,
             'championship_id' => $race->championship_id,
             'race_id' => $race->getKey(),
@@ -179,8 +202,8 @@ class RaceParticipantTest extends TestCase
                 'bib' => 100,
                 'category' => 'mini',
 
-                ...$this->generateValidDriver(),
-                ...$this->generateValidCompetitor(),
+                'driver' => $existingParticipant->driver->getKey(),
+                'competitor' => $existingParticipant->competitor->getKey(),
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
 

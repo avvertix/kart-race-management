@@ -29,8 +29,10 @@ class Participant extends Model
         'consents',
         'race_id',
         'championship_id',
-        'driver_id',
-        'competitor_id',
+        'driver_licence',
+        'competitor_licence',
+        'driver',
+        'competitor',
         'mechanic',
         'vehicles',
     ];
@@ -51,6 +53,8 @@ class Participant extends Model
      */
     protected $casts = [
         'licence_type' => DriverLicence::class,
+        'driver' => 'encrypted:json',
+        'competitor' => 'encrypted:json',
         'mechanic' => 'encrypted:json',
         'vehicles' => AsCollection::class,
         'confirmed_at' => 'datetime',
@@ -67,21 +71,6 @@ class Participant extends Model
         return ['uuid'];
     }
 
-    /**
-     * Get the first driver details.
-     */
-    public function driver()
-    {
-        return $this->belongsTo(Driver::class);
-    }
-
-    /**
-     * Get the first competitor details.
-     */
-    public function competitor()
-    {
-        return $this->belongsTo(Competitor::class);
-    }
 
     
     

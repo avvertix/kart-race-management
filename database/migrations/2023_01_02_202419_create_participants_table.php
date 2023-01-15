@@ -37,22 +37,26 @@ return new class extends Migration
 
             $table->string('last_name', 250);
 
+            $table->string('driver_licence', 250);
+            
+            $table->string('competitor_licence', 250)->nullable();
+
+            $table->mediumText('driver'); // an encrypted json
+
             $table->unsignedTinyInteger('licence_type')->nullable();
 
-            $table->foreignIdFor(User::class, 'added_by')->nullable();
-
-            $table->foreignIdFor(Driver::class);
-            
-            $table->foreignIdFor(Competitor::class)->nullable(); // null if is the same as the driver
+            $table->mediumText('competitor')->nullable(); // an encrypted json
 
             $table->mediumText('mechanic')->nullable(); // an encrypted json
             
             $table->json('vehicles')->nullable(); // the list of vehicles that a participant can have (minimum 1, maximum 2). Properties chassis_manufacturer, engine_manufacturer, engine_model, oil_manufacturer, oil_type, oil_percentage
-
+            
             $table->dateTime('confirmed_at')->nullable();
             
             $table->json('consents')->default('[]');
-                        
+            
+            $table->foreignIdFor(User::class, 'added_by')->nullable();
+            
             // $table->text('signature')->nullable();
             
             // $table->text('signing_code')->nullable();

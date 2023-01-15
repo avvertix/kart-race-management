@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Categories\Category;
 use App\Models\Competitor;
+use App\Models\CompetitorLicence;
 use App\Models\Driver;
 use App\Models\DriverLicence;
 use App\Models\Participant;
@@ -30,9 +32,12 @@ class RaceParticipantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Race $race)
     {
-        //
+        return view('participant.create', [
+            'race' => $race,
+            'categories' => Category::all(),
+        ]);
     }
 
     /**
@@ -49,25 +54,43 @@ class RaceParticipantController extends Controller
                 // Rule::unique('drivers', 'bib')->where(fn ($query) => $query->where('championship_id', $race->championship_id)),
                 Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),],
             'category' => ['required', 'string', new ExistsCategory],
-            'licence_type' => ['required', new Enum(DriverLicence::class)],
-            'first_name' => ['required', 'string', 'max:250'],
-            'last_name' => ['required', 'string', 'max:250'],
-            'driver' => ['required', 'integer', 'exists:drivers,id'],
-            // 'driver_licence_number' => ['required', 'string', 'max:250'],
-            // 'driver_licence_renewed_at' => ['nullable'],
-            // 'driver_nationality' => ['required', 'string', 'max:250'],
-            // 'driver_email' => ['required', 'string', 'email'],
-            // 'driver_phone' => ['required', 'string', ],
-            // 'driver_birth_date' => ['required', 'string', ],
-            // 'driver_birth_place' => ['required', 'string', ],
-            // 'driver_medical_certificate_expiration_date' => ['required', 'string', ],
+            'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
+            
+            'driver_first_name' => ['required', 'string', 'max:250'],
+            'driver_last_name' => ['required', 'string', 'max:250'],
+            
+            'driver_licence_number' => ['required', 'string', 'max:250'],
+            'driver_licence_renewed_at' => ['nullable'],
+            'driver_nationality' => ['required', 'string', 'max:250'],
+            'driver_email' => ['required', 'string', 'email'],
+            'driver_phone' => ['required', 'string', ],
+            'driver_birth_date' => ['required', 'string', ],
+            'driver_birth_place' => ['required', 'string', ],
+            'driver_medical_certificate_expiration_date' => ['required', 'string', ],
+            'driver_residence_address' => [ 'required', 'string' ],
+            'driver_sex' => [ 'required', 'string' ],
+            
+            'competitor_licence_number' => ['required', 'string', 'max:250'],
+            'competitor_licence_type' => ['required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
+            
+            'competitor_first_name' => ['required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_last_name' => ['required_with:competitor_licence_number', 'string', 'max:250'],
+
+            'competitor_licence_renewed_at' => ['nullable'],
+            'competitor_nationality' => ['required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_email' => ['required_with:competitor_licence_number', 'string', 'email'],
+            'competitor_phone' => ['required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_date' => ['required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_place' => ['required_with:competitor_licence_number', 'string', ],
+            'competitor_residence_address' => [ 'required_with:competitor_licence_number', 'string' ],
+
             // 'driver_residence' => [ 'required', 'array:address,city,province,postal_code' ],
             // 'driver_residence.address' => ['required', 'string', 'max:250'],
             // 'driver_residence.city' => ['required', 'string',  'max:250'],
             // 'driver_residence.province' => ['nullable', 'string',  'max:250'],
             // 'driver_residence.postal_code' => ['required', 'string', 'max:250'],
 
-            'competitor' => ['nullable', 'integer', 'exists:competitors,id'],
+            // 'competitor' => ['nullable', 'integer', 'exists:competitors,id'],
             
             'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
             'mechanic_name' => ['required_with:mechanic_licence_number', 'string', 'max:250'],
@@ -87,55 +110,45 @@ class RaceParticipantController extends Controller
         // TODO: track consents
         // TODO: track bonus
 
-        $driver = Driver::findOrFail($validated['driver']);
-        $competitor = $validated['competitor'] ? Competitor::findOrFail($validated['competitor']) : null;
-
-        $participant = DB::transaction(function() use ($validated, $race, $request, $driver, $competitor){
-            
-            // TODO: handle driver id already specified as existing driver is used
-
-            // $driver = Driver::create([
-            //     'bib' => $validated['bib'],
-            //     'category' => $validated['category'],
-            //     'first_name' => $validated['driver_name'],
-            //     'last_name' => $validated['driver_surname'],
-            //     'licence_number' => $validated['driver_licence_number'],
-            //     'licence_type' => $validated['driver_licence_type'],
-            //     'licence_renewed_at' => $validated['driver_licence_renewed_at'],
-            //     'nationality' => $validated['driver_nationality'],
-            //     'email' => $validated['driver_email'],
-            //     'phone' => $validated['driver_phone'],
-            //     'birth_date' => $validated['driver_birth_date'],
-            //     'birth_place' => $validated['driver_birth_place'],
-            //     'medical_certificate_expiration_date' => $validated['driver_medical_certificate_expiration_date'],
-            //     'residence_address' => "{$validated['driver_residence']['address']} {$validated['driver_residence']['city']} {$validated['driver_residence']['province']} {$validated['driver_residence']['postal_code']}",
-            //     'sex' => 10, // if the value is encrypted it cannot have null values?
-            // ]);
-
-            // TODO: handle competitor id already specified as existing competitor is used
-
-            // $competitor = Competitor::create([
-            //     'name' => $validated['competitor_name'],
-            //     'licence_number' => $validated['competitor_licence_number'],
-            //     'licence_type' => $validated['competitor_licence_type'],
-            //     'licence_renewed_at' => $validated['competitor_licence_renewed_at'],
-            //     'nationality' => $validated['competitor_nationality'],
-            //     'email' => $validated['competitor_email'],
-            //     'phone' => $validated['competitor_phone'],
-            //     'birth_date' => $validated['competitor_birth_date'],
-            //     'birth_place' => $validated['competitor_birth_place'],
-            //     'residence_address' => ($validated['competitor_residence'] ?? false) ? "{$validated['competitor_residence']['address']} {$validated['competitor_residence']['city']} {$validated['competitor_residence']['province']} {$validated['competitor_residence']['postal_code']}" : null,
-            // ]);
+        $participant = DB::transaction(function() use ($validated, $race, $request){
 
             $participant = $race->participants()->create([
-                'driver_id' => $driver->getKey(),
-                'competitor_id' => optional($competitor)->getKey(),
                 'bib' => $validated['bib'],
                 'category' => $validated['category'],
-                'first_name' => $validated['first_name'],
-                'last_name' => $validated['last_name'],
+                'first_name' => $validated['driver_first_name'],
+                'last_name' => $validated['driver_last_name'],
                 'added_by' => $request->user()?->getKey(),
                 'championship_id' => $race->championship_id,
+                'driver_licence' => hash('sha512', $validated['driver_licence_number']),
+                'competitor_licence' => $validated['competitor_licence_number'] ? hash('sha512', $validated['competitor_licence_number']) : null,
+                'driver' => [
+                    'first_name' => $validated['driver_first_name'],
+                    'last_name' => $validated['driver_last_name'],
+                    'licence_type' => $validated['driver_licence_type'],
+                    'licence_number' => $validated['driver_licence_number'],
+                    'licence_renewed_at' => $validated['driver_licence_renewed_at'],
+                    'nationality' => $validated['driver_nationality'],
+                    'email' => $validated['driver_email'],
+                    'phone' => $validated['driver_phone'],
+                    'birth_date' => $validated['driver_birth_date'],
+                    'birth_place' => $validated['driver_birth_place'],
+                    'medical_certificate_expiration_date' => $validated['driver_medical_certificate_expiration_date'],
+                    'residence_address' => $validated['driver_residence_address'],
+                    'sex' => $validated['driver_sex'],
+                ],
+                'competitor' => [
+                    'first_name' => $validated['competitor_first_name'],
+                    'last_name' => $validated['competitor_last_name'],
+                    'licence_type' => $validated['competitor_licence_type'],
+                    'licence_number' => $validated['competitor_licence_number'],
+                    'licence_renewed_at' => $validated['competitor_licence_renewed_at'],
+                    'nationality' => $validated['competitor_nationality'],
+                    'email' => $validated['competitor_email'],
+                    'phone' => $validated['competitor_phone'],
+                    'birth_date' => $validated['competitor_birth_date'],
+                    'birth_place' => $validated['competitor_birth_place'],
+                    'residence_address' => $validated['competitor_residence_address'],
+                ],
                 'mechanic' => [
                     'name' => $validated['mechanic_name'],
                     'licence_number' => $validated['mechanic_licence_number'],

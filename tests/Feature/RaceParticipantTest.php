@@ -9,6 +9,7 @@ use App\Models\DriverLicence;
 use App\Models\Mechanic;
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\Sex;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -45,14 +46,11 @@ class RaceParticipantTest extends TestCase
             'driver_birth_date' => '1999-11-11',
             'driver_birth_place' => 'Milan',
             'driver_medical_certificate_expiration_date' => today()->addYear()->toDateString(),
-            // 'driver_residence' => [
-            //     'address' => 'via dei Platani, 40',
-            //     'city' => 'Milan',
-            //     'province' => 'Milan',
-            //     'postal_code' => '20146',
-            // ],
-            'driver_residence_address' => 'via dei Platani, 40 Milan Milan 20146',
-            'driver_sex' => 'M',
+            'driver_residence_address' => 'via dei Platani, 40',
+            'driver_residence_city' => 'Milan',
+            'driver_residence_province' => 'Milan',
+            'driver_residence_postal_code' => '20146',
+            'driver_sex' => Sex::MALE->value,
         ];
     }
 
@@ -69,13 +67,10 @@ class RaceParticipantTest extends TestCase
             'competitor_phone' => '54444444',
             'competitor_birth_date' => '1979-11-11',
             'competitor_birth_place' => 'Milan',
-            'competitor_residence_address' => 'via dei Platani, 40 Milan Milan 20146',
-            'competitor_residence' => [
-                'address' => 'via dei Platani, 40',
-                'city' => 'Milan',
-                'province' => 'Milan',
-                'postal_code' => '20146',
-            ],
+            'competitor_residence_address' => 'via dei Platani, 40',
+            'competitor_residence_city' => 'Milan',
+            'competitor_residence_province' => 'Milan',
+            'competitor_residence_postal_code' => '20146',
         ];
     }
 
@@ -158,7 +153,7 @@ class RaceParticipantTest extends TestCase
             "birth_place" => "Milan",
             "medical_certificate_expiration_date" => "2024-01-15",
             "residence_address" => "via dei Platani, 40 Milan Milan 20146",
-            "sex" => "M",
+            "sex" => Sex::MALE->value,
         ], $participant->driver);
 
         $this->assertEquals([ 

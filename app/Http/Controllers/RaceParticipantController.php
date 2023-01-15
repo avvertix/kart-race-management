@@ -9,6 +9,7 @@ use App\Models\Driver;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\Sex;
 use App\Rules\ExistsCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -68,7 +69,12 @@ class RaceParticipantController extends Controller
             'driver_birth_place' => ['required', 'string', ],
             'driver_medical_certificate_expiration_date' => ['required', 'string', ],
             'driver_residence_address' => [ 'required', 'string' ],
-            'driver_sex' => [ 'required', 'string' ],
+            'driver_sex' => [ 'required', new Enum(Sex::class) ],
+
+            'driver_residence_address' => ['required', 'string', 'max:250'],
+            'driver_residence_city' => ['required', 'string',  'max:250'],
+            'driver_residence_province' => ['nullable', 'string',  'max:250'],
+            'driver_residence_postal_code' => ['required', 'string', 'max:250'],
             
             'competitor_licence_number' => ['required', 'string', 'max:250'],
             'competitor_licence_type' => ['required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
@@ -84,13 +90,10 @@ class RaceParticipantController extends Controller
             'competitor_birth_place' => ['required_with:competitor_licence_number', 'string', ],
             'competitor_residence_address' => [ 'required_with:competitor_licence_number', 'string' ],
 
-            // 'driver_residence' => [ 'required', 'array:address,city,province,postal_code' ],
-            // 'driver_residence.address' => ['required', 'string', 'max:250'],
-            // 'driver_residence.city' => ['required', 'string',  'max:250'],
-            // 'driver_residence.province' => ['nullable', 'string',  'max:250'],
-            // 'driver_residence.postal_code' => ['required', 'string', 'max:250'],
-
-            // 'competitor' => ['nullable', 'integer', 'exists:competitors,id'],
+            'competitor_residence_address' => ['required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_residence_city' => ['required_with:competitor_licence_number', 'string',  'max:250'],
+            'competitor_residence_province' => ['nullable', 'string',  'max:250'],
+            'competitor_residence_postal_code' => ['required_with:competitor_licence_number', 'string', 'max:250'],
             
             'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
             'mechanic_name' => ['required_with:mechanic_licence_number', 'string', 'max:250'],
@@ -133,7 +136,7 @@ class RaceParticipantController extends Controller
                     'birth_date' => $validated['driver_birth_date'],
                     'birth_place' => $validated['driver_birth_place'],
                     'medical_certificate_expiration_date' => $validated['driver_medical_certificate_expiration_date'],
-                    'residence_address' => $validated['driver_residence_address'],
+                    'residence_address' =>  $this->processAddressInput($validated, 'driver_residence'),
                     'sex' => $validated['driver_sex'],
                 ],
                 'competitor' => [
@@ -147,7 +150,7 @@ class RaceParticipantController extends Controller
                     'phone' => $validated['competitor_phone'],
                     'birth_date' => $validated['competitor_birth_date'],
                     'birth_place' => $validated['competitor_birth_place'],
-                    'residence_address' => $validated['competitor_residence_address'],
+                    'residence_address' => $this->processAddressInput($validated, 'competitor_residence'),
                 ],
                 'mechanic' => [
                     'name' => $validated['mechanic_name'],
@@ -163,6 +166,16 @@ class RaceParticipantController extends Controller
             ->with('message', __(':participant added.', [
                 'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}" 
             ]));
+    }
+
+    protected function processAddressInput($input, $fieldPrefix)
+    {
+        return collect([
+            $input[$fieldPrefix.'_address'],
+            $input[$fieldPrefix.'_city'],
+            $input[$fieldPrefix.'_province'],
+            $input[$fieldPrefix.'_postal_code'],
+        ])->join(' ');
     }
     
     /**

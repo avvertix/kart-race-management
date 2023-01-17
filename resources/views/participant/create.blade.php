@@ -84,43 +84,43 @@
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_nationality" value="{{ __('driver_nationality') }}*" />
+                                    <x-jet-label for="driver_nationality" value="{{ __('Nationality') }}*" />
                                     <x-jet-input id="driver_nationality" type="text" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality')"  />
                                     <x-jet-input-error for="driver_nationality" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_email" value="{{ __('driver_email') }}*" />
-                                    <x-jet-input id="driver_email" type="text" name="driver_email" class="mt-1 block w-full" :value="old('driver_email')"  />
+                                    <x-jet-label for="driver_email" value="{{ __('E-Mail') }}*" />
+                                    <x-jet-input id="driver_email" type="email" name="driver_email" class="mt-1 block w-full" :value="old('driver_email')"  />
                                     <x-jet-input-error for="driver_email" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_phone" value="{{ __('driver_phone') }}*" />
+                                    <x-jet-label for="driver_phone" value="{{ __('Phone number') }}*" />
                                     <x-jet-input id="driver_phone" type="text" name="driver_phone" class="mt-1 block w-full" :value="old('driver_phone')"  />
                                     <x-jet-input-error for="driver_phone" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_birth_date" value="{{ __('driver_birth_date') }}*" />
-                                    <x-jet-input id="driver_birth_date" type="text" name="driver_birth_date" class="mt-1 block w-full" :value="old('driver_birth_date')"  />
+                                    <x-jet-label for="driver_birth_date" value="{{ __('Birth date') }}*" />
+                                    <x-jet-input id="driver_birth_date" type="date" name="driver_birth_date" class="mt-1 block w-full" :value="old('driver_birth_date')" pattern="\d{4}-\d{2}-\d{2}" />
                                     <x-jet-input-error for="driver_birth_date" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_birth_place" value="{{ __('driver_birth_place') }}*" />
+                                    <x-jet-label for="driver_birth_place" value="{{ __('Birth place') }}*" />
                                     <x-jet-input id="driver_birth_place" type="text" name="driver_birth_place" class="mt-1 block w-full" :value="old('driver_birth_place')"  />
                                     <x-jet-input-error for="driver_birth_place" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_medical_certificate_expiration_date" value="{{ __('driver_medical_certificate_expiration_date') }}*" />
+                                    <x-jet-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
                                     <x-jet-input id="driver_medical_certificate_expiration_date" type="date" name="driver_medical_certificate_expiration_date" class="mt-1 block w-full" :value="old('driver_medical_certificate_expiration_date')"   pattern="\d{4}-\d{2}-\d{2}"/>
                                     <x-jet-input-error for="driver_medical_certificate_expiration_date" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_residence" value="{{ __('driver_residence_address') }}*" />
+                                    <x-jet-label for="driver_residence" value="{{ __('Residence address') }}*" />
                                     <x-jet-input-error for="driver_residence_address" class="mt-2" />
                                     <x-address id="driver_residence" type="text" name="driver_residence" class="mt-1 block w-full"  />
                                 </div>
@@ -174,37 +174,37 @@
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_nationality" value="{{ __('competitor_nationality') }}*" />
+                                    <x-jet-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
                                     <x-jet-input id="competitor_nationality" type="text" name="competitor_nationality" class="mt-1 block w-full" :value="old('competitor_nationality')"  />
                                     <x-jet-input-error for="competitor_nationality" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_email" value="{{ __('competitor_email') }}*" />
-                                    <x-jet-input id="competitor_email" type="text" name="competitor_email" class="mt-1 block w-full" :value="old('competitor_email')"  />
+                                    <x-jet-label for="competitor_email" value="{{ __('E-Mail') }}*" />
+                                    <x-jet-input id="competitor_email" type="email" name="competitor_email" class="mt-1 block w-full" :value="old('competitor_email')"  />
                                     <x-jet-input-error for="competitor_email" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_phone" value="{{ __('competitor_phone') }}*" />
+                                    <x-jet-label for="competitor_phone" value="{{ __('Phone number') }}*" />
                                     <x-jet-input id="competitor_phone" type="text" name="competitor_phone" class="mt-1 block w-full" :value="old('competitor_phone')"  />
                                     <x-jet-input-error for="competitor_phone" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_birth_date" value="{{ __('competitor_birth_date') }}*" />
-                                    <x-jet-input id="competitor_birth_date" type="text" name="competitor_birth_date" class="mt-1 block w-full" :value="old('competitor_birth_date')"  />
+                                    <x-jet-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
+                                    <x-jet-input id="competitor_birth_date" type="date" name="competitor_birth_date" class="mt-1 block w-full" :value="old('competitor_birth_date')" pattern="\d{4}-\d{2}-\d{2}" />
                                     <x-jet-input-error for="competitor_birth_date" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_birth_place" value="{{ __('competitor_birth_place') }}*" />
+                                    <x-jet-label for="competitor_birth_place" value="{{ __('Birth place') }}*" />
                                     <x-jet-input id="competitor_birth_place" type="text" name="competitor_birth_place" class="mt-1 block w-full" :value="old('competitor_birth_place')"  />
                                     <x-jet-input-error for="competitor_birth_place" class="mt-2" />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_residence" value="{{ __('competitor_residence_address') }}*" />
+                                    <x-jet-label for="competitor_residence" value="{{ __('Residence address') }}*" />
                                     <x-jet-input-error for="competitor_residence_address" class="mt-2" />
                                     <x-address id="competitor_residence" type="text" name="competitor_residence" class="mt-1 block w-full"  />
                                 </div>

@@ -6,6 +6,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Fluent;
 
+/**
+ * @property string $name
+ * @property string $tires
+ */
 class Category extends Fluent
 {
     protected static $categories = null;

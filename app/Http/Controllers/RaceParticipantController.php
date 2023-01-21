@@ -52,7 +52,7 @@ class RaceParticipantController extends Controller
 
         $validated = $request->validate([
             'bib' => ['required', 'integer', 'min:1', 
-                // Rule::unique('drivers', 'bib')->where(fn ($query) => $query->where('championship_id', $race->championship_id)),
+                // Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('championship_id', $race->championship_id)->whereNot()),
                 Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),],
             'category' => ['required', 'string', new ExistsCategory],
             'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
@@ -76,37 +76,36 @@ class RaceParticipantController extends Controller
             'driver_residence_province' => ['nullable', 'string',  'max:250'],
             'driver_residence_postal_code' => ['required', 'string', 'max:250'],
             
-            'competitor_licence_number' => ['required', 'string', 'max:250'],
-            'competitor_licence_type' => ['required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
+            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
+            'competitor_licence_type' => ['nullable','required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
             
-            'competitor_first_name' => ['required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_last_name' => ['required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_first_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_last_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
 
             'competitor_licence_renewed_at' => ['nullable'],
-            'competitor_nationality' => ['required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_email' => ['required_with:competitor_licence_number', 'string', 'email'],
-            'competitor_phone' => ['required_with:competitor_licence_number', 'string', ],
-            'competitor_birth_date' => ['required_with:competitor_licence_number', 'string', ],
-            'competitor_birth_place' => ['required_with:competitor_licence_number', 'string', ],
-            'competitor_residence_address' => [ 'required_with:competitor_licence_number', 'string' ],
+            'competitor_nationality' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_email' => ['nullable','required_with:competitor_licence_number', 'string', 'email'],
+            'competitor_phone' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_date' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_place' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_residence_address' => [ 'nullable','required_with:competitor_licence_number', 'string' ],
 
-            'competitor_residence_address' => ['required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_residence_city' => ['required_with:competitor_licence_number', 'string',  'max:250'],
+            'competitor_residence_address' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_residence_city' => ['nullable','required_with:competitor_licence_number', 'string',  'max:250'],
             'competitor_residence_province' => ['nullable', 'string',  'max:250'],
-            'competitor_residence_postal_code' => ['required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_residence_postal_code' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
             
             'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
-            'mechanic_name' => ['required_with:mechanic_licence_number', 'string', 'max:250'],
+            'mechanic_name' => ['nullable', 'required_with:mechanic_licence_number', 'string', 'max:250'],
 
-            'vehicles' => [ 'required', 'array', 'min:1', 'max:2' ],
-            'vehicles.*.chassis_manufacturer' => ['required', 'string', 'max:250'],
-            'vehicles.*.engine_manufacturer' => ['required', 'string',  'max:250'],
-            'vehicles.*.engine_model' => ['required', 'string',  'max:250'],
-            'vehicles.*.oil_manufacturer' => ['required', 'string', 'max:250'],
-            'vehicles.*.oil_type' => ['nullable', 'string',  'max:250'],
-            'vehicles.*.oil_percentage' => ['required', 'string', 'max:250'],
+            'vehicle_chassis_manufacturer' => ['required', 'string', 'max:250'],
+            'vehicle_engine_manufacturer' => ['required', 'string',  'max:250'],
+            'vehicle_engine_model' => ['required', 'string',  'max:250'],
+            'vehicle_oil_manufacturer' => ['required', 'string', 'max:250'],
+            'vehicle_oil_type' => ['nullable', 'string',  'max:250'],
+            'vehicle_oil_percentage' => ['required', 'string', 'max:250'],
 
-            'consent_privacy' => ['required', 'accepted'],
+            'consent_privacy' => ['sometimes', 'required', 'accepted'],
         ]);
 
         // TODO: ensure there is a lock on the bib so no one can take it while we validate and insert the records
@@ -123,13 +122,13 @@ class RaceParticipantController extends Controller
                 'added_by' => $request->user()?->getKey(),
                 'championship_id' => $race->championship_id,
                 'driver_licence' => hash('sha512', $validated['driver_licence_number']),
-                'competitor_licence' => $validated['competitor_licence_number'] ? hash('sha512', $validated['competitor_licence_number']) : null,
+                'competitor_licence' => isset($validated['competitor_licence_number']) ? hash('sha512', $validated['competitor_licence_number']) : null,
                 'driver' => [
                     'first_name' => $validated['driver_first_name'],
                     'last_name' => $validated['driver_last_name'],
                     'licence_type' => $validated['driver_licence_type'],
                     'licence_number' => $validated['driver_licence_number'],
-                    'licence_renewed_at' => $validated['driver_licence_renewed_at'],
+                    'licence_renewed_at' => $validated['driver_licence_renewed_at'] ?? null,
                     'nationality' => $validated['driver_nationality'],
                     'email' => $validated['driver_email'],
                     'phone' => $validated['driver_phone'],
@@ -139,24 +138,27 @@ class RaceParticipantController extends Controller
                     'residence_address' =>  $this->processAddressInput($validated, 'driver_residence'),
                     'sex' => $validated['driver_sex'],
                 ],
-                'competitor' => [
+                'competitor' => isset($validated['competitor_licence_number']) ? [
                     'first_name' => $validated['competitor_first_name'],
                     'last_name' => $validated['competitor_last_name'],
                     'licence_type' => $validated['competitor_licence_type'],
                     'licence_number' => $validated['competitor_licence_number'],
-                    'licence_renewed_at' => $validated['competitor_licence_renewed_at'],
+                    'licence_renewed_at' => $validated['competitor_licence_renewed_at'] ?? null,
                     'nationality' => $validated['competitor_nationality'],
                     'email' => $validated['competitor_email'],
                     'phone' => $validated['competitor_phone'],
                     'birth_date' => $validated['competitor_birth_date'],
                     'birth_place' => $validated['competitor_birth_place'],
                     'residence_address' => $this->processAddressInput($validated, 'competitor_residence'),
-                ],
-                'mechanic' => [
+                ] : null,
+                'mechanic' => isset($validated['mechanic_name']) && isset($validated['mechanic_licence_number']) ? [
                     'name' => $validated['mechanic_name'],
                     'licence_number' => $validated['mechanic_licence_number'],
-                ],
-                'vehicles' => $validated['vehicles'],
+                ] : null,
+                'vehicles' => $this->processVehicle($validated),
+                'consents' => [
+                    'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
+                ]
             ]);
             
             return $participant;
@@ -176,6 +178,18 @@ class RaceParticipantController extends Controller
             $input[$fieldPrefix.'_province'],
             $input[$fieldPrefix.'_postal_code'],
         ])->join(' ');
+    }
+
+    protected function processVehicle($input)
+    {
+        return [[
+            'chassis_manufacturer' => $input['vehicle_chassis_manufacturer'],
+            'engine_manufacturer' => $input['vehicle_engine_manufacturer'],
+            'engine_model' => $input['vehicle_engine_model'],
+            'oil_manufacturer' => $input['vehicle_oil_manufacturer'],
+            'oil_type' => $input['vehicle_oil_type'],
+            'oil_percentage' => $input['vehicle_oil_percentage'],
+        ]];
     }
     
     /**

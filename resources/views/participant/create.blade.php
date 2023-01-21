@@ -11,6 +11,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            <x-jet-validation-errors class="mb-4" />
 
 <form method="POST" action="{{ route('races.participants.store', $race) }}">
 @csrf
@@ -36,8 +37,9 @@
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-jet-label for="category" value="{{ __('Category') }}*" />
-                                    <x-jet-input id="category" type="text" name="category" class="mt-1 block w-full" :value="old('category')"   />
                                     <x-jet-input-error for="category" class="mt-2" />
+                                    
+                                    <livewire:category-selector name="category" class="mt-1 block w-full" :value="old('category')" />
                                 </div>
                             </div>
                         </div>
@@ -244,45 +246,43 @@
 
             <div class="md:grid md:grid-cols-3 md:gap-6">
                 <x-jet-section-title>
-                    <x-slot name="title">{{ __('Vehicles') }}</x-slot>
-                    <x-slot name="description">{{ __('The characteristics of the vehicles used. A maximum of two vehicles can be registered.') }}</x-slot>
+                    <x-slot name="title">{{ __('Vehicle') }}</x-slot>
+                    <x-slot name="description">{{ __('The characteristics of the vehicle.') }}</x-slot>
                 </x-jet-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
                     
-                    {{-- TODO: the vehicles can be two and the controller expectes an array --}}
-
                         <div class="px-4 py-5">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="chassis_manufacturer" value="{{ __('Chassis Manufacturer') }}*" />
-                                    <x-jet-input id="chassis_manufacturer" type="text" name="chassis_manufacturer" class="mt-1 block w-full" :value="old('chassis_manufacturer')"  autocomplete="chassis_manufacturer" />
-                                    <x-jet-input-error for="chassis_manufacturer" class="mt-2" />
+                                    <x-jet-label for="vehicle_chassis_manufacturer" value="{{ __('Chassis Manufacturer') }}*" />
+                                    <x-jet-input id="vehicle_chassis_manufacturer" type="text" name="vehicle_chassis_manufacturer" class="mt-1 block w-full" :value="old('vehicle_chassis_manufacturer')"  autocomplete="chassis_manufacturer" />
+                                    <x-jet-input-error for="vehicle_chassis_manufacturer" class="mt-2" />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="engine_manufacturer" value="{{ __('Engine Manufacturer') }}*" />
-                                    <x-jet-input id="engine_manufacturer" type="text" name="engine_manufacturer" class="mt-1 block w-full" :value="old('engine_manufacturer')"  autocomplete="engine_manufacturer" />
-                                    <x-jet-input-error for="engine_manufacturer" class="mt-2" />
+                                    <x-jet-label for="vehicle_engine_manufacturer" value="{{ __('Engine Manufacturer') }}*" />
+                                    <x-jet-input id="vehicle_engine_manufacturer" type="text" name="vehicle_engine_manufacturer" class="mt-1 block w-full" :value="old('vehicle_engine_manufacturer')"  autocomplete="engine_manufacturer" />
+                                    <x-jet-input-error for="vehicle_engine_manufacturer" class="mt-2" />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="engine_model" value="{{ __('Engine Model') }}*" />
-                                    <x-jet-input id="engine_model" type="text" name="engine_model" class="mt-1 block w-full" :value="old('engine_model')"  autocomplete="engine_model" />
-                                    <x-jet-input-error for="engine_model" class="mt-2" />
+                                    <x-jet-label for="vehicle_engine_model" value="{{ __('Engine Model') }}*" />
+                                    <x-jet-input id="vehicle_engine_model" type="text" name="vehicle_engine_model" class="mt-1 block w-full" :value="old('vehicle_engine_model')"  autocomplete="engine_model" />
+                                    <x-jet-input-error for="vehicle_engine_model" class="mt-2" />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="oil_manufacturer" value="{{ __('Oil Manufacturer') }}*" />
-                                    <x-jet-input id="oil_manufacturer" type="text" name="oil_manufacturer" class="mt-1 block w-full" :value="old('oil_manufacturer')"  autocomplete="oil_manufacturer" />
-                                    <x-jet-input-error for="oil_manufacturer" class="mt-2" />
+                                    <x-jet-label for="vehicle_oil_manufacturer" value="{{ __('Oil Manufacturer') }}*" />
+                                    <x-jet-input id="vehicle_oil_manufacturer" type="text" name="vehicle_oil_manufacturer" class="mt-1 block w-full" :value="old('vehicle_oil_manufacturer')"  autocomplete="oil_manufacturer" />
+                                    <x-jet-input-error for="vehicle_oil_manufacturer" class="mt-2" />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="oil_type" value="{{ __('Oil Type') }}" />
-                                    <x-jet-input id="oil_type" type="text" name="oil_type" class="mt-1 block w-full" :value="old('oil_type')" autocomplete="oil_type" />
-                                    <x-jet-input-error for="oil_type" class="mt-2" />
+                                    <x-jet-label for="vehicle_oil_type" value="{{ __('Oil Type') }}" />
+                                    <x-jet-input id="vehicle_oil_type" type="text" name="vehicle_oil_type" class="mt-1 block w-full" :value="old('vehicle_oil_type')" autocomplete="oil_type" />
+                                    <x-jet-input-error for="vehicle_oil_type" class="mt-2" />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="oil_percentage" value="{{ __('Oil Percentage') }}*" />
-                                    <x-jet-input id="oil_percentage" type="text" name="oil_percentage" class="mt-1 block w-full" :value="old('oil_percentage')"  autocomplete="oil_percentage" />
-                                    <x-jet-input-error for="oil_percentage" class="mt-2" />
+                                    <x-jet-label for="vehicle_oil_percentage" value="{{ __('Oil Percentage') }}*" />
+                                    <x-jet-input id="vehicle_oil_percentage" type="text" name="vehicle_oil_percentage" class="mt-1 block w-full" :value="old('vehicle_oil_percentage')"  autocomplete="oil_percentage" />
+                                    <x-jet-input-error for="vehicle_oil_percentage" class="mt-2" />
                                 </div>
                             </div>
                         </div>

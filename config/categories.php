@@ -16,10 +16,10 @@ return [
     'disk' => env('FILESYSTEM_DISK', 'local'),
 
     'default' => [
-        // '125CCX30SENIOR' => [
-        //     'name' => 'X30 Senior',
-        //     'tires' => 'VEGA SL4',
-        // ],
+        '125CCX30SENIOR' => [
+            'name' => 'X30 Senior',
+            'tires' => 'VEGA SL4',
+        ],
     ]
 
     

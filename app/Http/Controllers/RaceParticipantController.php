@@ -33,9 +33,13 @@ class RaceParticipantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Race $race)
     {
-        //
+        return view('participant.index', [
+            'race' => $race,
+            'championship' => $race->championship,
+            'participants' => $race->participants,
+        ]);
     }
 
     /**

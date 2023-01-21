@@ -30,6 +30,7 @@ class Participant extends Model
         'race_id',
         'championship_id',
         'driver_licence',
+        'licence_type',
         'competitor_licence',
         'driver',
         'competitor',
@@ -71,7 +72,27 @@ class Participant extends Model
         return ['uuid'];
     }
 
+    /**
+     * Get the championship
+     */
+    public function championship()
+    {
+        return $this->belongsTo(Championship::class);
+    }
 
+    /**
+     * Get the race
+     */
+    public function race()
+    {
+        return $this->belongsTo(Race::class);
+    }
+
+
+    public function getEngineAttribute($value = null)
+    {
+        return $this->vehicles[0]['engine_manufacturer'] ?? null;
+    }
     
     
 }

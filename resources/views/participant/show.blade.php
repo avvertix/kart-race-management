@@ -213,7 +213,10 @@
 
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-jet-label for="competitor_residence" value="{{ __('Residence address') }}*" />
-                                    {{ $participant->competitor['residence_address'] }}
+                                    {{ $participant->competitor['residence_address']['address'] ?? null }}
+                                    {{ $participant->competitor['residence_address']['city'] ?? null }}
+                                    {{ $participant->competitor['residence_address']['postal_code'] ?? null }}
+                                    {{ $participant->competitor['residence_address']['province'] ?? null }}
                                 </div>
                                 
                             </div>

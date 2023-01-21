@@ -19,6 +19,16 @@ use Illuminate\Validation\Rules\Enum;
 class RaceParticipantController extends Controller
 {
     /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Participant::class, 'participant');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

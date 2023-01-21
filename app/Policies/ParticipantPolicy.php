@@ -18,7 +18,7 @@ class ParticipantPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->hasPermission('participant:list');
     }
 
     /**
@@ -30,7 +30,7 @@ class ParticipantPolicy
      */
     public function view(User $user, Participant $participant)
     {
-        //
+        return $user->hasPermission('participant:list');
     }
 
     /**
@@ -41,7 +41,7 @@ class ParticipantPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->hasPermission('participant:create');
     }
 
     /**
@@ -53,7 +53,7 @@ class ParticipantPolicy
      */
     public function update(User $user, Participant $participant)
     {
-        //
+        return $user->hasPermission('participant:update');
     }
 
     /**
@@ -65,7 +65,7 @@ class ParticipantPolicy
      */
     public function delete(User $user, Participant $participant)
     {
-        //
+        return $user->hasPermission('participant:delete');
     }
 
     /**
@@ -77,7 +77,7 @@ class ParticipantPolicy
      */
     public function restore(User $user, Participant $participant)
     {
-        //
+        return $user->hasPermission('participant:restore');
     }
 
     /**
@@ -89,6 +89,6 @@ class ParticipantPolicy
      */
     public function forceDelete(User $user, Participant $participant)
     {
-        //
+        return $user->hasPermission('participant:delete');
     }
 }

@@ -187,12 +187,12 @@ class RaceParticipantController extends Controller
 
     protected function processAddressInput($input, $fieldPrefix)
     {
-        return collect([
-            $input[$fieldPrefix.'_address'],
-            $input[$fieldPrefix.'_city'],
-            $input[$fieldPrefix.'_province'],
-            $input[$fieldPrefix.'_postal_code'],
-        ])->join(' ');
+        return [
+            'address' => $input[$fieldPrefix.'_address'],
+            'city' => $input[$fieldPrefix.'_city'],
+            'province' => $input[$fieldPrefix.'_province'],
+            'postal_code' => $input[$fieldPrefix.'_postal_code'],
+        ];
     }
 
     protected function processVehicle($input)

@@ -125,7 +125,7 @@
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-jet-label for="driver_residence" value="{{ __('Residence address') }}*" />
                                     <x-jet-input-error for="driver_residence_address" class="mt-2" />
-                                    <x-address id="driver_residence" type="text" name="driver_residence" class="mt-1 block w-full"  />
+                                    <x-address id="driver_residence" type="text" name="driver_residence" class="mt-1 block w-full" :value="$participant->driver['residence_address'] ?? null"  />
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
@@ -209,7 +209,7 @@
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-jet-label for="competitor_residence" value="{{ __('Residence address') }}*" />
                                     <x-jet-input-error for="competitor_residence_address" class="mt-2" />
-                                    <x-address id="competitor_residence" type="text" name="competitor_residence" class="mt-1 block w-full"  />
+                                    <x-address id="competitor_residence" type="text" name="competitor_residence" :value="$participant->competitor['residence_address'] ?? null" class="mt-1 block w-full"  />
                                 </div>
                                 
                             </div>

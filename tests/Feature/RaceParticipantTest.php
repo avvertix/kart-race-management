@@ -149,7 +149,12 @@ class RaceParticipantTest extends TestCase
             "birth_date" => "1999-11-11",
             "birth_place" => "Milan",
             "medical_certificate_expiration_date" => today()->addYear()->toDateString(),
-            "residence_address" => "via dei Platani, 40 Milan Milan 20146",
+            "residence_address" => [
+                'address' => 'via dei Platani, 40',
+                'city' => 'Milan',
+                'province' => 'Milan',
+                'postal_code' => '20146',
+            ],
             "sex" => Sex::MALE->value,
         ], $participant->driver);
 
@@ -164,7 +169,12 @@ class RaceParticipantTest extends TestCase
             "phone" => "54444444",
             "birth_date" => "1979-11-11",
             "birth_place" => "Milan",
-            "residence_address" => "via dei Platani, 40 Milan Milan 20146",
+            "residence_address" => [
+                'address' => 'via dei Platani, 40',
+                'city' => 'Milan',
+                'province' => 'Milan',
+                'postal_code' => '20146',
+            ],
         ], $participant->competitor);
 
         $this->assertEquals('Mechanic Racer', $participant->mechanic['name']);
@@ -246,7 +256,12 @@ class RaceParticipantTest extends TestCase
             "birth_date" => "1999-11-11",
             "birth_place" => "Milan",
             "medical_certificate_expiration_date" => today()->addYear()->toDateString(),
-            "residence_address" => "via dei Platani, 40 Milan Milan 20146",
+            "residence_address" => [
+                'address' => 'via dei Platani, 40',
+                'city' => 'Milan',
+                'province' => 'Milan',
+                'postal_code' => '20146',
+            ],
             "sex" => Sex::MALE->value,
         ], $participant->driver);
 

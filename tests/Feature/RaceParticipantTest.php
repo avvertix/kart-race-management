@@ -108,18 +108,12 @@ class RaceParticipantTest extends TestCase
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
                 'category' => 'category_key',
-
-                'driver_licence_type' => DriverLicence::LOCAL_CLUB->value,
-
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
-
                 'consent_privacy' => true,
-
-                'use_bonus' => false, // TODO handle use of bonus
-
+                'use_bonus' => false,
             ]);
 
         $response->assertRedirectToRoute('races.participants.index', $race);
@@ -300,16 +294,12 @@ class RaceParticipantTest extends TestCase
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
                 'category' => 'category_key',
-
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
-
                 'consent_privacy' => true,
-
-                'use_bonus' => false, // TODO handle use of bonus
-
+                'use_bonus' => false,
             ]);
 
         $response->assertRedirectToRoute('races.participants.create', $race);
@@ -322,9 +312,6 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_cannot_register_using_existing_bib_in_championship()
     {
-
-        $this->markTestSkipped();
-
         $this->setAvailableCategories();
 
         $user = User::factory()->racemanager()->create();
@@ -346,16 +333,12 @@ class RaceParticipantTest extends TestCase
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
                 'category' => 'category_key',
-
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
-
                 'consent_privacy' => true,
-
-                'use_bonus' => false, // TODO handle use of bonus
-
+                'use_bonus' => false,
             ]);
 
         $response->assertRedirectToRoute('races.participants.create', $race);
@@ -364,5 +347,51 @@ class RaceParticipantTest extends TestCase
 
         $this->assertEquals(1, Participant::where('bib', 100)->count());
 
+    }
+
+    public function test_participant_can_register_to_more_races()
+    {
+        $this->setAvailableCategories();
+
+        $user = User::factory()->racemanager()->create();
+
+        $championship = Championship::factory()
+            ->has(Race::factory()->count(2))
+            ->create();
+
+        list($pastRace, $race) = $championship->races;
+
+        $existingParticipant = Participant::factory()->create([
+            'bib' => 100,
+            'championship_id' => $championship->getKey(),
+            'race_id' => $pastRace->getKey(),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('races.participants.create', $race))
+            ->post(route('races.participants.store', $race), [
+                'bib' => 100,
+                'category' => 'category_key',
+                ...$this->generateValidDriver(),
+                'driver_licence_number' => $existingParticipant->driver['licence_number'],
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+                'use_bonus' => false,
+            ]);
+
+        $response->assertRedirectToRoute('races.participants.index', $race);
+
+        $response->assertSessionHasNoErrors();
+
+        $response->assertSessionHas('message', '100 John Racer added.');
+
+        $participant = $race->participants()->first();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
     }
 }

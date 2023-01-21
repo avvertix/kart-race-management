@@ -24,6 +24,8 @@ class ParticipantFactory extends Factory
      */
     public function definition()
     {
+        $licenceNumber = fake()->numerify();
+
         return [
             'uuid' => Str::ulid(),
             'bib' => fake()->numberBetween(1, 200),
@@ -37,7 +39,7 @@ class ParticipantFactory extends Factory
                 ]);
             },
 
-            'driver_licence' => fake()->sha256(),
+            'driver_licence' => hash('sha512', $licenceNumber),
 
             'driver' => [
                 'first_name' => function (array $attributes) {
@@ -50,7 +52,7 @@ class ParticipantFactory extends Factory
                 'first_name' => fake()->name(),
                 'last_name' => fake()->lastName(),
                 'licence_type' => DriverLicence::LOCAL_CLUB,
-                'licence_number' => fake()->numerify(),
+                'licence_number' => $licenceNumber,
                 'licence_renewed_at' => null,
                 'nationality' => 'Italy',
                 'email' => fake()->email(),

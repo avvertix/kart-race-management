@@ -65,9 +65,15 @@ class RaceParticipantController extends Controller
     {
 
         $validated = $request->validate([
-            'bib' => ['required', 'integer', 'min:1', 
-                // Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('championship_id', $race->championship_id)->whereNot()),
-                Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),],
+            'bib' => [
+                'required', 'integer', 'min:1', 
+                Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),
+                
+                Rule::unique('participants', 'bib')
+                    ->where(fn ($query) => $query
+                        ->where('championship_id', $race->championship_id)
+                        ->where('driver_licence', '!=', hash('sha512', $request->driver_licence_number ?? ''))),
+            ],
             'category' => ['required', 'string', new ExistsCategory],
             'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
             
@@ -253,9 +259,14 @@ class RaceParticipantController extends Controller
     public function update(Request $request, Participant $participant)
     {
         $validated = $request->validate([
-            'bib' => ['required', 'integer', 'min:1', 
-                // Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('championship_id', $race->championship_id)->whereNot()),
-                Rule::unique('participants', 'bib')->ignore($participant)->where(fn ($query) => $query->where('race_id', $participant->race->getKey())),],
+            'bib' => [
+                'required', 'integer', 'min:1', 
+                Rule::unique('participants', 'bib')->ignore($participant)->where(fn ($query) => $query->where('race_id', $participant->race->getKey())),
+                Rule::unique('participants', 'bib')
+                    ->where(fn ($query) => $query
+                        ->where('championship_id', $participant->race->championship_id)
+                        ->where('driver_licence', '!=', hash('sha512', $request->driver_licence_number ?? ''))),
+            ],
             'category' => ['required', 'string', new ExistsCategory],
             'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
             

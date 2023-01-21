@@ -4,6 +4,7 @@ use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
+use App\Http\Controllers\RaceParticipantController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,5 +51,7 @@ Route::middleware([
         Route::post('championships/{championship}/races/import', [RaceImportController::class, 'store'])->name('championships.races.import.store');
         
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
+        
+        Route::resource('races.participants', RaceParticipantController::class)->shallow();
 
     });

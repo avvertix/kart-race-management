@@ -145,6 +145,8 @@ return [
     'ulid' => 'The :attribute must be a valid ULID.',
     'uuid' => 'The :attribute must be a valid UUID.',
 
+    'category' => 'The :attribute must be a valid category',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

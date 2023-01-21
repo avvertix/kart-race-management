@@ -59,21 +59,31 @@ class JetstreamServiceProvider extends ServiceProvider
             'race:create',
             'race:update',
             'race:delete',
+            'participant:list',
+            'participant:create',
+            'participant:update',
+            'participant:delete',
         ])->description('Race and Championship organizer');
         
         Jetstream::role('racemanager', 'Race manager', [
             'championship:list',
             'race:list',
+            'participant:list',
+            'participant:create',
+            'participant:update',
+            'participant:delete',
         ])->description('Responsible of the race');
 
         Jetstream::role('tireagent', 'Tire responsible', [
             'championship:list',
             'race:list',
+            'participant:list',
         ])->description('Responsible of tire management');
         
         Jetstream::role('timekeeper', 'Timekeeper', [
             'championship:list',
             'race:list',
+            'participant:list',
         ])->description('Time-keeping service');
 
     }

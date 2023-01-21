@@ -81,6 +81,14 @@ class Race extends Model
         return $this->belongsTo(Championship::class);
     }
 
+    /**
+     * Get the participants to the race.
+     */
+    public function participants()
+    {
+        return $this->hasMany(Participant::class);
+    }
+
     public function getPeriodAttribute()
     {
         return $this->event_start_at->toDateString() . ' — ' . (optional($this->event_start_at)->toDateString() ?? '...');

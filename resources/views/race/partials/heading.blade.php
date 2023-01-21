@@ -6,8 +6,8 @@
                 </h2>
                 <div class="mt-3 flex md:absolute md:top-3 md:right-0 md:mt-0 gap-2">
 
-                    @can('create', \App\Model\Race::class)
-                        <x-button-link href="#">
+                    @can('create', \App\Model\Participant::class)
+                        <x-button-link href="{{ route('races.participants.create', $race) }}">
                             {{ __('Add participant') }}
                         </x-button-link>
                     @endcan
@@ -41,7 +41,7 @@
 
                         <x-tab-link href="{{ route('races.show', $race) }}" :active="request()->routeIs('races.show', $race)">{{ __('Summary') }}</x-tab-link>
                         
-                        <x-tab-link href="#">{{ __('Participants') }}</x-tab-link>
+                        <x-tab-link href="{{ route('races.participants.index', $race) }}"  :active="request()->routeIs('races.participants.index', $race)">{{ __('Participants') }}</x-tab-link>
                         
                         <x-tab-link href="#">{{ __('Tires') }}</x-tab-link>
                         

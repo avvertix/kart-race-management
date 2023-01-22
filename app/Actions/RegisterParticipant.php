@@ -1,151 +1,47 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Actions;
 
-use App\Actions\RegisterParticipant;
-use App\Categories\Category;
-use App\Models\CompetitorLicence;
-use App\Models\DriverLicence;
-use App\Models\Participant;
 use App\Models\Race;
-use App\Models\Sex;
-use App\Rules\ExistsCategory;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use App\Models\Sex;
+use App\Rules\ExistsCategory;
+use App\Models\DriverLicence;
+use App\Models\Participant;
+use App\Models\CompetitorLicence;
+use Illuminate\Support\Facades\DB;
 
-class RaceParticipantController extends Controller
+class RegisterParticipant
 {
-    /**
-     * Create the controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->authorizeResource(Participant::class, 'participant');
-    }
 
     /**
-     * Display a listing of the resource.
+     * Validate and create a new race participant.
      *
-     * @return \Illuminate\Http\Response
+     * @param  array  $input
+     * @return \App\Models\Participant
      */
-    public function index(Race $race)
-    {
-        return view('participant.index', [
-            'race' => $race,
-            'championship' => $race->championship,
-            'participants' => $race->participants,
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Race $race)
-    {
-        return view('participant.create', [
-            'race' => $race,
-            'categories' => Category::all(),
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Race $race, Request $request, RegisterParticipant $registerParticipant)
+    public function __invoke(Race $race, array $input, ?User $user = null)
     {
 
-        $participant = $registerParticipant($race, $request->all(), $request->user());
-        
-        return to_route('races.participants.index', $race)
-            ->with('message', __(':participant added.', [
-                'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}" 
-            ]));
-    }
+        // Maybe validate driver licence before?
 
-    protected function processAddressInput($input, $fieldPrefix)
-    {
-        return [
-            'address' => $input[$fieldPrefix.'_address'],
-            'city' => $input[$fieldPrefix.'_city'],
-            'province' => $input[$fieldPrefix.'_province'],
-            'postal_code' => $input[$fieldPrefix.'_postal_code'],
-        ];
-    }
+        // TODO: ensure there is a lock on the bib so no one can take it while we validate and insert the records
+        // TODO: track consents
+        // TODO: track bonus
 
-    protected function processVehicle($input)
-    {
-        return [[
-            'chassis_manufacturer' => $input['vehicle_chassis_manufacturer'],
-            'engine_manufacturer' => $input['vehicle_engine_manufacturer'],
-            'engine_model' => $input['vehicle_engine_model'],
-            'oil_manufacturer' => $input['vehicle_oil_manufacturer'],
-            'oil_type' => $input['vehicle_oil_type'],
-            'oil_percentage' => $input['vehicle_oil_percentage'],
-        ]];
-    }
-    
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Participant $participant)
-    {
-
-        $participant->load(['race', 'championship']);
-
-        return view('participant.show', [
-            'race' => $participant,
-            'championship' => $participant->championship,
-            'participant' => $participant,
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Participant $participant)
-    {
-        $participant->load(['race', 'championship']);
-
-        return view('participant.edit', [
-            'race' => $participant,
-            'championship' => $participant->championship,
-            'participant' => $participant,
-            'categories' => Category::all(),
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Participant $participant)
-    {
-        $validated = $request->validate([
+        $validated = Validator::make($input, [
             'bib' => [
                 'required', 'integer', 'min:1', 
-                Rule::unique('participants', 'bib')->ignore($participant)->where(fn ($query) => $query->where('race_id', $participant->race->getKey())),
+                Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),
+                
                 Rule::unique('participants', 'bib')
                     ->where(fn ($query) => $query
-                        ->where('championship_id', $participant->race->championship_id)
-                        ->where('driver_licence', '!=', hash('sha512', $request->driver_licence_number ?? ''))),
+                        ->where('championship_id', $race->championship_id)
+                        ->where('driver_licence', '!=', hash('sha512', $input['driver_licence_number'] ?? ''))),
             ],
             'category' => ['required', 'string', new ExistsCategory],
             'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
@@ -163,7 +59,6 @@ class RaceParticipantController extends Controller
             'driver_medical_certificate_expiration_date' => ['required', 'string', ],
             'driver_residence_address' => [ 'required', 'string' ],
             'driver_sex' => [ 'required', new Enum(Sex::class) ],
-
             'driver_residence_address' => ['required', 'string', 'max:250'],
             'driver_residence_city' => ['required', 'string',  'max:250'],
             'driver_residence_province' => ['nullable', 'string',  'max:250'],
@@ -171,10 +66,8 @@ class RaceParticipantController extends Controller
             
             'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
             'competitor_licence_type' => ['nullable','required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
-            
             'competitor_first_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_last_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
-
             'competitor_licence_renewed_at' => ['nullable'],
             'competitor_nationality' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_email' => ['nullable','required_with:competitor_licence_number', 'string', 'email'],
@@ -182,7 +75,6 @@ class RaceParticipantController extends Controller
             'competitor_birth_date' => ['nullable','required_with:competitor_licence_number', 'string', ],
             'competitor_birth_place' => ['nullable','required_with:competitor_licence_number', 'string', ],
             'competitor_residence_address' => [ 'nullable','required_with:competitor_licence_number', 'string' ],
-
             'competitor_residence_address' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_residence_city' => ['nullable','required_with:competitor_licence_number', 'string',  'max:250'],
             'competitor_residence_province' => ['nullable', 'string',  'max:250'],
@@ -199,17 +91,19 @@ class RaceParticipantController extends Controller
             'vehicle_oil_percentage' => ['required', 'string', 'max:250'],
 
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
-        ]);
+        ])->validate();
 
-        // TODO: ensure there is a lock on the bib so no one can take it while we validate and insert the records
+        
 
-        $participant = DB::transaction(function() use ($validated, $participant, $request){
+        return DB::transaction(function() use ($validated, $race, $user){
 
-            $participant->update([
+            $participant = $race->participants()->create([
                 'bib' => $validated['bib'],
                 'category' => $validated['category'],
                 'first_name' => $validated['driver_first_name'],
                 'last_name' => $validated['driver_last_name'],
+                'added_by' => $user?->getKey(),
+                'championship_id' => $race->championship_id,
                 'driver_licence' => hash('sha512', $validated['driver_licence_number']),
                 'competitor_licence' => isset($validated['competitor_licence_number']) ? hash('sha512', $validated['competitor_licence_number']) : null,
                 'licence_type' => $validated['driver_licence_type'],
@@ -246,25 +140,35 @@ class RaceParticipantController extends Controller
                     'licence_number' => $validated['mechanic_licence_number'],
                 ] : null,
                 'vehicles' => $this->processVehicle($validated),
+                'consents' => [
+                    'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
+                ]
             ]);
             
             return $participant;
         });
-        
-        return to_route('races.participants.index', $participant->race)
-            ->with('message', __(':participant updated.', [
-                'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}" 
-            ]));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Participant $participant)
+    
+    protected function processAddressInput($input, $fieldPrefix)
     {
-        //
+        return [
+            'address' => $input[$fieldPrefix.'_address'] ?? null,
+            'city' => $input[$fieldPrefix.'_city'] ?? null,
+            'province' => $input[$fieldPrefix.'_province'] ?? null,
+            'postal_code' => $input[$fieldPrefix.'_postal_code'] ?? null,
+        ];
+    }
+
+    protected function processVehicle($input)
+    {
+        return [[
+            'chassis_manufacturer' => $input['vehicle_chassis_manufacturer'] ?? null,
+            'engine_manufacturer' => $input['vehicle_engine_manufacturer'] ?? null,
+            'engine_model' => $input['vehicle_engine_model'] ?? null,
+            'oil_manufacturer' => $input['vehicle_oil_manufacturer'] ?? null,
+            'oil_type' => $input['vehicle_oil_type'] ?? null,
+            'oil_percentage' => $input['vehicle_oil_percentage'] ?? null,
+        ]];
     }
 }

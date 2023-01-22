@@ -3,23 +3,27 @@
 namespace Tests\Feature;
 
 use App\Models\Championship;
-use App\Models\Competitor;
 use App\Models\CompetitorLicence;
-use App\Models\Driver;
 use App\Models\DriverLicence;
-use App\Models\Mechanic;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
 use App\Models\User;
-use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Tests\CreateCompetitor;
+use Tests\CreateDriver;
+use Tests\CreateMechanic;
+use Tests\CreateVehicle;
 use Tests\TestCase;
 
 class RaceParticipantTest extends TestCase
 {
     use RefreshDatabase;
+    use CreateDriver;
+    use CreateCompetitor;
+    use CreateMechanic;
+    use CreateVehicle;
 
     protected function setAvailableCategories()
     {
@@ -31,68 +35,6 @@ class RaceParticipantTest extends TestCase
                 ],
             ],
         ]);
-    }
-
-    protected function generateValidDriver()
-    {
-        return [
-            'driver_first_name' => 'John',
-            'driver_last_name' => 'Racer',
-            'driver_licence_number' => 'D0001',
-            'driver_licence_type' => DriverLicence::LOCAL_CLUB->value,
-            'driver_licence_renewed_at' => null,
-            'driver_nationality' => 'Italy',
-            'driver_email' => 'john@racer.local',
-            'driver_phone' => '555555555',
-            'driver_birth_date' => '1999-11-11',
-            'driver_birth_place' => 'Milan',
-            'driver_medical_certificate_expiration_date' => today()->addYear()->toDateString(),
-            'driver_residence_address' => 'via dei Platani, 40',
-            'driver_residence_city' => 'Milan',
-            'driver_residence_province' => 'Milan',
-            'driver_residence_postal_code' => '20146',
-            'driver_sex' => Sex::MALE->value,
-        ];
-    }
-
-    protected function generateValidCompetitor()
-    {
-        return [
-            'competitor_first_name' => 'Parent',
-            'competitor_last_name' => 'Racer',
-            'competitor_licence_number' => 'C0002',
-            'competitor_licence_type' => CompetitorLicence::LOCAL->value,
-            'competitor_licence_renewed_at' => null,
-            'competitor_nationality' => 'Italy',
-            'competitor_email' => 'parent@racer.local',
-            'competitor_phone' => '54444444',
-            'competitor_birth_date' => '1979-11-11',
-            'competitor_birth_place' => 'Milan',
-            'competitor_residence_address' => 'via dei Platani, 40',
-            'competitor_residence_city' => 'Milan',
-            'competitor_residence_province' => 'Milan',
-            'competitor_residence_postal_code' => '20146',
-        ];
-    }
-
-    protected function generateValidMechanic()
-    {
-        return [
-            'mechanic_name' => 'Mechanic Racer',
-            'mechanic_licence_number' => 'M0003',
-        ];
-    }
-
-    protected function generateValidVehicle()
-    {
-        return [
-            'vehicle_chassis_manufacturer' => 'Chassis',
-            'vehicle_engine_manufacturer' => 'Engine Manufacturer',
-            'vehicle_engine_model' => 'Engine Model',
-            'vehicle_oil_manufacturer' => 'Oil Manufacturer',
-            'vehicle_oil_type' => 'Oil Type',
-            'vehicle_oil_percentage' => '4',
-        ];
     }
 
     public function test_participant_can_be_registered()

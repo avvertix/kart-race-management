@@ -34,7 +34,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-        <form method="POST" action="{{ route('races.participants.store', $race) }}">
+        <form method="POST" action="{{ route('races.registration.store', $race) }}">
             @csrf
         
             @include('participant.partials.form')

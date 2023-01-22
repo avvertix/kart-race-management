@@ -5,6 +5,7 @@ use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
 use App\Http\Controllers\RaceParticipantController;
+use App\Http\Controllers\RaceRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -55,3 +56,7 @@ Route::middleware([
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
 
     });
+
+// Self registration
+
+Route::resource('races.registration', RaceRegistrationController::class)->only(['show', 'create', 'store'])->shallow();

@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use BaconQrCode\Renderer\Color\Rgb;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\Fill;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 
 class Participant extends Model
 {
@@ -105,4 +111,21 @@ class Participant extends Model
     }
     
     
+
+    public function qrCodeSvg()
+    {
+        $svg = (new Writer(
+            new ImageRenderer(
+                new RendererStyle(192, 0, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(45, 55, 72))),
+                new SvgImageBackEnd
+            )
+        ))->writeString($this->qrCodeContent());
+
+        return trim(substr($svg, strpos($svg, "\n") + 1));
+    }
+
+    public function qrCodeContent(): string
+    {
+        return base64_encode("{$this->id}/{$this->uuid}");
+    }
 }

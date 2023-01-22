@@ -11,7 +11,7 @@
                 </div>
 
                 {{-- Navigation Links --}}
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex print:hidden">
 
                     @auth
                         <x-jet-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
+            <div class="hidden sm:flex sm:items-center sm:ml-6 print:hidden">
                 {{-- Teams Dropdown --}}
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                     <div class="ml-3 relative">
@@ -134,7 +134,7 @@
             </div>
 
             {{-- Hamburger --}}
-            <div class="-mr-2 flex items-center sm:hidden">
+            <div class="-mr-2 flex items-center sm:hidden print:hidden">
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 focus:text-zinc-500 transition">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -146,7 +146,7 @@
     </div>
 
     {{-- Responsive Navigation Menu --}}
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white print:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @auth
                 <x-jet-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
@@ -163,7 +163,7 @@
         
         @auth
             {{-- Responsive Settings Options --}}
-            <div class="pt-4 pb-1 border-t border-zinc-200">
+            <div class="pt-4 pb-1 border-t border-zinc-200 print:hidden">
                 <div class="flex items-center px-4">
                     @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                         <div class="shrink-0 mr-3">

@@ -13,6 +13,7 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\Fill;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use Illuminate\Support\Facades\URL;
 
 class Participant extends Model
 {
@@ -119,13 +120,21 @@ class Participant extends Model
                 new RendererStyle(192, 0, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(45, 55, 72))),
                 new SvgImageBackEnd
             )
-        ))->writeString($this->qrCodeContent());
+        ))->writeString($this->qrCodeUrl());
 
         return trim(substr($svg, strpos($svg, "\n") + 1));
     }
 
-    public function qrCodeContent(): string
+    public function qrCodeUrl(): string
     {
-        return base64_encode("{$this->id}/{$this->uuid}");
+        return URL::signedRoute(
+            'registration.show',
+            ['registration' => $this, 'p' => $this->signatureContent()]
+        );
+    }
+    
+    public function signatureContent(): string
+    {
+        return "{$this->bib}-{$this->driver_licence}";
     }
 }

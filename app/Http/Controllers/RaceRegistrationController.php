@@ -14,6 +14,7 @@ use App\Models\Sex;
 use App\Rules\ExistsCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
@@ -45,10 +46,13 @@ class RaceRegistrationController extends Controller
     {
 
         $participant = $registerParticipant($race, $request->all());
-        
-        return to_route('registration.show', $participant)
-            // TODO: maybe add a signature
-            ->with('message', __('Race registration recorded.'));
+
+        return redirect()
+            ->signedRoute(
+                'registration.show',
+                ['registration' => $participant, 'p' => $participant->signatureContent()]
+            )
+            ->with('message', __('Race registration recorded. Please confirm it using the link sent in the email.'));
     }
     
     /**
@@ -57,8 +61,12 @@ class RaceRegistrationController extends Controller
      * @param  \App\Models\Participant  $participant
      * @return \Illuminate\Http\Response
      */
-    public function show(Participant $registration)
+    public function show(Participant $registration, Request $request)
     {
+        if (! $request->hasValidSignature()) {
+            abort(401, __('We cannot verify your identity, please follow the URL in the email.'));
+        }
+
         $registration->load(['race', 'championship']);
 
         return view('race-registration.show', [

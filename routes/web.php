@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChampionshipController;
+use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
@@ -19,9 +20,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('races.index');
+Route::get('/', ListRacesWithOpenRegistrationController::class)->name('races.index');
 
 Route::middleware([
     'auth:sanctum',

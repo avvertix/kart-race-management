@@ -25,7 +25,7 @@
 
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             <div class="">
                 <h3 class="text-xl font-bold mb-1">{{ $race->title }}</h3>
@@ -35,15 +35,15 @@
             
             <div class="p-4 -mx-4 shadow-lg bg-white rounded-md mb-6 print:shadow-none flex">
 
-                <div class="w-2/3">
+                <div class="lg:w-2/3">
                     <h3 class="text-3xl font-bold flex items-center gap-2">
                         <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                         <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                     </h3>
                     <p class="mb-6 text-xl">{{ $participant->category }} / {{ $participant->engine }}</p>
                     
-                    <div class="grid grid-cols-2 mb-2">
-                        <p class="font-bold col-span-2">{{ __('Driver') }}</p>
+                    <div class="grid md:grid-cols-2 mb-2">
+                        <p class="font-bold md:col-span-2">{{ __('Driver') }}</p>
                         <p>
                             {{ $participant->first_name }}
                             {{ $participant->last_name }}
@@ -77,9 +77,9 @@
                             ]) }}
                         </p>
                     </div>
-                    <div class="grid grid-cols-2">
-                        <div class="grid grid-cols-3 mb-2">
-                            <p class="font-bold col-span-3">{{ __('Competitor') }}</p>
+                    <div class="grid md:grid-cols-2">
+                        <div class="grid md:grid-cols-3 mb-2">
+                            <p class="font-bold md:col-span-3">{{ __('Competitor') }}</p>
                             @if ($participant->competitor)
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-jet-label for="competitor_first_name" value="{{ __('Name') }}*" />
@@ -140,10 +140,10 @@
                             @endif
                         </div>
                     </div>
-                    <div class="mt-6 grid grid-cols-2">
+                    <div class="mt-6 grid md:grid-cols-2">
                     
                         @foreach ($participant->vehicles as $vehicle)
-                            <div class="grid grid-cols-2 gap-1">
+                            <div class="grid sm:grid-cols-2 gap-1">
                                 <div class="">
                                     <span class="text-sm text-zinc-500 block">{{ __('Chassis') }}</span>
                                     {{ $vehicle['chassis_manufacturer'] }}
@@ -163,7 +163,7 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="w-1/3 flex justify-end p-4">
+                <div class="hidden lg:w-1/3 lg:flex justify-end p-4">
                     {!! $participant->qrCodeSvg() !!}
                 </div>
             </div>

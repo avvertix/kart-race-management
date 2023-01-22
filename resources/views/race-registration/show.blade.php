@@ -50,7 +50,7 @@
                         </p>
                         <p>
                             {{ $participant->driver['nationality'] }}
-                            {{ $participant->licence_type?->value }}
+                            {{ $participant->licence_type?->name }}
                             {{ $participant->driver['licence_number'] }}
                         </p>
                         <p>

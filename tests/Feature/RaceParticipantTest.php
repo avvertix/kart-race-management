@@ -9,8 +9,11 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
 use App\Models\User;
+use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Tests\CreateCompetitor;
 use Tests\CreateDriver;
 use Tests\CreateMechanic;
@@ -39,6 +42,8 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_can_be_registered()
     {
+        Notification::fake();
+
         $this->setAvailableCategories();
 
         $user = User::factory()->racemanager()->create();
@@ -124,6 +129,16 @@ class RaceParticipantTest extends TestCase
         $this->assertEquals('Oil Manufacturer', $participant->vehicles[0]['oil_manufacturer']);
         $this->assertEquals('Oil Type', $participant->vehicles[0]['oil_type']);
         $this->assertEquals('4', $participant->vehicles[0]['oil_percentage']);
+
+        Notification::assertCount(2);
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'driver';
+        });
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'competitor';
+        });
 
     }
     public function test_participant_without_competitor_can_be_registered()

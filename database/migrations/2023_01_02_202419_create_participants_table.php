@@ -56,14 +56,6 @@ return new class extends Migration
             $table->json('consents')->default('[]');
             
             $table->foreignIdFor(User::class, 'added_by')->nullable();
-            
-            // $table->text('signature')->nullable();
-            
-            // $table->text('signing_code')->nullable();
-            
-            // $table->text('signed_by')->nullable();
-
-            // $table->dateTime('signed_at')->nullable();
 
         });
     }

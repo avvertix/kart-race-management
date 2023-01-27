@@ -14,7 +14,9 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\Fill;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
 class Participant extends Model
@@ -194,8 +196,30 @@ class Participant extends Model
         ];
     }
 
+    /**
+     * Get the email to verify according to the target of the notification
+     */
     public function getEmailForVerification($target = 'driver')
     {
         return $target === 'competitor' && $this->competitor ? $this->competitor['email'] : $this->driver['email'];
+    }
+
+    /**
+     * Get the verification URL for the given notification target.
+     *
+     * @param  string  $target
+     * @return string
+     */
+    public function verificationUrl($target = 'driver')
+    {
+        return URL::temporarySignedRoute(
+            'participant.sign.create',
+            Carbon::now()->addMinutes(Config::get('participant.verification.expire', 60)),
+            [
+                'id' => $this->getKey(),
+                'p' => $this->signatureContent(),
+                'hash' => sha1($this->getEmailForVerification($target)),
+            ]
+        );
     }
 }

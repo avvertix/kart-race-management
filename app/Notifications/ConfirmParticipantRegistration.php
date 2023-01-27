@@ -53,12 +53,12 @@ class ConfirmParticipantRegistration extends Notification
     public function toMail(Participant $notifiable)
     {
         return (new MailMessage)
-                    ->subject(Lang::get('Verify the email and confirm the participation to race'))
+                    ->subject(Lang::get('Verify the email and confirm the participation to :race', ['race' => $notifiable->race->title,]))
                     ->line(Lang::get('We received a request to register **:name** as driver for the race :race', [
                         'name' => "{$notifiable->first_name} {$notifiable->last_name}",
                         'race' => $notifiable->race->title,
                     ]))
-                    ->action(Lang::get('Confirm the participation'), $this->verificationUrl($notifiable))
+                    ->action(Lang::get('Confirm the participation'), $notifiable->verificationUrl($this->target))
                     ->line(Lang::get('We do ask the confirmation to ensure that the email address is valid and as a proof that can replace the signature on the printed request for participation.'))
                     ->line(Lang::get('By confirming the participation you agree to the race regulation.'))
                     ->salutation(Lang::get('[View the participation](:link)', ['link' => $notifiable->qrCodeUrl()]))
@@ -76,25 +76,5 @@ class ConfirmParticipantRegistration extends Notification
         return [
             //
         ];
-    }
-
-
-    /**
-     * Get the verification URL for the given notifiable.
-     *
-     * @param  mixed  $notifiable
-     * @return string
-     */
-    protected function verificationUrl(Participant $notifiable)
-    {
-        return URL::temporarySignedRoute(
-            'participant.sign.create',
-            Carbon::now()->addMinutes(Config::get('participant.verification.expire', 60)),
-            [
-                'id' => $notifiable->getKey(),
-                'p' => $notifiable->signatureContent(),
-                'hash' => sha1($notifiable->getEmailForVerification($this->target)),
-            ]
-        );
     }
 }

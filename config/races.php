@@ -22,6 +22,14 @@ return [
 
     'organizer' => [
         'name' => env('RACE_ORGANIZER_NAME'),
+        'email' => env('RACE_ORGANIZER_EMAIL'),
+        'address' => env('RACE_ORGANIZER_ADDRESS'),
+        'bank_account' => env('RACE_ORGANIZER_BANK_ACCOUNT'),
+    ],
+
+    'licence' => [
+        'provider' => env('RACE_LICENCE_PROVIDER', 'ACI Sport'),
+        'country' => env('RACE_LICENCE_COUNTRY', 'Italia')
     ],
 
 ];

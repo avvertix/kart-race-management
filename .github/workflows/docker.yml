@@ -6,6 +6,8 @@ on:
       - "main"
   release:
     types: [published]
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 env:
   REGISTRY: ghcr.io

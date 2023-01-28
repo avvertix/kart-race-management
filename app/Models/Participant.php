@@ -216,8 +216,8 @@ class Participant extends Model
             'participant.sign.create',
             Carbon::now()->addMinutes(Config::get('participant.verification.expire', 60)),
             [
-                'id' => $this->getKey(),
-                'p' => $this->signatureContent(),
+                'p' => (string)$this->uuid,
+                't' => $target,
                 'hash' => sha1($this->getEmailForVerification($target)),
             ]
         );

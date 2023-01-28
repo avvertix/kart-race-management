@@ -40,10 +40,51 @@ class ConfirmParticipantRegistrationTest extends TestCase
             'participant.sign.create',
             Carbon::now()->addMinutes(Config::get('participant.verification.expire', 60)),
             [
-                'id' => $notifiable->getKey(),
-                'p' => $notifiable->signatureContent(),
+                'p' => (string)$notifiable->uuid,
+                't' => 'driver',
                 'hash' => sha1($notifiable->getEmailForVerification('driver')),
             ]
         )), $rendered);
+    }
+
+
+    public function test_driver_can_sign_the_participation_request()
+    {
+        /**
+         * @var \App\Models\Participant
+         */
+        $participant = Participant::factory()->create();
+
+        $response = $this->get($participant->verificationUrl('driver'));
+
+        $response->assertRedirect($participant->qrCodeUrl());
+
+        $response->assertSessionHas('message', 'You signed the participation request.');
+
+        $signature = $participant->signatures()->first();
+
+        $this->assertNotNull($signature->signed_at);
+
+        $this->assertEquals(sha1($participant->driver['email']), $signature->signature);
+    }
+
+    public function test_competitor_can_sign_the_participation_request()
+    {
+        /**
+         * @var \App\Models\Participant
+         */
+        $participant = Participant::factory()->withCompetitor()->create();
+
+        $response = $this->get($participant->verificationUrl('competitor'));
+
+        $response->assertRedirect($participant->qrCodeUrl());
+
+        $response->assertSessionHas('message', 'You signed the participation request.');
+
+        $signature = $participant->signatures()->first();
+
+        $this->assertNotNull($signature->signed_at);
+
+        $this->assertEquals(sha1($participant->competitor['email']), $signature->signature);
     }
 }

@@ -21,6 +21,17 @@ class Signature extends Model
         'id',
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $fillable = [
+        'signature',
+        'signed_by',
+        'signed_at',
+    ];
+
 
     /**
      * The attributes that should be cast.

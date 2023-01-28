@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChampionshipController;
+use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
@@ -64,10 +65,6 @@ Route::resource('races.registration', RaceRegistrationController::class)->only([
 
 // Signature for registration
 
-Route::get('confirm-participation', ShowParticipantSignatureFormController::class)
+Route::get('confirm-participation', ConfirmParticipantController::class)
     ->name('participant.sign.create')
-    ->middleware('signed');
-
-Route::post('confirm-participation', SaveParticipantSignatureController::class)
-    ->name('participant.sign.store')
     ->middleware('signed');

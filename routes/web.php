@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\ChampionshipController;
+use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
 use App\Http\Controllers\RaceParticipantController;
 use App\Http\Controllers\RaceRegistrationController;
+use App\Http\Controllers\SaveParticipantSignatureController;
+use App\Http\Controllers\ShowParticipantSignatureFormController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,3 +62,9 @@ Route::middleware([
 // Self registration
 
 Route::resource('races.registration', RaceRegistrationController::class)->only(['show', 'create', 'store'])->shallow();
+
+// Signature for registration
+
+Route::get('confirm-participation', ConfirmParticipantController::class)
+    ->name('participant.sign.create')
+    ->middleware('signed');

@@ -144,6 +144,8 @@ class RegisterParticipant
                     'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
                 ]
             ]);
+
+            $participant->sendConfirmParticipantNotification();
             
             return $participant;
         });

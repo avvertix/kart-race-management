@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Championship;
 use App\Models\Competitor;
+use App\Models\CompetitorLicence;
 use App\Models\Driver;
 use App\Models\DriverLicence;
 use App\Models\Race;
@@ -48,9 +49,6 @@ class ParticipantFactory extends Factory
                 'last_name' => function (array $attributes) {
                     return $attributes['first_name'];
                 },
-                
-                'first_name' => fake()->name(),
-                'last_name' => fake()->lastName(),
                 'licence_type' => DriverLicence::LOCAL_CLUB,
                 'licence_number' => $licenceNumber,
                 'licence_renewed_at' => null,
@@ -88,6 +86,37 @@ class ParticipantFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'confirmed_at' => now(),
+            ];
+        });
+    }
+    
+    /**
+     * Indicate that the has a competitor.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function withCompetitor()
+    {
+        return $this->state(function (array $attributes) {
+
+            $licenceNumber = fake()->numerify();
+
+            return [
+                'competitor_licence' => hash('sha512', $licenceNumber),
+
+                'competitor' => [
+                    'first_name' => fake()->name(),
+                    'last_name' => fake()->lastName(),
+                    'licence_type' => CompetitorLicence::LOCAL,
+                    'licence_number' => $licenceNumber,
+                    'licence_renewed_at' => null,
+                    'nationality' => 'Italy',
+                    'email' => fake()->email(),
+                    'phone' => fake()->phoneNumber(),
+                    'birth_date' => new Carbon(fake()->dateTimeBetween('-20 years', '-18 years')),
+                    'birth_place' => fake()->city(),
+                    'residence_address' => fake()->address(),
+                ]
             ];
         });
     }

@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\Participant;
 use App\Models\Race;
+use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Tests\CreateCompetitor;
 use Tests\CreateDriver;
@@ -37,6 +39,8 @@ class SelfRegistrationTest extends TestCase
 
     public function test_participant_can_self_register()
     {
+        Notification::fake();
+        
         $this->setAvailableCategories();
 
         $race = Race::factory()->create();
@@ -71,6 +75,15 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertSessionHas('message', 'Race registration recorded. Please confirm it using the link sent in the email.');
 
+        Notification::assertCount(2);
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'driver';
+        });
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'competitor';
+        });
     }
 
     public function test_participant_can_access_registration_receipt()

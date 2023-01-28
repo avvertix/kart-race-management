@@ -12,8 +12,23 @@ enum DriverLicence: int implements Describable
     case FOREIGN = 20;
 
 
+    public function localizedName(): string
+    {
+        return trans("licence.driver.{$this->name}");
+    }
+
+
     public function description(): string
     {
-        return 'test';
+        if($this == DriverLicence::FOREIGN){
+            return __('Licence issued out of :country', [
+                'country' => config('races.licence.country'),
+            ]);
+        }
+
+        return __('Licence issued by :provider in :country', [
+            'provider' => config('races.licence.provider'),
+            'country' => config('races.licence.country'),
+        ]);
     }
 }

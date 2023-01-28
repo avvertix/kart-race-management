@@ -7,7 +7,7 @@
             
             <span class="flex flex-1">
                 <span class="flex flex-col">
-                    <span id="{{ $id }}-{{ $item->value }}-label" class="block text-sm font-medium text-zinc-900">{{ $item->name }}</span>
+                    <span id="{{ $id }}-{{ $item->value }}-label" class="block text-sm font-medium text-zinc-900">{{ method_exists($item, 'localizedName') ? $item->localizedName() : $item->name }}</span>
                     @if ($item instanceof \App\Support\Describable)
                         <span id="{{ $id }}-{{ $item->value }}-description" class="mt-1 flex items-center text-sm text-zinc-500">{{ $item->description() }}</span>
                     @endif

@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', ListRacesWithOpenRegistrationController::class)->name('races.index');
+Route::get('/', ListRacesWithOpenRegistrationController::class)->name('welcome');
 
 Route::middleware([
     'auth:sanctum',

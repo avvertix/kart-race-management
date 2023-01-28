@@ -5,7 +5,7 @@
             <div class="flex">
                 {{-- Logo --}}
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ auth()->check() ? route('dashboard') : route('races.index') }}">
+                    <a href="{{ auth()->check() ? route('dashboard') : route('welcome') }}">
                         <x-jet-application-mark class="block h-9 w-auto" />
                     </a>
                 </div>

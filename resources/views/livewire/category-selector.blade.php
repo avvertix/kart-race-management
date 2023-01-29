@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-2 border bg-white rounded-lg p-1 mt-1">
 
-    <x-jet-input id="category_search" wire:model="search" type="text" placeholder="{{ __('Search category') }}" name="category_search" class="mt-1 block w-full"  />
+    <x-search-input id="category_search" wire:model="search" type="text" placeholder="{{ __('Search category') }}" name="category_search" class="block w-full"  />
 
     <div class="flex flex-col gap-2 h-96 max-h-96 overflow-y-scroll">    
         @forelse ($categories as $key => $item)

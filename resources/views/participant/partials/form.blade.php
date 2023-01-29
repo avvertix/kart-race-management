@@ -24,7 +24,7 @@
                     <x-jet-label for="category" value="{{ __('Category') }}*" />
                     <x-jet-input-error for="category" class="mt-2" />
                     
-                    <livewire:category-selector name="category" class="mt-1 block w-full" :value="old('category', optional($participant ?? null)->category)" />
+                    <livewire:category-selector name="category" class="" :value="old('category', optional($participant ?? null)->category)" />
                 </div>
             </div>
         </div>

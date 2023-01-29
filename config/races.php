@@ -29,7 +29,7 @@ return [
 
     'licence' => [
         'provider' => env('RACE_LICENCE_PROVIDER', 'ACI Sport'),
-        'country' => env('RACE_LICENCE_COUNTRY', 'Italia')
+        'country' => env('RACE_LICENCE_COUNTRY', 'it')
     ],
 
 ];

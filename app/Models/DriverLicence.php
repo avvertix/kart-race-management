@@ -20,15 +20,17 @@ enum DriverLicence: int implements Describable
 
     public function description(): string
     {
+        $country = country(config('races.licence.country'));
+
         if($this == DriverLicence::FOREIGN){
             return __('Licence issued out of :country', [
-                'country' => config('races.licence.country'),
+                'country' => $country->getName(),
             ]);
         }
 
         return __('Licence issued by :provider in :country', [
             'provider' => config('races.licence.provider'),
-            'country' => config('races.licence.country'),
+            'country' => $country->getName(),
         ]);
     }
 }

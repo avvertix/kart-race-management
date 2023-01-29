@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
@@ -68,3 +69,8 @@ Route::resource('races.registration', RaceRegistrationController::class)->only([
 Route::get('confirm-participation', ConfirmParticipantController::class)
     ->name('participant.sign.create')
     ->middleware('signed');
+
+
+// Privacy Policy page
+
+Route::get('/privacy-policy', [PrivacyPolicyController::class, 'show'])->name('policy.show');

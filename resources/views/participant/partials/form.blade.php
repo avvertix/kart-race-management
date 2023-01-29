@@ -24,7 +24,7 @@
                     <x-jet-label for="category" value="{{ __('Category') }}*" />
                     <x-jet-input-error for="category" class="mt-2" />
                     
-                    <livewire:category-selector name="category" class="mt-1 block w-full" :value="old('category', optional($participant ?? null)->category)" />
+                    <livewire:category-selector name="category" class="" :value="old('category', optional($participant ?? null)->category)" />
                 </div>
             </div>
         </div>
@@ -257,8 +257,8 @@
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-jet-label for="vehicle_engine_manufacturer" value="{{ __('Engine Manufacturer') }}*" />
-                    <x-jet-input id="vehicle_engine_manufacturer" type="text" name="vehicle_engine_manufacturer" class="mt-1 block w-full" :value="old('vehicle_engine_manufacturer', optional($participant ?? null)->vehicles[0]['engine_manufacturer'] ?? null)"  autocomplete="engine_manufacturer" />
                     <x-jet-input-error for="vehicle_engine_manufacturer" class="mt-2" />
+                    <livewire:engine-input  :value="old('vehicle_engine_manufacturer', optional($participant ?? null)->vehicles[0]['engine_manufacturer'] ?? null)"  autocomplete="engine_manufacturer" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-jet-label for="vehicle_engine_model" value="{{ __('Engine Model') }}*" />

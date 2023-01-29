@@ -16,15 +16,20 @@ class CategorySelector extends Component
      * @var \Illuminate\Support\Collection
      */
     public $categories;
+
+    public $search;
     
 
     public function __construct()
     {
-        $this->categories = Category::all();
+        $search = null;
     }
-
+    
     public function render()
     {
+        $this->categories = $this->search ? Category::search($this->search) : Category::all();
+
+
         return view('livewire.category-selector');
     }
 }

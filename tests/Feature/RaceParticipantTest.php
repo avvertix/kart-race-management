@@ -155,7 +155,7 @@ class RaceParticipantTest extends TestCase
                 'bib' => 100,
                 'category' => 'category_key',
 
-                'driver_licence_type' => DriverLicence::LOCAL_CLUB->value,
+                'driver_licence_type' => DriverLicence::LOCAL_NATIONAL->value,
 
                 ...$this->generateValidDriver(),
                 ...$this->generateValidMechanic(),

@@ -49,7 +49,7 @@ class ParticipantFactory extends Factory
                 'last_name' => function (array $attributes) {
                     return $attributes['first_name'];
                 },
-                'licence_type' => DriverLicence::LOCAL_CLUB,
+                'licence_type' => DriverLicence::LOCAL_NATIONAL,
                 'licence_number' => $licenceNumber,
                 'licence_renewed_at' => null,
                 'nationality' => 'Italy',

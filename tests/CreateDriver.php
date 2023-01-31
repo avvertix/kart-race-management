@@ -18,7 +18,7 @@ trait CreateDriver
             'driver_first_name' => 'John',
             'driver_last_name' => 'Racer',
             'driver_licence_number' => 'D0001',
-            'driver_licence_type' => DriverLicence::LOCAL_CLUB->value,
+            'driver_licence_type' => DriverLicence::LOCAL_NATIONAL->value,
             'driver_licence_renewed_at' => null,
             'driver_nationality' => 'Italy',
             'driver_email' => 'john@racer.local',

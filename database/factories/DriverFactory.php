@@ -26,7 +26,7 @@ class DriverFactory extends Factory
             'category' => 'category_key',
             'first_name' => fake()->name(),
             'last_name' => fake()->lastName(),
-            'licence_type' => DriverLicence::LOCAL_CLUB,
+            'licence_type' => DriverLicence::LOCAL_NATIONAL,
             'licence_number' => fake()->numerify(),
             'licence_renewed_at' => null,
             'nationality' => 'Italy',

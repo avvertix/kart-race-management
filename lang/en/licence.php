@@ -11,7 +11,6 @@ return [
     */
 
     'driver' => [
-        'LOCAL_CLUB' => 'Club',
         'LOCAL_NATIONAL' => 'National',
         'LOCAL_INTERNATIONAL' => 'International',
         'FOREIGN' => 'Foreign',

@@ -52,7 +52,7 @@ class RaceRegistrationController extends Controller
                 'registration.show',
                 ['registration' => $participant, 'p' => $participant->signatureContent()]
             )
-            ->with('message', __('Race registration recorded. Please confirm it using the link sent in the email.'));
+            ->with('flash.banner', __('Race registration recorded. Please confirm it using the link sent in the email.'));
     }
     
     /**

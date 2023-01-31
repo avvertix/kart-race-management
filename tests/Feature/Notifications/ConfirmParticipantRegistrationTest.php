@@ -59,7 +59,7 @@ class ConfirmParticipantRegistrationTest extends TestCase
 
         $response->assertRedirect($participant->qrCodeUrl());
 
-        $response->assertSessionHas('message', 'You signed the participation request.');
+        $response->assertSessionHas('flash.banner', 'You signed the participation request.');
 
         $signature = $participant->signatures()->first();
 
@@ -79,7 +79,7 @@ class ConfirmParticipantRegistrationTest extends TestCase
 
         $response->assertRedirect($participant->qrCodeUrl());
 
-        $response->assertSessionHas('message', 'You signed the participation request.');
+        $response->assertSessionHas('flash.banner', 'You signed the participation request.');
 
         $signature = $participant->signatures()->first();
 

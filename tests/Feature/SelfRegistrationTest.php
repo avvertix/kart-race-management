@@ -73,7 +73,7 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', 'Race registration recorded. Please confirm it using the link sent in the email.');
+        $response->assertSessionHas('flash.banner', 'Race registration recorded. Please confirm it using the link sent in the email.');
 
         Notification::assertCount(2);
 

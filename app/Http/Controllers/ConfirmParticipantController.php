@@ -38,7 +38,7 @@ class ConfirmParticipantController extends Controller
         ]);
 
         return redirect($participant->qrCodeUrl())
-            ->with('message', __('You signed the participation request.'));
+            ->with('flash.banner', __('You signed the participation request.'));
 
     }
 }

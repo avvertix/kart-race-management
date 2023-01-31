@@ -14,12 +14,14 @@
         @livewireStyles
     </head>
     <body class="font-sans text-zinc-900 antialiased">
-        <x-jet-banner />
+        
 
         <div class="min-h-screen bg-zinc-100 print:bg-white">
             @livewire('navigation-menu')
+            
+            <x-jet-banner />
 
-            <!-- Page Heading -->
+            {{-- Page Heading --}}
             @if (isset($header))
                 <header class="">
                     <div {{ $header->attributes->class(['max-w-7xl','mx-auto','py-6','px-4','sm:px-6','lg:px-8']) }}>
@@ -28,7 +30,7 @@
                 </header>
             @endif
 
-            <!-- Page Content -->
+            {{-- Page Content --}}
             <main>
                 {{ $slot }}
             </main>

@@ -53,7 +53,7 @@ class ChampionshipTest extends TestCase
         
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', 'Kartsport 2023 created.');
+        $response->assertSessionHas('flash.banner', 'Kartsport 2023 created.');
 
         $champ = Championship::first();
 
@@ -82,7 +82,7 @@ class ChampionshipTest extends TestCase
         
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', '2023 Championship created.');
+        $response->assertSessionHas('flash.banner', '2023 Championship created.');
 
         $champ = Championship::first();
 
@@ -144,7 +144,7 @@ class ChampionshipTest extends TestCase
         
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', 'Kartsport changed 2023 updated.');
+        $response->assertSessionHas('flash.banner', 'Kartsport changed 2023 updated.');
 
         $champ = Championship::first();
 

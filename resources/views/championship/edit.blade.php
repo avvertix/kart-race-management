@@ -8,13 +8,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 
-            <x-jet-validation-errors class="mb-4" />
-
-        @if (session('message'))
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ session('message') }}
-            </div>
-        @endif
+        <x-jet-validation-errors class="mb-4" />
 
         <form method="POST" action="{{ route('championships.update', $championship) }}">
             @method('PUT')

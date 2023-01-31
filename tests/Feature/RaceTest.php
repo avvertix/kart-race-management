@@ -56,7 +56,7 @@ class RaceTest extends TestCase
         
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', 'First Race created.');
+        $response->assertSessionHas('flash.banner', 'First Race created.');
 
         $race = Race::first();
 
@@ -92,7 +92,7 @@ class RaceTest extends TestCase
         
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', 'First Updated Race saved.');
+        $response->assertSessionHas('flash.banner', 'First Updated Race saved.');
 
         $race = Race::first();
 

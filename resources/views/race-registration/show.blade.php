@@ -16,11 +16,6 @@
             
         </div>
 
-        @if (session('message'))
-            <div class="mb-4 font-medium text-sm text-green-600 print:hidden">
-                {{ session('message') }}
-            </div>
-        @endif
     </x-slot>
 
 

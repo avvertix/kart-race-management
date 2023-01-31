@@ -72,7 +72,7 @@ class ChampionshipController extends Controller
         ]);
 
         return to_route('championships.index')
-            ->with('message', __(':championship created.', [
+            ->with('flash.banner', __(':championship created.', [
                 'championship' => $championship->title
             ]));
     }
@@ -146,7 +146,7 @@ class ChampionshipController extends Controller
         ]);
 
         return to_route('championships.show', $championship)
-            ->with('message', __(':championship updated.', [
+            ->with('flash.banner', __(':championship updated.', [
                 'championship' => $validated['title']
             ]));
     }

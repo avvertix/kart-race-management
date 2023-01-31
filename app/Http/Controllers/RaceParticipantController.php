@@ -66,7 +66,7 @@ class RaceParticipantController extends Controller
         $participant = $registerParticipant($race, $request->all(), $request->user());
         
         return to_route('races.participants.index', $race)
-            ->with('message', __(':participant added.', [
+            ->with('flash.banner', __(':participant added.', [
                 'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}" 
             ]));
     }
@@ -252,7 +252,7 @@ class RaceParticipantController extends Controller
         });
         
         return to_route('races.participants.index', $participant->race)
-            ->with('message', __(':participant updated.', [
+            ->with('flash.banner', __(':participant updated.', [
                 'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}" 
             ]));
     }

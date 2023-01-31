@@ -67,7 +67,7 @@ class RaceParticipantTest extends TestCase
 
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', '100 John Racer added.');
+        $response->assertSessionHas('flash.banner', '100 John Racer added.');
 
         $participant = Participant::first();
 
@@ -184,7 +184,7 @@ class RaceParticipantTest extends TestCase
 
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', '100 John Racer added.');
+        $response->assertSessionHas('flash.banner', '100 John Racer added.');
 
         $participant = Participant::first();
 
@@ -340,7 +340,7 @@ class RaceParticipantTest extends TestCase
 
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', '100 John Racer added.');
+        $response->assertSessionHas('flash.banner', '100 John Racer added.');
 
         $participant = $race->participants()->first();
 

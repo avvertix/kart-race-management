@@ -95,7 +95,7 @@ class RaceController extends Controller
         ]);
 
         return to_route('races.show', $race)
-            ->with('message', __(':race saved.', [
+            ->with('flash.banner', __(':race saved.', [
                 'race' => $validated['title']
             ]));
     }

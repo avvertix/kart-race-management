@@ -31,7 +31,7 @@ class RaceImportTest extends TestCase
         
         $response->assertSessionHasNoErrors();
 
-        $response->assertSessionHas('message', 'Races imported.');
+        $response->assertSessionHas('flash.banner', 'Races imported.');
         
         
         $this->assertEquals(2, Race::count());

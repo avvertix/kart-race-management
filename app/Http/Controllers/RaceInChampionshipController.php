@@ -79,7 +79,7 @@ class RaceInChampionshipController extends Controller
         ]);
 
         return to_route('championships.races.index', $championship)
-            ->with('message', __(':race created.', [
+            ->with('flash.banner', __(':race created.', [
                 'race' => $race->title
             ]));
     }

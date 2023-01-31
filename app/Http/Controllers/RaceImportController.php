@@ -114,7 +114,7 @@ class RaceImportController extends Controller
         $championship->races()->createMany($toCreate->toArray());
 
         return to_route('championships.races.index', $championship)
-            ->with('message', __('Races imported.'));
+            ->with('flash.banner', __('Races imported.'));
 
     }
 

@@ -20,7 +20,6 @@
 
                 @include('participant.partials.bonus')
 
-
                 <x-jet-section-border />
                 
                 <div class="md:grid md:grid-cols-3 md:gap-6">
@@ -41,6 +40,8 @@
                             </div>
                     </div>
                 </div>
+
+                @include('participant.partials.costs')
                 
                 <div class="md:grid md:grid-cols-3 md:gap-6">
                     

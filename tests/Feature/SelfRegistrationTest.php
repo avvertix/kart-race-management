@@ -32,6 +32,12 @@ class SelfRegistrationTest extends TestCase
                     'tires' => 'T1',
                 ],
             ],
+            'races.tires' => [
+                'T1' => [
+                    'name' => 'T1',
+                    'price' => 10,
+                ],
+            ],
         ]);
     }
 
@@ -88,6 +94,7 @@ class SelfRegistrationTest extends TestCase
 
     public function test_participant_can_access_registration_receipt()
     {
+        $this->setAvailableCategories();
 
         $race = Race::factory()->create();
 

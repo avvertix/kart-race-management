@@ -37,6 +37,12 @@ class RaceParticipantTest extends TestCase
                     'tires' => 'T1',
                 ],
             ],
+            'races.tires' => [
+                'T1' => [
+                    'name' => 'T1',
+                    'price' => 10,
+                ],
+            ],
         ]);
     }
 

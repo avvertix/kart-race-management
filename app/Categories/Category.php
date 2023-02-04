@@ -2,6 +2,7 @@
 
 namespace App\Categories;
 
+use App\Models\TireOption;
 use App\Support\Describable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +11,7 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $name
+ * @property string $description
  * @property string $tires
  */
 class Category extends Fluent implements Describable
@@ -22,6 +24,11 @@ class Category extends Fluent implements Describable
         return $this->get('description', '');
     }
 
+    public function tire(): TireOption
+    {
+        return TireOption::find($this->tires);
+    }
+
     
     /**
      * Get all defined categories
@@ -29,7 +36,7 @@ class Category extends Fluent implements Describable
     public static function all(): Collection 
     {
         self::$categories = collect(config('categories.default'))
-            ->merge(json_decode(Storage::disk(config('categories.disk'))->get(config('categories.file')), true))
+            ->merge(json_decode(Storage::disk(config('categories.disk'))->get(config('categories.file')) ?? '{}', true))
             ->mapInto(Category::class);
         
         return self::$categories;

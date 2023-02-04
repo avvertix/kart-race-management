@@ -13,7 +13,7 @@ enum DriverLicence: int implements Describable
 
     public function localizedName(): string
     {
-        return trans("licence.driver.{$this->name}");
+        return trans("licences.driver.{$this->name}");
     }
 
 

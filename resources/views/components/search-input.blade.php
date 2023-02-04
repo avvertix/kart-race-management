@@ -9,4 +9,7 @@
         </svg>
     </div>
       
+    <div wire:loading wire:target="search" class="absolute top-0 right-0 flex items-center h-full p-2 text-orange-50 bg-orange-600 rounded-r-md ">
+        {{ __('Searching...') }}
+    </div>
 </div>

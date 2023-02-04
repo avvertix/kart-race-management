@@ -30,7 +30,7 @@ class ParticipantPolicy
      */
     public function view(User $user, Participant $participant)
     {
-        return $user->hasPermission('participant:list');
+        return $user->hasPermission('participant:view');
     }
 
     /**

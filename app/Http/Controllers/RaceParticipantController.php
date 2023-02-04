@@ -34,10 +34,11 @@ class RaceParticipantController extends Controller
      */
     public function index(Race $race)
     {
+        $race->load(['championship']);
+
         return view('participant.index', [
             'race' => $race,
             'championship' => $race->championship,
-            'participants' => $race->participants,
         ]);
     }
 

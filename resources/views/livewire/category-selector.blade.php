@@ -13,6 +13,7 @@
                         @if ($item instanceof \App\Support\Describable)
                             <span id="{{ $name }}-{{ $key }}-description" class="mt-1 flex items-center text-sm text-zinc-500">{{ $item->description() }}</span>
                         @endif
+                        <span class="mt-1 flex items-center text-sm text-zinc-500">{{ optional($item->tire())->name ?? __('Tires not defined') }}</span>
                     </span>
                 </span>
 

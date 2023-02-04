@@ -13,8 +13,8 @@
                 <div class="grid grid-cols-6 gap-6">
                     <div class="col-span-6 sm:col-span-4">
                         <label for="bonus" class="flex items-center">
-                            <x-jet-checkbox id="bonus" name="bonus" />
-                            <span class="ml-2">{{ __('Apply a bonus') }}</span>
+                            <x-jet-checkbox id="bonus" name="bonus" :checked="(optional($participant ?? null)->use_bonus)" />
+                            <span class="ml-2">{{ __('Use a bonus') }}</span>
                         </label>
                     </div>
                 </div>

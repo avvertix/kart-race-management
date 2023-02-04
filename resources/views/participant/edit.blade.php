@@ -19,6 +19,8 @@
                     
                 @include('participant.partials.form')
                 
+                @include('participant.partials.bonus')
+                
                 <div class="md:grid md:grid-cols-3 md:gap-6">
                     
                     <div></div>

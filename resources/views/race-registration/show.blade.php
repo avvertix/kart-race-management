@@ -9,7 +9,7 @@
 
                 </div>
             </div>
-            <div>
+            <div class="prose prose-zinc">
                 <p class="font-bold">{{ __('You must present yourself to the race secretary the day of the race to confirm your participation.') }}</p>
                 <p>{{ __('Please bring this receipt with you to the race (printed version or PDF).') }}</p>
             </div>
@@ -17,6 +17,39 @@
         </div>
 
     </x-slot>
+
+    <div class="py-3 print:hidden bg-white border-y border-zinc-300">
+        
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <h3 class="text-xl font-bold mb-1">{{ __('Race participation price') }} <x-price class="font-mono">{{ $participant->price()->last() }}</x-price></h3>
+
+            <div class="grid lg:gap-4 lg:grid-cols-2">
+
+                <div class="prose prose-zinc">
+                    <p>{{ __('Race cost is calculated from a fixed fee plus one tire set, based on the selected category.') }}</p>
+                    <table>
+                        @foreach ($participant->price() as $key => $price)
+                            <tr>
+                                <td class="{{ $loop->last ? 'font-bold' : ''}}">{{ $key }}</td>
+                                <td class="text-right {{ $loop->last ? 'font-bold' : ''}}"><x-price>{{ $price }}</x-price></td>
+                                <td class="min-w-[40px]">&nbsp;</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+
+                <div class="prose prose-zinc">
+                    <p>{{ __('Race participation can be paid via bank transfer to') }}</p>
+                    <p class="bg-zinc-50 p-2 shadow">{{ config('races.organizer.name') }}
+                        <br>{{ config('races.organizer.bank') }}
+                        <br><span class="font-mono">{{ config('races.organizer.bank_account') }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
 
 
     <div class="py-6">
@@ -35,7 +68,8 @@
                         <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                         <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                     </h3>
-                    <p class="mb-6 text-xl">{{ $participant->category }} / {{ $participant->engine }}</p>
+                    <p class="mb-1 text-xl">{{ $participant->category()->name }} / {{ $participant->engine }}</p>
+                    <p class="mb-6 text-xl">{{ $participant->tire()->name }}</p>
                     
                     <div class="grid md:grid-cols-2 mb-2">
                         <p class="font-bold md:col-span-2">{{ __('Driver') }}</p>

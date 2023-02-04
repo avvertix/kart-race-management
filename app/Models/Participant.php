@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Categories\Category;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -16,6 +17,8 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
@@ -49,6 +52,7 @@ class Participant extends Model
         'competitor',
         'mechanic',
         'vehicles',
+        'use_bonus',
     ];
 
     /**
@@ -73,6 +77,7 @@ class Participant extends Model
         'vehicles' => AsCollection::class,
         'confirmed_at' => 'datetime',
         'consents' => AsArrayObject::class,
+        'use_bonus' => 'boolean',
     ];
 
     /**
@@ -130,6 +135,15 @@ class Participant extends Model
         return $this->driver['email'] ?? null;
     }
     
+    public function category(): Category|null
+    {
+        return Category::find($this->category);
+    }
+    
+    public function tire(): TireOption|null
+    {
+        return optional($this->category())->tire();
+    }
     
 
     public function qrCodeSvg()
@@ -221,5 +235,26 @@ class Participant extends Model
                 'hash' => sha1($this->getEmailForVerification($target)),
             ]
         );
+    }
+
+    /**
+     * Calculate the cost of the participation
+     */
+    public function price(): Collection
+    {
+        $tires = $this->tire();
+
+        $order = collect([
+            __('Race fee') => (int)config('races.price'),
+            __('Tires (:model)', ['model' => $tires->name]) => $tires->price,
+            __('Bonus') => $this->use_bonus ? 0-config('races.bonus_amount', 0) : 0,
+            __('Total') => null,
+        ]);
+
+        $total = $order->sum();
+
+        return  $order->merge([
+            __('Total') => $total,
+        ])->filter();
     }
 }

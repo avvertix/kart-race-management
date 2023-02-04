@@ -91,7 +91,7 @@ class ParticipantFactory extends Factory
     }
     
     /**
-     * Indicate that the has a competitor.
+     * Indicate that the participant has a competitor.
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
@@ -117,6 +117,21 @@ class ParticipantFactory extends Factory
                     'birth_place' => fake()->city(),
                     'residence_address' => fake()->address(),
                 ]
+            ];
+        });
+    }
+    
+    /**
+     * Indicate that the participant requested to use the bonus.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function usingBonus()
+    {
+        return $this->state(function (array $attributes) {
+
+            return [
+                'use_bonus' => true,
             ];
         });
     }

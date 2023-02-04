@@ -91,6 +91,8 @@ class RegisterParticipant
             'vehicle_oil_percentage' => ['required', 'string', 'max:250'],
 
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
+            
+            'bonus' => ['sometimes', 'required', 'boolean'],
         ])->validate();
 
         
@@ -142,7 +144,8 @@ class RegisterParticipant
                 'vehicles' => $this->processVehicle($validated),
                 'consents' => [
                     'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
-                ]
+                ],
+                'use_bonus' => ($validated['bonus'] ?? false) ? true : false,
             ]);
 
             $participant->sendConfirmParticipantNotification();

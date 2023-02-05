@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -10,18 +11,33 @@ class ParticipantListing extends Component
 {
     public $selectedParticipant;
 
+    /**
+     * @var \Illuminate\Support\Collection
+     */
     public $participants;
+
+    /**
+     * @var \App\Models\Race
+     */
+    public $race;
 
     public $search;
 
-    public function __construct(public $race)
+    public function __construct($race)
     {
+        $this->race = $race;
         $this->search = null;
     }
 
     public function select($item)
     {
         $this->selectedParticipant = $item;
+    }
+    
+    public function confirm($item)
+    {
+        // TODO: add some validation and an action to be reused
+        Participant::findOrFail($item)->update(['confirmed_at' => now()]);
     }
 
     public function render()

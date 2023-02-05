@@ -31,12 +31,37 @@
                                 <p class="mb-1 text-xl">{{ $item->category()->name }} / {{ $item->engine }}</p>
                                 <p class="mb-6 text-xl">{{ $item->tire()->name }}</p>
                             </div>
-                            <div>
-                                <x-jet-button wire:click.prevent="select(null)">{{ __('Collapse') }}</x-jet-button>
+                            <div class="flex gap-3 items-start">
+                                <div class="flex gap-1">
+                                    <span wire:loading wire:target="confirm({{ $item->getKey() }})">
+                                        {{ __('Saving...') }}
+                                    </span>
 
+                                    @can('update', $item)
+                                        @if ($item->confirmed_at)
+                                            <x-jet-secondary-button wire:click.prevent="confirm({{ $item->getKey() }})">{{ __('Confirm') }}</x-jet-button>
+                                        @else
+                                            <x-jet-button wire:click.prevent="confirm({{ $item->getKey() }})">{{ __('Confirm') }}</x-jet-button>
+                                        @endif
+                                    @endcan
+
+                                    @can('create', \App\Model\Tire::class)
+                                        <x-jet-secondary-button wire:click.prevent="select(null)">{{ __('Add Tires') }}</x-jet-button>
+                                    @endcan
+                                </div>
+                                
                                 @can('update', $item)
-                                    <x-button-link href="{{ route('participants.edit', $item) }}">{{ __('Edit') }}<span class="sr-only">, {{ $item->title }}</span></x-button-link>
+                                    <div class="flex gap-1">
+                                        <x-secondary-button-link href="{{ route('participants.edit', $item) }}">{{ __('Edit') }}<span class="sr-only">, {{ $item->title }}</span></x-button-link>
+                                    </div>
                                 @endcan
+
+                                <div class="flex gap-1">
+                                    <x-jet-secondary-button wire:click.prevent="select(null)">
+                                        {{ __('Collapse') }}
+                                    </x-jet-button>
+    
+                                </div>
                             </div>
                         </div>
                         
@@ -181,8 +206,16 @@
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->category()?->name ?? $item->category }} / {{ $item->engine }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->licence_type?->localizedName() }}</td>
-                    <td class="whitespace-nowrap px-3 py-4 text-zinc-900">...</td>
-                    <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right font-medium sm:pr-6">
+                    <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
+                        @if ($item->confirmed_at)
+                            <span>{{ __('Confirmed') }}</span>
+                        @endif
+                    </td>
+                    <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right font-medium sm:pr-6 space-x-2">
+
+                        @can('create', \App\Model\Tire::class)
+                            <a href="#" class="text-orange-600 hover:text-orange-900">{{ __('Tires') }}</a>
+                        @endcan
 
                         @can('update', $item)
                             <a href="{{ route('participants.edit', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}<span class="sr-only">, {{ $item->title }}</span></a>

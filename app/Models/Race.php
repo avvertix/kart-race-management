@@ -111,7 +111,7 @@ class Race extends Model
         $todayStartOfDay = today();
         $todayEndOfDay = today()->endOfDay();
         
-        if($this->event_start_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)
+        if(now() >= $this->registration_closes_at || $this->event_start_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)
            || $this->event_end_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)){
             return 'active';
         };

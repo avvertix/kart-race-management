@@ -40,9 +40,21 @@ class RaceController extends Controller
      */
     public function show(Race $race)
     {
+        $statistics = $race->participants()
+            ->selectRaw('count(*) as total')
+            ->selectRaw("count(case when confirmed_at is not null then 1 end) as confirmed")
+            ->first();
+
+        $participantsPerCategory = $race->participants()
+            ->selectRaw('category, count(*) as total')
+            ->groupBy('category')
+            ->get();
+
         return view('race.show', [
             'race' => $race,
             'championship' => $race->championship,
+            'statistics' => $statistics,
+            'participantsPerCategory' => $participantsPerCategory,
         ]);
     }
 

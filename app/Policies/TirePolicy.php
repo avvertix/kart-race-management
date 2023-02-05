@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Participant;
+use App\Models\Tire;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ParticipantPolicy
+class TirePolicy
 {
     use HandlesAuthorization;
 
@@ -18,19 +18,19 @@ class ParticipantPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('participant:list');
+        return $user->hasPermission('tire:list');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Participant  $participant
+     * @param  \App\Models\Tire  $tire
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Participant $participant)
+    public function view(User $user, Tire $tire)
     {
-        return $user->hasPermission('participant:view');
+        return $user->hasPermission('tire:list');
     }
 
     /**
@@ -41,54 +41,54 @@ class ParticipantPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('participant:create');
+        return $user->hasPermission('tire:create');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Participant  $participant
+     * @param  \App\Models\Tire  $tire
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Participant $participant)
+    public function update(User $user, Tire $tire)
     {
-        return $user->hasPermission('participant:update');
+        return $user->hasPermission('tire:update');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Participant  $participant
+     * @param  \App\Models\Tire  $tire
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Participant $participant)
+    public function delete(User $user, Tire $tire)
     {
-        return $user->hasPermission('participant:delete');
+        return $user->hasPermission('tire:delete');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Participant  $participant
+     * @param  \App\Models\Tire  $tire
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Participant $participant)
+    public function restore(User $user, Tire $tire)
     {
-        return $user->hasPermission('participant:restore');
+        return $user->hasPermission('tire:restore');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Participant  $participant
+     * @param  \App\Models\Tire  $tire
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Participant $participant)
+    public function forceDelete(User $user, Tire $tire)
     {
-        return $user->hasPermission('participant:delete');
+        return $user->hasPermission('tire:delete');
     }
 }

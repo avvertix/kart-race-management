@@ -123,6 +123,14 @@ class Participant extends Model
     {
         return $this->hasMany(Signature::class);
     }
+    
+    /**
+     * Get the tires assigned to the participant
+     */
+    public function tires()
+    {
+        return $this->hasMany(Tire::class);
+    }
 
 
     public function getEngineAttribute($value = null)

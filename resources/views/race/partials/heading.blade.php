@@ -43,9 +43,9 @@
                         
                         <x-tab-link href="{{ route('races.participants.index', $race) }}"  :active="request()->routeIs('races.participants.index', $race)">{{ __('Participants') }}</x-tab-link>
                         
-                        <x-tab-link href="#">{{ __('Tires') }}</x-tab-link>
+                        <x-tab-link href="{{ route('races.tires', $race) }}"  :active="request()->routeIs('races.tires', $race)">{{ __('Tires') }}</x-tab-link>
                         
-                        <x-tab-link href="#">{{ __('Results') }}</x-tab-link>
+                        <x-tab-link href="#" class="cursor-not-allowed">{{ __('Results') }}</x-tab-link>
                         
                     </nav>
                 </div>

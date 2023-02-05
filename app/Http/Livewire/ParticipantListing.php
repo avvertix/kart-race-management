@@ -42,14 +42,17 @@ class ParticipantListing extends Component
 
     public function render()
     {
-        $this->participants = $this->race->participants()->when($this->search, function($query, $search){
-            $query->where('bib', e($search))
-                ->orWhere('first_name', 'LIKE', e($search).'%')
-                ->orWhere('last_name', 'LIKE', e($search).'%')
-                ->orWhere('driver_licence', hash('sha512', $search))
-                ->orWhere('competitor_licence', hash('sha512', $search))
-                ;
-        })->get();
+        $this->participants = $this->race->participants()
+            ->withCount('tires')
+            ->when($this->search, function($query, $search){
+                $query->where('bib', e($search))
+                    ->orWhere('first_name', 'LIKE', e($search).'%')
+                    ->orWhere('last_name', 'LIKE', e($search).'%')
+                    ->orWhere('driver_licence', hash('sha512', $search))
+                    ->orWhere('competitor_licence', hash('sha512', $search))
+                    ;
+            })
+            ->get();
 
         return view('livewire.participant-listing');
     }

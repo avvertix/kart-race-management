@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="relativepb-5 sm:pb-0 print:hidden">
+        <div class="relative pb-5 sm:pb-0 print:hidden">
             <div class="md:flex md:items-center md:justify-between">
                 <h2 class="font-semibold text-4xl text-zinc-800 leading-tight">
                     {{ __('Race participation') }}

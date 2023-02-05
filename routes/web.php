@@ -3,12 +3,14 @@
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\ParticipantTiresController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
 use App\Http\Controllers\RaceParticipantController;
 use App\Http\Controllers\RaceRegistrationController;
+use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\SaveParticipantSignatureController;
 use App\Http\Controllers\ShowParticipantSignatureFormController;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +59,10 @@ Route::middleware([
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
         
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
+        
+        Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
+        
+        Route::resource('participants.tires', ParticipantTiresController::class)->shallow()->only(['index', 'create', 'store']);
 
     });
 

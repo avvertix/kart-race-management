@@ -46,7 +46,9 @@
                                     @endcan
 
                                     @can('create', \App\Model\Tire::class)
-                                        <x-jet-secondary-button wire:click.prevent="select(null)">{{ __('Add Tires') }}</x-jet-button>
+                                        @if ($item->tires_count == 0)
+                                            <x-secondary-button-link href="{{ route('participants.tires.create', $item) }}">{{ __('Assign Tires') }}</x-secondary-button-link>
+                                        @endif
                                     @endcan
                                 </div>
                                 
@@ -214,7 +216,9 @@
                     <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right font-medium sm:pr-6 space-x-2">
 
                         @can('create', \App\Model\Tire::class)
-                            <a href="#" class="text-orange-600 hover:text-orange-900">{{ __('Tires') }}</a>
+                            @if ($item->tires_count == 0)
+                                <a href="{{ route('participants.tires.create', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Assign tires') }}</a>
+                            @endif
                         @endcan
 
                         @can('update', $item)

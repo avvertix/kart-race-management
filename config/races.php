@@ -54,7 +54,7 @@ return [
         ],
         'MG_SC' => [
             'name' => 'MG SC',
-            'price' => '15000',
+            'price' => '15500',
         ],
         'MG_SM' => [
             'name' => 'MG SM',

@@ -51,6 +51,8 @@ class SelfRegistrationTest extends TestCase
 
         $race = Race::factory()->create();
 
+        $this->travelTo($race->registration_closes_at->subHour());
+
         $response = $this
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
@@ -63,6 +65,8 @@ class SelfRegistrationTest extends TestCase
                 'consent_privacy' => true,
                 'use_bonus' => false,
             ]);
+
+        $this->travelBack();
 
         $participant = Participant::first();
 

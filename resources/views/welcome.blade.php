@@ -13,7 +13,18 @@
                             <h1 class="text-2xl font-bold mb-1"><a href="{{ route('races.registration.create', $race) }}" class="text-orange-600 hover:text-orange-900">{{ $race->title }}</a></h1>
                             <p class="text-zinc-700 mb-1">{{ $race->period }}</p>
                             <p class="text-zinc-700">{{ $race->track }}</p>
-                            <p class="text-zinc-700">{{ $race->status }}</p>
+
+                            <p class="text-zinc-700 mt-2 -mx-4 -mb-4 rounded-b-md px-4 py-2 bg-orange-100 relative">
+                                @if ($race->isRegistrationOpen)
+                                    <span class="absolute block w-full h-1 animate-pulse bg-yellow-300 inset-0"></span>
+                                    {{ __('Race registration open until') }} <span class="font-bold">{{ $race->registration_closes_at }}</span>
+                                @elseif( $race->status === 'active' || $race->status === 'scheduled')
+                                    <span class="absolute block w-full h-1 animate-pulse bg-red-300 inset-0"></span>
+                                    {{ __('Online registration closed. Registration might still be possible at the race track.') }}
+                                @else
+                                    {{ __('Online registration currently closed.') }}
+                                @endif
+                            </p>
                         </article>
                     @empty
                         <article class="p-4 shadow-lg bg-white rounded-md ring-2 ring-orange-300 ">

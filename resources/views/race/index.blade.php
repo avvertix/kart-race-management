@@ -28,7 +28,7 @@
                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-zinc-900 sm:pl-6"><a href="{{ route('races.show', $item->uuid) }}" class=" hover:text-orange-900">{{ $item->title }}</a></td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->event_start_at }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->track }}</td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->status }}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500"><x-race-status :value="$item->status" /></td>
                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         @can('update', $item)
                             <a href="{{ route('races.edit', $item->uuid) }}" class="text-orange-600 hover:text-orange-900">Edit<span class="sr-only">, {{ $item->title }}</span></a>

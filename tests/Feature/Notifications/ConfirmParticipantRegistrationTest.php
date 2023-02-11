@@ -20,6 +20,7 @@ class ConfirmParticipantRegistrationTest extends TestCase
     {
 
         Carbon::setTestNow();
+        $this->travelTo(now());
 
         $notifiable = Participant::factory()->create();
 
@@ -45,6 +46,8 @@ class ConfirmParticipantRegistrationTest extends TestCase
                 'hash' => sha1($notifiable->getEmailForVerification('driver')),
             ]
         )), $rendered);
+
+        $this->travelBack();
     }
 
 

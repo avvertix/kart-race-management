@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Race;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ListRacesWithOpenRegistrationController extends Controller
@@ -18,6 +19,12 @@ class ListRacesWithOpenRegistrationController extends Controller
 
         $races = Race::query()
             ->withRegistrationOpen()
+            ->orWhere(function (Builder $query) {
+                $query->active();
+            })
+            ->orWhere(function (Builder $query) {
+                $query->where('event_start_at', '>=', now()->subDays(2));
+            })
             ->orderBy('event_start_at')
             ->with('championship')
             ->get();

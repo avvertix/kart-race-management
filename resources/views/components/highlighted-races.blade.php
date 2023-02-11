@@ -8,7 +8,7 @@
                 <h1 class="text-2xl font-bold mb-1"><a href="{{ route('races.show', $item) }}" class="text-orange-600 hover:text-orange-900">{{ $item->title }}</a></h1>
                 <p class="text-zinc-700 mb-1">{{ $item->period }}</p>
                 <p class="text-zinc-700">{{ $item->track }}</p>
-                <p class="text-zinc-700">{{ $item->status }}</p>
+                <p class="text-zinc-700"><x-race-status :value="$item->status" /></p>
             </article>
         @empty
             <article class="p-4 shadow-lg bg-white rounded-md ring-2 ring-orange-300 ">

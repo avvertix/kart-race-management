@@ -26,7 +26,7 @@ class RaceFactory extends Factory
             'event_start_at' => $start,
             'event_end_at' => $start->copy()->endOfDay(),
             'registration_opens_at' => $start->copy()->subHours(config('races.registration.opens'))->startOfDay(),
-            'registration_closes_at' => $start->copy()->subHours(config('races.registration.opens'))->endOfDay(),
+            'registration_closes_at' => $start->copy()->subHours(config('races.registration.closes'))->endOfDay(),
             'track' => fake()->city(),
             'title' => fake()->sentence(3),
             'description' => fake()->paragraph(),

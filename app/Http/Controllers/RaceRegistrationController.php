@@ -33,6 +33,7 @@ class RaceRegistrationController extends Controller
         return view('race-registration.create', [
             'race' => $race,
             'categories' => Category::all(),
+            'registration_open' => $race->isRegistrationOpen,
         ]);
     }
 
@@ -44,6 +45,20 @@ class RaceRegistrationController extends Controller
      */
     public function store(Race $race, Request $request, RegisterParticipant $registerParticipant)
     {
+
+        if(!$race->isRegistrationOpen){
+            
+            dump('not open');
+
+            return redirect()
+                ->route('races.registration.create', $race)
+                ->with('flash', [
+                    'banner' => __('Online registration closed. Registration might still be possible at the race track.'),
+                    'bannerStyle' => 'danger',
+                ]);
+        }
+
+        
 
         $participant = $registerParticipant($race, $request->all());
 

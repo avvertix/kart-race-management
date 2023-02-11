@@ -30,9 +30,17 @@
         </div>
     </x-slot>
 
+    @if (!$registration_open)
+        
+        <div class="my-6 p-2 bg-red-100 text-red-800 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{ __('Online registration currently closed.') }}
+            {{ __('Registration might still be possible at the race track.') }}
+        </div>
+
+    @endif
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <form method="POST" action="{{ route('races.registration.store', $race) }}">
             @csrf

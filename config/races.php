@@ -23,6 +23,7 @@ return [
     'organizer' => [
         'name' => env('RACE_ORGANIZER_NAME'),
         'email' => env('RACE_ORGANIZER_EMAIL'),
+        'url' => env('RACE_ORGANIZER_URL'),
         'address' => env('RACE_ORGANIZER_ADDRESS'),
         'bank_account' => env('RACE_ORGANIZER_BANK_ACCOUNT'),
         'bank' => env('RACE_ORGANIZER_BANK'),

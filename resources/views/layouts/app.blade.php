@@ -34,6 +34,24 @@
             <main>
                 {{ $slot }}
             </main>
+
+            <footer class="mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-sm text-zinc-600">
+                    <p class="font-bold">{{ __('Organizer') }}</p>
+                    @if (config('races.organizer.url'))
+                        <p><a href="{{ config('races.organizer.url') }}" target="_blank" rel="noopener">{{ config('races.organizer.name') }}</a></p>
+                    @else
+                        <p>{{ config('races.organizer.name') }}</p>
+                    @endif
+                    <p>{{ config('races.organizer.address') }}</p>
+                </div>
+                <div class="mt-4 prose prose-sm">
+                    <a href="{{ route('policy.show') }}" class="underline text-sm text-zinc-600 hover:text-zinc-900">{{ __('Privacy Policy') }}</a>
+                </div>
+                <div class="mt-4 prose prose-sm">
+                    <p>{{ __('Powered by') }}&nbsp;<a href="https://github.com/avvertix/kart-race-management" target="_blank" rel="noopener">Kart Race Management</a></p>
+                </div>
+            </footer>
         </div>
 
         @stack('modals')

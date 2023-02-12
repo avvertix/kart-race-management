@@ -36,14 +36,21 @@
             </main>
 
             <footer class="mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-sm text-zinc-600">
-                    <p class="font-bold">{{ __('Organizer') }}</p>
-                    @if (config('races.organizer.url'))
-                        <p><a href="{{ config('races.organizer.url') }}" target="_blank" rel="noopener">{{ config('races.organizer.name') }}</a></p>
-                    @else
-                        <p>{{ config('races.organizer.name') }}</p>
-                    @endif
-                    <p>{{ config('races.organizer.address') }}</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="text-sm text-zinc-600">
+                        <p class="font-bold">{{ __('Organizer') }}</p>
+                        @if (config('races.organizer.url'))
+                            <p><a href="{{ config('races.organizer.url') }}" target="_blank" rel="noopener">{{ config('races.organizer.name') }}</a></p>
+                        @else
+                            <p>{{ config('races.organizer.name') }}</p>
+                        @endif
+                        <p>{{ config('races.organizer.address') }}</p>
+                    </div>
+                    <div class="text-sm text-zinc-600">
+                        <p class="font-bold">{{ __('Change language') }}</p>
+                        <p><a href="{{ route('language.change', ['lang' => 'it']) }}" class="underline text-sm text-zinc-600 hover:text-zinc-900">{{ __('Italiano') }}</a></p>
+                        <p><a href="{{ route('language.change', ['lang' => 'en']) }}" class="underline text-sm text-zinc-600 hover:text-zinc-900">{{ __('English') }}</a></p>
+                    </div>
                 </div>
                 <div class="mt-4 prose prose-sm">
                     <a href="{{ route('policy.show') }}" class="underline text-sm text-zinc-600 hover:text-zinc-900">{{ __('Privacy Policy') }}</a>

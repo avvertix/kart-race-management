@@ -13,6 +13,7 @@ use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\SaveParticipantSignatureController;
 use App\Http\Controllers\ShowParticipantSignatureFormController;
+use App\Http\Controllers\SwitchLanguageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -80,3 +81,5 @@ Route::get('confirm-participation', ConfirmParticipantController::class)
 // Privacy Policy page
 
 Route::get('/privacy-policy', [PrivacyPolicyController::class, 'show'])->name('policy.show');
+
+Route::get('/swtich-language', SwitchLanguageController::class)->name('language.change');

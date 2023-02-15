@@ -191,5 +191,12 @@
     "Results": "Risultati",
     "Race status": "Stato gara",
     "confirmed": "confermati",
-    "Participants per category": "Partecipanti per categoria"
+    "Participants per category": "Partecipanti per categoria",
+    "Assign tire set": "Assegna gomme",
+    "Assign a tire set": "Assegna un treno di gomme",
+    "Tire :number": "Gomma :number",
+    "Assigned tire set": "Gomme assegnate",
+    "Assigned tires": "Gomme assegnate",
+    "You must bring this to the official at the entrance of the race track for technical verification.": "Devi portare questo foglio agli ufficiali di gara in pre-griglia per le verifiche tecniche.",
+    "Tire codes": "Codici a barre delle gomme"
 }

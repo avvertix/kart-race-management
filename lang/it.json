@@ -83,7 +83,7 @@
     "Suggestions:": "Suggerimenti:",
     "Search participant using bib, name, last name or licence number": "Cerca un partecipante tramite numero gara, nome, cognome o numero di licenza",
     "Bib": "Numero gara",
-    "Driver": "Pilota/Concorrente",
+    "Driver": "Pilota (Concorrente)",
     "Category / Engine": "Categoria / Motore",
     "Licence": "Licenza",
     "Status": "Stato",
@@ -178,5 +178,18 @@
     "Please bring this receipt with you to the race (printed version or PDF).": "Portate con voi questa ricevuta di iscrizione il giorno della gara (stampata on in formato PDF).",
     "Race participation price": "Costo iscrizione gara",
     "Race participation can be paid via bank transfer to": "L'iscrizione alla gara può essere pagata mediante bonifico bancario a",
-    "Participation detail": "Dettaglio iscrizione"
+    "Participation detail": "Dettaglio iscrizione",
+    "Period": "Periodo",
+    "Races currently active or available for registration": "Gare in corso o con iscrizione aperta",
+    "No race available for self registration open or currently active.": "Nessuna gara disponibile per registrazione online oppure in corso di svolgimento.",
+    "You can still browse all races and participants, but racers cannot sign-up yet.": "Puoi comunque esplorare tutte le gare, ma i partecipanti non potranno iscriversi via web.",
+    "Date": "Data",
+    "Edit race": "Modifica gara",
+    "Summary": "Sommario",
+    "Participants": "Partecipanti",
+    "participants": "partecipanti",
+    "Results": "Risultati",
+    "Race status": "Stato gara",
+    "confirmed": "confermati",
+    "Participants per category": "Partecipanti per categoria"
 }

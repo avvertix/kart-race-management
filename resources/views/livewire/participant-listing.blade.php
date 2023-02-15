@@ -11,7 +11,7 @@
             <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Licence') }}</th>
             <th scope="col" class="w-1/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Status') }}</th>
             <th scope="col" class="w-2/12 relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span class="sr-only">Edit</span>
+                <span class="sr-only">{{ __('Edit') }}</span>
             </th>
         </x-slot>
 

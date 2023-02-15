@@ -13,12 +13,12 @@
 
         <x-table>
             <x-slot name="head">
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">Title</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">Date ▼</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">Track</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">Status</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Title') }}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Date') }} ▼</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Track') }}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Status') }}</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                    <span class="sr-only">Edit</span>
+                    <span class="sr-only">{{ __('Edit') }}</span>
                 </th>
             </x-slot>
 

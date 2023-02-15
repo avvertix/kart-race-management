@@ -11,14 +11,14 @@ return [
     */
 
     'driver' => [
-        'LOCAL_NATIONAL' => 'National',
-        'LOCAL_INTERNATIONAL' => 'International',
-        'FOREIGN' => 'Foreign',
+        'LOCAL_NATIONAL' => 'Nazionale',
+        'LOCAL_INTERNATIONAL' => 'Internazionale',
+        'FOREIGN' => 'Estera',
     ],
 
     'competitor' => [
-        'LOCAL' => 'Nazional',
-        'FOREIGN' => 'Foreign',
+        'LOCAL' => 'Nazionale',
+        'FOREIGN' => 'Estera',
     ],
     
 ];

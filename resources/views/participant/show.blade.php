@@ -41,7 +41,7 @@
                     <x-slot name="description">
                         {{ __('Insert your race number and category.') }}<br/>
                         {{ __('If you previously participate in a race within the championship use the same number.') }}<br/>
-                        <em>{{ __('') }}</em>.
+                        <em></em>.
                     </x-slot>
                 </x-jet-section-title>
 
@@ -70,7 +70,7 @@
                         {{ __('Search for a previously registered driver using name, race number or licence. If no driver is already participating in the championship you can create a new driver.') }}<br/>
                         {{ __('After selecting an existing driver you can change category, licence and name for this race') }}<br/>
                         {{ __('The "race number" is uniquely assigned to a driver within the championship and cannot be changed.') }}<br/>
-                        <em>{{ __('') }}</em>.
+                        <em></em>.
                     </x-slot>
                 </x-jet-section-title>
 
@@ -156,7 +156,7 @@
                     <x-slot name="description">
                         {{ __('The competitor that brings the driver to the race.') }}<br/>
                         {{ __('Search for a competitor using the licence number or insert a new one.') }}<br/>
-                        <em>{{ __(' if driver is underage') }}</em>.</x-slot>
+                        <em>{{ __('required if driver is underage') }}</em>.</x-slot>
                 </x-jet-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">

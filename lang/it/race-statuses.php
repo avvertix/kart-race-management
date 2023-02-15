@@ -10,9 +10,9 @@ return [
     |
     */
 
-    'active' => 'Currently happening',
-    'registration_open' => 'Registration open',
-    'scheduled' => 'Scheduled',
-    'concluded' => 'Concluded',
+    'active' => 'In corso',
+    'registration_open' => 'Iscrizioni aperte',
+    'scheduled' => 'In programma',
+    'concluded' => 'Conclusa',
     
 ];

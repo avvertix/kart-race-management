@@ -60,13 +60,13 @@ class ParticipantTiresController extends Controller
     public function store(Request $request, Participant $participant)
     {        
         $validated = $this->validate($request, [
-            'tires' => 'required|array|size:4',
+            'tires' => 'required|array|min:4|max:5',
             'tires.*' => 'required|string',
         ]);
 
-        if($participant->tires()->count() >= 4){
+        if($participant->tires()->count() >= 5){
             throw ValidationException::withMessages([
-                'tires' => __('Participant already have 4 tires assigned'),
+                'tires' => __('Participant already have 5 tires assigned'),
             ]);
         }
 

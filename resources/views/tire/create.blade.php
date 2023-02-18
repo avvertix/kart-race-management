@@ -33,7 +33,7 @@
             <x-jet-validation-errors class="mb-4" />
 
 
-            @for ($i = 0; $i < 4; $i++)
+            @for ($i = 0; $i < 5; $i++)
                 
                 <div class="mb-2">
                     <x-jet-label for="tire_{{ $i }}" value="{{ __('Tire :number', ['number' => $i+1]) }}*" />

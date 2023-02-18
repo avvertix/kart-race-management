@@ -45,6 +45,7 @@
                         <br>{{ config('races.organizer.bank') }}
                         <br><span class="font-mono">{{ config('races.organizer.bank_account') }}</span>
                     </p>
+                    <p>{{ __('Once paid send the bank transfer receipt to :email', ['email' => config('races.organizer.email')]) }}</p>
                 </div>
             </div>
         </div>

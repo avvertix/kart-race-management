@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\ActivityLog\EncryptSensibleParticipantData;
+use App\Models\Participant;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Relation::enforceMorphMap([
+            'participant' => Participant::class,
+            'user' => User::class,
+        ]);
+        
+        Participant::addLogChange(new EncryptSensibleParticipantData());
     }
 }

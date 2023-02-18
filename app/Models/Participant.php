@@ -21,6 +21,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Participant extends Model
 {
@@ -29,6 +31,8 @@ class Participant extends Model
     use HasUlids;
 
     use Notifiable;
+
+    use LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -264,5 +268,29 @@ class Participant extends Model
         return  $order->merge([
             __('Total') => $total,
         ])->filter();
+    }
+
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'bib',
+            'category',
+            'first_name',
+            'last_name',
+            'added_by',
+            'confirmed_at',
+            'driver_licence',
+            'licence_type',
+            'competitor_licence',
+            'vehicles',
+            'use_bonus',
+            'driver->email',
+            'competitor->email',
+        ])
+        ->dontLogIfAttributesChangedOnly(['updated_at'])
+        ->logOnlyDirty()
+        ->dontSubmitEmptyLogs();
     }
 }

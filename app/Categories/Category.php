@@ -21,7 +21,7 @@ class Category extends Fluent implements Describable
 
     public function description(): string
     {
-        return $this->get('description', '');
+        return $this->get('description', '') ?? '';
     }
 
     public function tire(): TireOption

@@ -36,25 +36,21 @@ return [
         
         '60 MINI TDM ROK' => [
             'name' => '60 Mini Rok (TDM)',
-            'description' => null,
             'tires' => 'VEGA_MINI',
         ],
         
         '60 MINI TDM EASY' => [
             'name' => '60 Easy (TDM)',
-            'description' => null,
             'tires' => 'VEGA_MINI',
         ],
         
         '60 MINI TDM FR ROTAX' => [
             'name' => '60 Mini FR Rotax (TDM)',
-            'description' => null,
             'tires' => 'VEGA_MINI',
         ],
         
         '60 MINI TDM X30' => [
             'name' => '60 Mini X30 (TDM)',
-            'description' => null,
             'tires' => 'VEGA_MINI',
         ],
 

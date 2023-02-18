@@ -34,6 +34,30 @@ return [
             'tires' => 'VEGA_MINI',
         ],
         
+        '60 MINI TDM ROK' => [
+            'name' => '60 Mini Rok (TDM)',
+            'description' => null,
+            'tires' => 'VEGA_MINI',
+        ],
+        
+        '60 MINI TDM EASY' => [
+            'name' => '60 Easy (TDM)',
+            'description' => null,
+            'tires' => 'VEGA_MINI',
+        ],
+        
+        '60 MINI TDM FR ROTAX' => [
+            'name' => '60 Mini FR Rotax (TDM)',
+            'description' => null,
+            'tires' => 'VEGA_MINI',
+        ],
+        
+        '60 MINI TDM X30' => [
+            'name' => '60 Mini X30 (TDM)',
+            'description' => null,
+            'tires' => 'VEGA_MINI',
+        ],
+
         '60 MINI TERR' => [
             'name' => '60 Mini Territorial',
             'description' => 'For all engine trophies (e.g. X30, Rok, ...)',
@@ -55,6 +79,19 @@ return [
             'tires' => 'VEGA_XH3',
         ],
         
+        '125 JUNIOR TDM ROK' => [
+            'name' => '125 Junior Rok (TDM)',
+            'tires' => 'VEGA_XH3',
+        ],
+        '100 JUNIOR TDM EASY' => [
+            'name' => '100 Easy (TDM)',
+            'tires' => 'VEGA_XH3',
+        ],
+        '125 JUNIOR TDM X30' => [
+            'name' => '125 Junior X30 (TDM)',
+            'tires' => 'VEGA_XH3',
+        ],
+        
         '125 SENIOR TERR' => [
             'name' => '125 Senior Territorial',
             'tires' => 'VEGA_SL4',
@@ -67,6 +104,61 @@ return [
         
         '125 SENIOR OK-N' => [
             'name' => '125 Senior OK-N',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM ROK' => [
+            'name' => '125 Senior Rok (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM SUPEROK' => [
+            'name' => '125 Senior Superok (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM ROTAX MAX' => [
+            'name' => '125 Senior Rotax Max (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM BMB' => [
+            'name' => '125 Senior BMB (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM X30' => [
+            'name' => '125 Senior X30 (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM SHIFTER ROK' => [
+            'name' => '125 Senior Shifter Rok (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM KGP SHIFTER' => [
+            'name' => '125 Senior KGP Shifter (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM X30 SUPER SHIFTER' => [
+            'name' => '125 Senior X30 Super Shifter (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM KGP DIRECT DRIVE' => [
+            'name' => '125 Senior KGP Direct Drive (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM ROTAX DD2' => [
+            'name' => '125 Senior Rotax DD2 (TDM)',
+            'tires' => 'MG_SM',
+        ],
+
+        '125 SENIOR TDM X30 SUPER' => [
+            'name' => '125 Senior X30 Super (TDM)',
             'tires' => 'MG_SM',
         ],
         

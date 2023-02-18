@@ -51,7 +51,11 @@ class RaceTiresController extends Controller
 
         // List participants with tires
 
-        $participants = $race->participants()->has('tires')->orderBy('bib', 'asc')->get();
+        $participants = $race->participants()
+            ->withCount('tires')
+            ->has('tires')
+            ->orderBy('bib', 'asc')
+            ->get();
 
         return view('race.tires', [
             'race' => $race,

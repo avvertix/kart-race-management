@@ -44,9 +44,12 @@ class ParticipantTiresController extends Controller
      */
     public function create(Participant $participant)
     {
+        $participant->loadCount('tires');
+
         return view('tire.create', [
             'participant' => $participant,
             'race' => $participant->race,
+            'tireLimit' => (5 - $participant->tires_count) % 4,
         ]);
     }
 
@@ -60,7 +63,7 @@ class ParticipantTiresController extends Controller
     public function store(Request $request, Participant $participant)
     {        
         $validated = $this->validate($request, [
-            'tires' => 'required|array|min:4|max:5',
+            'tires' => 'required|array|min:1|max:5',
             'tires.*' => 'required|string',
         ]);
 

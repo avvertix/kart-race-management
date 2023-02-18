@@ -22,7 +22,7 @@
         <x-slot name="head">
             <th scope="col" class="w-4/12 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 sm:pl-6">{{ __('Bib') }} ▼ / {{ __('Driver') }}</th>
             <th scope="col" class="w-3/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Category / Engine') }}</th>
-            <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Licence') }}</th>
+            <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Tires') }}</th>
             <th scope="col" class="w-1/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Status') }}</th>
             <th scope="col" class="w-2/12 relative py-3.5 pl-3 pr-4 sm:pr-6">
                 &nbsp;
@@ -39,16 +39,24 @@
 
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->category()?->name ?? $item->category }} / {{ $item->engine }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->licence_type?->localizedName() }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->tires_count }} &times; {{ $item->category()?->tire()?->name ?? __('unspecified') }}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
-                    @if ($item->confirmed_at)
-                        <span>{{ __('Confirmed') }}</span>
+                    @if ($item->signatures_count == 0)
+                        <span class="px-2 py-1 rounded bg-red-100 text-red-800">{{ __('Signature Missing') }}</span>
+                    @elseif ($item->confirmed_at)
+                        <span class="px-2 py-1 rounded bg-green-100 text-green-800">{{ __('Confirmed') }}</span>
                     @endif
                 </td>
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right font-medium sm:pr-6 space-x-2">
 
                     @can('viewAny', \App\Model\Tire::class)
-                        <a href="{{ route('participants.tires.index', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Assigned tires') }}</a>
+                        <a href="{{ route('participants.tires.index', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('View tires') }}</a>
+                    @endcan
+
+                    @can('create', \App\Model\Tire::class)
+                        @if ($item->tires_count < 5)
+                            <a href="{{ route('participants.tires.create', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Add tires') }}</a>
+                        @endif
                     @endcan
                 </td>
             </tr>

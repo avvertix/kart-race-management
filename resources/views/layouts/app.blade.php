@@ -46,16 +46,16 @@
                         @endif
                         <p>{{ config('races.organizer.address') }}</p>
                     </div>
-                    <div class="text-sm text-zinc-600">
+                    <div class="text-sm text-zinc-600 print:hidden">
                         <p class="font-bold">{{ __('Change language') }}</p>
                         <p><a href="{{ route('language.change', ['lang' => 'it']) }}" class="underline text-sm text-zinc-600 hover:text-zinc-900">{{ __('Italiano') }}</a></p>
                         <p><a href="{{ route('language.change', ['lang' => 'en']) }}" class="underline text-sm text-zinc-600 hover:text-zinc-900">{{ __('English') }}</a></p>
                     </div>
                 </div>
-                <div class="mt-4 prose prose-sm">
+                <div class="mt-4 prose prose-sm print:hidden">
                     <a href="{{ route('policy.show') }}" class="underline text-sm text-zinc-600 hover:text-zinc-900">{{ __('Privacy Policy') }}</a>
                 </div>
-                <div class="mt-4 prose prose-sm">
+                <div class="mt-4 prose prose-sm print:hidden">
                     <p>{{ __('Powered by') }}&nbsp;<a href="https://github.com/avvertix/kart-race-management" target="_blank" rel="noopener">Kart Race Management</a></p>
                 </div>
             </footer>

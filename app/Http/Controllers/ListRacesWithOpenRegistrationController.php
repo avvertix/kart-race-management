@@ -23,7 +23,8 @@ class ListRacesWithOpenRegistrationController extends Controller
                 $query->active();
             })
             ->orWhere(function (Builder $query) {
-                $query->where('event_start_at', '>=', now()->subDays(2));
+                $query->where('event_start_at', '<=', now()->subDays(2))
+                      ->where('event_start_at', '>=', now());
             })
             ->orderBy('event_start_at')
             ->with('championship')

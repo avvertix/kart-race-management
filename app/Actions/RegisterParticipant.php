@@ -26,12 +26,7 @@ class RegisterParticipant
      */
     public function __invoke(Race $race, array $input, ?User $user = null)
     {
-
-        // Maybe validate driver licence before?
-
         // TODO: ensure there is a lock on the bib so no one can take it while we validate and insert the records
-        // TODO: track consents
-        // TODO: track bonus
 
         $validated = Validator::make($input, [
             'bib' => [
@@ -92,7 +87,7 @@ class RegisterParticipant
 
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
             
-            'bonus' => ['sometimes', 'required', 'boolean'],
+            'bonus' => ['nullable', 'in:true,false'],
         ])->validate();
 
         

@@ -63,7 +63,7 @@ class SelfRegistrationTest extends TestCase
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
                 'consent_privacy' => true,
-                'use_bonus' => false,
+                'use_bonus' => 'false',
             ]);
 
         $this->travelBack();

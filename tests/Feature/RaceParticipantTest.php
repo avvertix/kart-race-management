@@ -66,7 +66,7 @@ class RaceParticipantTest extends TestCase
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
                 'consent_privacy' => true,
-                'bonus' => false,
+                'bonus' => 'true',
             ]);
 
         $response->assertRedirectToRoute('races.participants.index', $race);
@@ -182,7 +182,7 @@ class RaceParticipantTest extends TestCase
 
                 'consent_privacy' => true,
 
-                'bonus' => true,
+                'bonus' => 'true',
 
             ]);
 
@@ -341,7 +341,7 @@ class RaceParticipantTest extends TestCase
                 'driver_licence_number' => $existingParticipant->driver['licence_number'],
                 ...$this->generateValidVehicle(),
                 'consent_privacy' => true,
-                'bonus' => false,
+                'bonus' => 'false',
             ]);
 
         $response->assertRedirectToRoute('races.participants.index', $race);

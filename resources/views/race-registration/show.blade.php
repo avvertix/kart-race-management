@@ -10,7 +10,7 @@
                 </div>
             </div>
             <div class="prose prose-zinc">
-                <p class="font-bold">{{ __('You must present yourself to the race secretary the day of the race to confirm your participation.') }}</p>
+                <p class="font-bold">{{ __('You must present yourself to the secretary on the race track before the closing of the registrations to confirm your participation.') }}</p>
                 <p>{{ __('Please bring this receipt with you to the race (printed version or PDF).') }}</p>
             </div>
             

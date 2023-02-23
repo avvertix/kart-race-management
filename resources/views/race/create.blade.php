@@ -90,6 +90,30 @@
                         </div>
                 </div>
             </div>
+
+            <x-jet-section-border />
+
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                <x-jet-section-title>
+                    <x-slot name="title">{{ __('Hide race') }}</x-slot>
+                    <x-slot name="description">{{ __('Hide the race from public listing.') }}</x-slot>
+                </x-jet-section-title>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    
+                    <div class="px-4 py-5">
+                        <div class="grid grid-cols-6 gap-6">
+                            <div class="col-span-6 sm:col-span-4">
+                                <label for="hidden" class="flex items-center">
+                                    <x-jet-checkbox id="hidden" name="hidden" value="true" />
+                                    <span class="ml-2">{{ __('Hide the race from public listing') }}</span>
+                                    <x-jet-input-error for="hidden" class="mt-2" />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="md:grid md:grid-cols-3 md:gap-6">
                 

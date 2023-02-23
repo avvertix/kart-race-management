@@ -1,7 +1,7 @@
 <div {{ $attributes }}>
     <p class="uppercase tracking-widest text-sm mb-2">{{ __('Races currently active or available for registration') }}</p>
 
-    <div class="grid grid-cols-3">
+    <div class="grid grid-cols-3 gap-4">
 
         @forelse ($races as $item)
             <article class="p-4 shadow-lg bg-white rounded-md ring-2 ring-orange-300 shadow-orange-200">

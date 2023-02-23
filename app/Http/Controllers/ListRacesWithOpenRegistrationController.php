@@ -19,6 +19,7 @@ class ListRacesWithOpenRegistrationController extends Controller
 
         $races = Race::query()
             ->withRegistrationOpen()
+            ->visible()
             ->orWhere(function (Builder $query) {
                 $query->active();
             })

@@ -28,6 +28,7 @@ class Race extends Model
         'description',
         'tags',
         'properties',
+        'hide',
     ];
 
     /**
@@ -51,6 +52,7 @@ class Race extends Model
         'registration_closes_at' => 'datetime',
         'tags' => AsCollection::class,
         'properties' => AsArrayObject::class,
+        'hide' => 'boolean',
     ];
 
     /**
@@ -156,5 +158,29 @@ class Race extends Model
         return $query
             ->where('event_start_at', '<=', $now)
             ->where('event_end_at', '>=', $now);
+    }
+    
+    /**
+     * Filter only visible races
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query)
+    {
+        return $query
+            ->where('hide', false);
+    }
+    
+    /**
+     * Filter races that are hidden
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeHidden($query)
+    {
+        return $query
+            ->where('hide', true);
     }
 }

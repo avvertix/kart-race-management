@@ -6,7 +6,7 @@
             <div>
                 <p class="uppercase tracking-widest text-sm mb-2">{{ __('Register to a race') }}</p>
             
-                <div class="grid grid-cols-3">
+                <div class="grid grid-cols-3 gap-4">
             
                     @forelse ($races as $race)
                         <article class="p-4 shadow-lg bg-white rounded-md ring-2 ring-orange-300 shadow-orange-200">

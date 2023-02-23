@@ -59,6 +59,7 @@ class RaceInChampionshipController extends Controller
             'title' => 'required|string|max:250|unique:' . Race::class .',title',
             'description' => 'nullable|string|max:1000',
             'track' => 'required|string|max:250',
+            'hidden' => 'nullable|in:true,false',
         ]);
 
         $configuredStartTime = config('races.start_time');
@@ -76,6 +77,7 @@ class RaceInChampionshipController extends Controller
             'track' => $validated['track'],
             'registration_opens_at' => $start_date->copy()->subHours(config('races.registration.opens')),
             'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
+            'hide' => ($validated['hidden'] ?? '') === 'true' ? true : false,
         ]);
 
         return to_route('championships.races.index', $championship)

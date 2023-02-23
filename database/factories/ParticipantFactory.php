@@ -27,12 +27,15 @@ class ParticipantFactory extends Factory
     {
         $licenceNumber = fake()->numerify();
 
+        $first_name = fake()->name();
+        $last_name = fake()->lastName();
+
         return [
             'uuid' => Str::ulid(),
             'bib' => fake()->numberBetween(1, 200),
             'category' => 'category_key',
-            'first_name' => fake()->name(),
-            'last_name' => fake()->lastName(),
+            'first_name' => $first_name,
+            'last_name' => $last_name,
             'championship_id' => Championship::factory(),
             'race_id' => function (array $attributes) {
                 return Race::factory(null, [
@@ -43,12 +46,8 @@ class ParticipantFactory extends Factory
             'driver_licence' => hash('sha512', $licenceNumber),
 
             'driver' => [
-                'first_name' => function (array $attributes) {
-                    return $attributes['first_name'];
-                },
-                'last_name' => function (array $attributes) {
-                    return $attributes['first_name'];
-                },
+                'first_name' => $first_name,
+                'last_name' => $last_name,
                 'licence_type' => DriverLicence::LOCAL_NATIONAL,
                 'licence_number' => $licenceNumber,
                 'licence_renewed_at' => null,

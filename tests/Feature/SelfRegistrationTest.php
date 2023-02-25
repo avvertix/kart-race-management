@@ -99,7 +99,7 @@ class SelfRegistrationTest extends TestCase
 
     public function test_participant_preferred_language_saved()
     {
-        // Notification::fake();
+        Notification::fake();
         
         $this->setAvailableCategories();
 
@@ -141,15 +141,15 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertSessionHas('flash.banner', __('Race registration recorded. Please confirm it using the link sent in the email.', [], 'it'));
 
-        // Notification::assertCount(2);
+        Notification::assertCount(2);
 
-        // Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
-        //     return $notification->target === 'driver';
-        // });
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'driver';
+        });
 
-        // Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
-        //     return $notification->target === 'competitor';
-        // });
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'competitor';
+        });
     }
 
     public function test_participant_can_access_registration_receipt()

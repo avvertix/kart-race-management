@@ -16,6 +16,7 @@ use BaconQrCode\Renderer\RendererStyle\Fill;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\URL;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class Participant extends Model
+class Participant extends Model implements HasLocalePreference
 {
     use HasFactory;
     
@@ -57,6 +58,7 @@ class Participant extends Model
         'mechanic',
         'vehicles',
         'use_bonus',
+        'locale',
     ];
 
     /**
@@ -292,5 +294,15 @@ class Participant extends Model
         ->dontLogIfAttributesChangedOnly(['updated_at'])
         ->logOnlyDirty()
         ->dontSubmitEmptyLogs();
+    }
+
+    /**
+     * Get the participant's preferred locale.
+     *
+     * @return string
+     */
+    public function preferredLocale()
+    {
+        return $this->locale ?? config('app.locale');
     }
 }

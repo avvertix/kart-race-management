@@ -75,6 +75,7 @@ class SelfRegistrationTest extends TestCase
         $this->assertEquals('category_key', $participant->category);
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('en', $participant->locale);
 
         $response->assertRedirectToSignedRoute('registration.show', [
             'registration' => $participant,
@@ -94,6 +95,61 @@ class SelfRegistrationTest extends TestCase
         Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
             return $notification->target === 'competitor';
         });
+    }
+
+    public function test_participant_preferred_language_saved()
+    {
+        // Notification::fake();
+        
+        $this->setAvailableCategories();
+
+        $race = Race::factory()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->withHeader('Accept-Language', 'it;q=90, en;q=10')
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 100,
+                'category' => 'category_key',
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+        $participant = Participant::first();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('it', $participant->locale);
+
+        $response->assertRedirectToSignedRoute('registration.show', [
+            'registration' => $participant,
+            'p' => $participant->signatureContent()
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $response->assertSessionHas('flash.banner', __('Race registration recorded. Please confirm it using the link sent in the email.', [], 'it'));
+
+        // Notification::assertCount(2);
+
+        // Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        //     return $notification->target === 'driver';
+        // });
+
+        // Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        //     return $notification->target === 'competitor';
+        // });
     }
 
     public function test_participant_can_access_registration_receipt()

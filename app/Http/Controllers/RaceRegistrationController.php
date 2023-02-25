@@ -47,9 +47,6 @@ class RaceRegistrationController extends Controller
     {
 
         if(!$race->isRegistrationOpen){
-            
-            dump('not open');
-
             return redirect()
                 ->route('races.registration.create', $race)
                 ->with('flash', [

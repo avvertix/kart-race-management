@@ -54,7 +54,7 @@ class ConfirmParticipantRegistration extends Notification
     {
         return (new MailMessage)
                     ->subject(Lang::get('Verify the email and confirm the participation to :race', ['race' => $notifiable->race->title,]))
-                    ->line(Lang::get('We received a request to register **:name** as driver for the race :race', [
+                    ->line(Lang::get('We received a request to register **:name** for the race :race', [
                         'name' => "{$notifiable->first_name} {$notifiable->last_name}",
                         'race' => $notifiable->race->title,
                     ]))

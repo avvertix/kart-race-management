@@ -13,6 +13,7 @@ use App\Rules\ExistsCategory;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\CompetitorLicence;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class RegisterParticipant
@@ -141,6 +142,7 @@ class RegisterParticipant
                     'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
                 ],
                 'use_bonus' => ($validated['bonus'] ?? false) ? true : false,
+                'locale' => App::currentLocale(),
             ]);
 
             $participant->sendConfirmParticipantNotification();

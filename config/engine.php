@@ -15,11 +15,9 @@ return [
 
     'manufacturers' => [
         'Iame',
-        'Easy',
         'ROK',
         'Rotax',
         'BMB',
-        'KGP SHIPTER',
     ],
 
 ];

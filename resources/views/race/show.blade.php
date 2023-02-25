@@ -10,7 +10,9 @@
             <div class="grid grid-flow-col-dense gap-4">
                 <div class="text-lg p-4 bg-white shadow rounded">
                     <p>{{ __('Race registration open until') }}</p>
-                    <p class="text-3xl font-black">{{ $race->registration_closes_at }}</p>
+                    <p class="text-3xl font-black">
+                        <x-time :value="$race->registration_closes_at" :timezone="$race->timezone" />
+                    </p>
                     <p>{{ __('Race status') }} <x-race-status :value="$race->status" /></p>
                 </div>
                 <div class="text-lg p-4 bg-white shadow rounded">

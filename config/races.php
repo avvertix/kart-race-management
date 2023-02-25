@@ -11,9 +11,11 @@ return [
     |
     */
 
-    'start_time' => '09:00:00',
+    'start_time' => env('RACE_START_TIME', '09:00:00'),
     
-    'end_time' => '18:00:00',
+    'end_time' => env('RACE_END_TIME', '18:00:00'),
+
+    'timezone' => env('RACE_TIMEZONE', 'Europe/Rome'),
 
     'registration' => [
         'opens' => env('RACE_REGISTRATION_OPENS_HOURS', 7 * Carbon::HOURS_PER_DAY),

@@ -93,7 +93,11 @@ class Race extends Model
 
     public function getPeriodAttribute()
     {
-        return $this->event_start_at->toDateString() . ' — ' . (optional($this->event_start_at)->toDateString() ?? '...');
+        if($this->event_end_at && !$this->event_end_at->isSameDay($this->event_start_at)){
+            return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l') . ' — ' . $this->event_end_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
+        }
+
+        return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
     }
 
     /**
@@ -127,6 +131,11 @@ class Race extends Model
         };
         
         return 'concluded';
+    }
+
+    public function getTimezoneAttribute()
+    {
+        return config('races.timezone', 'UTC');
     }
 
 

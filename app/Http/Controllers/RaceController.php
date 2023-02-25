@@ -93,18 +93,21 @@ class RaceController extends Controller
         $configuredStartTime = config('races.start_time');
         $configuredEndTime = config('races.end_time');
 
-        $start_date = Carbon::parse("{$validated['start']} {$configuredStartTime}");
-        $end_date = $validated['end'] ? Carbon::parse("{$validated['end']} {$configuredEndTime}") : $start_date->copy()->setTimeFromTimeString($configuredEndTime);
+        $start_date = Carbon::parse("{$validated['start']} {$configuredStartTime}", config('races.timezone'));
+        $end_date = $validated['end'] ? Carbon::parse("{$validated['end']} {$configuredEndTime}", config('races.timezone')) : $start_date->copy()->setTimeFromTimeString($configuredEndTime);
+
+        $utc_start_date = $start_date->setTimezone(config('app.timezone'));
+        $utc_end_date = $end_date->setTimezone(config('app.timezone'));
 
 
         $race->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'event_start_at' => $start_date,
-            'event_end_at' => $end_date,
+            'event_start_at' => $utc_start_date,
+            'event_end_at' => $utc_end_date,
             'track' => $validated['track'],
-            'registration_opens_at' => $start_date->copy()->subHours(config('races.registration.opens')),
-            'registration_closes_at' => $start_date->copy()->subHours(config('races.registration.closes')),
+            'registration_opens_at' => $utc_start_date->copy()->subHours(config('races.registration.opens')),
+            'registration_closes_at' => $utc_start_date->copy()->subHours(config('races.registration.closes')),
             'hide' => ($validated['hidden'] ?? '') === 'true' ? true : false,
         ]);
 

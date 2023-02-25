@@ -17,7 +17,7 @@
                             <p class="text-zinc-700 mt-2 -mx-4 -mb-4 rounded-b-md px-4 py-2 bg-orange-100 relative">
                                 @if ($race->isRegistrationOpen)
                                     <span class="absolute block w-full h-1 animate-pulse bg-yellow-300 inset-0"></span>
-                                    {{ __('Race registration open until') }} <span class="font-bold">{{ $race->registration_closes_at }}</span>
+                                    {{ __('Online registration open until') }} <x-time class="font-bold" :value="$race->registration_closes_at" :timezone="$race->timezone" />
                                 @elseif( $race->status === 'active' || $race->status === 'scheduled')
                                     <span class="absolute block w-full h-1 animate-pulse bg-red-300 inset-0"></span>
                                     {{ __('Online registration closed. Registration might still be possible at the race track.') }}

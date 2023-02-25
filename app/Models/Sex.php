@@ -12,6 +12,6 @@ enum Sex: int
 
     public function localizedName(): string
     {
-        return Str::title($this->name);
+        return trans("sex-options.{$this->name}");
     }
 }

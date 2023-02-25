@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use Tests\CreateCompetitor;
@@ -264,7 +265,7 @@ class RaceParticipantTest extends TestCase
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
                 'consent_privacy' => true,
-                'bonus' => false,
+                'bonus' => 'false',
             ]);
 
         $response->assertRedirectToRoute('races.participants.create', $race);
@@ -303,7 +304,7 @@ class RaceParticipantTest extends TestCase
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
                 'consent_privacy' => true,
-                'bonus' => false,
+                'bonus' => 'false',
             ]);
 
         $response->assertRedirectToRoute('races.participants.create', $race);
@@ -311,6 +312,39 @@ class RaceParticipantTest extends TestCase
         $response->assertSessionHasErrors('bib');
 
         $this->assertEquals(1, Participant::where('bib', 100)->count());
+
+    }
+
+    public function test_participant_cannot_register_while_another_is_submitting_with_same_bib()
+    {
+        $this->setAvailableCategories();
+
+        $user = User::factory()->racemanager()->create();
+
+        $race = Race::factory()->create();
+
+        $response =Cache::lock('participant:100', 10)->get(function() use ($race, $user){
+
+            return $this->actingAs($user)
+                ->from(route('races.participants.create', $race))
+                ->post(route('races.participants.store', $race), [
+                    'bib' => 100,
+                    'category' => 'category_key',
+                    ...$this->generateValidDriver(),
+                    ...$this->generateValidCompetitor(),
+                    ...$this->generateValidMechanic(),
+                    ...$this->generateValidVehicle(),
+                    'consent_privacy' => true,
+                    'bonus' => 'false',
+                ]);
+
+        });
+            
+        $response->assertRedirectToRoute('races.participants.create', $race);
+
+        $response->assertSessionHasErrors('bib');
+
+        $this->assertEquals(0, Participant::where('bib', 100)->count());
 
     }
 
@@ -330,6 +364,10 @@ class RaceParticipantTest extends TestCase
             'bib' => 100,
             'championship_id' => $championship->getKey(),
             'race_id' => $pastRace->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ]
         ]);
 
         $response = $this->actingAs($user)
@@ -349,6 +387,55 @@ class RaceParticipantTest extends TestCase
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', '100 John Racer added.');
+
+        $participant = $race->participants()->first();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+    }
+
+    public function test_participant_can_be_updated()
+    {
+        $this->setAvailableCategories();
+
+        $user = User::factory()->racemanager()->create();
+
+        $championship = Championship::factory()
+            ->has(Race::factory()->count(2))
+            ->create();
+
+        list($pastRace, $race) = $championship->races;
+
+        $existingParticipant = Participant::factory()->create([
+            'bib' => 100,
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ]
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('participants.edit', $existingParticipant))
+            ->put(route('participants.update', $existingParticipant), [
+                'bib' => 100,
+                'category' => 'category_key',
+                ...$this->generateValidDriver(),
+                'driver_licence_number' => $existingParticipant->driver['licence_number'],
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+            ]);
+
+        $response->assertRedirectToRoute('races.participants.index', $race);
+
+        $response->assertSessionHasNoErrors();
+
+        $response->assertSessionHas('flash.banner', '100 John Racer updated.');
 
         $participant = $race->participants()->first();
 

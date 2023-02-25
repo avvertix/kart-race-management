@@ -175,6 +175,8 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'bib' => 'race number',
+    ],
 
 ];

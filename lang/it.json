@@ -211,5 +211,6 @@
     "[View the participation](:link)": "[Guarda i dettagli della tua iscrizione](:link)",
     "Whoops!": "Ops!",
     "Hello!": "Ciao!",
-    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Se hai problemi nel premere il pulsante \":actionText\", copia e incolla l'indirizzo seguente nel tuo browser:"
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Se hai problemi nel premere il pulsante \":actionText\", copia e incolla l'indirizzo seguente nel tuo browser:",
+    "The race number has already been taken.": "Il numero di gara scelto è già in uso."
 }

@@ -13,8 +13,11 @@ use App\Rules\ExistsCategory;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\CompetitorLicence;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class RegisterParticipant
 {
@@ -27,17 +30,9 @@ class RegisterParticipant
      */
     public function __invoke(Race $race, array $input, ?User $user = null)
     {
-        // TODO: ensure there is a lock on the bib so no one can take it while we validate and insert the records
-
         $validated = Validator::make($input, [
             'bib' => [
                 'required', 'integer', 'min:1', 
-                Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),
-                
-                Rule::unique('participants', 'bib')
-                    ->where(fn ($query) => $query
-                        ->where('championship_id', $race->championship_id)
-                        ->where('driver_licence', '!=', hash('sha512', $input['driver_licence_number'] ?? ''))),
             ],
             'category' => ['required', 'string', new ExistsCategory],
             'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
@@ -91,64 +86,81 @@ class RegisterParticipant
             'bonus' => ['nullable', 'in:true,false'],
         ])->validate();
 
+        try {
         
+            $participant = Cache::lock("participant:{$validated['bib']}", 10)->block(5, function() use($race, $validated, $user){
 
-        return DB::transaction(function() use ($validated, $race, $user){
+                $validatedBib = Validator::make($validated, [
+                    'bib' => [
+                        Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),
+                        
+                        Rule::unique('participants', 'bib')
+                            ->where(fn ($query) => $query
+                                ->where('championship_id', $race->championship_id)
+                                ->where('driver_licence', '!=', hash('sha512', $validated['driver_licence_number']))),
+                    ],
+                ])->validate();
 
-            $participant = $race->participants()->create([
-                'bib' => $validated['bib'],
-                'category' => $validated['category'],
-                'first_name' => $validated['driver_first_name'],
-                'last_name' => $validated['driver_last_name'],
-                'added_by' => $user?->getKey(),
-                'championship_id' => $race->championship_id,
-                'driver_licence' => hash('sha512', $validated['driver_licence_number']),
-                'competitor_licence' => isset($validated['competitor_licence_number']) ? hash('sha512', $validated['competitor_licence_number']) : null,
-                'licence_type' => $validated['driver_licence_type'],
-                'driver' => [
+                return $race->participants()->create([
+                    'bib' => $validated['bib'],
+                    'category' => $validated['category'],
                     'first_name' => $validated['driver_first_name'],
                     'last_name' => $validated['driver_last_name'],
+                    'added_by' => $user?->getKey(),
+                    'championship_id' => $race->championship_id,
+                    'driver_licence' => hash('sha512', $validated['driver_licence_number']),
+                    'competitor_licence' => isset($validated['competitor_licence_number']) ? hash('sha512', $validated['competitor_licence_number']) : null,
                     'licence_type' => $validated['driver_licence_type'],
-                    'licence_number' => $validated['driver_licence_number'],
-                    'licence_renewed_at' => $validated['driver_licence_renewed_at'] ?? null,
-                    'nationality' => $validated['driver_nationality'],
-                    'email' => $validated['driver_email'],
-                    'phone' => $validated['driver_phone'],
-                    'birth_date' => $validated['driver_birth_date'],
-                    'birth_place' => $validated['driver_birth_place'],
-                    'medical_certificate_expiration_date' => $validated['driver_medical_certificate_expiration_date'],
-                    'residence_address' =>  $this->processAddressInput($validated, 'driver_residence'),
-                    'sex' => $validated['driver_sex'],
-                ],
-                'competitor' => isset($validated['competitor_licence_number']) ? [
-                    'first_name' => $validated['competitor_first_name'],
-                    'last_name' => $validated['competitor_last_name'],
-                    'licence_type' => $validated['competitor_licence_type'],
-                    'licence_number' => $validated['competitor_licence_number'],
-                    'licence_renewed_at' => $validated['competitor_licence_renewed_at'] ?? null,
-                    'nationality' => $validated['competitor_nationality'],
-                    'email' => $validated['competitor_email'],
-                    'phone' => $validated['competitor_phone'],
-                    'birth_date' => $validated['competitor_birth_date'],
-                    'birth_place' => $validated['competitor_birth_place'],
-                    'residence_address' => $this->processAddressInput($validated, 'competitor_residence'),
-                ] : null,
-                'mechanic' => isset($validated['mechanic_name']) && isset($validated['mechanic_licence_number']) ? [
-                    'name' => $validated['mechanic_name'],
-                    'licence_number' => $validated['mechanic_licence_number'],
-                ] : null,
-                'vehicles' => $this->processVehicle($validated),
-                'consents' => [
-                    'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
-                ],
-                'use_bonus' => ($validated['bonus'] ?? false) ? true : false,
-                'locale' => App::currentLocale(),
-            ]);
+                    'driver' => [
+                        'first_name' => $validated['driver_first_name'],
+                        'last_name' => $validated['driver_last_name'],
+                        'licence_type' => $validated['driver_licence_type'],
+                        'licence_number' => $validated['driver_licence_number'],
+                        'licence_renewed_at' => $validated['driver_licence_renewed_at'] ?? null,
+                        'nationality' => $validated['driver_nationality'],
+                        'email' => $validated['driver_email'],
+                        'phone' => $validated['driver_phone'],
+                        'birth_date' => $validated['driver_birth_date'],
+                        'birth_place' => $validated['driver_birth_place'],
+                        'medical_certificate_expiration_date' => $validated['driver_medical_certificate_expiration_date'],
+                        'residence_address' =>  $this->processAddressInput($validated, 'driver_residence'),
+                        'sex' => $validated['driver_sex'],
+                    ],
+                    'competitor' => isset($validated['competitor_licence_number']) ? [
+                        'first_name' => $validated['competitor_first_name'],
+                        'last_name' => $validated['competitor_last_name'],
+                        'licence_type' => $validated['competitor_licence_type'],
+                        'licence_number' => $validated['competitor_licence_number'],
+                        'licence_renewed_at' => $validated['competitor_licence_renewed_at'] ?? null,
+                        'nationality' => $validated['competitor_nationality'],
+                        'email' => $validated['competitor_email'],
+                        'phone' => $validated['competitor_phone'],
+                        'birth_date' => $validated['competitor_birth_date'],
+                        'birth_place' => $validated['competitor_birth_place'],
+                        'residence_address' => $this->processAddressInput($validated, 'competitor_residence'),
+                    ] : null,
+                    'mechanic' => isset($validated['mechanic_name']) && isset($validated['mechanic_licence_number']) ? [
+                        'name' => $validated['mechanic_name'],
+                        'licence_number' => $validated['mechanic_licence_number'],
+                    ] : null,
+                    'vehicles' => $this->processVehicle($validated),
+                    'consents' => [
+                        'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
+                    ],
+                    'use_bonus' => ($validated['bonus'] ?? false) ? true : false,
+                    'locale' => App::currentLocale(),
+                ]);
+            });
 
             $participant->sendConfirmParticipantNotification();
             
             return $participant;
-        });
+
+        } catch (LockTimeoutException $th) {
+            throw ValidationException::withMessages([
+                'bib' => __('The race number has already been taken.'),
+            ]);
+        }
     }
 
     

@@ -194,6 +194,12 @@
                                 </div>
                             @endforeach
                         </div>
+
+                        @can('update', $item)
+                            <div class="mt-6">
+                                <p class="font-bold md:col-span-2">{{ __('Participant id') }} <span class="font-mono">{{ $item->getKey() }}</span></p>
+                            </div>
+                        @endcan
                     
                     </td>
                 </tr>

@@ -77,6 +77,19 @@
                             </div>
                         </div>
                         
+                        @can('update', $item)
+                            <div class="grid md:grid-cols-2 mb-2">
+                                <p class="font-bold md:col-span-2">{{ __('Race participation price') }}</p>
+                                <p class="flex gap-2 items-center">
+                                    <x-price class="font-mono">{{ $item->price()->last() }}</x-price>
+
+                                    @if ($item->use_bonus)
+                                        <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{{ __('Bonus')}}</span>
+                                    @endif
+                                </p>
+                            </div>
+                        @endcan
+
                         <div class="grid md:grid-cols-2 mb-2">
                             <p class="font-bold md:col-span-2">{{ __('Driver') }}</p>
                             <p>

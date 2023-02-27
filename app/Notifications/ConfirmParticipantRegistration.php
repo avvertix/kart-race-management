@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 
-class ConfirmParticipantRegistration extends Notification
+class ConfirmParticipantRegistration extends Notification implements ShouldQueue
 {
     use Queueable;
 

@@ -98,8 +98,8 @@
                             </p>
                             <p>
                                 {{ $item->driver['nationality'] }}
-                                {{ $item->licence_type?->name }}
-                                {{ $item->driver['licence_number'] }}
+                                {{ $item->licence_type?->localizedName() }}
+                                <span class="font-mono font-bold">{{ $item->driver['licence_number'] }}</span>
                             </p>
                             <p>
                                 {{ $item->driver['email'] }}
@@ -126,8 +126,8 @@
                             </p>
                         </div>
                         <div class="grid md:grid-cols-2">
-                            <div class="grid md:grid-cols-3 mb-2">
-                                <p class="font-bold md:col-span-3">{{ __('Competitor') }}</p>
+                            <div class="mb-2">
+                                <p class="font-bold">{{ __('Competitor') }}</p>
                                 @if ($item->competitor)
                                     <p>
                                         {{ $item->competitor['first_name'] }}
@@ -135,8 +135,8 @@
                                     </p>
                                     <p>
                                         {{ $item->competitor['nationality'] }}
-                                        {{ $item->competitor['licence_type'] }}
-                                        {{ $item->competitor['licence_number'] }}
+                                        {{ \App\Models\CompetitorLicence::from($item->competitor['licence_type'])->localizedName() }}
+                                        <span class="font-mono font-bold">{{ $item->competitor['licence_number'] }}</span>
                                     </p>
                                     <p>
                                         {{ $item->competitor['email'] }}

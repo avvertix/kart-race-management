@@ -166,6 +166,9 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'driver_licence_number' => [
+            'unique' => 'Iscrizione già presente per un pilota con la stessa licenza',
+        ],
     ],
 
     /*

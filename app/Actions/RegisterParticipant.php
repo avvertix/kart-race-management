@@ -90,15 +90,21 @@ class RegisterParticipant
         
             $participant = Cache::lock("participant:{$validated['bib']}", 10)->block(5, function() use($race, $validated, $user){
 
-                $validatedBib = Validator::make($validated, [
+                $input = array_merge($validated, ['driver_licence_number' => hash('sha512', $validated['driver_licence_number'])]);
+
+                Validator::make($input, [
                     'bib' => [
                         Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),
                         
                         Rule::unique('participants', 'bib')
                             ->where(fn ($query) => $query
                                 ->where('championship_id', $race->championship_id)
-                                ->where('driver_licence', '!=', hash('sha512', $validated['driver_licence_number']))),
+                                ->where('driver_licence', '!=', $input['driver_licence_number'])),
                     ],
+                    'driver_licence_number' => [
+                        Rule::unique('participants', 'driver_licence')
+                            ->where(fn ($query) => $query->where('race_id', $race->getKey())),
+                    ]
                 ])->validate();
 
                 return $race->participants()->create([

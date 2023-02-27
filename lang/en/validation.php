@@ -162,6 +162,9 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'driver_licence_number' => [
+            'unique' => 'A registration is already present for a driver with the same licence number',
+        ],
     ],
 
     /*

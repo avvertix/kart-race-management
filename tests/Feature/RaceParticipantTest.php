@@ -276,6 +276,43 @@ class RaceParticipantTest extends TestCase
 
     }
 
+    public function test_participant_cannot_register_using_same_licence_twice_in_race()
+    {
+        $this->setAvailableCategories();
+
+        $user = User::factory()->racemanager()->create();
+
+        $race = Race::factory()->create();
+
+        $existingParticipant = Participant::factory()->create([
+            'bib' => 100,
+            'championship_id' => $race->championship_id,
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ]
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('races.participants.create', $race))
+            ->post(route('races.participants.store', $race), [
+                'bib' => 200,
+                'category' => 'category_key',
+                ...$this->generateValidDriver(),
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+                'bonus' => 'false',
+            ]);
+
+        $response->assertRedirectToRoute('races.participants.create', $race);
+        
+        $response->assertSessionHasErrors('driver_licence_number');
+
+        $this->assertEquals(1, Participant::where('bib', 100)->count());
+
+    }
+
     public function test_participant_cannot_register_using_existing_bib_in_championship()
     {
         $this->setAvailableCategories();

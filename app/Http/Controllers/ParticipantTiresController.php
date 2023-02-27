@@ -49,7 +49,7 @@ class ParticipantTiresController extends Controller
         return view('tire.create', [
             'participant' => $participant,
             'race' => $participant->race,
-            'tireLimit' => (5 - $participant->tires_count) % 4,
+            'tireLimit' => $participant->tires_count == 0 ? 4 : (5 - $participant->tires_count),
         ]);
     }
 

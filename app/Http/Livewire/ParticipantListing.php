@@ -53,6 +53,7 @@ class ParticipantListing extends Component
                     ->orWhere('competitor_licence', hash('sha512', $search))
                     ;
             })
+            ->orderBy('bib', 'asc')
             ->get();
 
         return view('livewire.participant-listing');

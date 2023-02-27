@@ -116,49 +116,33 @@
                             <div class="grid md:grid-cols-3 mb-2">
                                 <p class="font-bold md:col-span-3">{{ __('Competitor') }}</p>
                                 @if ($item->competitor)
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_first_name" value="{{ __('Name') }}*" />
+                                    <p>
                                         {{ $item->competitor['first_name'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_last_name" value="{{ __('Surname') }}*" />
                                         {{ $item->competitor['last_name'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
-                                        {{ $item->competitor['licence_type'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />
-                                        {{ $item->competitor['licence_number'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
+                                    </p>
+                                    <p>
                                         {{ $item->competitor['nationality'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_email" value="{{ __('E-Mail') }}*" />
+                                        {{ $item->competitor['licence_type'] }}
+                                        {{ $item->competitor['licence_number'] }}
+                                    </p>
+                                    <p>
                                         {{ $item->competitor['email'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_phone" value="{{ __('Phone number') }}*" />
                                         {{ $item->competitor['phone'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
-                                        {{ $item->competitor['birth_date'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_birth_place" value="{{ __('Birth place') }}*" />
-                                        {{ $item->competitor['birth_place'] }}
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="competitor_residence" value="{{ __('Residence address') }}*" />
-                                        {{ $item->competitor['residence_address']['address'] ?? null }}
-                                        {{ $item->competitor['residence_address']['city'] ?? null }}
-                                        {{ $item->competitor['residence_address']['postal_code'] ?? null }}
-                                        {{ $item->competitor['residence_address']['province'] ?? null }}
-                                    </div>
+                                    </p>
+                                    <p>
+                                        {{ __('Birth :place on :date', [
+                                            'place' => $item->competitor['birth_place'],
+                                            'date' => $item->competitor['birth_date'],
+                                        ]) }}
+                                    </p>
+                                    <p>
+                                        {{ __('Residence in :address, :city :province :postal_code', [
+                                            'address' => $item->competitor['residence_address']['address'] ?? null,
+                                            'city' => $item->competitor['residence_address']['city'] ?? null,
+                                            'postal_code' => $item->competitor['residence_address']['postal_code'] ?? null,
+                                            'province' => $item->competitor['residence_address']['province'] ?? null,
+                                        ]) }}
+                                    </p>
                                 @else
                                     <p>{{ __('No competitor specified') }}</p>
                                 @endif

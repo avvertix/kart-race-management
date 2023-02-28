@@ -62,7 +62,7 @@ return [
         
         '125 JUNIOR TERR' => [
             'name' => '125 Junior Territorial',
-            'tires' => 'VEGA_SL4',
+            'tires' => 'VEGA_XH3',
         ],
         
         '125 JUNIOR OK' => [
@@ -90,7 +90,7 @@ return [
         
         '125 SENIOR TERR' => [
             'name' => '125 Senior Territorial',
-            'tires' => 'VEGA_SL4',
+            'tires' => 'MG_SM',
         ],
         
         '125 SENIOR OK' => [
@@ -100,7 +100,7 @@ return [
         
         '125 SENIOR OK-N' => [
             'name' => '125 Senior OK-N',
-            'tires' => 'MG_SM',
+            'tires' => 'VEGA_XH3',
         ],
 
         '125 SENIOR TDM ROK' => [
@@ -160,7 +160,7 @@ return [
         
         '125 MASTER TERR' => [
             'name' => '125 Master Territorial',
-            'tires' => 'VEGA_SL4',
+            'tires' => 'MG_SM',
         ],
         
         '125 MASTER OK-N' => [

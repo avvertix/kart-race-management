@@ -46,12 +46,14 @@ class ParticipantListing extends Component
             ->withCount('tires')
             ->withCount('signatures')
             ->when($this->search, function($query, $search){
-                $query->where('bib', e($search))
-                    ->orWhere('first_name', 'LIKE', e($search).'%')
-                    ->orWhere('last_name', 'LIKE', e($search).'%')
-                    ->orWhere('driver_licence', hash('sha512', $search))
-                    ->orWhere('competitor_licence', hash('sha512', $search))
-                    ;
+                $query->where(function($query) use($search){
+                    $query->where('bib', e($search))
+                        ->orWhere('first_name', 'LIKE', e($search).'%')
+                        ->orWhere('last_name', 'LIKE', e($search).'%')
+                        ->orWhere('driver_licence', hash('sha512', $search))
+                        ->orWhere('competitor_licence', hash('sha512', $search))
+                        ;
+                });
             })
             ->orderBy('bib', 'asc')
             ->get();

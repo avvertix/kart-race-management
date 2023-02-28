@@ -22,7 +22,7 @@
         <x-slot name="head">
             <th scope="col" class="w-4/12 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 sm:pl-6">{{ __('Bib') }} / {{ __('Driver') }}</th>
             <th scope="col" class="w-3/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Category / Engine') }}</th>
-            <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Transponders') }} ▼</th>
+            <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Transponder') }} ▼</th>
             <th scope="col" class="w-1/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Status') }}</th>
             <th scope="col" class="w-2/12 relative py-3.5 pl-3 pr-4 sm:pr-6">
                 &nbsp;
@@ -51,12 +51,6 @@
 
                     @can('viewAny', \App\Model\Transponder::class)
                         <a href="{{ route('participants.transponders.index', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('View transponders') }}</a>
-                    @endcan
-
-                    @can('create', \App\Model\Transponder::class)
-                        @if ($item->transponders_count < 5)
-                            <a href="{{ route('participants.transponders.create', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Add transponders') }}</a>
-                        @endif
                     @endcan
                 </td>
             </tr>

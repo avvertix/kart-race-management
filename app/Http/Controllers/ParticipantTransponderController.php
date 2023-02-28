@@ -81,11 +81,18 @@ class ParticipantTransponderController extends Controller
             ]);
         }
 
-        $participant->transponders()->createMany(collect($validated['transponders'])->map(function($transponder) use ($participant) {
+        $transponders = collect($validated['transponders'])->map(function($transponder) use ($participant) {
             return ['code' => $transponder, 'race_id' => $participant->race_id];
-        }));
+        });
 
-        return redirect()->route('races.participants.index', $participant->race)->with('flash.banner', __('Transponders assigned.'));
+        $participant->transponders()->createMany($transponders);
+
+        return redirect()
+            ->route('races.participants.index', $participant->race)
+            ->with('flash.banner', __('Transponder :number assigned to :participant.', [
+                'number' => $transponders->pluck('code')->join(', '),
+                'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}",
+            ]));
     }
 
 }

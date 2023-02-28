@@ -242,7 +242,7 @@ class Participant extends Model implements HasLocalePreference
     {
         return URL::temporarySignedRoute(
             'participant.sign.create',
-            Carbon::now()->addMinutes(Config::get('participant.verification.expire', 60)),
+            Carbon::now()->addMinutes(Config::get('participant.verification.expire', 12 * Carbon::MINUTES_PER_HOUR)),
             [
                 'p' => (string)$this->uuid,
                 't' => $target,

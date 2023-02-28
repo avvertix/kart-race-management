@@ -137,6 +137,14 @@ class Participant extends Model implements HasLocalePreference
     {
         return $this->hasMany(Tire::class);
     }
+    
+    /**
+     * Get the transponders assigned to the participant
+     */
+    public function transponders()
+    {
+        return $this->hasMany(Transponder::class);
+    }
 
 
     public function getEngineAttribute($value = null)

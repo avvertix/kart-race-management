@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Race;
 use App\Models\Tire;
 use App\Models\TireOption;
+use App\Models\Transponder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -19,12 +20,12 @@ class RaceTranspondersController extends Controller
      */
     public function __invoke(Request $request, Race $race)
     {
-        $this->authorize('viewAny', Tire::class);
+        $this->authorize('viewAny', Transponder::class);
 
         $race->load(['championship']);
 
 
-        // List participants with tires
+        // List participants with transponder
 
         $participants = $race->participants()
             ->withCount('transponders')

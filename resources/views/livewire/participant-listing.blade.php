@@ -58,7 +58,11 @@
                                     @endcan
 
                                     @can('viewAny', \App\Model\Tire::class)
-                                        <x-secondary-button-link href="{{ route('participants.tires.index', $item) }}">{{ __('View tires') }}</x-secondary-button-link>
+                                        <x-secondary-button-link href="{{ route('participants.tires.index', $item) }}">{{ __('Tires') }}</x-secondary-button-link>
+                                    @endcan
+                                    
+                                    @can('viewAny', \App\Model\Transponder::class)
+                                        <x-secondary-button-link href="{{ route('participants.transponders.index', $item) }}">{{ __('Transponder') }}</x-secondary-button-link>
                                     @endcan
                                 </div>
                                 
@@ -228,11 +232,17 @@
                             <span class="px-2 py-1 rounded bg-green-100 text-green-800">{{ __('Confirmed') }}</span>
                         @endif
                     </td>
-                    <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right font-medium sm:pr-6 space-x-2">
+                    <td class=" py-4 pl-3 pr-4 text-right font-medium sm:pr-6 space-x-2">
 
                         @can('create', \App\Model\Tire::class)
                             @if ($item->tires_count == 0)
-                                <a href="{{ route('participants.tires.create', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Assign tires') }}</a>
+                                <a href="{{ route('participants.tires.create', $item) }}" class="whitespace-nowrap text-orange-600 hover:text-orange-900">{{ __('Assign tires') }}</a>
+                            @endif
+                        @endcan
+                        
+                        @can('create', \App\Model\Transponder::class)
+                            @if ($item->transponders_count == 0)
+                                <a href="{{ route('participants.transponders.create', $item) }}" class="whitespace-nowrap text-orange-600 hover:text-orange-900">{{ __('Assign transponder') }}</a>
                             @endif
                         @endcan
 

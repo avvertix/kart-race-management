@@ -45,6 +45,7 @@ class ParticipantListing extends Component
         $this->participants = $this->race->participants()
             ->withCount('tires')
             ->withCount('signatures')
+            ->withCount('transponders')
             ->when($this->search, function($query, $search){
                 $query->where(function($query) use($search){
                     $query->where('bib', e($search))

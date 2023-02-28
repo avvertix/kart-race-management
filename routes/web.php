@@ -4,6 +4,7 @@ use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\ParticipantTiresController;
+use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
@@ -64,6 +65,8 @@ Route::middleware([
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
         
         Route::resource('participants.tires', ParticipantTiresController::class)->shallow()->only(['index', 'create', 'store']);
+        
+        Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->only(['index', 'create', 'store']);
 
     });
 

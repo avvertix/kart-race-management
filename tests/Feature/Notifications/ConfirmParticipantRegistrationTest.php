@@ -39,7 +39,7 @@ class ConfirmParticipantRegistrationTest extends TestCase
         $this->assertStringContainsString(e($notifiable->qrCodeUrl()), $rendered);
         $this->assertStringContainsString(e(URL::temporarySignedRoute(
             'participant.sign.create',
-            Carbon::now()->addMinutes(Config::get('participant.verification.expire', 60)),
+            Carbon::now()->addMinutes(Config::get('participant.verification.expire', 12 * Carbon::MINUTES_PER_HOUR)),
             [
                 'p' => (string)$notifiable->uuid,
                 't' => 'driver',

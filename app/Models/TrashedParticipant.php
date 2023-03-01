@@ -39,6 +39,7 @@ class TrashedParticipant extends Model
         'vehicles',
         'use_bonus',
         'locale',
+        'registration_completed_at',
     ];
 
     /**
@@ -62,6 +63,7 @@ class TrashedParticipant extends Model
         'mechanic' => 'encrypted:json',
         'vehicles' => AsCollection::class,
         'confirmed_at' => 'datetime',
+        'registration_completed_at' => 'datetime',
         'consents' => AsArrayObject::class,
         'use_bonus' => 'boolean',
     ];

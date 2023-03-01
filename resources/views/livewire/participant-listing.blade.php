@@ -38,24 +38,37 @@
                                     </span>
 
                                     @can('update', $item)
-                                        @if ($item->confirmed_at)
+                                        @if ($item->registration_completed_at)
                                             <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="confirm({{ $item->getKey() }})">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                                                 </svg>
 
-                                                {{ __('Confirmed') }}
+                                                {{ __('Completed') }}
                                             </x-jet-button>
+                                        @elseif ($item->confirmed_at)
+                                            <x-jet-button wire:click.prevent="markAsComplete({{ $item->getKey() }})">{{ __('Complete registration') }}</x-jet-button>
+                                            
+                                            {{-- <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="confirm({{ $item->getKey() }})">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                </svg>
+
+                                                {{ __('Confirmed') }}
+                                            </x-jet-button> --}}
                                         @else
                                             <x-jet-button wire:click.prevent="confirm({{ $item->getKey() }})">{{ __('Confirm') }}</x-jet-button>
                                         @endif
                                     @endcan
 
-                                    @can('create', \App\Model\Tire::class)
-                                        @if ($item->tires_count == 0)
-                                            <x-secondary-button-link href="{{ route('participants.tires.create', $item) }}">{{ __('Assign Tires') }}</x-secondary-button-link>
-                                        @endif
-                                    @endcan
+                                    @unless ($item->registration_completed_at)
+                                        
+                                        @can('create', \App\Model\Tire::class)
+                                            @if ($item->tires_count == 0)
+                                                <x-secondary-button-link href="{{ route('participants.tires.create', $item) }}">{{ __('Assign Tires') }}</x-secondary-button-link>
+                                            @endif
+                                        @endcan
+                                    @endunless
 
                                     @can('viewAny', \App\Model\Tire::class)
                                         <x-secondary-button-link href="{{ route('participants.tires.index', $item) }}">{{ __('Tires') }}</x-secondary-button-link>
@@ -226,7 +239,9 @@
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->category()?->name ?? $item->category }} / {{ $item->engine }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->licence_type?->localizedName() }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
-                        @if ($item->signatures_count == 0)
+                        @if ($item->registration_completed_at)
+                            <span class="px-2 py-1 rounded bg-blue-100 text-blue-800">{{ __('Registration completed') }}</span>
+                        @elseif ($item->signatures_count == 0)
                             <span class="px-2 py-1 rounded bg-red-100 text-red-800">{{ __('Signature Missing') }}</span>
                         @elseif ($item->confirmed_at)
                             <span class="px-2 py-1 rounded bg-green-100 text-green-800">{{ __('Confirmed') }}</span>
@@ -246,9 +261,11 @@
                             @endif
                         @endcan
 
-                        @can('update', $item)
-                            <a href="{{ route('participants.edit', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}<span class="sr-only">, {{ $item->title }}</span></a>
-                        @endcan
+                        @unless ($item->registration_completed_at)
+                            @can('update', $item)
+                                <a href="{{ route('participants.edit', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}<span class="sr-only">, {{ $item->title }}</span></a>
+                            @endcan
+                        @endunless
                     </td>
                 </tr>
             @endif

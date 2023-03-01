@@ -90,7 +90,7 @@
     "Saving...": "Sto salvando...",
     "Confirm": "Conferma",
     "Assign Tires": "Assegna gomme",
-    "Collapse": "",
+    "Collapse": "Chiudi",
     "Birth :place on :date": "Nato a :place in data :date",
     "Medical certificate expires on :date": "Il certificato medico scadrà il :date",
     "Residence in :address, :city :province :postal_code": "Residente in :address, :city :province :postal_code",
@@ -218,5 +218,8 @@
     "Assign transponders": "Assegna transponder",
     "Assign a transponder": "Assegna un transponder",
     "Assigned transponders": "Transponder assegnati",
-    "At the end of the race, before the prize awards, you need to return the transponder to the organizer or the time keeping service.": "Prima delle premiazioni e/o al termine della propria gara si prega di riconsegnare il transponder all'organizzatore o al servizio di cronometraggio."
+    "At the end of the race, before the prize awards, you need to return the transponder to the organizer or the time keeping service.": "Prima delle premiazioni e/o al termine della propria gara si prega di riconsegnare il transponder all'organizzatore o al servizio di cronometraggio.",
+    "Completed": "Completato",
+    "Complete registration": "Completa registrazione",
+    "Registration completed": "Iscrizione completata"
 }

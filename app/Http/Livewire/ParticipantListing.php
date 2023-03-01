@@ -36,8 +36,14 @@ class ParticipantListing extends Component
     
     public function confirm($item)
     {
-        // TODO: add some validation and an action to be reused
+        // TODO: add some validation and/or an action to be reused
         Participant::findOrFail($item)->update(['confirmed_at' => now()]);
+    }
+    
+    public function markAsComplete($item)
+    {
+        // TODO: add some validation and/or an action to be reused
+        Participant::findOrFail($item)->update(['registration_completed_at' => now()]);
     }
 
     public function render()

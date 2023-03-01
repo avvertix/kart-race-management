@@ -12,7 +12,11 @@
                         </x-button-link>
                     @endcan
 
-                    @can('update', $championship)
+                    @can('update', $race)
+                        <x-button-link href="{{ route('races.export.participants', $race) }}">
+                            {{ __('Export participants') }}
+                        </x-button-link>
+
                         <x-button-link href="{{ route('races.edit', $race) }}">
                             {{ __('Edit race') }}
                         </x-button-link>

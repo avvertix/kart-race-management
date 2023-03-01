@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ConfirmParticipantController;
+use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\ParticipantTiresController;
 use App\Http\Controllers\ParticipantTransponderController;
@@ -70,6 +71,8 @@ Route::middleware([
         Route::get('races/{race}/transponders', RaceTranspondersController::class)->name('races.transponders');
         
         Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->only(['index', 'create', 'store']);
+        
+        Route::get('races/{race}/export-participants', ExportRaceParticipantsController::class)->name('races.export.participants');
 
     });
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2cf44186bc80dd486afe3edd10cb4b1",
+    "content-hash": "51adaf2548ad19e118f7f592a7dc5626",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6011,6 +6011,68 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/2.2.5"
             },
             "time": "2022-09-12T13:28:28+00:00"
+        },
+        {
+            "name": "vitorccs/laravel-csv",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vitorccs/laravel-csv.git",
+                "reference": "a3911a2a25eafdd69cae54e45c5851c1505bd2bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vitorccs/laravel-csv/zipball/a3911a2a25eafdd69cae54e45c5851c1505bd2bf",
+                "reference": "a3911a2a25eafdd69cae54e45c5851c1505bd2bf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "ext-sqlite3": "*",
+                "laravel/legacy-factories": "1.x-dev",
+                "orchestra/testbench": "^6.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "suggest": {
+                "league/flysystem-aws-s3-v3": "Required to use the Flysystem S3 driver (^1.0)."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vitorccs\\LaravelCsv\\ServiceProviders\\CsvServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vitorccs\\LaravelCsv\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Vitor Siqueira",
+                    "email": "vitorccsiqueira@gmail.com"
+                }
+            ],
+            "description": "PHP Laravel package to create CSV files in a memory-optimized way",
+            "keywords": [
+                "csv",
+                "export",
+                "laravel",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/vitorccs/laravel-csv/issues",
+                "source": "https://github.com/vitorccs/laravel-csv/tree/v1.0.0"
+            },
+            "time": "2022-01-11T21:16:34+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

@@ -35,6 +35,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
         return [
             __('Number'),
             __('Category'),
+            __('Status'),
 
             __('Driver Name'),
             __('Driver Surname'),
@@ -78,6 +79,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
         return [
             $participant->bib,
             $participant->category()->name,
+            $participant->registration_completed_at ? __('completed') : null,
 
             $participant->first_name,
             $participant->last_name,
@@ -87,7 +89,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             $participant->driver['birth_date'],
             $participant->driver['birth_place'],
             $participant->driver['medical_certificate_expiration_date'],
-            __(':address, :city :province :postal_code', [
+            __(':address :city :province :postal_code', [
                 'address' => $participant->driver['residence_address']['address'] ?? null,
                 'city' => $participant->driver['residence_address']['city'] ?? null,
                 'postal_code' => $participant->driver['residence_address']['postal_code'] ?? null,
@@ -102,12 +104,12 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             $participant->competitor['nationality'] ?? null,
             $participant->competitor['birth_date'] ?? null,
             $participant->competitor['birth_place'] ?? null,
-            __(':address, :city :province :postal_code', [
-                'address' => $participantcompetitordriver['residence_address']['address'] ?? null,
+            trim(__(':address :city :province :postal_code', [
+                'address' => $participant->competitor['residence_address']['address'] ?? null,
                 'city' => $participant->competitor['residence_address']['city'] ?? null,
                 'postal_code' => $participant->competitor['residence_address']['postal_code'] ?? null,
                 'province' => $participant->competitor['residence_address']['province'] ?? null,
-            ]),
+            ])),
 
             $participant->mechanic['name'] ?? null,
             $participant->mechanic['licence_number'] ?? null,

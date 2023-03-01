@@ -45,6 +45,8 @@ class ParticipantFactory extends Factory
 
             'driver_licence' => hash('sha512', $licenceNumber),
 
+            'licence_type' => DriverLicence::LOCAL_NATIONAL,
+
             'driver' => [
                 'first_name' => $first_name,
                 'last_name' => $last_name,
@@ -57,17 +59,22 @@ class ParticipantFactory extends Factory
                 'birth_date' => new Carbon(fake()->dateTimeBetween('-20 years', '-18 years')),
                 'birth_place' => fake()->city(),
                 'medical_certificate_expiration_date' => new Carbon(fake()->dateTimeBetween('-2 months', 'today')),
-                'residence_address' => fake()->address(),
+                'residence_address' => [
+                    'address' => 'via dei Platani, 40',
+                    'city' => 'Milan',
+                    'province' => 'Milan',
+                    'postal_code' => '20146',
+                ],
                 'sex' => Sex::UNSPECIFIED,
             ],
 
             'vehicles' => [
                 [
-                    'chassis_manufacturer' => '',
-                    'engine_manufacturer' => '',
-                    'engine_model' => '',
-                    'oil_manufacturer' => '',
-                    'oil_type' => '',
+                    'chassis_manufacturer' => 'Birel',
+                    'engine_manufacturer' => 'Iame',
+                    'engine_model' => 'X30',
+                    'oil_manufacturer' => 'Shell',
+                    'oil_type' => 'Oil type',
                     'oil_percentage' => fake()->numberBetween(1, 10),
                 ],
             ],
@@ -78,7 +85,7 @@ class ParticipantFactory extends Factory
     /**
      * Indicate that the participant is confirmed.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
      */
     public function confirmed()
     {
@@ -88,11 +95,25 @@ class ParticipantFactory extends Factory
             ];
         });
     }
+
+    /**
+     * Indicate that the participant registratio is completed.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     */
+    public function markCompleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'registration_completed_at' => now(),
+            ];
+        });
+    }
     
     /**
      * Indicate that the participant has a competitor.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
      */
     public function withCompetitor()
     {
@@ -114,7 +135,30 @@ class ParticipantFactory extends Factory
                     'phone' => fake()->phoneNumber(),
                     'birth_date' => new Carbon(fake()->dateTimeBetween('-20 years', '-18 years')),
                     'birth_place' => fake()->city(),
-                    'residence_address' => fake()->address(),
+                    'residence_address' => [
+                        'address' => 'via dei Platani, 40',
+                        'city' => 'Milan',
+                        'province' => 'Milan',
+                        'postal_code' => '20146',
+                    ],
+                ]
+            ];
+        });
+    }
+    
+    /**
+     * Indicate that the participant has a mechanic.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     */
+    public function withMechanic()
+    {
+        return $this->state(function (array $attributes) {
+
+            return [
+                'mechanic' => [
+                    'name' => fake()->name(),
+                    'licence_number' => fake()->numerify(),
                 ]
             ];
         });
@@ -123,7 +167,7 @@ class ParticipantFactory extends Factory
     /**
      * Indicate that the participant requested to use the bonus.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
      */
     public function usingBonus()
     {

@@ -43,7 +43,7 @@ class ChampionshipTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.create'))
             ->post(route('championships.store'), [
-                'start' => '2023-03-02',
+                'start' => '2023-03-12',
                 'end' => '2023-12-02',
                 'title' => 'Kartsport 2023',
                 'description' => 'a little description',
@@ -72,7 +72,7 @@ class ChampionshipTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.create'))
             ->post(route('championships.store'), [
-                'start' => '2023-03-02',
+                'start' => '2023-03-12',
                 'end' => '2023-12-02',
                 'title' => '',
                 'description' => 'a little description',
@@ -98,7 +98,7 @@ class ChampionshipTest extends TestCase
         $response = $this
             ->from(route('championships.create'))
             ->post(route('championships.store'), [
-                'start' => '2023-03-02',
+                'start' => '2023-03-12',
                 'end' => '2023-12-02',
                 'title' => '',
                 'description' => 'a little description',

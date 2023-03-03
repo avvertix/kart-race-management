@@ -60,7 +60,7 @@ class ChampionshipTest extends TestCase
         $this->assertInstanceOf(Championship::class, $champ);
         $this->assertEquals('Kartsport 2023', $champ->title);
         $this->assertEquals('a little description', $champ->description);
-        $this->assertEquals(Carbon::parse('2023-03-02'), $champ->start_at);
+        $this->assertEquals(Carbon::parse('2023-03-12'), $champ->start_at);
         $this->assertEquals(Carbon::parse('2023-12-02'), $champ->end_at);
     }
     
@@ -89,7 +89,7 @@ class ChampionshipTest extends TestCase
         $this->assertInstanceOf(Championship::class, $champ);
         $this->assertEquals('2023 Championship', $champ->title);
         $this->assertEquals('a little description', $champ->description);
-        $this->assertEquals(Carbon::parse('2023-03-02'), $champ->start_at);
+        $this->assertEquals(Carbon::parse('2023-03-12'), $champ->start_at);
         $this->assertEquals(Carbon::parse('2023-12-02'), $champ->end_at);
     }
 
@@ -115,7 +115,7 @@ class ChampionshipTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.create'))
             ->post(route('championships.store'), [
-                'start' => '2023-03-02',
+                'start' => '2023-03-12',
                 'end' => '2023-12-02',
                 'title' => '',
                 'description' => 'a little description',
@@ -134,7 +134,7 @@ class ChampionshipTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.show', $existing))
             ->put(route('championships.update', $existing), [
-                'start' => '2023-03-02',
+                'start' => '2023-03-12',
                 'end' => '2023-12-02',
                 'title' => 'Kartsport changed 2023',
                 'description' => 'a little description',
@@ -151,7 +151,7 @@ class ChampionshipTest extends TestCase
         $this->assertInstanceOf(Championship::class, $champ);
         $this->assertEquals('Kartsport changed 2023', $champ->title);
         $this->assertEquals('a little description', $champ->description);
-        $this->assertEquals(Carbon::parse('2023-03-02'), $champ->start_at);
+        $this->assertEquals(Carbon::parse('2023-03-12'), $champ->start_at);
         $this->assertEquals(Carbon::parse('2023-12-02'), $champ->end_at);
     }
 
@@ -167,7 +167,7 @@ class ChampionshipTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.edit', $existing))
             ->put(route('championships.update', $existing), [
-                'start' => '2023-03-02',
+                'start' => '2023-03-12',
                 'end' => '2023-12-02',
                 'title' => 'Kartsport 2023',
                 'description' => 'a little description',

@@ -95,4 +95,56 @@ class ParticipantTransponderController extends Controller
             ]));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Transponder  $transponder
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Transponder $transponder)
+    {
+        $transponder->load(['participant', 'participant.race', 'participant.championship']);
+
+        return view('transponder.edit', [
+            'participant' => $transponder->participant,
+            'race' => $transponder->participant->race,
+            'transponderLimit' => 1,
+            'transponder' => $transponder,
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Transponder  $transponder
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Transponder $transponder)
+    {
+        $transponder->load(['participant', 'participant.race']);
+
+        $validated = $this->validate($request, [
+            'transponder' => [
+                'required',
+                'integer',
+                'min:0',
+                Rule::unique('transponders', 'code')
+                    ->ignore($transponder)
+                    ->where(fn ($query) => $query->where('race_id', $transponder->race_id)),
+            ],
+        ]);
+
+        $transponder->code = $validated['transponder'];
+
+        $transponder->save();
+
+        return redirect()
+            ->route('races.participants.index', $transponder->participant->race)
+            ->with('flash.banner', __('Transponder :number assigned to :participant.', [
+                'number' => $transponder->code,
+                'participant' => "{$transponder->participant->bib} {$transponder->participant->first_name} {$transponder->participant->last_name}",
+            ]));
+    }
+
 }

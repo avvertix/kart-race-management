@@ -50,4 +50,12 @@ class Transponder extends Model
     {
         return 'uuid';
     }
+
+    /**
+     * Get the participant that owns this transponder.
+     */
+    public function participant()
+    {
+        return $this->belongsTo(Participant::class);
+    }
 }

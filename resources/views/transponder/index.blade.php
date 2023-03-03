@@ -53,7 +53,7 @@
 
             @foreach ($transponders as $item)
                 <div class="mb-4">
-                    <p class="font-mono text-3xl">{{ $item->code }}</p>
+                    <p><span class="font-mono text-3xl">{{ $item->code }}</span> <a class="text-orange-600 hover:text-orange-900" href="{{ route('transponders.edit', $item) }}">{{ __('edit') }}</a></p>
                 </div>
             @endforeach
 

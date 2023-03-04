@@ -28,6 +28,11 @@ return [
             'tires' => 'MG_SC',
         ],
         
+        '60 MINI GR3 UNDER 10' => [
+            'name' => '60 Mini Group 3 under 10',
+            'tires' => 'MG_SC',
+        ],
+        
         '60 MINI MK' => [
             'name' => '60 Mini Kart',
             'description' => 'with engine approval 2010-2014',

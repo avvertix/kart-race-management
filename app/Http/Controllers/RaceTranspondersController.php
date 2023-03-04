@@ -33,8 +33,7 @@ class RaceTranspondersController extends Controller
             ->with('transponders')
             ->select('participants.*')
             ->join('transponders', 'transponders.participant_id', '=', 'participants.id')
-            ->orderBy('transponders.code', 'desc')
-            ->orderBy('bib', 'asc')
+            ->orderByRaw('CAST(`code` as unsigned) DESC')
             ->distinct()
             ->get();
 

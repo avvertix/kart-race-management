@@ -70,10 +70,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ]);
 
         $vehicle = $participant->vehicles[0];
-
-        $transponder = $participant->transponders[0];
-
-        $this->withoutExceptionHandling();
         
         $response = $this
             ->actingAs($user)
@@ -111,7 +107,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                $participant->category()->name,  // qui come normalizzo i nomi delle categorie per averli corretti a livello di crono
+                'category_key',
                 strtoupper($participant->first_name),
                 strtoupper($participant->last_name),
                 "a1234567", // car registration
@@ -123,10 +119,9 @@ class RaceParticipantsForTimingExportTest extends TestCase
                 "",
                 "",
                 $participant->licence_type->localizedName(),
-                $vehicle['engine_manufacturer'],
-                $vehicle['engine_model'],
+                strtoupper($vehicle['engine_manufacturer']),
+                strtoupper($vehicle['engine_model']),
                 $participant->driver['phone'] . ' - ' . ($participant->competitor['phone'] ?? ''),
-                $participant->driver['licence_number'],
             ],
         ], $csv->toArray());
     }

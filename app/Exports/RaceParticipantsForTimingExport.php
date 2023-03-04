@@ -93,9 +93,11 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
         // driver registration => identifier assigned to the driver data (max 8 chars)
         $registration_identifier = substr($participant->driver_licence, 0, 8);
 
+        $engine_mapping = config('engine.normalization');
+
         return [
             $participant->bib,
-            $participant->category()->name,
+            $participant->category,
             strtoupper($participant->first_name),
             strtoupper($participant->last_name),
             $registration_identifier, 
@@ -107,10 +109,9 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
             "",
             "",
             $participant->licence_type->localizedName(),
-            $vehicle['engine_manufacturer'],
-            $vehicle['engine_model'],
+            $engine_mapping[strtolower($vehicle['engine_manufacturer'])] ?? strtoupper($vehicle['engine_manufacturer']),
+            strtoupper($vehicle['engine_model']),
             $participant->driver['phone'] . ' - ' . ($participant->competitor['phone'] ?? ''),
-            $participant->driver['licence_number'],
         ];
     }
 }

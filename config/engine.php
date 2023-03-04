@@ -9,15 +9,22 @@ return [
     | Engines
     |--------------------------------------------------------------------------
     |
-    | List of known engine manufactures to suggest
+    | List of known engine manufactures to suggest and normalizations
+    | that can be applied when exporting for MyLaps Orbits
     |
     */
 
     'manufacturers' => [
         'Iame',
-        'ROK',
+        'Vortex',
         'Rotax',
         'BMB',
+        'TM',
+    ],
+
+    'normalization' => [
+        'tm racing' => 'TM',
+        'tiemme' => 'TM',
     ],
 
 ];

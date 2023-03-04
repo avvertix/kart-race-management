@@ -220,7 +220,7 @@ class RaceParticipantsExportTest extends TestCase
         $this->assertCount(2, $csv);
         $this->assertEquals([
             [
-                CsvHelper::getBom() . 'Number',
+                'Number',
                 'Category',
                 'Status',
                 'Driver Name',

@@ -70,6 +70,8 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ]);
 
         $vehicle = $participant->vehicles[0];
+
+        $this->withoutExceptionHandling();
         
         $response = $this
             ->actingAs($user)
@@ -88,7 +90,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
         $this->assertCount(2, $csv);
         $this->assertEquals([
             [
-                CsvHelper::getBom() . "No",
+                "No",
                 "Class",
                 "FirstName",
                 "LastName",

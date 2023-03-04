@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ExportRaceParticipantsController;
+use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\ParticipantTiresController;
 use App\Http\Controllers\ParticipantTransponderController;
@@ -73,6 +74,8 @@ Route::middleware([
         Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->except(['destroy', 'show']);
         
         Route::get('races/{race}/export-participants', ExportRaceParticipantsController::class)->name('races.export.participants');
+        
+        Route::get('races/{race}/export-transponders', ExportRaceParticipantsForTimingController::class)->name('races.export.transponders');
 
     });
 

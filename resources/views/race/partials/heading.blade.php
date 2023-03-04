@@ -16,7 +16,15 @@
                         <x-button-link href="{{ route('races.export.participants', $race) }}">
                             {{ __('Export participants') }}
                         </x-button-link>
+                    @endcan
 
+                    @can('create', \App\Model\Transponder::class)
+                        <x-button-link href="{{ route('races.export.transponders', $race) }}">
+                            {{ __('Export transponders') }}
+                        </x-button-link>
+                    @endcan
+                    
+                    @can('update', $race)
                         <x-button-link href="{{ route('races.edit', $race) }}">
                             {{ __('Edit race') }}
                         </x-button-link>

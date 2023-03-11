@@ -44,6 +44,8 @@ class RaceController extends Controller
             ->selectRaw('count(*) as total')
             ->selectRaw("count(case when confirmed_at is not null then 1 end) as confirmed")
             ->first();
+        
+        $statistics->transponders = $race->participants()->has('transponders')->count();
 
         $participantsPerCategory = $race->participants()
             ->selectRaw('category, count(*) as total')

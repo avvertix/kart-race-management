@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Participant;
 use App\Models\Tire;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ParticipantTiresController extends Controller
@@ -63,8 +64,13 @@ class ParticipantTiresController extends Controller
     public function store(Request $request, Participant $participant)
     {        
         $validated = $this->validate($request, [
-            'tires' => 'required|array|min:1|max:5',
-            'tires.*' => 'required|string',
+            'tires' => ['required','array','min:1','max:5'],
+            'tires.*' => [
+                'required',
+                'string',
+                Rule::unique('tires', 'code')
+                    ->where(fn ($query) => $query->where('race_id', $participant->race_id)),
+            ],
         ]);
 
         if($participant->tires()->count() >= 5){
@@ -77,7 +83,50 @@ class ParticipantTiresController extends Controller
             return ['code' => $tire, 'race_id' => $participant->race_id];
         }));
 
-        return redirect()->route('participants.tires.index', $participant)->with('flash.banner', __('Tires assigned. Print a copy for the participant.'));
+        return redirect()
+            ->route('participants.tires.index', $participant)
+            ->with('flash.banner', __('Tires assigned. Print a copy for the participant.'));
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param  \App\Models\Participant  $participant
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Tire $tire)
+    {
+        $tire->load(['participant', 'race']);
+
+        return view('tire.edit', [
+            'participant' => $tire->participant,
+            'race' => $tire->race,
+            'tire' => $tire,
+        ]);
+    }
+
+
+    public function update(Request $request, Tire $tire)
+    {        
+        $validated = $this->validate($request, [
+            'tire' => [
+                'required',
+                'string',
+                
+                Rule::unique('tires', 'code')
+                    ->ignore($tire)
+                    ->where(fn ($query) => $query->where('race_id', $tire->race_id)),
+            ],
+        ]);
+
+        $tire->code = $validated['tire'];
+        
+        $tire->save();
+
+        return redirect()
+            ->route('participants.tires.index', $tire->participant)
+            ->with('flash.banner', __('Tire code updated.'));
     }
 
 }

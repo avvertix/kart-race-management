@@ -67,6 +67,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'tire:list',
             'tire:view',
             'tire:create',
+            'tire:update',
             'transponder:view',
             'transponder:create',
             'transponder:update',
@@ -83,6 +84,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'tire:list',
             'tire:view',
             'tire:create',
+            'tire:update',
             'transponder:list',
             'transponder:view',
             'transponder:create',
@@ -97,6 +99,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'tire:list',
             'tire:view',
             'tire:create',
+            'tire:update',
         ])->description('Responsible of tire management');
         
         Jetstream::role('timekeeper', 'Timekeeper', [

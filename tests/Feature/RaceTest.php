@@ -42,6 +42,8 @@ class RaceTest extends TestCase
 
         $championship = Championship::factory()->create();
 
+        $this->travelTo(Carbon::parse('2023-03-04'));
+
         $response = $this
             ->actingAs($user)
             ->from(route('championships.races.create', $championship))
@@ -52,6 +54,8 @@ class RaceTest extends TestCase
                 'title' => 'First Race',
                 'description' => 'a little description',
             ]);
+        
+        $this->travelBack();
 
         $response->assertRedirectToRoute('championships.races.index', ['championship' => $championship]);
         
@@ -78,6 +82,8 @@ class RaceTest extends TestCase
 
         $existingRace = Race::factory()->create();
 
+        $this->travelTo(Carbon::parse('2023-03-04'));
+
         $response = $this
             ->actingAs($user)
             ->from(route('races.edit', $existingRace))
@@ -88,6 +94,8 @@ class RaceTest extends TestCase
                 'title' => 'First Updated Race',
                 'description' => 'a little description',
             ]);
+        
+        $this->travelBack();
 
         $response->assertRedirectToRoute('races.show', $existingRace);
         

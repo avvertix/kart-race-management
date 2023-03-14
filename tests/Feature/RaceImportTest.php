@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Championship;
 use App\Models\Race;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -20,12 +21,16 @@ class RaceImportTest extends TestCase
 
         $championship = Championship::factory()->create();
 
+        $this->travelTo(Carbon::parse('2023-03-04'));
+
         $response = $this
             ->actingAs($user)
             ->from(route('championships.races.import.create', $championship))
             ->post(route('championships.races.import.store', $championship), [
                 'races' => '2023-03-05;2023-03-05;Race title;Track;Description of the race;' . PHP_EOL . '2023-03-07;2023-03-07;Second Race;Track;Description of the race',
             ]);
+
+        $this->travelBack();
 
         $response->assertRedirectToRoute('championships.races.index', $championship);
         

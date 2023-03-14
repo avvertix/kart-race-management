@@ -50,4 +50,20 @@ class Tire extends Model
     {
         return 'uuid';
     }
+
+    /**
+     * Get the participant that owns this transponder.
+     */
+    public function participant()
+    {
+        return $this->belongsTo(Participant::class);
+    }
+
+    /**
+     * Get the participant that owns this transponder.
+     */
+    public function race()
+    {
+        return $this->belongsTo(Race::class);
+    }
 }

@@ -67,7 +67,7 @@ Route::middleware([
         
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
         
-        Route::resource('participants.tires', ParticipantTiresController::class)->shallow()->only(['index', 'create', 'store']);
+        Route::resource('participants.tires', ParticipantTiresController::class)->shallow()->only(['index', 'create', 'store', 'edit', 'update']);
         
         Route::get('races/{race}/transponders', RaceTranspondersController::class)->name('races.transponders');
         

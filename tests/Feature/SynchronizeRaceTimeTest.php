@@ -20,6 +20,8 @@ class SynchronizeRaceTimeTest extends TestCase
             'races.timezone' => 'Europe/Rome',
         ]);
 
+        $this->travelTo(Carbon::parse('2023-03-05'));
+
         $raceDate = Carbon::parse('2023-03-05');
 
         $race = Race::factory()->create([
@@ -30,6 +32,8 @@ class SynchronizeRaceTimeTest extends TestCase
         $this->artisan('races:sync-time')
             ->assertSuccessful();
 
+        $this->travelBack();
+        
         $updatedRace = $race->fresh();
 
         $this->assertEquals(Carbon::parse('2023-03-05 09:00:00', config('races.timezone'))->setTimezone(config('app.timezone'))->toDateTimeString(), $updatedRace->event_start_at->toDateTimeString());

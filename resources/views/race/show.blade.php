@@ -18,7 +18,7 @@
                 <div class="text-lg p-4 bg-white shadow rounded">
                     <p>{{ __('participants') }}</p>
                     <p class="text-3xl font-black">{{ $statistics->total }}</p>
-                    <p>{{ $statistics->confirmed }} {{ __('confirmed') }}</p>
+                    <p>{{ $statistics->confirmed }} {{ __('confirmed') }}, {{ $statistics->transponders }} {{ __('transponders') }}</p>
                 </div>
             </div>
 

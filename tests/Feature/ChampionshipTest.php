@@ -39,6 +39,8 @@ class ChampionshipTest extends TestCase
     {
         $user = User::factory()->organizer()->create();
 
+        $this->travelTo(Carbon::parse('2023-03-05'));
+
         $response = $this
             ->actingAs($user)
             ->from(route('championships.create'))
@@ -48,6 +50,8 @@ class ChampionshipTest extends TestCase
                 'title' => 'Kartsport 2023',
                 'description' => 'a little description',
             ]);
+
+        $this->travelBack();
 
         $response->assertRedirectToRoute('championships.index');
         
@@ -67,7 +71,9 @@ class ChampionshipTest extends TestCase
     public function test_new_championship_title_can_be_generated()
     {
         $user = User::factory()->organizer()->create();
-
+        
+        $this->travelTo(Carbon::parse('2023-03-05'));
+        
         $response = $this
             ->actingAs($user)
             ->from(route('championships.create'))
@@ -77,9 +83,11 @@ class ChampionshipTest extends TestCase
                 'title' => '',
                 'description' => 'a little description',
             ]);
-
-        $response->assertRedirectToRoute('championships.index');
         
+        $this->travelBack();
+    
+        $response->assertRedirectToRoute('championships.index');
+    
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', '2023 Championship created.');
@@ -130,6 +138,8 @@ class ChampionshipTest extends TestCase
 
         $existing = Championship::factory()->create();
 
+        $this->travelTo(Carbon::parse('2023-03-05'));
+
         $response = $this
             ->actingAs($user)
             ->from(route('championships.show', $existing))
@@ -139,6 +149,8 @@ class ChampionshipTest extends TestCase
                 'title' => 'Kartsport changed 2023',
                 'description' => 'a little description',
             ]);
+
+        $this->travelBack();
 
         $response->assertRedirectToRoute('championships.show', $existing);
         

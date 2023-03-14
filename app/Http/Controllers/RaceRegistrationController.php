@@ -79,7 +79,8 @@ class RaceRegistrationController extends Controller
             abort(401, __('We cannot verify your identity, please follow the URL in the email.'));
         }
 
-        $registration->load(['race', 'championship']);
+        $registration
+            ->load(['race', 'championship', 'signatures']);
 
         return view('race-registration.show', [
             'race' => $registration->race,

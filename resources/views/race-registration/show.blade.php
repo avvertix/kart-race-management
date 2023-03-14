@@ -18,11 +18,83 @@
 
     </x-slot>
 
-    <div class="py-3 print:hidden bg-white border-y border-zinc-300">
+    <div class="py-3 print:hidden mb-6">
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-3 gap-6">
+
+            <div class="space-y-2">
+                <p class="text-xl font-bold flex gap-2 items-center">
+                    1. {{ __('Signature') }}
+                    @if ($participant->hasSignedTheRequest())
+                        <span class="block text-sm text-green-700 border border-green-400 bg-green-50 px-2 py-1">Signed</span>
+                    @endif
+                </p>
+                
+                @unless ($participant->hasSignedTheRequest())
+                
+                    <p class="prose">{{ __('We sent an email to :driver_email with a link to confirm your identity.', ['driver_email' => $participant->email])}} {{ __('The link is valid for :hours hours.', ['hours' => 12]) }}</p>
+                    <p class="prose">{{ __('Please confirm it as it replaces your handwritten signature.') }}</p>
+
+                    @if (session('status') == 'verification-link-sent')
+                        <div class="mb-4 font-medium text-sm text-green-600">
+                            {{ __('A new verification link has been sent to the email address you provided.') }}
+                        </div>
+                    @endif
+                    
+                
+                    <form method="POST" action="{{ url()->signedRoute('registration-verification.send', $participant->signedUrlParameters()) }}">
+                        @csrf
+
+                        <input type="hidden" name="participant" value="{{ $participant->uuid }}">
+        
+                        <p>
+                            <x-jet-button type="submit">
+                                {{ __('Resend Verification Email') }}
+                            </x-jet-button>
+                        </p>
+                    </form>
+                @else
+
+                    <p class="prose">{{ __('We sent an email to :driver_email with a link to confirm your identity.', ['driver_email' => $participant->email])}}</p>
+                    <p class="prose">{{ __('Thanks for signing the participation request.')}}</p>
+                    
+                @endunless
+
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-xl font-bold flex gap-2 items-center">
+                    2. {{ __('Payment') }}
+                </p>
+                <p class="prose">{{ __('Pay the participation cost using a bank transfer (details below) and upload the picture/pdf with the transfer receipt.') }}</p>
+                
+                <form method="POST" action="#">
+                    @csrf
+    
+                    <p>
+                        <x-jet-button type="submit">
+                            {{ __('Submit payment receipt') }}
+                        </x-jet-button>
+                    </p>
+                </form>
+            </div>
+            
+            <div class="space-y-2">
+                <p class="text-xl font-bold flex gap-2 items-center">
+                    3. {{ __('Tires and transponder') }}
+                </p>
+                <p class="prose">{{ __('Go to the race secretary and pick tires and transponder.') }}</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="py-3 print:hidden bg-white border-y-4 border-yellow-400">
         
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <h3 class="text-xl font-bold mb-1">{{ __('Race participation price') }} <x-price class="font-mono">{{ $participant->price()->last() }}</x-price></h3>
+            <h3 class="text-2xl font-bold mb-1">{{ __('Race participation price') }} <x-price class="font-mono">{{ $participant->price()->last() }}</x-price></h3>
 
             <div class="grid lg:gap-4 lg:grid-cols-2">
 

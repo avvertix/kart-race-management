@@ -159,6 +159,11 @@ class Participant extends Model implements HasLocalePreference
         return $this->driver['email'] ?? null;
     }
     
+    public function getCompetitorEmailAttribute($value = null)
+    {
+        return $this->competitor['email'] ?? null;
+    }
+    
     public function category(): Category|null
     {
         return Category::find($this->category);
@@ -182,17 +187,32 @@ class Participant extends Model implements HasLocalePreference
         return trim(substr($svg, strpos($svg, "\n") + 1));
     }
 
+    public function signedUrlParameters(): array
+    {
+        return ['registration' => $this, 'p' => $this->signatureContent()];
+    }
+
     public function qrCodeUrl(): string
     {
         return URL::signedRoute(
             'registration.show',
-            ['registration' => $this, 'p' => $this->signatureContent()]
+            $this->signedUrlParameters()
         );
     }
     
     public function signatureContent(): string
     {
         return "{$this->bib}-{$this->driver_licence}";
+    }
+
+    /**
+     * Determine if the participant has signed the participation request.
+     *
+     * @return bool
+     */
+    public function hasSignedTheRequest()
+    {
+        return $this->signatures()->count() > 0;
     }
 
     /**

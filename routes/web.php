@@ -5,6 +5,7 @@ use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
 use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrivacyPolicyController;
@@ -82,6 +83,11 @@ Route::middleware([
 // Self registration
 
 Route::resource('races.registration', RaceRegistrationController::class)->only(['show', 'create', 'store'])->shallow();
+
+// TODO: protect with a rate limit
+Route::post('registration-verification', [ParticipantSignatureNotificationController::class, 'store'])
+    ->name('registration-verification.send')
+    ->middleware(['signed', 'throttle:3,10']);
 
 // Signature for registration
 

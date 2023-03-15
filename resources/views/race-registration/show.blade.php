@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="relative pb-5 sm:pb-0 print:hidden">
-            <div class="md:flex md:items-center md:justify-between">
+            <div class="md:flex md:items-center md:justify-between mb-1">
                 <h2 class="font-semibold text-4xl text-zinc-800 leading-tight">
                     {{ __('Race participation') }}
                 </h2>
@@ -11,23 +11,21 @@
             </div>
             <div class="prose prose-zinc">
                 <p class="font-bold">{{ __('You must present yourself to the secretary on the race track before the closing of the registrations to confirm your participation.') }}</p>
-                <p>{{ __('Please bring this receipt with you to the race (printed version or PDF).') }}</p>
+                <p class="print:hidden">{{ __('This receipt is uniquely generated for you. You can access it anytime by clicking on "View the participation" in the email you received. For easier access you can add it to your favourites, share it or send it to your phone by scanning the QR code.') }}</p>
+                <p class="print:hidden">{{ __('Please bring this receipt with you to the race (printed version or PDF).') }}</p>
             </div>
             
         </div>
 
     </x-slot>
 
-    <div class="py-3 print:hidden mb-6">
+    <div class="py-3 print:hidden print:p-0 mb-6">
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-3 gap-6">
 
             <div class="space-y-2">
                 <p class="text-xl font-bold flex gap-2 items-center">
                     1. {{ __('Signature') }}
-                    @if ($participant->hasSignedTheRequest())
-                        <span class="block text-sm text-green-700 border border-green-400 bg-green-50 px-2 py-1">Signed</span>
-                    @endif
                 </p>
                 
                 @unless ($participant->hasSignedTheRequest())
@@ -36,7 +34,7 @@
                     <p class="prose">{{ __('Please confirm it as it replaces your handwritten signature.') }}</p>
 
                     @if (session('status') == 'verification-link-sent')
-                        <div class="mb-4 font-medium text-sm text-green-600">
+                        <div class="mb-4 font-medium text-sm text-green-700 border border-green-400">
                             {{ __('A new verification link has been sent to the email address you provided.') }}
                         </div>
                     @endif
@@ -55,8 +53,14 @@
                     </form>
                 @else
 
+                    <p class="flex gap-2 rounded-md text-sm text-green-700 border border-green-400 bg-green-50 px-2 py-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                        </svg>
+                        
+                        {{ __('Thanks for signing the participation request.')}}
+                    </p>
                     <p class="prose">{{ __('We sent an email to :driver_email with a link to confirm your identity.', ['driver_email' => $participant->email])}}</p>
-                    <p class="prose">{{ __('Thanks for signing the participation request.')}}</p>
                     
                 @endunless
 
@@ -90,7 +94,7 @@
 
     </div>
 
-    <div class="py-3 print:hidden bg-white border-y-4 border-yellow-400">
+    <div class="py-3 print:hidden print:p-0 bg-white border-y-4 border-yellow-400">
         
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
@@ -125,7 +129,7 @@
     </div>
 
 
-    <div class="py-6">
+    <div class="py-6 print:py-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             <div class="">

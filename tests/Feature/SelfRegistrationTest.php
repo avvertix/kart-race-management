@@ -186,6 +186,8 @@ class SelfRegistrationTest extends TestCase
         $response = $this
             ->get(route('registration.show', $participant));
 
-        $response->assertUnauthorized();
+        $response->assertForbidden();
+
+        $response->assertViewIs('errors.participant-link-invalid');
     }
 }

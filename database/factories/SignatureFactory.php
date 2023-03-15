@@ -17,7 +17,9 @@ class SignatureFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'signature' => fake()->md5(),
+            'signed_by' => null,
+            'signed_at' => now()->subHour(2),
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\RegisterParticipant;
 use App\Categories\Category;
+use App\Exceptions\InvalidParticipantSignatureException;
 use App\Models\Competitor;
 use App\Models\CompetitorLicence;
 use App\Models\Driver;
@@ -75,9 +76,7 @@ class RaceRegistrationController extends Controller
      */
     public function show(Participant $registration, Request $request)
     {
-        if (! $request->hasValidSignature()) {
-            abort(401, __('We cannot verify your identity, please follow the URL in the email.'));
-        }
+        throw_unless($request->hasValidSignature(), InvalidParticipantSignatureException::class);
 
         $registration
             ->load(['race', 'championship', 'signatures']);

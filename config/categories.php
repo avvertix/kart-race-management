@@ -18,27 +18,27 @@ return [
     'default' => [
 
         '60 MINI SM' => [
-            'name' => '60 Mini SM', // MINIKART
+            'name' => 'Minikart',
             'description' => 'with engine approval 2010-2022 (green control unit)',
             'tires' => 'VEGA_MINI',
         ],
         
         '60 MINI GR3' => [
-            'name' => '60 Mini Group 3',
+            'name' => 'Mini GR.3',
             'tires' => 'MG_SC',
         ],
         
         '60 MINI GR3 UNDER 10' => [
-            'name' => '60 Mini Group 3 under 10',
+            'name' => 'Mini GR.3 Under 10',
             'tires' => 'MG_SC',
         ],
         
-        '60 MINI MK' => [
-            // non c'è più e fa parte della territoriale
-            'name' => '60 Mini Kart',
-            'description' => 'with engine approval 2010-2014',
-            'tires' => 'VEGA_MINI',
-        ],
+        // '60 MINI MK' => [
+        //     // Deprecated category, all drivers to be moved under 60 Mini Territorial
+        //     'name' => '60 Mini Kart',
+        //     'description' => 'with engine approval 2010-2014',
+        //     'tires' => 'VEGA_MINI',
+        // ],
         
         '60 MINI TDM ROK' => [
             'name' => '60 Mini Rok (TDM)',
@@ -61,7 +61,7 @@ return [
         ],
 
         '60 MINI TERR' => [
-            'name' => '60 Mini Territorial',
+            'name' => '60cc Territorial',
             'description' => 'For all engine trophies (e.g. X30, Rok, ...)',
             'tires' => 'VEGA_MINI',
         ],

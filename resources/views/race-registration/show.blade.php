@@ -98,7 +98,7 @@
                     <div class="prose prose-zinc">
                         <ul>
                             @foreach ($participant->payments as $item)
-                                <li><a href="{{ $item->downloadUrl }}" target="_blank">Receipt uploaded on <x-time :value="$item->created_at" /></a></li>
+                                <li><a href="{{ $item->downloadUrl }}" target="_blank">{{ __('Receipt uploaded on') }} <x-time :value="$item->created_at" /></a></li>
                             @endforeach
                         </ul>
                     </div>
@@ -110,7 +110,7 @@
                 <p class="text-xl font-bold flex gap-2 items-center">
                     3. {{ __('Tires and transponder') }}
                 </p>
-                <p class="prose prose-zinc">{{ __('Go to the race secretary and pick tires and transponder.') }}</p>
+                <p class="prose prose-zinc">{{ __('Go to the race secretary and pick tires and/or transponder.') }}</p>
             </div>
 
         </div>

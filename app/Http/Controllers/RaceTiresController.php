@@ -53,6 +53,7 @@ class RaceTiresController extends Controller
 
         $participants = $race->participants()
             ->withCount('tires')
+            ->withCount('signatures')
             ->has('tires')
             ->orderBy('bib', 'asc')
             ->get();

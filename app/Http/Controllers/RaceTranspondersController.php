@@ -29,7 +29,6 @@ class RaceTranspondersController extends Controller
 
         $participants = $race->participants()
             ->withCount('transponders')
-            ->has('transponders')
             ->with('transponders')
             ->select('participants.*')
             ->join('transponders', 'transponders.participant_id', '=', 'participants.id')

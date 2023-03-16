@@ -1,5 +1,5 @@
 
-FROM klinktech/k-box-ci-pipeline-php:8.1 AS builder
+FROM klinktechnology/k-box-ci-pipeline-php:8.1 AS builder
 
 COPY --chown=php:php . /var/www/html
 RUN \

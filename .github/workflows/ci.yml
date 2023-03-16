@@ -12,7 +12,7 @@ jobs:
     name: Tests PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     container: 
-      image: klinktech/k-box-ci-pipeline-php:${{ matrix.php }}
+      image: klinktechnology/k-box-ci-pipeline-php:${{ matrix.php }}
       options: --user root 
 
     services:

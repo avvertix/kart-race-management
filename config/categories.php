@@ -18,8 +18,8 @@ return [
     'default' => [
 
         '60 MINI SM' => [
-            'name' => '60 Mini SM',
-            'description' => 'with engine approval 2015-2022 (green control unit)',
+            'name' => '60 Mini SM', // MINIKART
+            'description' => 'with engine approval 2010-2022 (green control unit)',
             'tires' => 'VEGA_MINI',
         ],
         
@@ -34,6 +34,7 @@ return [
         ],
         
         '60 MINI MK' => [
+            // non c'è più e fa parte della territoriale
             'name' => '60 Mini Kart',
             'description' => 'with engine approval 2010-2014',
             'tires' => 'VEGA_MINI',

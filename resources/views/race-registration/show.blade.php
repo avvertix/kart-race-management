@@ -30,8 +30,8 @@
                 
                 @unless ($participant->hasSignedTheRequest())
                 
-                    <p class="prose">{{ __('We sent an email to :driver_email with a link to confirm your identity.', ['driver_email' => $participant->email])}} {{ __('The link is valid for :hours hours.', ['hours' => 12]) }}</p>
-                    <p class="prose">{{ __('Please confirm it as it replaces your handwritten signature.') }}</p>
+                    <p class="prose prose-zinc">{{ __('We sent an email to :driver_email with a link to confirm your identity.', ['driver_email' => $participant->email])}} {{ __('The link is valid for :hours hours.', ['hours' => 12]) }}</p>
+                    <p class="prose prose-zinc">{{ __('Please confirm it as it replaces your handwritten signature.') }}</p>
 
                     @if (session('status') == 'verification-link-sent')
                         <div class="mb-4 font-medium text-sm text-green-700 border border-green-400">
@@ -60,7 +60,7 @@
                         
                         {{ __('Thanks for signing the participation request.')}}
                     </p>
-                    <p class="prose">{{ __('We sent an email to :driver_email with a link to confirm your identity.', ['driver_email' => $participant->email])}}</p>
+                    <p class="prose prose-zinc">{{ __('We sent an email to :driver_email with a link to confirm your identity.', ['driver_email' => $participant->email])}}</p>
                     
                 @endunless
 
@@ -70,24 +70,47 @@
                 <p class="text-xl font-bold flex gap-2 items-center">
                     2. {{ __('Payment') }}
                 </p>
-                <p class="prose">{{ __('Pay the participation cost using a bank transfer (details below) and upload the picture/pdf with the transfer receipt.') }}</p>
-                
-                <form method="POST" action="#">
-                    @csrf
-    
-                    <p>
-                        <x-jet-button type="submit">
-                            {{ __('Submit payment receipt') }}
-                        </x-jet-button>
+
+                @unless ($participant->payments->isEmpty())
+                    <p class="flex gap-2 rounded-md text-sm text-green-700 border border-green-400 bg-green-50 px-2 py-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                        </svg>
+                        
+                        {{ __('Payment proof uploaded.')}}
                     </p>
-                </form>
+                @endunless
+
+                <p class="prose prose-zinc">{{ __('Pay the participation cost using a bank transfer (details below) and upload the picture/pdf with the transfer receipt.') }}</p>
+
+                @if (session('status') == 'payment-uploaded')
+                    <div class="mb-4 font-medium text-sm text-green-700 border border-green-400">
+                        {{ __('Thanks for uploading the payment receipt.') }}
+                    </div>
+                @endif
+                
+                @if ($participant->payments->isEmpty())
+                    
+                    @include('race-registration.partials.payment-upload-form')
+
+                @else
+
+                    <div class="prose prose-zinc">
+                        <ul>
+                            @foreach ($participant->payments as $item)
+                                <li><a href="{{ $item->downloadUrl }}" target="_blank">Receipt uploaded on <x-time :value="$item->created_at" /></a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                            
+                @endif
             </div>
             
             <div class="space-y-2">
                 <p class="text-xl font-bold flex gap-2 items-center">
                     3. {{ __('Tires and transponder') }}
                 </p>
-                <p class="prose">{{ __('Go to the race secretary and pick tires and transponder.') }}</p>
+                <p class="prose prose-zinc">{{ __('Go to the race secretary and pick tires and transponder.') }}</p>
             </div>
 
         </div>
@@ -121,7 +144,13 @@
                         <br>{{ config('races.organizer.bank') }}
                         <br><span class="font-mono">{{ config('races.organizer.bank_account') }}</span>
                     </p>
-                    <p>{{ __('Once paid send the bank transfer receipt to :email', ['email' => config('races.organizer.email')]) }}</p>
+                    
+                    @if ($participant->payments->isEmpty())
+                        <p>{{ __('Once paid upload the bank transfer receipt') }}</p>
+                    
+                        @include('race-registration.partials.payment-upload-form')
+                    
+                    @endif
                 </div>
             </div>
         </div>

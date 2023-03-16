@@ -79,7 +79,7 @@ class RaceRegistrationController extends Controller
         throw_unless($request->hasValidSignature(), InvalidParticipantSignatureException::class);
 
         $registration
-            ->load(['race', 'championship', 'signatures']);
+            ->load(['race', 'championship', 'signatures', 'payments']);
 
         return view('race-registration.show', [
             'race' => $registration->race,

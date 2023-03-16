@@ -5,6 +5,7 @@ use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
 use App\Http\Controllers\ParticipantTransponderController;
@@ -84,10 +85,17 @@ Route::middleware([
 
 Route::resource('races.registration', RaceRegistrationController::class)->only(['show', 'create', 'store'])->shallow();
 
-// TODO: protect with a rate limit
 Route::post('registration-verification', [ParticipantSignatureNotificationController::class, 'store'])
     ->name('registration-verification.send')
     ->middleware(['signed', 'throttle:3,10']);
+
+Route::post('payment-verification', [ParticipantPaymentController::class, 'store'])
+    ->name('payment-verification.store')
+    ->middleware(['signed', 'throttle:3,10']);
+
+Route::get('payment-verification/{payment}', [ParticipantPaymentController::class, 'show'])
+    ->name('payment-verification.show')
+    ->middleware(['signed']);
 
 // Signature for registration
 

@@ -131,6 +131,14 @@ class Participant extends Model implements HasLocalePreference
     {
         return $this->hasMany(Signature::class);
     }
+
+    /**
+     * Get the payment proofs linked to the participation
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
     
     /**
      * Get the tires assigned to the participant

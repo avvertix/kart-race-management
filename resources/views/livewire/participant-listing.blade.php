@@ -20,7 +20,7 @@
             @if ($selectedParticipant && $selectedParticipant === $item->getKey())
                 <tr class="relative">
                     <td colspan="5" class="px-3 py-4 space-y-2 border-2 border-orange-300">
-                    @include('participant.partials.expanded-details')
+                        @include('participant.partials.expanded-details')
                     </td>
                 </tr>
                 

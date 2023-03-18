@@ -195,7 +195,15 @@
 </div>
 
 @can('update', $item)
-    <div class="mt-6">
-        <p class="font-bold md:col-span-2">{{ __('Participant id') }} <span class="font-mono">{{ $item->getKey() }}</span></p>
+    <div class="mt-6 flex gap-2 items-baseline">
+        <p class="font-bold">
+            {{ __('Participant id') }} <span class="font-mono">{{ $item->getKey() }}</span>
+        </p>
+
+        <form wire:submit.prevent="resendSignatureNotification({{ $item->getKey() }})">
+            <x-jet-button type="submit" class="">
+                {{ __('Resend Verification Email') }}
+            </x-jet-button>
+        </form>    
     </div>
 @endcan

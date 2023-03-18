@@ -45,6 +45,18 @@ class ParticipantListing extends Component
         // TODO: add some validation and/or an action to be reused
         Participant::findOrFail($item)->update(['registration_completed_at' => now()]);
     }
+    
+    public function resendSignatureNotification($item)
+    {
+        // TODO: add some validation and/or an action to be reused
+        $participant = Participant::findOrFail($item);
+
+        if($participant->hasSignedTheRequest()){
+            return;
+        }
+
+        $participant->sendConfirmParticipantNotification();
+    }
 
     public function render()
     {

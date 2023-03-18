@@ -184,8 +184,8 @@ class RegisterParticipant
     {
         return [[
             'chassis_manufacturer' => $input['vehicle_chassis_manufacturer'] ?? null,
-            'engine_manufacturer' => $input['vehicle_engine_manufacturer'] ?? null,
-            'engine_model' => $input['vehicle_engine_model'] ?? null,
+            'engine_manufacturer' => strtolower($input['vehicle_engine_manufacturer'] ?? ''),
+            'engine_model' => strtolower($input['vehicle_engine_model'] ?? ''),
             'oil_manufacturer' => $input['vehicle_oil_manufacturer'] ?? null,
             'oil_type' => $input['vehicle_oil_type'] ?? null,
             'oil_percentage' => $input['vehicle_oil_percentage'] ?? null,

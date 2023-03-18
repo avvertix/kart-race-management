@@ -131,8 +131,8 @@ class RaceParticipantTest extends TestCase
         $this->assertCount(1, $participant->vehicles);
 
         $this->assertEquals('Chassis', $participant->vehicles[0]['chassis_manufacturer']);
-        $this->assertEquals('Engine Manufacturer', $participant->vehicles[0]['engine_manufacturer']);
-        $this->assertEquals('Engine Model', $participant->vehicles[0]['engine_model']);
+        $this->assertEquals('engine manufacturer', $participant->vehicles[0]['engine_manufacturer']);
+        $this->assertEquals('engine model', $participant->vehicles[0]['engine_model']);
         $this->assertEquals('Oil Manufacturer', $participant->vehicles[0]['oil_manufacturer']);
         $this->assertEquals('Oil Type', $participant->vehicles[0]['oil_type']);
         $this->assertEquals('4', $participant->vehicles[0]['oil_percentage']);
@@ -233,8 +233,8 @@ class RaceParticipantTest extends TestCase
         $this->assertTrue($participant->use_bonus);
 
         $this->assertEquals('Chassis', $participant->vehicles[0]['chassis_manufacturer']);
-        $this->assertEquals('Engine Manufacturer', $participant->vehicles[0]['engine_manufacturer']);
-        $this->assertEquals('Engine Model', $participant->vehicles[0]['engine_model']);
+        $this->assertEquals('engine manufacturer', $participant->vehicles[0]['engine_manufacturer']);
+        $this->assertEquals('engine model', $participant->vehicles[0]['engine_model']);
         $this->assertEquals('Oil Manufacturer', $participant->vehicles[0]['oil_manufacturer']);
         $this->assertEquals('Oil Type', $participant->vehicles[0]['oil_type']);
         $this->assertEquals('4', $participant->vehicles[0]['oil_percentage']);

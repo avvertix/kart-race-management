@@ -28,7 +28,7 @@
                         </article>
                     @empty
                         <article class="p-4 shadow-lg bg-white rounded-md ring-2 ring-orange-300 ">
-                            <p class="text-zinc-700 mb-1">{{ __('No race currently available for registration. Race registration opens 7 days before the race.') }}</p>
+                            <p class="text-zinc-700 mb-1">{{ __('No race currently available for registration. Race registration opens 6 days before the race.') }}</p>
                         </article>
                     @endforelse
                 </div>

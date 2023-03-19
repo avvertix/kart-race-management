@@ -47,6 +47,85 @@ class RaceParticipantTest extends TestCase
         ]);
     }
 
+    
+    public function test_registration_form_loads()
+    {
+        $this->setAvailableCategories();
+
+        $user = User::factory()->racemanager()->create();
+
+        $race = Race::factory()->create();
+        
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.participants.create', $race));
+
+        $response->assertOk();
+
+        $response->assertViewHas('race', $race);
+        
+        $response->assertViewHas('categories');
+
+    }
+    
+    public function test_template_participant_included_when_race_within_same_championship()
+    {
+        $this->setAvailableCategories();
+
+        $user = User::factory()->racemanager()->create();
+
+        $race = Race::factory()->create();
+
+        $existingParticipant = Participant::factory()->create([
+            'bib' => 100,
+            'championship_id' => $race->championship_id,
+            'race_id' => $race->getKey(),
+        ]);
+        
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.participants.create', $race).'?from=' . $existingParticipant->uuid);
+
+        $response->assertOk();
+
+        $response->assertViewHas('race', $race);
+        
+        $response->assertViewHas('categories');
+
+        $response->assertViewHas('participant', $existingParticipant);
+
+    }
+    
+    public function test_template_participant_ignored_if_from_other_championship()
+    {
+        $this->setAvailableCategories();
+
+        $user = User::factory()->racemanager()->create();
+
+        $race = Race::factory()->create();
+        
+        $otherRace = Race::factory()->create();
+
+        $existingParticipant = Participant::factory()->create([
+            'bib' => 100,
+            'championship_id' => $otherRace->championship_id,
+            'race_id' => $otherRace->getKey(),
+        ]);
+        
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.participants.create', ['race' => $race, 'from' => $existingParticipant->uuid]));
+
+        $response->assertOk();
+
+        $response->assertViewHas('race', $race);
+        
+        $response->assertViewHas('categories');
+
+        $response->assertViewHas('participant', null);
+
+    }
+
     public function test_participant_can_be_registered()
     {
         Notification::fake();

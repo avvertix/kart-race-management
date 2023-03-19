@@ -1,10 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
-            <span><a href="{{ route('races.show', $race) }}">{{ $race->title }}</a></span>
-            <span>/</span>
-            <span>{{ __('Add new participant') }}</span>
-        </h2>
+        <div class="flex justify-between items-center">
+
+            <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
+                <span><a href="{{ route('races.show', $race) }}">{{ $race->title }}</a></span>
+                <span>/</span>
+                <span>{{ __('Add new participant') }}</span>
+            </h2>
+
+            <div class="w-1/3">
+                <livewire:participant-selector :race="$race" />
+            </div>
+
+        </div>
     </x-slot>
 
 

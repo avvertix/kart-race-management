@@ -49,13 +49,37 @@ class RaceParticipantController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function create(Race $race)
+    public function create(Race $race, Request $request)
     {
+
+        $templateParticipant = null;
+
+        try {
+            $validated = $this->validate($request, [
+                'from' => [
+                    'sometimes', 
+                    'nullable', 
+                    'string', 
+                    Rule::exists('participants', 'uuid')->where(function ($query) use ($race) {
+                        return $query->where('championship_id', $race->championship_id);
+                    }),
+                ]
+            ]);
+
+            $templateParticipant = ($validated['from'] ?? false) ? Participant::whereUuid($validated['from'])->first() : null;
+
+        } catch (ValidationException $th) {
+
+        }
+
+
         return view('participant.create', [
             'race' => $race,
             'categories' => Category::all(),
+            'participant' => $templateParticipant,
         ]);
     }
 

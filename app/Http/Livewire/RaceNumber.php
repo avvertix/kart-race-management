@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Livewire;
+
+use App\Actions\GenerateRaceNumber;
+use App\Models\Generators\RaceNumberGenerator;
+use Livewire\Component;
+
+class RaceNumber extends Component
+{
+    
+    public $value;
+    
+    public $championship;
+
+    public $suggestions = [];
+
+    public function select($value)
+    {
+        $this->value = $value;
+    }
+
+    public function render(GenerateRaceNumber $generateRaceNumber)
+    {
+        $this->suggestions = $generateRaceNumber($this->championship);
+
+        return view('livewire.race-number');
+    }
+}

@@ -16,9 +16,7 @@
         <div class="px-4 py-5">
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-4">
-                    <x-jet-label for="bib" value="{{ __('Number') }}*" />
-                    <x-jet-input id="bib" type="number" name="bib" class="mt-1 block w-full" :value="old('bib', optional($participant ?? null)->bib)"  autofocus />
-                    <x-jet-input-error for="bib" class="mt-2" />
+                    <livewire:race-number :championship="$race->championship" :value="old('bib', optional($participant ?? null)->bib)" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-jet-label for="category" value="{{ __('Category') }}*" />

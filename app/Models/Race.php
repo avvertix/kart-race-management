@@ -165,7 +165,7 @@ class Race extends Model
         $now = now();
 
         return $query
-            ->where('event_start_at', '<=', $now)
+            ->where('registration_closes_at', '<=', $now)
             ->where('event_end_at', '>=', $now);
     }
     

@@ -23,7 +23,9 @@ class HighlightedRaces extends Component
             ->when($championship->exists, function($query, $state) use ($championship){
                 $query->where('championship_id', $championship->getKey());
             })
-            ->withRegistrationOpen()
+            ->orWhere(function (Builder $query) {
+                $query->withRegistrationOpen();
+            })
             ->orWhere(function (Builder $query) {
                 $query->active();
             })

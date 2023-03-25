@@ -29,8 +29,8 @@ class HighlightedRacesTest extends TestCase
                     'registration_opens_at' => Carbon::parse('2022-12-29 09:00'), 'registration_closes_at' => Carbon::parse('2022-12-29 23:00'),
                 ],
                 [
-                    'event_start_at' => Carbon::parse('2022-12-30 00:00'), 'event_end_at' => Carbon::parse('2022-12-30 23:59'),
-                    'registration_opens_at' => Carbon::parse('2022-12-29 09:00'), 'registration_closes_at' => Carbon::parse('2022-12-29 23:00'),
+                    'event_start_at' => Carbon::parse('2022-12-30 09:00'), 'event_end_at' => Carbon::parse('2022-12-30 23:59'),
+                    'registration_opens_at' => Carbon::parse('2022-12-29 11:00'), 'registration_closes_at' => Carbon::parse('2022-12-30 08:00'),
                 ],
             ))
             ->create();
@@ -42,7 +42,7 @@ class HighlightedRacesTest extends TestCase
     {
         $races = $this->createRaces();
 
-        $this->travelTo(Carbon::parse('2022-12-29 10:00'));
+        $this->travelTo(Carbon::parse('2022-12-29 12:00'));
 
         $view = $this->component(HighlightedRaces::class);
         

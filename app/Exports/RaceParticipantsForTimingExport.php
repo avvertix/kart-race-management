@@ -97,7 +97,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
 
         return [
             $participant->bib,
-            $participant->category,
+            $participant->category()->get('timekeeper_label', $participant->category),
             strtoupper($participant->first_name),
             strtoupper($participant->last_name),
             $registration_identifier, 
@@ -107,7 +107,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
             "",
             "",
             "",
-            "",
+            $this->race->event_start_at->toDateString(),
             $participant->licence_type->localizedName(),
             $engine_mapping[strtolower($vehicle['engine_manufacturer'])] ?? strtoupper($vehicle['engine_manufacturer']),
             strtoupper($vehicle['engine_model']),

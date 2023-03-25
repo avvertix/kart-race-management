@@ -129,67 +129,67 @@ return [
         '125 SENIOR TDM ROK' => [
             'name' => '125 Senior Rok (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM SUPEROK' => [
             'name' => '125 Senior Superok (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM ROTAX MAX' => [
             'name' => '125 Senior Rotax Max (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM BMB' => [
             'name' => '125 Senior BMB (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM X30' => [
             'name' => '125 Senior X30 (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM SHIFTER ROK' => [
             'name' => '125 Senior Shifter Rok (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM KGP SHIFTER' => [
             'name' => '125 Senior KGP Shifter (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM X30 SUPER SHIFTER' => [
             'name' => '125 Senior X30 Super Shifter (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM KGP DIRECT DRIVE' => [
             'name' => '125 Senior KGP Direct Drive (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM ROTAX DD2' => [
             'name' => '125 Senior Rotax DD2 (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
 
         '125 SENIOR TDM X30 SUPER' => [
             'name' => '125 Senior X30 Super (TDM)',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 TAG SENIOR TER',
+            'timekeeper_label' => '125 TAG SENIOR TERR',
         ],
         
         '125 MASTER TERR' => [

@@ -81,15 +81,15 @@ return [
         ],
         
         '125 JUNIOR OK' => [
-            'name' => '125 Junior OK',
+            'name' => '125 OK Junior',
             'tires' => 'VEGA_XH3',
-            'timekeeper_label' => '125 JUNIOR OK',
+            'timekeeper_label' => '125 OK JUNIOR',
         ],
         
         '125 JUNIOR OK-N' => [
-            'name' => '125 Junior OK-N',
+            'name' => '125 OK-N Junior',
             'tires' => 'VEGA_XH3',
-            'timekeeper_label' => '125 JUNIOR OK-N',
+            'timekeeper_label' => '125 OK-N JUNIOR',
         ],
         
         '125 JUNIOR TDM ROK' => [
@@ -115,15 +115,15 @@ return [
         ],
         
         '125 SENIOR OK' => [
-            'name' => '125 Senior OK',
+            'name' => '125 OK Senior',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 SENIOR OK',
+            'timekeeper_label' => '125 OK SENIOR',
         ],
         
         '125 SENIOR OK-N' => [
-            'name' => '125 Senior OK-N',
+            'name' => '125 OK-N Senior',
             'tires' => 'VEGA_XH3',
-            'timekeeper_label' => '125 SENIOR OK-N',
+            'timekeeper_label' => '125 OK-N SENIOR',
         ],
 
         '125 SENIOR TDM ROK' => [
@@ -199,9 +199,9 @@ return [
         ],
         
         '125 MASTER OK-N' => [
-            'name' => '125 Master OK-N',
+            'name' => '125 OK-N Master',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 MASTER OK-N',
+            'timekeeper_label' => '125 OK-N MASTER',
         ],
         
         '125 KZ TERR' => [

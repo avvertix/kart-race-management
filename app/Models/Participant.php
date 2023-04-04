@@ -182,6 +182,25 @@ class Participant extends Model implements HasLocalePreference
         return optional($this->category())->tire();
     }
     
+    /**
+     * Filter races available for registration
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearch($query, $terms)
+    {
+        return $query->when($terms, function($query, $search){
+            $query->where(function($query) use($search){
+                $query->where('bib', e($search))
+                    ->orWhere('first_name', 'LIKE', e($search).'%')
+                    ->orWhere('last_name', 'LIKE', e($search).'%')
+                    ->orWhere('driver_licence', hash('sha512', $search))
+                    ->orWhere('competitor_licence', hash('sha512', $search))
+                    ;
+            });
+        });
+    }
 
     public function qrCodeSvg()
     {

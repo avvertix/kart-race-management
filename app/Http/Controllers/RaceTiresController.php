@@ -49,12 +49,18 @@ class RaceTiresController extends Controller
             })
             ->values();
 
+        $search_term = $request->has('tire_search') ? e($request->get('tire_search')) : null;
+        
         // List participants with tires
 
         $participants = $race->participants()
             ->withCount('tires')
             ->withCount('signatures')
             ->has('tires')
+            ->when($search_term, function($query, $search_term){
+                $query->search($search_term)
+                    ->orWhereRelation('tires', 'code', e($search_term));
+            })
             ->orderBy('bib', 'asc')
             ->get();
 
@@ -63,6 +69,7 @@ class RaceTiresController extends Controller
             'championship' => $race->championship,
             'tires' => $tires,
             'participants' => $participants,
+            'search_term' => $search_term,
         ]);
     }
     

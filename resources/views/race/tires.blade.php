@@ -4,8 +4,14 @@
     </x-slot>
 
 
-    <div class="py-6">
+    <div class="">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            <form action="{{ route('races.tires', $race) }}" method="get">
+                <x-search-input id="tire_search" type="text" autofocus placeholder="{{ __('Search tires using bib, name, last name or tire code') }}" name="tire_search" class="block w-full sticky top-0" :value="$search_term" />
+            </form>
+
+            <div class="h-6"></div>
 
             <div class="grid grid-flow-col-dense gap-4">
                 @foreach ($tires as $item)
@@ -16,7 +22,7 @@
                 @endforeach
             </div>
 
-            <div class="h-4"></div>
+            <div class="h-6"></div>
     
     <x-table>
         <x-slot name="head">

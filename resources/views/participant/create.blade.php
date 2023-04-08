@@ -21,8 +21,6 @@
 
             @include('race-registration.partials.participant-limit-banner')
 
-            <x-jet-validation-errors class="mb-4" />
-
             <form method="POST" action="{{ route('races.participants.store', $race) }}">
                 @csrf
 

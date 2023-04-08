@@ -11,6 +11,7 @@
                 <div class="text-lg p-4 bg-white shadow rounded">
                     <p>{{ __('Race registration open until') }}</p>
                     <p class="text-3xl font-black">
+                        <x-time :value="$race->registration_opens_at" :timezone="$race->timezone" /> ▸
                         <x-time :value="$race->registration_closes_at" :timezone="$race->timezone" />
                     </p>
                     <p>{{ __('Race status') }} <x-race-status :value="$race->status" /></p>

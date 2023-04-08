@@ -29,7 +29,7 @@ class RaceRegistrationController extends Controller
      */
     public function create(Race $race)
     {
-        $race->load('championship');
+        $race->load('championship')->loadCount('participants');
 
         return view('race-registration.create', [
             'race' => $race,

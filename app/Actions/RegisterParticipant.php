@@ -87,8 +87,10 @@ class RegisterParticipant
         ])->validate();
 
         try {
+
+            $race->loadCount('participants');
         
-            $participant = Cache::lock("participant:{$validated['bib']}", 10)->block(5, function() use($race, $validated, $user){
+            $participant = Cache::lock($this->getLockKey($race, $validated['bib']), 10)->block(5, function() use($race, $validated, $user){
 
                 $input = array_merge($validated, ['driver_licence_number' => hash('sha512', $validated['driver_licence_number'])]);
 
@@ -106,6 +108,12 @@ class RegisterParticipant
                             ->where(fn ($query) => $query->where('race_id', $race->getKey())),
                     ]
                 ])->validate();
+
+                if($race->hasTotalParticipantLimit() && ($race->participants_count + 1) > $race->getTotalParticipantLimit()){
+                    throw ValidationException::withMessages([
+                        'participants_limit' => __('We reached the maximum allowed participants to this race.')
+                    ]);
+                }
 
                 return $race->participants()->create([
                     'bib' => $validated['bib'],
@@ -169,6 +177,14 @@ class RegisterParticipant
         }
     }
 
+    protected function getLockKey(Race $race, $seed)
+    {
+        if($race->hasTotalParticipantLimit()){
+            return "participant:{$race->uuid}";
+        }
+        
+        return "participant:{$seed}";
+    }
     
     protected function processAddressInput($input, $fieldPrefix)
     {

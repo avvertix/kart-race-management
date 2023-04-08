@@ -53,6 +53,7 @@ class Race extends Model
         'tags' => AsCollection::class,
         'properties' => AsArrayObject::class,
         'hide' => 'boolean',
+        'participant_limits' => AsCollection::class,
     ];
 
     /**
@@ -192,4 +193,15 @@ class Race extends Model
         return $query
             ->where('hide', true);
     }
+
+    public function hasTotalParticipantLimit()
+    {
+        return $this->getTotalParticipantLimit() ?? false;
+    }
+
+    public function getTotalParticipantLimit()
+    {
+        return $this->participant_limits?->get('total');
+    }
+
 }

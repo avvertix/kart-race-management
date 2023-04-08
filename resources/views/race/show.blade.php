@@ -23,6 +23,10 @@
             </div>
 
             <div class="mt-6">
+                @include('race-registration.partials.participant-limit-banner')
+            </div>
+
+            <div class="mt-6">
                 <div class="prose prose-zinc prose-p:mb-0 prose-table:mt-2 w-1/3">
                     <p class="font-bold">{{ __('Participants per category') }}</p>
 

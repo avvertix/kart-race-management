@@ -64,6 +64,11 @@
                                     <x-jet-input id="description" type="text" name="description" class="mt-1 block w-full" autocomplete="description" />
                                     <x-jet-input-error for="description" class="mt-2" />
                                 </div>
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-jet-label for="participants_total_limit" value="{{ __('Maximum number of participants (leave blank for no limit)') }}" />
+                                    <x-jet-input id="participants_total_limit" type="text" name="participants_total_limit" class="mt-1 block w-full" autocomplete="participants_total_limit" />
+                                    <x-jet-input-error for="participants_total_limit" class="mt-2" />
+                                </div>
                             </div>
                         </div>
                 </div>

@@ -29,6 +29,7 @@ class Race extends Model
         'tags',
         'properties',
         'hide',
+        'participant_limits',
     ];
 
     /**
@@ -196,7 +197,9 @@ class Race extends Model
 
     public function hasTotalParticipantLimit()
     {
-        return $this->getTotalParticipantLimit() ?? false;
+        $limit = $this->getTotalParticipantLimit();
+
+        return $limit !== null;
     }
 
     public function getTotalParticipantLimit()

@@ -270,5 +270,6 @@
     "Search tires using bib, name, last name or tire code": "Cerca partecipanti tramite numero gara, nome, cognome e/o codice a barre dello pneumatico",
     "Limited number competition.": "Gara a numero chiuso.",
     "In this race we can only accept a maximum of :total participants.": "In questa gara accettiamo fino ad un massimo di :total partecipanti.",
-    "We reached the maximum allowed participants to this race.": "Abbiamo raggiunto il limite di partecipanti per questa gara."
+    "We reached the maximum allowed participants to this race.": "Abbiamo raggiunto il limite di partecipanti per questa gara.",
+    "Maximum number of participants (leave blank for no limit)": "Numero di massimo di partecipanti ammessi (non inserire niente per non limitare)"
 }

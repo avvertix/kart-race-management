@@ -90,6 +90,7 @@ class RaceController extends Controller
             'description' => 'nullable|string|max:1000',
             'track' => 'required|string|max:250',
             'hidden' => 'nullable|in:true,false',
+            'participants_total_limit' => 'nullable|integer|min:1',
         ]);
 
         $configuredStartTime = config('races.start_time');
@@ -111,6 +112,7 @@ class RaceController extends Controller
             'registration_opens_at' => $utc_start_date->copy()->subHours(config('races.registration.opens')),
             'registration_closes_at' => $utc_start_date->copy()->subHours(config('races.registration.closes')),
             'hide' => ($validated['hidden'] ?? '') === 'true' ? true : false,
+            'participant_limits' => $validated['participants_total_limit'] ? ($race->participant_limits ?? collect())->merge(['total' => $validated['participants_total_limit']]) : null,
         ]);
 
         return to_route('races.show', $race)

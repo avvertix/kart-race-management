@@ -57,6 +57,8 @@ class RaceParticipantController extends Controller
 
         $templateParticipant = null;
 
+        $race->load('championship')->loadCount('participants');
+
         try {
             $validated = $this->validate($request, [
                 'from' => [

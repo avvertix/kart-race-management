@@ -7,6 +7,7 @@ use App\Models\Race;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Tests\CreateCompetitor;
@@ -42,6 +43,73 @@ class SelfRegistrationTest extends TestCase
     }
 
     
+
+    public function test_registration_form_loads()
+    {        
+        $this->setAvailableCategories();
+
+        $race = Race::factory()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertSee("Register for {$race->name}");
+        $response->assertSee("Race number and category");
+        $response->assertSee("Driver");
+        $response->assertSee("Competitor");
+        $response->assertSee("Mechanic");
+        $response->assertSee("Vehicle");
+        $response->assertSee("Bonus");
+        $response->assertSee("Consents");
+        $response->assertSee("Rules");
+        $response->assertSee("Participation price");
+    }
+
+    public function test_participant_limit_message_visible_on_registration_form()
+    {        
+        $this->setAvailableCategories();
+
+        $race = Race::factory()->withTotalParticipantLimit()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertSee("Limited number competition");
+        $response->assertSee("In this race we can only accept a maximum of 10 participants.");
+    }
+
+    public function test_participant_limit_reached_message_visible_on_registration_form()
+    {        
+        $this->setAvailableCategories();
+
+        $race = Race::factory()
+            ->withTotalParticipantLimit(1)
+            ->has(Participant::factory(), 'participants')
+            ->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertSee("We reached the maximum allowed participants to this race.");
+    }
 
     public function test_participant_can_self_register()
     {
@@ -95,6 +163,103 @@ class SelfRegistrationTest extends TestCase
         Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
             return $notification->target === 'competitor';
         });
+    }
+
+    public function test_last_participant_can_self_register()
+    {
+        Notification::fake();
+        
+        $this->setAvailableCategories();
+
+        $race = Race::factory()
+            ->withTotalParticipantLimit(2)
+            ->has(Participant::factory(), 'participants')
+            ->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 100,
+                'category' => 'category_key',
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+        $participant = Participant::latest()->first();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('en', $participant->locale);
+
+        $response->assertRedirectToSignedRoute('registration.show', [
+            'registration' => $participant,
+            'p' => $participant->signatureContent()
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $response->assertSessionHas('flash.banner', 'Race registration recorded. Please confirm it using the link sent in the email.');
+
+        Notification::assertCount(2);
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'driver';
+        });
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'competitor';
+        });
+    }
+    
+    public function test_participant_cannot_register_if_limit_is_reached()
+    {
+        Notification::fake();
+        
+        $this->setAvailableCategories();
+
+        $race = Race::factory()
+            ->withTotalParticipantLimit(1)
+            ->has(Participant::factory(), 'participants')
+            ->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 100,
+                'category' => 'category_key',
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+
+        $response->assertRedirectToRoute('races.registration.create', $race);
+
+        $response->assertSessionHasErrors([
+            'participants_limit' => 'We reached the maximum allowed participants to this race.',
+        ]);
+
+        $this->assertEquals(1, $race->participants()->count());
+
+        Notification::assertNothingSent();
     }
 
     public function test_participant_preferred_language_saved()

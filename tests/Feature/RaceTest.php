@@ -76,6 +76,37 @@ class RaceTest extends TestCase
         $this->assertEquals(Carbon::parse('2023-03-05 08:00:00', config('races.timezone'))->setTimezone(config('app.timezone'))->toDateTimeString(), $race->registration_closes_at->toDateTimeString());
     }
 
+    public function test_new_race_with_participant_limit_can_be_created()
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()->create();
+
+        $this->travelTo(Carbon::parse('2023-03-04'));
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.races.create', $championship))
+            ->post(route('championships.races.store', $championship), [
+                'start' => '2023-03-05',
+                'end' => '2023-03-05',
+                'track' => 'Franciacorta',
+                'title' => 'First Race',
+                'description' => 'a little description',
+                'participants_total_limit' => 10,
+            ]);
+        
+        $this->travelBack();
+
+        $response->assertSessionHasNoErrors();
+
+        $race = Race::first();
+
+        $this->assertInstanceOf(Race::class, $race);
+        $this->assertTrue($race->hasTotalParticipantLimit());
+        $this->assertEquals(10, $race->getTotalParticipantLimit());
+    }
+
     public function test_race_can_be_updated()
     {
         $user = User::factory()->organizer()->create();
@@ -93,6 +124,7 @@ class RaceTest extends TestCase
                 'track' => 'Franciacorta',
                 'title' => 'First Updated Race',
                 'description' => 'a little description',
+                'participants_total_limit' => 10,
             ]);
         
         $this->travelBack();
@@ -114,6 +146,8 @@ class RaceTest extends TestCase
         $this->assertEquals(Carbon::parse('2023-03-05 18:00:00', config('races.timezone'))->setTimezone(config('app.timezone'))->toDateTimeString(), $race->event_end_at->toDateTimeString());
         $this->assertEquals(Carbon::parse('2023-02-26 09:00:00', config('races.timezone'))->setTimezone(config('app.timezone'))->toDateTimeString(), $race->registration_opens_at->toDateTimeString());
         $this->assertEquals(Carbon::parse('2023-03-05 08:00:00', config('races.timezone'))->setTimezone(config('app.timezone'))->toDateTimeString(), $race->registration_closes_at->toDateTimeString());
+        $this->assertTrue($race->hasTotalParticipantLimit());
+        $this->assertEquals(10, $race->getTotalParticipantLimit());
     }
 
 }

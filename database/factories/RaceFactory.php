@@ -35,4 +35,21 @@ class RaceFactory extends Factory
             'championship_id' => Championship::factory(),
         ];
     }
+
+
+    /**
+     * Indicate that the race allows a maximum number of overall participants.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function withTotalParticipantLimit($limit = 10)
+    {
+        return $this->state(function (array $attributes) use ($limit) {
+            return [
+                'participant_limits' => [
+                    'total' => $limit,
+                ],
+            ];
+        });
+    }
 }

@@ -21,7 +21,7 @@ return [
             'name' => 'Minikart',
             'description' => 'with engine approval 2010-2022 (green control unit)',
             'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'MINIKART',
+            'timekeeper_label' => 'MINIKART TERRITORIALE',
         ],
         
         '60 MINI GR3' => [
@@ -46,32 +46,32 @@ return [
         '60 MINI TDM ROK' => [
             'name' => '60 Mini Rok (TDM)',
             'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'MINI Territoriali',
+            'timekeeper_label' => 'MINIKART TERRITORIALE',
         ],
         
         '60 MINI TDM EASY' => [
             'name' => '60 Easy (TDM)',
             'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'MINI Territoriali',
+            'timekeeper_label' => 'MINIKART TERRITORIALE',
         ],
         
         '60 MINI TDM FR ROTAX' => [
             'name' => '60 Mini FR Rotax (TDM)',
             'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'MINI Territoriali',
+            'timekeeper_label' => 'MINIKART TERRITORIALE',
         ],
         
         '60 MINI TDM X30' => [
             'name' => '60 Mini X30 (TDM)',
             'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'MINI Territoriali',
+            'timekeeper_label' => 'MINIKART TERRITORIALE',
         ],
 
         '60 MINI TERR' => [
             'name' => '60cc Territorial',
             'description' => 'For all engine trophies (e.g. X30, Rok, ...)',
             'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'MINI Territoriali',
+            'timekeeper_label' => 'MINIKART TERRITORIALE',
         ],
         
         '125 JUNIOR TERR' => [
@@ -266,12 +266,12 @@ return [
         '125 LEGEND AIR' => [
             'name' => '125 Legend Aria',
             'tires' => 'VEGA_SL4',
-            'timekeeper_label' => '125 LEGEND AIR',
+            'timekeeper_label' => '125 LEGEND',
         ],
         '125 LEGEND WATER' => [
             'name' => '125 Legend Acqua',
             'tires' => 'VEGA_SL4',
-            'timekeeper_label' => '125 LEGEND WATER',
+            'timekeeper_label' => '125 LEGEND',
         ],
     ]
 

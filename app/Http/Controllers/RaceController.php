@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Championship;
 use App\Models\Race;
+use App\Models\RaceType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class RaceController extends Controller
 {
@@ -91,6 +93,7 @@ class RaceController extends Controller
             'track' => 'required|string|max:250',
             'hidden' => 'nullable|in:true,false',
             'participants_total_limit' => 'nullable|integer|min:1',
+            'race_type' => ['nullable', 'integer', new Enum(RaceType::class)],
         ]);
 
         $configuredStartTime = config('races.start_time');
@@ -113,6 +116,7 @@ class RaceController extends Controller
             'registration_closes_at' => $utc_start_date->copy()->subHours(config('races.registration.closes')),
             'hide' => ($validated['hidden'] ?? '') === 'true' ? true : false,
             'participant_limits' => $validated['participants_total_limit'] ? ($race->participant_limits ?? collect())->merge(['total' => $validated['participants_total_limit']]) : null,
+            'type' => $validated['race_type'] ?? RaceType::LOCAL,
         ]);
 
         return to_route('races.show', $race)

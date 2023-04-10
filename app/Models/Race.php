@@ -30,6 +30,7 @@ class Race extends Model
         'properties',
         'hide',
         'participant_limits',
+        'type',
     ];
 
     /**
@@ -55,6 +56,7 @@ class Race extends Model
         'properties' => AsArrayObject::class,
         'hide' => 'boolean',
         'participant_limits' => AsCollection::class,
+        'type' => RaceType::class,
     ];
 
     /**
@@ -205,6 +207,12 @@ class Race extends Model
     public function getTotalParticipantLimit()
     {
         return $this->participant_limits?->get('total');
+    }
+
+
+    public function isZonal()
+    {
+        return $this->type == RaceType::ZONE;
     }
 
 }

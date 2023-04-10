@@ -385,6 +385,6 @@ class Participant extends Model implements HasLocalePreference
             return __('Out of zone not yet evaluated');
         }
 
-        return $this->properties['out_of_zone'] ? __('The racer is out of zone') : __('The racer is within zone');
+        return $this->properties['out_of_zone'] ? __('Out of zone') : __('Within zone');
     }
 }

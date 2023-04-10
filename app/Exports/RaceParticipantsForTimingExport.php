@@ -106,7 +106,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
             $transponders->skip(1)->last(),
             "",
             "",
-            "",
+            ($this->race->isZonal() && $participant->properties['out_of_zone']) ? __('Out of zone') : "",
             $this->race->event_start_at->toDateString(),
             $participant->licence_type->localizedName(),
             $engine_mapping[strtolower($vehicle['engine_manufacturer'])] ?? strtoupper($vehicle['engine_manufacturer']),

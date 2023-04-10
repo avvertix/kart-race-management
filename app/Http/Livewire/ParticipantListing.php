@@ -23,6 +23,11 @@ class ParticipantListing extends Component
 
     public $search;
 
+    protected $queryString = [
+        'search' => ['except' => '', 'as' => 's'],
+        'selectedParticipant' => ['except' => '', 'as' => 'pid'],
+    ];
+
     public function __construct($race)
     {
         $this->race = $race;
@@ -44,6 +49,12 @@ class ParticipantListing extends Component
     {
         // TODO: add some validation and/or an action to be reused
         Participant::findOrFail($item)->update(['registration_completed_at' => now()]);
+    }
+    
+    public function markAsOutOfZone($item, $outOfZone = true)
+    {
+        // TODO: add some validation and/or an action to be reused
+        Participant::findOrFail($item)->markOutOfZone($outOfZone);
     }
     
     public function resendSignatureNotification($item)

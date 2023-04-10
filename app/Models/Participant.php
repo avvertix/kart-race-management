@@ -86,6 +86,7 @@ class Participant extends Model implements HasLocalePreference
         'registration_completed_at' => 'datetime',
         'consents' => AsArrayObject::class,
         'use_bonus' => 'boolean',
+        'properties' => AsArrayObject::class,
     ];
 
     /**
@@ -361,5 +362,29 @@ class Participant extends Model implements HasLocalePreference
     public function preferredLocale()
     {
         return $this->locale ?? config('app.locale');
+    }
+
+    public function markOutOfZone($outOfZone = true)
+    {
+        $this->properties['out_of_zone'] = $outOfZone;
+        $this->save();
+    }
+    
+    public function wasProcessedForOutOfZone()
+    {
+        if(is_null($this->properties['out_of_zone'] ?? null)){
+            return false;
+        }
+
+        return true;
+    }
+    
+    public function outOfZoneStatus()
+    {
+        if(! $this->wasProcessedForOutOfZone()){
+            return __('Out of zone not yet evaluated');
+        }
+
+        return $this->properties['out_of_zone'] ? __('Out of zone') : __('Within zone');
     }
 }

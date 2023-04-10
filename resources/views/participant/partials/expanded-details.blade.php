@@ -82,14 +82,14 @@
                 @if ($item->wasProcessedForOutOfZone())
                     <p>{{ __('Out of zone status: :status', ['status' => $item->outOfZoneStatus()]) }}</p>
                 @else            
-                    <p>{{ __('Please check if the participant is out of zone and mark it accordingly') }}</p>
+                    <p>{{ __('Please check if the participant is out of zone and mark it accordingly.') }}</p>
                 @endif
             </div>
 
             <div class="flex gap-4">
-                <x-jet-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }}, false)">
+                <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }}, false)">
                     {{ __('Within zone') }}
-                </x-jet-button>
+                </x-jet-secondary-button>
 
                 <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }})">
                     {{ __('Out of zone') }}

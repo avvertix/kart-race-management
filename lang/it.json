@@ -271,5 +271,13 @@
     "Limited number competition.": "Gara a numero chiuso.",
     "In this race we can only accept a maximum of :total participants.": "In questa gara accettiamo fino ad un massimo di :total partecipanti.",
     "We reached the maximum allowed participants to this race.": "Abbiamo raggiunto il limite di partecipanti per questa gara.",
-    "Maximum number of participants (leave blank for no limit)": "Numero di massimo di partecipanti ammessi (non inserire niente per non limitare)"
+    "Maximum number of participants (leave blank for no limit)": "Numero di massimo di partecipanti ammessi (non inserire niente per non limitare)",
+    "This race is part of a zonal championship.": "Questa gara fa parte di un campionato di zona",
+    "Out of zone status: :status": "Stato fuori zona: :status",
+    "Please check if the participant is out of zone and mark it accordingly.": "Controllare se il pilota è fuori zona e indicarlo.",
+    "Out of zone not yet evaluated": "Fuori zona non indicato",
+    "The racer is out of zone": "Il pilota è fuori zona",
+    "The racer is within zone": "Il pilota è in zona",
+    "Within zone": "In zona",
+    "Out of zone": "Fuori zona"
 }

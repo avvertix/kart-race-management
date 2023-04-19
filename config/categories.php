@@ -21,7 +21,7 @@ return [
             'name' => 'Minikart',
             'description' => 'with engine approval 2010-2022 (green control unit)',
             'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'MINIKART TERRITORIALE',
+            'timekeeper_label' => 'MINIKART',
         ],
         
         '60 MINI GR3' => [
@@ -83,7 +83,7 @@ return [
         '125 JUNIOR OK' => [
             'name' => '125 OK Junior',
             'tires' => 'VEGA_XH3',
-            'timekeeper_label' => '125 OK JUNIOR',
+            'timekeeper_label' => '125 OK JUNIOR TERR',
         ],
         
         '125 JUNIOR OK-N' => [
@@ -117,7 +117,7 @@ return [
         '125 SENIOR OK' => [
             'name' => '125 OK Senior',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 OK SENIOR',
+            'timekeeper_label' => '125 OK SENIOR TERR',
         ],
         
         '125 SENIOR OK-N' => [
@@ -199,9 +199,9 @@ return [
         ],
         
         '125 MASTER OK-N' => [
-            'name' => '125 OK-N Master',
+            'name' => '125 OK-N Over 40',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 OK-N MASTER',
+            'timekeeper_label' => '125 OK-N OVER 40',
         ],
         
         '125 KZ TERR' => [

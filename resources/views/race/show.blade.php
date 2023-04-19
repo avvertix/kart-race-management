@@ -27,7 +27,7 @@
                 @include('race-registration.partials.participant-limit-banner')
             </div>
 
-            <div class="mt-6">
+            <div class="mt-6 flex gap-6">
                 <div class="prose prose-zinc prose-p:mb-0 prose-table:mt-2 w-1/3">
                     <p class="font-bold">{{ __('Participants per category') }}</p>
 
@@ -40,7 +40,18 @@
                         @endforeach
                     </table>
                 </div>
-                <div></div>
+                <div class="prose prose-zinc prose-p:mb-0 prose-table:mt-2 w-1/3">
+                    <p class="font-bold">{{ __('Participants per engine manufacturer') }}</p>
+
+                    <table>
+                        @foreach ($participantsPerEngine as $item)
+                            <tr>
+                                <td>{{ $item->engine_manufacturer }}</td>
+                                <td>{{ $item->total }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
             </div>
 
         </div>

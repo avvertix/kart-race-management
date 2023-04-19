@@ -7,6 +7,7 @@ use App\Models\Race;
 use App\Models\RaceType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
@@ -53,12 +54,21 @@ class RaceController extends Controller
             ->selectRaw('category, count(*) as total')
             ->groupBy('category')
             ->get();
+        
+        $participantsPerEngine = DB::query()
+            ->fromRaw("participants, JSON_TABLE(vehicles, '$[*].engine_manufacturer' COLUMNS (engine_manufacturer TEXT PATH '$')) AS jt")
+            ->selectRaw('jt.engine_manufacturer, COUNT(*) AS total')
+            ->groupBy(["jt.engine_manufacturer"])
+            ->whereNotNull('jt.engine_manufacturer')
+            ->orderBy('jt.engine_manufacturer')
+            ->get();
 
         return view('race.show', [
             'race' => $race,
             'championship' => $race->championship,
             'statistics' => $statistics,
             'participantsPerCategory' => $participantsPerCategory,
+            'participantsPerEngine' => $participantsPerEngine,
         ]);
     }
 

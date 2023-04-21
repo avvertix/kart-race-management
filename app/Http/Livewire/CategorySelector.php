@@ -27,7 +27,9 @@ class CategorySelector extends Component
     
     public function render()
     {
-        $this->categories = $this->search ? Category::search($this->search) : Category::all();
+        $this->categories = ($this->search ? Category::search($this->search) : Category::all())->filter(function($category){
+            return $category->get('enabled', true);
+        });
 
 
         return view('livewire.category-selector');

@@ -9,6 +9,7 @@ use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
 use App\Http\Controllers\ParticipantTransponderController;
+use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
@@ -66,6 +67,8 @@ Route::middleware([
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
         
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
+        
+        Route::get('races/{race}/participants/print', PrintRaceParticipantsController::class)->name('races.participants.print');
         
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
         

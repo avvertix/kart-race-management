@@ -60,6 +60,7 @@ class RaceController extends Controller
             ->selectRaw('jt.engine_manufacturer, COUNT(*) AS total')
             ->groupBy(["jt.engine_manufacturer"])
             ->whereNotNull('jt.engine_manufacturer')
+            ->where('race_id', $race->getKey())
             ->orderBy('jt.engine_manufacturer')
             ->get();
 

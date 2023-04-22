@@ -56,7 +56,8 @@ class RaceParticipantsForTimingExportTest extends TestCase
         $race = Race::factory()
             ->create([
                 'event_start_at' => Carbon::parse("2023-02-28"),
-                'title' => 'Race title'
+                'title' => 'Race title',
+                'type' => RaceType::ZONE,
             ]);
         
         $participant = Participant::factory()

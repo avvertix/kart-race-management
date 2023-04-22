@@ -35,7 +35,7 @@
                         @foreach ($participantsPerCategory as $item)
                             <tr>
                                 <td>{{ $item->category()->name }}</td>
-                                <td>{{ $item->total }}</td>
+                                <td class="text-right"><span class="font-bold">{{ $item->total_confirmed }}</span> / {{ $item->total }}</td>
                             </tr>
                         @endforeach
                     </table>

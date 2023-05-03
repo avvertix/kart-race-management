@@ -49,6 +49,7 @@ function startup_config () {
     install_or_update &&
     ensure_permissions_on_folders &&
     activate_supervisor_configuration_files &&
+    run_post_upgrade_processes &&
 	echo "Configuration completed."
 
 }
@@ -109,6 +110,12 @@ function install_or_update() {
     php artisan config:cache
     php artisan route:cache
     php artisan optimize
+}
+
+function run_post_upgrade_processes() {
+    cd ${WORKDIR} || return 242
+
+    php artisan operations:process
 }
 
 function wait_services () {

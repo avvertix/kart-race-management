@@ -14,6 +14,7 @@
         "livewire/livewire": "^2.5",
         "rinvex/countries": "^9.0",
         "spatie/laravel-activitylog": "^4.7",
+        "timokoerber/laravel-one-time-operations": "^1.3",
         "vitorccs/laravel-csv": "^1.0"
     },
     "require-dev": {

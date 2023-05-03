@@ -213,6 +213,7 @@ return [
         
         '125 MASTER TERR' => [
             'name' => '125 Master Territorial',
+            'description' => 'For all engine trophies including TDM (e.g. X30, Rok, Rotax, ...)',
             'tires' => 'MG_SM',
             'timekeeper_label' => '125 MASTER TERR',
         ],

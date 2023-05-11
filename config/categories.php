@@ -88,7 +88,7 @@ return [
         '125 JUNIOR OK' => [
             'name' => '125 OK Junior',
             'tires' => 'VEGA_XH3',
-            'timekeeper_label' => '125 OK JUNIOR TERR',
+            'timekeeper_label' => '125 OK JUNIOR',
         ],
         
         '125 JUNIOR OK-N' => [
@@ -125,7 +125,7 @@ return [
         '125 SENIOR OK' => [
             'name' => '125 OK Senior',
             'tires' => 'MG_SM',
-            'timekeeper_label' => '125 OK SENIOR TERR',
+            'timekeeper_label' => '125 OK SENIOR',
         ],
         
         '125 SENIOR OK-N' => [

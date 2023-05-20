@@ -283,15 +283,20 @@ return [
             'tires' => 'VEGA_SL4',
             'timekeeper_label' => '100 LEGEND',
         ],
-        '125 LEGEND AIR' => [
-            'name' => '125 Legend Aria',
+        '100 LEGEND OVER 40' => [
+            'name' => '100 Legend Over 40',
+            'tires' => 'VEGA_SL4',
+            'timekeeper_label' => '100 LEGEND OVER 40',
+        ],
+        '125 LEGEND' => [
+            'name' => '125 Legend',
             'tires' => 'VEGA_SL4',
             'timekeeper_label' => '125 LEGEND',
         ],
-        '125 LEGEND WATER' => [
-            'name' => '125 Legend Acqua',
+        '125 LEGEND OVER 40' => [
+            'name' => '125 Legend Over 40',
             'tires' => 'VEGA_SL4',
-            'timekeeper_label' => '125 LEGEND',
+            'timekeeper_label' => '125 LEGEND OVER 40',
         ],
     ]
 

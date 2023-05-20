@@ -40,6 +40,8 @@
                         <x-tab-link href="{{ route('championships.show', $championship) }}" :active="request()->routeIs('championships.show', $championship)">{{ __('Details') }}</x-tab-link>
 
                         <x-tab-link href="{{ route('championships.races.index', $championship) }}" :active="request()->routeIs('championships.races.index', $championship)">{{ __('Races') }}</x-tab-link>
+                        
+                        <x-tab-link href="{{ route('championships.participants.index', $championship) }}" :active="request()->routeIs('championships.participants.index', $championship)">{{ __('Participants') }}</x-tab-link>
 
                     </nav>
                 </div>

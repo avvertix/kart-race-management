@@ -156,6 +156,11 @@ class Participant extends Model implements HasLocalePreference
     {
         return $this->hasMany(Transponder::class);
     }
+    
+    public function participationHistory()
+    {
+        return $this->hasMany(Participant::class, 'driver_licence', 'driver_licence')->orderBy('created_at');
+    }
 
 
     public function getEngineAttribute($value = null)
@@ -171,6 +176,11 @@ class Participant extends Model implements HasLocalePreference
     public function getCompetitorEmailAttribute($value = null)
     {
         return $this->competitor['email'] ?? null;
+    }
+    
+    public function getFullNameAttribute($value = null)
+    {
+        return $this->first_name .' '. $this->last_name;
     }
     
     public function category(): Category|null

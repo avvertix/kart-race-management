@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChampionshipController;
+use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
@@ -65,6 +66,8 @@ Route::middleware([
         Route::post('championships/{championship}/races/import', [RaceImportController::class, 'store'])->name('championships.races.import.store');
         
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
+        
+        Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
         
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
         

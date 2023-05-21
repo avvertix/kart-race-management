@@ -81,6 +81,45 @@ class ParticipantFactory extends Factory
         ];
     }
 
+    public function driver($driver)
+    {
+        return $this->state(function (array $attributes) use ($driver) {
+
+            $licenceNumber = fake()->numerify();
+
+            $first_name = fake()->name();
+            $last_name = fake()->lastName();
+
+            return [
+                'bib' => $driver['bib'] ?? fake()->numberBetween(1, 200),
+                'first_name' => $driver['first_name'] ?? $first_name,
+                'last_name' => $driver['last_name'] ?? $last_name,
+                'driver_licence' => hash('sha512', $driver['licence_number'] ?? $licenceNumber),
+                'licence_type' => $driver['licence_type'] ?? DriverLicence::LOCAL_NATIONAL,
+                'driver' => array_merge([
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'licence_type' => DriverLicence::LOCAL_NATIONAL,
+                    'licence_number' => $licenceNumber,
+                    'licence_renewed_at' => null,
+                    'nationality' => 'Italy',
+                    'email' => fake()->email(),
+                    'phone' => fake()->phoneNumber(),
+                    'birth_date' => new Carbon(fake()->dateTimeBetween('-20 years', '-18 years')),
+                    'birth_place' => fake()->city(),
+                    'medical_certificate_expiration_date' => new Carbon(fake()->dateTimeBetween('-2 months', 'today')),
+                    'residence_address' => [
+                        'address' => 'via dei Platani, 40',
+                        'city' => 'Milan',
+                        'province' => 'Milan',
+                        'postal_code' => '20146',
+                    ],
+                    'sex' => Sex::UNSPECIFIED,
+                ], $driver),
+            ];
+        });
+    }
+
 
     /**
      * Indicate that the participant is confirmed.

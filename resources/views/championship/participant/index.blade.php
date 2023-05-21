@@ -19,14 +19,10 @@
             @forelse ($participants as $participant)
 
                 <tr>
-                    <td class="py-4 pl-4 pr-3 text-zinc-900 sm:pl-6">
-
-                        <a href="{{ route('participants.show', $participant) }}"
-                            class=" hover:text-orange-900  font-medium group">
-                            <span class="font-mono text-lg inline-block bg-gray-100 group-hover:bg-orange-200 px-2 py-1 rounded mr-2">{{ $participant->bib }}</span>
-                            {{ $participant->full_name }}
-                        </a>
-                        <span class="font-mono font-bold">{{ $participant->driver['licence_number'] }}</span>
+                    <td class="py-4 pl-4 pr-3 text-zinc-900 sm:pl-6 font-medium">
+                        <span class="font-mono text-lg inline-block bg-gray-100 group-hover:bg-orange-200 px-2 py-1 rounded mr-2">{{ $participant->bib }}</span>
+                        {{ $participant->full_name }}
+                        <span class="text-zinc-600 font-mono font-bold">{{ $participant->driver['licence_number'] }}</span>
                     </td>
                     <td class="px-3 py-4 text-sm text-zinc-500">{{ $participant->participationHistory?->count() ?? '-' }}</td>
                     <td class="px-3 py-4 text-sm text-zinc-500 flex gap-4 overflow-x-auto">

@@ -180,7 +180,7 @@ class Participant extends Model implements HasLocalePreference
     
     public function getFullNameAttribute($value = null)
     {
-        return $this->first_name .' '. $this->last_name;
+        return str()->title($this->first_name .' '. $this->last_name);
     }
     
     public function category(): Category|null

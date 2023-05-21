@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\DB;
 class ChampionshipParticipantController extends Controller
 {
     /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Championship::class, 'championship');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -17,7 +27,6 @@ class ChampionshipParticipantController extends Controller
     public function index(Championship $championship)
     {
 
-        // TODO: performance check
         $subQuery = Participant::where('championship_id', $championship->getKey())
             // ->groupBy('first_name', 'last_name')
             ->groupBy('driver_licence')

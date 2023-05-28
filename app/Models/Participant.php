@@ -213,6 +213,16 @@ class Participant extends Model implements HasLocalePreference
         });
     }
 
+    public function scopeLicenceHash($query, $licence)
+    {
+        return $query->where('driver_licence', $licence);
+    }
+
+    public function scopeLicence($query, $licence)
+    {
+        return $query->where('driver_licence', hash('sha512', $licence));
+    }
+
     public function qrCodeSvg()
     {
         $svg = (new Writer(

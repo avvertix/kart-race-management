@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Notifications\ConfirmParticipantRegistration;
@@ -164,6 +165,63 @@ class SelfRegistrationTest extends TestCase
             return $notification->target === 'competitor';
         });
     }
+
+    
+    public function test_participant_bib_cannot_be_changed_during_championship()
+    {
+        Notification::fake();
+        
+        $this->setAvailableCategories();
+
+        
+        $championship = Championship::factory()
+            ->has(Race::factory()->count(2))
+            ->create();
+
+        $firstRace = $championship->races->first();
+        $race = $championship->races->last();
+        
+        $participationToFirstRace = Participant::factory()
+            ->for($firstRace)
+            ->for($championship)
+            ->driver([
+                'first_name' => 'John',
+                'last_name' => 'Racer',
+                'licence_number' => 'D0001',
+                'bib' => 80,
+            ])
+            ->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 100,
+                'category' => 'category_key',
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+        
+        $response->assertRedirectToRoute('races.registration.create', $race);
+
+        $response->assertSessionHasErrors([
+            'bib' => 'The entered bib does not reflect what has been used so far in the championship by the same driver.',
+        ]);
+
+        $this->assertEquals(0, $race->participants()->count());
+
+        Notification::assertNothingSent();
+    }
+
+
 
     public function test_last_participant_can_self_register()
     {

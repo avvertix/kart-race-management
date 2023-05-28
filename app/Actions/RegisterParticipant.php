@@ -107,7 +107,26 @@ class RegisterParticipant
                         Rule::unique('participants', 'driver_licence')
                             ->where(fn ($query) => $query->where('race_id', $race->getKey())),
                     ]
-                ])->validate();
+                ])
+                ->after(function($validator) use ($race) {
+
+                    $validated = $validator->validated();
+
+                    $bibs = collect(Participant::query()
+                        ->where('championship_id', $race->championship_id)
+                        ->licenceHash($validated['driver_licence_number'])
+                        ->select(["bib"])
+                        ->get(["bib"])->pluck("bib"))->unique()->filter();
+
+                    // check if participant by licence has equal bib
+                    if($bibs->isNotEmpty() && !$bibs->contains($validated['bib'])){
+                        $validator->errors()->add(
+                            'bib', 'The entered bib does not reflect what has been used so far in the championship by the same driver.'
+                        );
+                    }
+
+                })
+                ->validate();
 
                 if($race->hasTotalParticipantLimit() && ($race->participants_count + 1) > $race->getTotalParticipantLimit()){
                     throw ValidationException::withMessages([

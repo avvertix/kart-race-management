@@ -52,6 +52,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
     {
         return $this->race
             ->participants()
+            ->has('transponders')
             ->orderBy('bib');
     }
 

@@ -307,4 +307,70 @@ class RaceParticipantsForTimingExportTest extends TestCase
         ], $csv->toArray());
     }
 
+    public function test_export_participants_does_not_include_participants_without_transponder()
+    {
+        config(['races.organizer.name' => 'Organizer name']);
+        config(['categories.default' => ['category_key' => [
+            'name' => 'Category Name',
+            'description' => 'category description',
+            'tires' => 'VEGA_MINI',
+        ]]]);
+
+        $user = User::factory()->timekeeper()->create();
+
+        $race = Race::factory()
+            ->create([
+                'event_start_at' => Carbon::parse("2023-02-28"),
+                'title' => 'Race title',
+                'type' => RaceType::ZONE,
+            ]);
+        
+        $participant = Participant::factory()
+            ->create([
+                'driver_licence' => 'a1234567890',
+                'race_id' => $race->getKey(),
+                'championship_id' => $race->championship->getKey(),
+            ]);
+
+        $vehicle = $participant->vehicles[0];
+
+        $this->withoutExceptionHandling();
+        
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.export.transponders', $race));
+
+        $expected_filename = "mylaps-organizer-name-2023-02-28-race-title.csv";
+
+        $response->assertDownload($expected_filename);
+
+        $csv = collect(str($response->streamedContent())->split('/\r?\n|\r/'))
+            ->filter()
+            ->map(function ($l) {
+                return str_getcsv($l, ';');
+            });
+
+        $this->assertCount(1, $csv);
+        $this->assertEquals([
+            [
+                "No",
+                "Class",
+                "FirstName",
+                "LastName",
+                "CarRegistration",
+                "DriverRegistration",
+                "Transponder1",
+                "Transponder2",
+                "Additional1",
+                "Additional2",
+                "Additional3",
+                "Additional4",
+                "Additional5",
+                "Additional6",
+                "Additional7",
+                "Additional8",
+            ],
+        ], $csv->toArray());
+    }
+
 }

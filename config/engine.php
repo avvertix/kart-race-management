@@ -26,6 +26,7 @@ return [
         'tm racing' => 'TM',
         'tiemme' => 'TM',
         'tm kart' => 'TM',
+        'tm r1' => 'TM',
         'modena engine' => 'MODENA',
         'modena engines' => 'MODENA',
         'sgm - severi racing kart srl' => 'SGM',

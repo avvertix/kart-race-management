@@ -86,7 +86,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
         $csv = collect(str($response->streamedContent())->split('/\r?\n|\r/'))
             ->filter()
             ->map(function ($l) {
-                return str_getcsv($l, ',');
+                return str_getcsv($l, ';');
             });
 
         $this->assertCount(2, $csv);
@@ -174,7 +174,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
         $csv = collect(str($response->streamedContent())->split('/\r?\n|\r/'))
             ->filter()
             ->map(function ($l) {
-                return str_getcsv($l, ',');
+                return str_getcsv($l, ';');
             });
 
         $this->assertCount(2, $csv);
@@ -263,7 +263,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
         $csv = collect(str($response->streamedContent())->split('/\r?\n|\r/'))
             ->filter()
             ->map(function ($l) {
-                return str_getcsv($l, ',');
+                return str_getcsv($l, ';');
             });
 
         $this->assertCount(2, $csv);

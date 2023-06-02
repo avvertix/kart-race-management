@@ -30,7 +30,7 @@ return [
     | Configure delimiter and enclosure for CSV file
     |
     */
-    'csv_delimiter' => ',',
+    'csv_delimiter' => ';',
     'csv_enclosure' => '"',
     'csv_escape' => '\\',
     'csv_bom' => false,

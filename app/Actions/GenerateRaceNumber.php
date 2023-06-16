@@ -24,6 +24,8 @@ use Illuminate\Validation\ValidationException;
 class GenerateRaceNumber
 {
 
+    private const MAXIMUM_SUGGESTION = 500;
+
     /**
      * Generate a set of race numbers based on available ones within the championship
      *
@@ -35,7 +37,11 @@ class GenerateRaceNumber
     {
         $existing = Participant::where('championship_id', $championship->getKey())->distinct()->get('bib')->pluck('bib');
 
-        $range = collect()->range(1, $existing->max() + 10)->diff($existing)->random(5);
+        $max = $existing->max() % self::MAXIMUM_SUGGESTION;
+
+        $options = collect()->range(1, $max)->diff($existing);
+
+        $range = $options->count() > 4 ? $options->random(4) : $options;
 
         return $range->toArray();
     }

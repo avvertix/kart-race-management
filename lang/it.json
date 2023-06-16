@@ -284,5 +284,8 @@
     "Participants per engine manufacturer": "Partecipanti per marca del motore",
     "Export or print": "Esporta o stampa",
     "Print participants": "Stampa autocertificazioni",
-    "The entered bib does not reflect what has been used so far in the championship by the same driver.": "Il numero di gara non è tra quelli usati nel campionato dal pilota. Verifica di aver inserito correttamente il numero di licenza e/o il numero di gara."
+    "The entered bib does not reflect what has been used so far in the championship by the same driver.": "Il numero di gara non è tra quelli usati nel campionato dal pilota. Verifica di aver inserito correttamente il numero di licenza e/o il numero di gara.",
+    "Race number": "Numero gara",
+    "Registration date": "Data di iscrizione",
+    "Sorting": "Ordina per"
 }

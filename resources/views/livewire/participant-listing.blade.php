@@ -6,7 +6,44 @@
     
     <x-table>
         <x-slot name="head">
-            <th scope="col" class="w-4/12 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 sm:pl-6">{{ __('Bib') }} ▼ / {{ __('Driver') }}</th>
+            <th scope="col" class="w-4/12 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 sm:pl-6 relative">
+                
+                <x-jet-dropdown align="left" width="60">
+                    <x-slot name="trigger">
+                        <button type="button" >
+                        {{ __('Driver') }} ▼
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <div class="w-60">
+                            <div class="block px-4 py-2 text-xs text-zinc-400">
+                                {{ __('Sorting') }}
+                            </div>
+
+                            <x-jet-dropdown-link href="#" wire:click.prevent="sorting('bib')">
+                                <div class="flex items-center">
+                                    @if ($sort === 'bib')
+                                        <svg class="mr-2 h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    @endif
+
+                                    {{ __('Race number') }}
+                                </div>
+                            </x-jet-dropdown-link>
+
+                            <x-jet-dropdown-link href="#" wire:click.prevent="sorting('registration-date')">
+                                <div class="flex items-center">
+                                    @if ($sort === 'registration-date')
+                                        <svg class="mr-2 h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    @endif
+                                    {{ __('Registration date') }}
+                                </div>
+                            </x-jet-dropdown-link>
+                        </div>
+                    </x-slot>
+                </x-jet-dropdown>
+                
+            </th>
             <th scope="col" class="w-3/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Category / Engine') }}</th>
             <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Licence') }}</th>
             <th scope="col" class="w-1/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Status') }}</th>
@@ -38,6 +75,8 @@
                         <span wire:loading wire:target="select({{ $item->getKey() }})">
                             {{ __('Opening...') }}
                         </span>
+
+                        <p class="text-xs text-zinc-700">{{ __('registered at') }} <x-time :value="$item->created_at" /></p>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->category()?->name ?? $item->category }} / {{ $item->engine }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->licence_type?->localizedName() }}</td>

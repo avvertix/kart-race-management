@@ -23,20 +23,29 @@ class ParticipantListing extends Component
 
     public $search;
 
+    public $sort;
+
     protected $queryString = [
         'search' => ['except' => '', 'as' => 's'],
         'selectedParticipant' => ['except' => '', 'as' => 'pid'],
+        'sort' => ['except' => '', 'as' => 'order'],
     ];
 
     public function __construct($race)
     {
         $this->race = $race;
         $this->search = null;
+        $this->sort = 'bib';
     }
 
     public function select($item)
     {
         $this->selectedParticipant = $item;
+    }
+    
+    public function sorting($option)
+    {
+        $this->sort = $option === 'bib' ? 'bib' : 'registration-date';
     }
     
     public function confirm($item)
@@ -86,7 +95,7 @@ class ParticipantListing extends Component
                         ;
                 });
             })
-            ->orderBy('bib', 'asc')
+            ->orderBy( $this->sort === 'registration-date' ? 'created_at' : 'bib', 'asc')
             ->get();
 
         return view('livewire.participant-listing');

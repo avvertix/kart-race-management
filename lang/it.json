@@ -287,5 +287,18 @@
     "The entered bib does not reflect what has been used so far in the championship by the same driver.": "Il numero di gara non è tra quelli usati nel campionato dal pilota. Verifica di aver inserito correttamente il numero di licenza e/o il numero di gara.",
     "Race number": "Numero gara",
     "Registration date": "Data di iscrizione",
-    "Sorting": "Ordina per"
+    "Sorting": "Ordina per",
+    "Communications": "Comunicazioni",
+    "Create a communication": "Crea una comunicazione",
+    "Create message": "Crea messaggio",
+    "Preview": "Anteprima",
+    "Target users": "Utenti",
+    "Delete": "Elimina",
+    "No communication messages. Write one!": "Nessuna comunicaione. Scrivine una!",
+    "Message (maximum 300 characters)": "Messaggio (max 300 caratteri)",
+    "Show date": "Data di inizio visualizzazione del messaggio",
+    "Expiration date": "Data di fine visualizzazione del messaggio",
+    "Users to which the message is presented (all users by default)": "Tipologia di utenti a cui mostrare il messaggio (default tutti)",
+    "Graphic theme": "Tema grafico",
+    "Informative": "Informational"
 }

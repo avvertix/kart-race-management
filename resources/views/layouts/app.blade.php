@@ -30,6 +30,8 @@
                 </header>
             @endif
 
+            <x-broadcast-communications />
+
             {{-- Page Content --}}
             <main>
                 {{ $slot }}

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
+use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\SaveParticipantSignatureController;
 use App\Http\Controllers\ShowParticipantSignatureFormController;
 use App\Http\Controllers\SwitchLanguageController;
+use App\Models\CommunicationMessage;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -85,6 +87,7 @@ Route::middleware([
         
         Route::get('races/{race}/export-transponders', ExportRaceParticipantsForTimingController::class)->name('races.export.transponders');
 
+        Route::resource('communications', CommunicationMessageController::class)->except(['create', 'show']);
     });
 
 // Self registration

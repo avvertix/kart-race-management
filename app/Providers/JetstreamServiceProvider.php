@@ -72,6 +72,11 @@ class JetstreamServiceProvider extends ServiceProvider
             'transponder:create',
             'transponder:update',
             'payment:view',
+            'communication:list',
+            'communication:view',
+            'communication:create',
+            'communication:update',
+            'communication:delete',
         ])->description('Race and Championship organizer');
         
         Jetstream::role('racemanager', 'Race manager', [
@@ -91,6 +96,11 @@ class JetstreamServiceProvider extends ServiceProvider
             'transponder:create',
             'transponder:update',
             'payment:view',
+            'communication:list',
+            'communication:view',
+            'communication:create',
+            'communication:update',
+            'communication:delete',
         ])->description('Responsible of the race');
 
         Jetstream::role('tireagent', 'Tire responsible', [

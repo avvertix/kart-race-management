@@ -23,6 +23,9 @@
                         <x-jet-nav-link href="{{ route('races.index') }}" :active="request()->routeIs('races.*') || request()->routeIs('participants.*')">
                             {{ __('Races') }}
                         </x-jet-nav-link>
+                        <x-jet-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
+                            {{ __('Communications') }}
+                        </x-jet-nav-link>
                     @endauth
                 </div>
             </div>
@@ -162,6 +165,9 @@
                 </x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('races.index') }}" :active="request()->routeIs('races.*') || request()->routeIs('participants.*')">
                     {{ __('Races') }}
+                </x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
+                    {{ __('Communications') }}
                 </x-jet-responsive-nav-link>
             @endauth
         </div>

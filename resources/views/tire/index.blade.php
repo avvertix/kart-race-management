@@ -47,20 +47,28 @@
 
 
     <div class="py-3">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2">
 
-            <h3 class="text-xl font-bold mb-1">{{ __('Tire codes') }}</h3>
-
-            @foreach ($tires as $item)            
-                <div class="mb-4">
-                    <p class="font-mono text-3xl">{{ $item->code }}</p>
-
-                    @can('update', $item)
-                        <p><a class="text-orange-600 hover:text-orange-900" href="{{ route('tires.edit', $item) }}">{{ __('Edit') }}</a></p>
-                    @endcan
+            <div>
+                <h3 class="text-xl font-bold mb-1">{{ __('Tire codes') }}</h3>
+    
+                @foreach ($tires as $item)            
+                    <div class="mb-4">
+                        <p class="font-mono text-3xl">{{ $item->code }}</p>
+    
+                        @can('update', $item)
+                            <p><a class="text-orange-600 hover:text-orange-900 print:hidden" href="{{ route('tires.edit', $item) }}">{{ __('Edit') }}</a></p>
+                        @endcan
+                    </div>
+                @endforeach
+            </div>
+            <div class="justify-self-end">
+                <div class="hidden print:block lg:block bg-white p-4">
+                    {!! $participant->tiresQrCodeSvg() !!}
                 </div>
-            @endforeach
+            </div>
 
         </div>
+
     </div>
 </x-app-layout>

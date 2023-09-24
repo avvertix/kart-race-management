@@ -55,5 +55,9 @@ class Handler extends ExceptionHandler
         $this->renderable(function (InvalidParticipantSignatureException $e) {
             return response()->view('errors.participant-link-invalid', [], 403);
         });
+        
+        $this->renderable(function (InvalidParticipantTiresSignatureException $e) {
+            return response()->view('errors.participant-tires-link-invalid', [], 401);
+        });
     }
 }

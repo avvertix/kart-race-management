@@ -10,6 +10,7 @@ use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
+use App\Http\Controllers\ParticipantTireVerificationController;
 use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
@@ -112,6 +113,9 @@ Route::get('confirm-participation', ConfirmParticipantController::class)
     ->name('participant.sign.create')
     ->middleware('signed');
 
+
+Route::get('tires-verification/{registration}', [ParticipantTireVerificationController::class, 'show'])
+    ->name('tires-verification.show');
 
 // Privacy Policy page
 

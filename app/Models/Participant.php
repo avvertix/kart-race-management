@@ -234,6 +234,18 @@ class Participant extends Model implements HasLocalePreference
 
         return trim(substr($svg, strpos($svg, "\n") + 1));
     }
+    
+    public function tiresQrCodeSvg()
+    {
+        $svg = (new Writer(
+            new ImageRenderer(
+                new RendererStyle(192, 0, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(45, 55, 72))),
+                new SvgImageBackEnd
+            )
+        ))->writeString($this->tiresQrCodeUrl());
+
+        return trim(substr($svg, strpos($svg, "\n") + 1));
+    }
 
     public function signedUrlParameters(): array
     {
@@ -245,6 +257,14 @@ class Participant extends Model implements HasLocalePreference
         return URL::signedRoute(
             'registration.show',
             $this->signedUrlParameters()
+        );
+    }
+    
+    public function tiresQrCodeUrl(): string
+    {
+        return URL::signedRoute(
+            'tires-verification.show',
+            ['registration' => $this, 'p' => md5($this->uuid)]
         );
     }
     

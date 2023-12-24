@@ -16,3 +16,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/dump
+*.sql
+docker-compose.override.yml

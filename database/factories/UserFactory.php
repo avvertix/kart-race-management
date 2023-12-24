@@ -4,10 +4,16 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
 {
+    /**
+     * The current password being used by the factory.
+     */
+    protected static ?string $password;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -20,13 +26,13 @@ class UserFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
@@ -36,7 +42,7 @@ class UserFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function unverified()
+    public function unverified(): static
     {
         return $this->state(function (array $attributes) {
             return [
@@ -50,7 +56,7 @@ class UserFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function admin()
+    public function admin(): static
     {
         return $this->state(function (array $attributes) {
             return [
@@ -64,7 +70,7 @@ class UserFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function organizer()
+    public function organizer(): static
     {
         return $this->state(function (array $attributes) {
             return [
@@ -77,7 +83,7 @@ class UserFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function racemanager()
+    public function racemanager(): static
     {
         return $this->state(function (array $attributes) {
             return [
@@ -90,7 +96,7 @@ class UserFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function tireagent()
+    public function tireagent(): static
     {
         return $this->state(function (array $attributes) {
             return [
@@ -103,7 +109,7 @@ class UserFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function timekeeper()
+    public function timekeeper(): static
     {
         return $this->state(function (array $attributes) {
             return [

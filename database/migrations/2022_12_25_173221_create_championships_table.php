@@ -8,14 +8,12 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('championships', function (Blueprint $table) {
             $table->id();
-            $table->ulid();
+            $table->ulid('uuid');
             
             $table->timestamps();
             
@@ -29,10 +27,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('championships');
     }

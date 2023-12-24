@@ -36,8 +36,11 @@ class DeleteParticipant
             return DB::transaction(function() use($participant){
 
                 $replica = $participant->replicate(['properties']);
-    
-                $trashedParticipant = (new TrashedParticipant)->forceFill($replica->toArray());
+
+                $trashedParticipant = (new TrashedParticipant)->forceFill([
+                    ...['uuid' => $participant->uuid],
+                    ...$replica->toArray()
+                ]);
 
                 $trashedParticipant->save();
 

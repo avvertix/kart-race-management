@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\HtmlString;
+use Illuminate\View\ComponentSlot;
 use NumberFormatter;
 
 enum Currency: string
@@ -13,11 +14,11 @@ enum Currency: string
     /**
      * Format the given amount using the specific currency
      * 
-     * @param \Illuminate\Support\HtmlString|int $amount
+     * @param \Illuminate\View\ComponentSlot|int $amount
      */
     public function format($amount): string
     {
-        $amount = $amount instanceof HtmlString ? intval(trim($amount->toHtml())) : $amount;
+        $amount = $amount instanceof HtmlString || $amount instanceof ComponentSlot ? intval(trim($amount->toHtml())) : $amount;
 
         $fmt = new NumberFormatter( 'en_EN', NumberFormatter::CURRENCY );
 

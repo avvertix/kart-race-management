@@ -69,4 +69,4 @@ jobs:
         php artisan view:clear
         php artisan config:clear
         php artisan route:clear
-        vendor/bin/phpunit --verbose
+        vendor/bin/phpunit

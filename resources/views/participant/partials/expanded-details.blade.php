@@ -18,23 +18,23 @@
             <div class="flex gap-2 justify-end">
                 @can('update', $item)
                     @if ($item->registration_completed_at)
-                        <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="confirm({{ $item->getKey() }})">
+                        <x-secondary-button class="inline-flex gap-1" wire:click.prevent="confirm({{ $item->getKey() }})">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                             </svg>
                             {{ __('Completed') }}
-                        </x-jet-secondary-button>
+                        </x-secondary-button>
                     @elseif ($item->confirmed_at)
-                        <x-jet-button wire:click.prevent="markAsComplete({{ $item->getKey() }})">{{ __('Complete registration') }}</x-jet-button>
+                        <x-button wire:click.prevent="markAsComplete({{ $item->getKey() }})">{{ __('Complete registration') }}</x-button>
             
-                        {{-- <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="confirm({{ $item->getKey() }})">
+                        {{-- <x-secondary-button class="inline-flex gap-1" wire:click.prevent="confirm({{ $item->getKey() }})">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                             </svg>
                             {{ __('Confirmed') }}
-                        </x-jet-button> --}}
+                        </x-button> --}}
                     @else
-                        <x-jet-button wire:click.prevent="confirm({{ $item->getKey() }})">{{ __('Confirm') }}</x-jet-button>
+                        <x-button wire:click.prevent="confirm({{ $item->getKey() }})">{{ __('Confirm') }}</x-button>
                     @endif
                 @endcan
                 
@@ -44,9 +44,9 @@
                     </div>
                 @endcan
                 <div class="flex gap-1">
-                    <x-jet-secondary-button wire:click.prevent="select(null)">
+                    <x-secondary-button wire:click.prevent="select(null)">
                         {{ __('Collapse') }}
-                    </x-jet-button>
+                    </x-button>
                 </div>
             
             </div>
@@ -87,13 +87,13 @@
             </div>
 
             <div class="flex gap-4">
-                <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }}, false)">
+                <x-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }}, false)">
                     {{ __('Within zone') }}
-                </x-jet-secondary-button>
+                </x-secondary-button>
 
-                <x-jet-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }})">
+                <x-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }})">
                     {{ __('Out of zone') }}
-                </x-jet-secondary-button>
+                </x-secondary-button>
 
             </div>
         </div>
@@ -233,9 +233,9 @@
         </p>
 
         <form wire:submit.prevent="resendSignatureNotification({{ $item->getKey() }})">
-            <x-jet-button type="submit" class="">
+            <x-button type="submit" class="">
                 {{ __('Resend Verification Email') }}
-            </x-jet-button>
+            </x-button>
         </form>    
     </div>
 @endcan

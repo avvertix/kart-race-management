@@ -19,7 +19,7 @@
         <div class="min-h-screen bg-zinc-100 print:bg-white">
             @livewire('navigation-menu')
             
-            <x-jet-banner />
+            <x-banner />
 
             {{-- Page Heading --}}
             @if (isset($header))

@@ -130,7 +130,7 @@ class CommunicationMessageControllerTest extends TestCase
         $this->assertNull($communication->ends_at);
     }
 
-    public function invalid_communication_requests_provider()
+    public static function invalid_communication_requests_provider()
     {
         return [
             [

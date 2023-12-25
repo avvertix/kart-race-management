@@ -24,7 +24,7 @@
     </div>
 
     @error('participants_limit')
-        <x-jet-banner style="danger" :message="$message" />
+        <x-banner style="danger" :message="$message" />
     @enderror
         
 @endif

@@ -1,5 +1,5 @@
 <div class="mt-1 block w-full">
-    <x-jet-input id="vehicle_engine_manufacturer" type="text" name="vehicle_engine_manufacturer" class="mt-1 block w-full" :value="$value"  autocomplete="engine_manufacturer" />
+    <x-input id="vehicle_engine_manufacturer" type="text" name="vehicle_engine_manufacturer" class="mt-1 block w-full" :value="$value"  autocomplete="engine_manufacturer" />
     <div class="text-zinc-600">
         {{ __('Suggestions:')}}
         @forelse ($suggestions as $item)

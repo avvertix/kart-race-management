@@ -13,7 +13,7 @@ class CommunicationMessageTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function communication_dates_provider()
+    public static function communication_dates_provider()
     {
         return [
             ["2023-03-31", '2023-04-01', '2023-04-01', 'Scheduled'],

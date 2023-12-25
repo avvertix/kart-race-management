@@ -1,7 +1,7 @@
 <div>
     
     <div class="ml-3 relative">
-        <x-jet-dropdown align="right" width="48">
+        <x-dropdown align="right" width="48">
             <x-slot name="trigger">
 
                 <span class="inline-flex rounded-md">
@@ -20,16 +20,16 @@
 
             <x-slot name="content">
 
-                <x-jet-dropdown-link href="{{ route('language.change', ['lang' => 'it']) }}">
+                <x-dropdown-link href="{{ route('language.change', ['lang' => 'it']) }}">
                     {{ __('Italiano') }}
-                </x-jet-dropdown-link>
-                <x-jet-dropdown-link href="{{ route('language.change', ['lang' => 'en']) }}">
+                </x-dropdown-link>
+                <x-dropdown-link href="{{ route('language.change', ['lang' => 'en']) }}">
                     {{ __('English') }}
-                </x-jet-dropdown-link>
+                </x-dropdown-link>
 
 
             </x-slot>
-        </x-jet-dropdown>
+        </x-dropdown>
     </div>
 
     

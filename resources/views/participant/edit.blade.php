@@ -28,9 +28,9 @@
                     <div class="mt-5 md:mt-0 md:col-span-2">
                         
                             <div class="px-4 py-5">
-                                <x-jet-button class="">
+                                <x-button class="">
                                     {{ __('Update participant') }}
-                                </x-jet-button>
+                                </x-button>
                             </div>
                     </div>
                 </div>

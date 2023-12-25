@@ -46,9 +46,9 @@
                         <input type="hidden" name="participant" value="{{ $participant->uuid }}">
         
                         <p>
-                            <x-jet-button type="submit">
+                            <x-button type="submit">
                                 {{ __('Resend Verification Email') }}
-                            </x-jet-button>
+                            </x-button>
                         </p>
                     </form>
                 @else
@@ -217,43 +217,43 @@
                             <p class="font-bold md:col-span-3">{{ __('Competitor') }}</p>
                             @if ($participant->competitor)
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_first_name" value="{{ __('Name') }}*" />
+                                    <x-label for="competitor_first_name" value="{{ __('Name') }}*" />
                                     {{ $participant->competitor['first_name'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_last_name" value="{{ __('Surname') }}*" />
+                                    <x-label for="competitor_last_name" value="{{ __('Surname') }}*" />
                                     {{ $participant->competitor['last_name'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
+                                    <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
                                     {{ $participant->competitor['licence_type'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />
+                                    <x-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />
                                     {{ $participant->competitor['licence_number'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
+                                    <x-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
                                     {{ $participant->competitor['nationality'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_email" value="{{ __('E-Mail') }}*" />
+                                    <x-label for="competitor_email" value="{{ __('E-Mail') }}*" />
                                     {{ $participant->competitor['email'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_phone" value="{{ __('Phone number') }}*" />
+                                    <x-label for="competitor_phone" value="{{ __('Phone number') }}*" />
                                     {{ $participant->competitor['phone'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
+                                    <x-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
                                     {{ $participant->competitor['birth_date'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_birth_place" value="{{ __('Birth place') }}*" />
+                                    <x-label for="competitor_birth_place" value="{{ __('Birth place') }}*" />
                                     {{ $participant->competitor['birth_place'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_residence" value="{{ __('Residence address') }}*" />
+                                    <x-label for="competitor_residence" value="{{ __('Residence address') }}*" />
                                     {{ $participant->competitor['residence_address']['address'] ?? null }}
                                     {{ $participant->competitor['residence_address']['city'] ?? null }}
                                     {{ $participant->competitor['residence_address']['postal_code'] ?? null }}

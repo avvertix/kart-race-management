@@ -1,10 +1,10 @@
-<x-jet-section-border />
+<x-section-border />
             
 <div class="md:grid md:grid-cols-3 md:gap-6">
-    <x-jet-section-title>
+    <x-section-title>
         <x-slot name="title">{{ __('Rules') }}</x-slot>
         <x-slot name="description">{{ __('Here some regulation remarks.') }}</x-slot>
-    </x-jet-section-title>
+    </x-section-title>
 
     <div class="mt-5 md:mt-0 md:col-span-2">
 

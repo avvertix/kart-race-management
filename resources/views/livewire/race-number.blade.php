@@ -1,7 +1,7 @@
 <div>
-    <x-jet-label for="bib" value="{{ __('Number') }}*" />
-    <x-jet-input-error for="bib" class="mt-2" />
-    <x-jet-input id="bib" type="number" name="bib" class="mt-1 block w-full" :value="$value"  autofocus />
+    <x-label for="bib" value="{{ __('Number') }}*" />
+    <x-input-error for="bib" class="mt-2" />
+    <x-input id="bib" type="number" name="bib" class="mt-1 block w-full" :value="$value"  autofocus />
     @if (!empty($suggestions))
         <p class="text-zinc-600 mt-1">{{ __('First time racing? Some currently free numbers:') }} 
             @foreach ($suggestions as $item)

@@ -36,25 +36,25 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="md:grid md:grid-cols-3 md:gap-6">
-                <x-jet-section-title>
+                <x-section-title>
                     <x-slot name="title">{{ __('Race number and category') }}</x-slot>
                     <x-slot name="description">
                         {{ __('Insert your race number and category.') }}<br/>
                         {{ __('If you previously participate in a race within the championship use the same number.') }}<br/>
                         <em></em>.
                     </x-slot>
-                </x-jet-section-title>
+                </x-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
                     
                         <div class="px-4 py-5">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label value="{{ __('Number') }}*" />
+                                    <x-label value="{{ __('Number') }}*" />
                                     {{ $participant->bib }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label value="{{ __('Category') }}*" />
+                                    <x-label value="{{ __('Category') }}*" />
                                     {{ $participant->category }}
                                 </div>
                             </div>
@@ -63,7 +63,7 @@
             </div>
         
             <div class="md:grid md:grid-cols-3 md:gap-6">
-                <x-jet-section-title>
+                <x-section-title>
                     <x-slot name="title">{{ __('Driver') }}</x-slot>
                     <x-slot name="description">
                         {{ __('The driver that is participating to the competition.') }}<br/>
@@ -72,7 +72,7 @@
                         {{ __('The "race number" is uniquely assigned to a driver within the championship and cannot be changed.') }}<br/>
                         <em></em>.
                     </x-slot>
-                </x-jet-section-title>
+                </x-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
                     
@@ -81,54 +81,54 @@
                                 
                                 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_first_name" value="{{ __('Name') }}*" />
+                                    <x-label for="driver_first_name" value="{{ __('Name') }}*" />
                                     {{ $participant->first_name }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_last_name" value="{{ __('Surname') }}*" />
+                                    <x-label for="driver_last_name" value="{{ __('Surname') }}*" />
                                     {{ $participant->last_name }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
+                                    <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                                     {{ $participant->licence_type?->value }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
+                                    <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
                                     {{ $participant->driver['licence_number'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_nationality" value="{{ __('Nationality') }}*" />
+                                    <x-label for="driver_nationality" value="{{ __('Nationality') }}*" />
                                     {{ $participant->driver['nationality'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_email" value="{{ __('E-Mail') }}*" />
+                                    <x-label for="driver_email" value="{{ __('E-Mail') }}*" />
                                     {{ $participant->driver['email'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_phone" value="{{ __('Phone number') }}*" />
+                                    <x-label for="driver_phone" value="{{ __('Phone number') }}*" />
                                     {{ $participant->driver['phone'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_birth_date" value="{{ __('Birth date') }}*" />
+                                    <x-label for="driver_birth_date" value="{{ __('Birth date') }}*" />
                                     {{ $participant->driver['birth_date'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_birth_place" value="{{ __('Birth place') }}*" />
+                                    <x-label for="driver_birth_place" value="{{ __('Birth place') }}*" />
                                     {{ $participant->driver['birth_place'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
+                                    <x-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
                                     {{ $participant->driver['medical_certificate_expiration_date'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_residence" value="{{ __('Residence address') }}*" />
+                                    <x-label for="driver_residence" value="{{ __('Residence address') }}*" />
                                     {{ $participant->driver['residence_address']['address'] ?? null }}
                                     {{ $participant->driver['residence_address']['city'] ?? null }}
                                     {{ $participant->driver['residence_address']['postal_code'] ?? null }}
@@ -136,7 +136,7 @@
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="driver_sex" value="{{ __('driver_sex') }}*" />
+                                    <x-label for="driver_sex" value="{{ __('driver_sex') }}*" />
                                     {{ $participant->driver['sex'] }}
                                 </div>
                                 
@@ -148,16 +148,16 @@
             @if ($participant->competitor)
                 
             
-            <x-jet-section-border />
+            <x-section-border />
 
             <div class="md:grid md:grid-cols-3 md:gap-6">
-                <x-jet-section-title>
+                <x-section-title>
                     <x-slot name="title">{{ __('Competitor') }}</x-slot>
                     <x-slot name="description">
                         {{ __('The competitor that brings the driver to the race.') }}<br/>
                         {{ __('Search for a competitor using the licence number or insert a new one.') }}<br/>
                         <em>{{ __('required if driver is underage') }}</em>.</x-slot>
-                </x-jet-section-title>
+                </x-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
                     
@@ -165,49 +165,49 @@
                             <div class="grid grid-cols-6 gap-6">
                                 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_first_name" value="{{ __('Name') }}*" />
+                                    <x-label for="competitor_first_name" value="{{ __('Name') }}*" />
                                     {{ $participant->competitor['first_name'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_last_name" value="{{ __('Surname') }}*" />
+                                    <x-label for="competitor_last_name" value="{{ __('Surname') }}*" />
                                     {{ $participant->competitor['last_name'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
+                                    <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
                                     {{ $participant->competitor['licence_type'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />
+                                    <x-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />
                                     {{ $participant->competitor['licence_number'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
+                                    <x-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
                                     {{ $participant->competitor['nationality'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_email" value="{{ __('E-Mail') }}*" />
+                                    <x-label for="competitor_email" value="{{ __('E-Mail') }}*" />
                                     {{ $participant->competitor['email'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_phone" value="{{ __('Phone number') }}*" />
+                                    <x-label for="competitor_phone" value="{{ __('Phone number') }}*" />
                                     {{ $participant->competitor['phone'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
+                                    <x-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
                                     {{ $participant->competitor['birth_date'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_birth_place" value="{{ __('Birth place') }}*" />
+                                    <x-label for="competitor_birth_place" value="{{ __('Birth place') }}*" />
                                     {{ $participant->competitor['birth_place'] }}
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="competitor_residence" value="{{ __('Residence address') }}*" />
+                                    <x-label for="competitor_residence" value="{{ __('Residence address') }}*" />
                                     {{ $participant->competitor['residence_address']['address'] ?? null }}
                                     {{ $participant->competitor['residence_address']['city'] ?? null }}
                                     {{ $participant->competitor['residence_address']['postal_code'] ?? null }}
@@ -224,23 +224,23 @@
             @if ($participant->mechanic)
                 
             
-            <x-jet-section-border />
+            <x-section-border />
 
             <div class="md:grid md:grid-cols-3 md:gap-6">
-                <x-jet-section-title>
+                <x-section-title>
                     <x-slot name="title">{{ __('Mechanic') }}</x-slot>
                     <x-slot name="description">{{ __('The mechanic that will assist the driver during the race.') }}<br/><em>{{ __('optional') }}</em>.</x-slot>
-                </x-jet-section-title>
+                </x-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
                         <div class="px-4 py-5">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="mechanic_licence_number" value="{{ __('Licence number') }}" />
+                                    <x-label for="mechanic_licence_number" value="{{ __('Licence number') }}" />
                                     {{ $participant->mechanic['licence_number'] }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
-                                    <x-jet-label for="mechanic_name" value="{{ __('Name and Surname') }}" />
+                                    <x-label for="mechanic_name" value="{{ __('Name and Surname') }}" />
                                     {{ $participant->mechanic['name'] }}
                                 </div>
                             </div>
@@ -250,13 +250,13 @@
 
             @endif
 
-            <x-jet-section-border />
+            <x-section-border />
 
             <div class="md:grid md:grid-cols-3 md:gap-6">
-                <x-jet-section-title>
+                <x-section-title>
                     <x-slot name="title">{{ __('Vehicle') }}</x-slot>
                     <x-slot name="description">{{ __('The characteristics of the vehicle.') }}</x-slot>
-                </x-jet-section-title>
+                </x-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
                     
@@ -266,27 +266,27 @@
                                 @foreach ($participant->vehicles as $vehicle)
                                     
                                     <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="vehicle_chassis_manufacturer" value="{{ __('Chassis Manufacturer') }}*" />
+                                        <x-label for="vehicle_chassis_manufacturer" value="{{ __('Chassis Manufacturer') }}*" />
                                         {{ $vehicle['chassis_manufacturer'] }}
                                     </div>
                                     <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="vehicle_engine_manufacturer" value="{{ __('Engine Manufacturer') }}*" />
+                                        <x-label for="vehicle_engine_manufacturer" value="{{ __('Engine Manufacturer') }}*" />
                                         {{ $vehicle['engine_manufacturer'] }}
                                     </div>
                                     <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="vehicle_engine_model" value="{{ __('Engine Model') }}*" />
+                                        <x-label for="vehicle_engine_model" value="{{ __('Engine Model') }}*" />
                                         {{ $vehicle['engine_model'] }}
                                     </div>
                                     <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="vehicle_oil_manufacturer" value="{{ __('Oil Manufacturer') }}*" />
+                                        <x-label for="vehicle_oil_manufacturer" value="{{ __('Oil Manufacturer') }}*" />
                                         {{ $vehicle['oil_manufacturer'] }}
                                     </div>
                                     <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="vehicle_oil_type" value="{{ __('Oil Type') }}" />
+                                        <x-label for="vehicle_oil_type" value="{{ __('Oil Type') }}" />
                                         {{ $vehicle['oil_type'] }}
                                     </div>
                                     <div class="col-span-6 sm:col-span-4">
-                                        <x-jet-label for="vehicle_oil_percentage" value="{{ __('Oil Percentage') }}*" />
+                                        <x-label for="vehicle_oil_percentage" value="{{ __('Oil Percentage') }}*" />
                                         {{ $vehicle['oil_percentage'] }}
                                     </div>
                                 @endforeach
@@ -296,13 +296,13 @@
                 </div>
             </div>
 
-            <x-jet-section-border />
+            <x-section-border />
 
             <div class="md:grid md:grid-cols-3 md:gap-6">
-                <x-jet-section-title>
+                <x-section-title>
                     <x-slot name="title">{{ __('Bonus') }}</x-slot>
                     <x-slot name="description">{{ __('The participant can use a bonus given by the organizer.') }}</x-slot>
-                </x-jet-section-title>
+                </x-section-title>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
 
@@ -310,7 +310,7 @@
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-4">
                                     <label for="bonus" class="flex items-center">
-                                        <x-jet-checkbox id="bonus" name="bonus" />
+                                        <x-checkbox id="bonus" name="bonus" />
                                         <span class="ml-2">{{ __('Apply a bonus') }}</span>
                                     </label>
                                 </div>

@@ -24,26 +24,26 @@
                 @method('PUT')
                 @csrf
                 
-                    <x-jet-section-title>
+                    <x-section-title>
                         <x-slot name="title">{{ __('Update transponder') }}</x-slot>
                         <x-slot name="description">
                             
                         </x-slot>
-                    </x-jet-section-title>
+                    </x-section-title>
             
-                    <x-jet-validation-errors class="mb-4" />
+                    <x-validation-errors class="mb-4" />
             
                     <div class="mb-2">
-                        <x-jet-label for="transponder" value="{{ __('Transponder') }}*" />
-                        <x-jet-input id="transponder" type="text" name="transponder" class="mt-1 block w-full" required autofocus :value="old('transponder', $transponder?->code)" />
+                        <x-label for="transponder" value="{{ __('Transponder') }}*" />
+                        <x-input id="transponder" type="text" name="transponder" class="mt-1 block w-full" required autofocus :value="old('transponder', $transponder?->code)" />
                     </div>
                               
                     <div class="">
             
                         <div class="py-5">
-                            <x-jet-button class="">
+                            <x-button class="">
                                 {{ __('Update transponder') }}
-                            </x-jet-button>
+                            </x-button>
                         </div>
             
                     </div>

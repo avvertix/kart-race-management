@@ -23,29 +23,29 @@
         <form method="POST" action="{{ route('participants.tires.store', $participant) }}">
         @csrf
         
-            <x-jet-section-title>
+            <x-section-title>
                 <x-slot name="title">{{ __('Assign a tire set') }}</x-slot>
                 <x-slot name="description">
                     
                 </x-slot>
-            </x-jet-section-title>
+            </x-section-title>
 
-            <x-jet-validation-errors class="mb-4" />
+            <x-validation-errors class="mb-4" />
 
             @for ($i = 0; $i < $tireLimit; $i++)
                 
                 <div class="mb-2">
-                    <x-jet-label for="tire_{{ $i }}" value="{{ __('Tire :number', ['number' => $i+1]) }}*" />
-                    <x-jet-input id="tire_{{ $i }}" type="text" name="tires[]" class="mt-1 block w-full" required autofocus />
+                    <x-label for="tire_{{ $i }}" value="{{ __('Tire :number', ['number' => $i+1]) }}*" />
+                    <x-input id="tire_{{ $i }}" type="text" name="tires[]" class="mt-1 block w-full" required autofocus />
                 </div>
             @endfor
                       
             <div class="">
 
                 <div class="py-5">
-                    <x-jet-button class="">
+                    <x-button class="">
                         {{ __('Assign tires') }}
-                    </x-jet-button>
+                    </x-button>
                 </div>
 
             </div>

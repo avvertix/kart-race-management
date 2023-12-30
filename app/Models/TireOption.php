@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 /**
  * @property string $name
  * @property string $price
+ * 
+ * @deprecated Use \App\Models\ChampionshipTire
  */
 class TireOption extends Fluent
 {

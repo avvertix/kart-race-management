@@ -84,5 +84,13 @@ class Championship extends Model
     {
         return $this->hasMany(Category::class);
     }
+    
+    /**
+     * Get the allowed tire models.
+     */
+    public function tires()
+    {
+        return $this->hasMany(ChampionshipTire::class);
+    }
 
 }

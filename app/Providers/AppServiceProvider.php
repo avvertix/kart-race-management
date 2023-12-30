@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\ActivityLog\EncryptSensibleParticipantData;
+use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -26,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'participant' => Participant::class,
             'user' => User::class,
+            'championship_tire' => ChampionshipTire::class,
         ]);
         
         Participant::addLogChange(new EncryptSensibleParticipantData());

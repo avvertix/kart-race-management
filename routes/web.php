@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\CommunicationMessageController;
@@ -71,6 +72,8 @@ Route::middleware([
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
         
         Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
+        
+        Route::resource('championships.categories', ChampionshipCategoryController::class)->shallow()->except(['destroy']);
         
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
         

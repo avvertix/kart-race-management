@@ -5,23 +5,29 @@
                 </h2>
                 <div class="mt-3 flex md:absolute md:top-3 md:right-0 md:mt-0 gap-2">
 
-                    @can('create', \App\Model\Race::class)
-                        <x-button-link href="{{ route('championships.races.create', $championship) }}">
-                            {{ __('Add race') }}
-                        </x-button-link>
-                    @endcan
-                    
-                    @can('create', \App\Model\Race::class)
-                        <x-button-link href="{{ route('championships.races.import.create', $championship) }}">
-                            {{ __('Import races') }}
-                        </x-button-link>
-                    @endcan
+                    @sectionMissing('actions')
 
-                    @can('update', $championship)
-                        <x-button-link href="{{ route('championships.edit', $championship) }}">
-                            {{ __('Edit championship') }}
-                        </x-button-link>
-                    @endcan
+                        @can('create', \App\Model\Race::class)
+                            <x-button-link href="{{ route('championships.races.create', $championship) }}">
+                                {{ __('Add race') }}
+                            </x-button-link>
+                        @endcan
+                        
+                        @can('create', \App\Model\Race::class)
+                            <x-button-link href="{{ route('championships.races.import.create', $championship) }}">
+                                {{ __('Import races') }}
+                            </x-button-link>
+                        @endcan
+
+                        @can('update', $championship)
+                            <x-button-link href="{{ route('championships.edit', $championship) }}">
+                                {{ __('Edit championship') }}
+                            </x-button-link>
+                        @endcan
+
+                    @endif
+
+                    @yield('actions')
                 </div>
             </div>
             <div class="mt-2 flex items-center text-sm text-zinc-500">
@@ -42,6 +48,8 @@
                         <x-tab-link href="{{ route('championships.races.index', $championship) }}" :active="request()->routeIs('championships.races.index', $championship)">{{ __('Races') }}</x-tab-link>
                         
                         <x-tab-link href="{{ route('championships.participants.index', $championship) }}" :active="request()->routeIs('championships.participants.index', $championship)">{{ __('Participants') }}</x-tab-link>
+                        
+                        <x-tab-link href="{{ route('championships.categories.index', $championship) }}" :active="request()->routeIs('championships.categories.index', $championship) || request()->routeIs('categories.*')">{{ __('Categories') }}</x-tab-link>
 
                     </nav>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Championship;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,25 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'championship_id' => Championship::factory(),
+            'name' => fake()->randomElement([
+                'Minikart',
+                'Mini GR.3',
+                '125 OK Senior'
+            ]),
+            'enabled' => true,
+            'short_name' => null,
+            'description' => null,
         ];
+    }
+
+
+    public function disabled()
+    {
+        return $this->state(function (array $attributes){
+            return [
+                'enabled' => false,
+            ];
+        });
     }
 }

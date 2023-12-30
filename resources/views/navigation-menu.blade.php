@@ -17,7 +17,7 @@
                         <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
-                        <x-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*')">
+                        <x-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*')">
                             {{ __('Championships') }}
                         </x-nav-link>
                         <x-nav-link href="{{ route('races.index') }}" :active="request()->routeIs('races.*') || request()->routeIs('participants.*')">

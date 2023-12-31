@@ -25,6 +25,7 @@ class CategoryFactory extends Factory
                 '125 OK Senior'
             ]),
             'enabled' => true,
+            'code' => null,
             'short_name' => null,
             'description' => null,
         ];

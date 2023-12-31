@@ -21,7 +21,7 @@ class ChampionshipCategoryController extends Controller
     {
         return view('category.index', [
             'championship' => $championship,
-            'categories' => $championship->categories()->orderBy('name', 'ASC')->get(),
+            'categories' => $championship->categories()->with('tire')->orderBy('name', 'ASC')->get(),
         ]);
     }
 

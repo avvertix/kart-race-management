@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
  * @property string $name
  * @property string $description
  * @property string $tires
+ * 
+ * @deprecated Use \App\Models\Category
  */
 class Category extends Fluent implements Describable
 {

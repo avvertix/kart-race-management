@@ -15,28 +15,33 @@
     </x-slot>
 
 
-    <div class="py-12">
+    <div class="pb-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <x-table>
                 <x-slot name="head">
                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Name') }} ▼</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Tire') }}</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Short Name') }}</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Status') }}</th>
                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                         <span class="sr-only">{{ __('Edit') }}</span>
                     </th>
                 </x-slot>
-
-            
-
             
             @forelse ($categories as $item)
 
                 <tr>
-                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-zinc-900 sm:pl-6">
-                        <p><a href="{{ route('categories.show', $item) }}" class=" hover:text-orange-900">{{ $item->name }}</a></p>
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm  text-zinc-900 sm:pl-6">
+                        <p><a href="{{ route('categories.show', $item) }}" class="font-medium hover:text-orange-900">{{ $item->name }}</a></p>
                         <p>{{ $item->description }}</p>
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
+                        @if ($item->tire)
+                            <a href="{{ route('tire-options.show', $item->tire) }}" target="_blank">{{ $item->tire?->name ?? __('All tires') }}</a>
+                        @else
+                            {{ __('All tires') }}
+                        @endif
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                         {{ $item->short_name }}

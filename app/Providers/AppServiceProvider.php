@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\ActivityLog\EncryptSensibleParticipantData;
+use App\Models\Category;
 use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\User;
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
             'participant' => Participant::class,
             'user' => User::class,
             'championship_tire' => ChampionshipTire::class,
+            'category' => Category::class,
         ]);
         
         Participant::addLogChange(new EncryptSensibleParticipantData());

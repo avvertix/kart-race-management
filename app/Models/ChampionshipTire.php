@@ -59,6 +59,14 @@ class ChampionshipTire extends Model
     {
         return $this->belongsTo(Championship::class);
     }
+    
+    /**
+     * The category that uses the tire
+     */
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

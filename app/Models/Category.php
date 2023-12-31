@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Category extends Model
 {
@@ -12,15 +14,19 @@ class Category extends Model
 
     use HasUlids;
 
+    use LogsActivity;
+
     protected $hidden = [
         'id',
     ];
 
     protected $fillable = [
+        'code',
         'name',
         'description',
         'enabled',
         'short_name',
+        'championship_tire_id',
     ];
 
     protected $casts = [
@@ -58,12 +64,12 @@ class Category extends Model
 
 
     /**
-     * Get the selectable tires for the category
+     * Get the selectable tire for the category
      */
-    // public function tires()
-    // {
-    //     return $this->hasMany(Tire::class);
-    // }
+    public function tire()
+    {
+        return $this->hasOne(ChampionshipTire::class, 'id', 'championship_tire_id');
+    }
 
 
     /**
@@ -86,5 +92,14 @@ class Category extends Model
     public function scopeDisabled($query)
     {
         return $query->where('enabled', false);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->dontLogIfAttributesChangedOnly(['updated_at'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

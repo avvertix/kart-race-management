@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
+use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ExportRaceParticipantsController;
@@ -74,6 +75,8 @@ Route::middleware([
         Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
         
         Route::resource('championships.categories', ChampionshipCategoryController::class)->shallow()->except(['destroy']);
+        
+        Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);
         
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
         

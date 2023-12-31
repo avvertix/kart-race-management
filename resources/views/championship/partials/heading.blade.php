@@ -50,6 +50,8 @@
                         <x-tab-link href="{{ route('championships.participants.index', $championship) }}" :active="request()->routeIs('championships.participants.index', $championship)">{{ __('Participants') }}</x-tab-link>
                         
                         <x-tab-link href="{{ route('championships.categories.index', $championship) }}" :active="request()->routeIs('championships.categories.index', $championship) || request()->routeIs('categories.*')">{{ __('Categories') }}</x-tab-link>
+                        
+                        <x-tab-link href="{{ route('championships.tire-options.index', $championship) }}" :active="request()->routeIs('championships.tire-options.*') || request()->routeIs('tire-options.*')">{{ __('Tires') }}</x-tab-link>
 
                     </nav>
                 </div>

@@ -26,6 +26,7 @@ class ChampionshipTire extends Model
         'code',
         'description',
         'price',
+        'championship_id',
     ];
 
     protected $casts = [

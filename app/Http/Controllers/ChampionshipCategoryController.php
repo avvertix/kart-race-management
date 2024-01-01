@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Championship;
+use App\Models\ChampionshipTire;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -32,6 +34,7 @@ class ChampionshipCategoryController extends Controller
     {
         return view('category.create', [
             'championship' => $championship,
+            'tires' => $championship->tires,
         ]);
     }
 
@@ -42,14 +45,23 @@ class ChampionshipCategoryController extends Controller
     {
         $validated = $this->validate($request, [
             'name' => 'required|string|max:250|unique:' . Category::class .',name',
+            'short_name' => 'nullable|string|max:250',
             'description' => 'nullable|string|max:1000',
             'enabled' => 'nullable|boolean',
+            'tire' => [
+                'nullable',
+                'integer',
+                Rule::exists((new ChampionshipTire())->getTable(), 'id')->where(function ($query) use ($championship) {
+                    return $query->where('championship_id', $championship->getKey());
+                })]
         ]);
 
         $category = $championship->categories()->create([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
+            'short_name' => $validated['short_name'] ?? null,
             'enabled' => $request->boolean('enabled') ?? false,
+            'championship_tire_id' => $validated['tire'] ?? null,
         ]);
 
         return redirect()->route('championships.categories.index', $championship)
@@ -77,6 +89,7 @@ class ChampionshipCategoryController extends Controller
         return view('category.edit', [
             'category' => $category,
             'championship' => $category->championship,
+            'tires' => $category->championship->tires,
         ]);
     }
 
@@ -85,19 +98,30 @@ class ChampionshipCategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $championship = $category->championship;
+
         $validated = $this->validate($request, [
             'name' => ['required','string','max:250', Rule::unique((new Category())->getTable(), 'name')->ignore($category)],
+            'short_name' => 'nullable|string|max:250',
             'description' => 'nullable|string|max:1000',
             'enabled' => 'nullable|boolean',
+            'tire' => [
+                'nullable',
+                'integer',
+                Rule::exists((new ChampionshipTire())->getTable(), 'id')->where(function ($query) use ($championship) {
+                    return $query->where('championship_id', $championship->getKey());
+                })]
         ]);
 
         $category->update([
             'name' => $validated['name'],
+            'short_name' => $validated['short_name'] ?? null,
             'description' => $validated['description'] ?? null,
             'enabled' => $request->boolean('enabled') ?? false,
+            'championship_tire_id' => $validated['tire'] ?? null,
         ]);
 
-        return redirect()->route('championships.categories.index', $category->championship)
+        return redirect()->route('championships.categories.index', $championship)
             ->with('flash.banner', __(':category updated.', [
                 'category' => $category->name
             ]));

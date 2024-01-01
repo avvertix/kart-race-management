@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Championship;
+use App\Models\ChampionshipTire;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ChampionshipCategoryControllerTest extends TestCase
@@ -69,6 +71,7 @@ class ChampionshipCategoryControllerTest extends TestCase
         $user = User::factory()->organizer()->create();
 
         $championship = Championship::factory()
+            ->has(ChampionshipTire::factory()->count(1), 'tires')
             ->create();
 
         $response = $this
@@ -80,9 +83,11 @@ class ChampionshipCategoryControllerTest extends TestCase
         $response->assertViewIs('category.create');
 
         $response->assertViewHas('championship', $championship);
+
+        $response->assertViewHas('tires', $championship->tires);
     }
     
-    public function test_category_created(): void
+    public function test_category_created_without_tire(): void
     {
         $user = User::factory()->organizer()->create();
 
@@ -94,6 +99,7 @@ class ChampionshipCategoryControllerTest extends TestCase
             ->from(route('championships.categories.create', $championship))
             ->post(route('championships.categories.store', $championship), [
                 'name' => 'Category name',
+                'short_name' => 'Alternate name',
                 'enabled' => true,
             ]);
 
@@ -106,9 +112,98 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertInstanceOf(Category::class, $category);
 
         $this->assertEquals('Category name', $category->name);
+        $this->assertEquals('Alternate name', $category->short_name);
         $this->assertNull($category->description);
-        $this->assertNull($category->short_name);
+        $this->assertNull($category->code);
         $this->assertTrue($category->enabled);
+        $this->assertNull($category->tire);
+    }
+    
+    public function test_category_created(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->has(ChampionshipTire::factory()->count(2), 'tires')
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.categories.create', $championship))
+            ->post(route('championships.categories.store', $championship), [
+                'name' => 'Category name',
+                'short_name' => 'Alternate name',
+                'enabled' => true,
+                'tire' => $championship->tires()->first()->getKey(),
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.index', $championship);
+
+        $response->assertSessionHas('flash.banner', 'Category name created.');
+
+        $category = Category::first();
+
+        $this->assertInstanceOf(Category::class, $category);
+
+        $this->assertEquals('Category name', $category->name);
+        $this->assertEquals('Alternate name', $category->short_name);
+        $this->assertNull($category->description);
+        $this->assertNull($category->code);
+        $this->assertTrue($category->enabled);
+        $this->assertTrue($category->tire->is($championship->tires()->first()));
+    }
+    
+    public function test_category_not_created_when_tire_not_in_championship(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $tire = ChampionshipTire::factory()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.categories.create', $championship))
+            ->post(route('championships.categories.store', $championship), [
+                'name' => 'Category name',
+                'short_name' => 'Alternate name',
+                'enabled' => true,
+                'tire' => $tire->getKey(),
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.create', $championship);
+
+        $response->assertSessionHasErrors('tire');
+
+        $category = Category::first();
+
+        $this->assertNull($category);
+    }
+    
+    public function test_category_not_created_when_name_above_maximum_length(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.categories.create', $championship))
+            ->post(route('championships.categories.store', $championship), [
+                'name' => 'Category name ' . Str::random(250),
+                'short_name' => 'Alternate name',
+                'enabled' => true,
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.create', $championship);
+
+        $response->assertSessionHasErrors('name');
+
+        $category = Category::first();
+
+        $this->assertNull($category);
     }
 
 
@@ -130,13 +225,20 @@ class ChampionshipCategoryControllerTest extends TestCase
         $response->assertViewHas('category', $category);
 
         $response->assertViewHas('championship', $category->championship);
+        
+        $response->assertViewHas('tires', $category->championship->tires);
     }
 
     public function test_category_updated(): void
     {
         $user = User::factory()->organizer()->create();
 
+        $championship = Championship::factory()
+            ->create();
+
         $category = Category::factory()
+            ->recycle($championship)
+            ->withTire()
             ->create();
 
         $response = $this
@@ -146,6 +248,7 @@ class ChampionshipCategoryControllerTest extends TestCase
                 'name' => 'Category name',
                 'description' => 'Added description',
                 'enabled' => false,
+                'tire' => $category->tire->getKey(),
             ]);
 
         $response->assertRedirectToRoute('championships.categories.index', $category->championship);
@@ -160,6 +263,31 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertEquals('Added description', $updatedCategory->description);
         $this->assertNull($updatedCategory->short_name);
         $this->assertFalse($updatedCategory->enabled);
+        $this->assertTrue($updatedCategory->tire->is($category->tire));
+    }
+
+    public function test_category_not_updated_when_tire_not_in_championship(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $tire = ChampionshipTire::factory()->create();
+
+        $category = Category::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('categories.edit', $category))
+            ->put(route('categories.update', $category), [
+                'name' => 'Category name',
+                'description' => 'Added description',
+                'enabled' => false,
+                'tire' => $tire->getKey(),
+            ]);
+
+        $response->assertRedirectToRoute('categories.edit', $category);
+
+        $response->assertSessionHasErrors('tire');
     }
 
     public function test_category_can_be_disabled_by_omitting_enabled(): void

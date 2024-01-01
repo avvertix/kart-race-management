@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Championship;
+use App\Models\ChampionshipTire;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -37,6 +38,15 @@ class CategoryFactory extends Factory
         return $this->state(function (array $attributes){
             return [
                 'enabled' => false,
+            ];
+        });
+    }
+    
+    public function withTire(?ChampionshipTire $tire = null)
+    {
+        return $this->state(function (array $attributes){
+            return [
+                'championship_tire_id' => $tire ?? ChampionshipTire::factory()->state(['championship_id' => $attributes['championship_id']]),
             ];
         });
     }

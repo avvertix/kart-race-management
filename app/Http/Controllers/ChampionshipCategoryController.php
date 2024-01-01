@@ -75,9 +75,12 @@ class ChampionshipCategoryController extends Controller
      */
     public function show(Category $category)
     {
+        $category->load('tire');
+        
         return view('category.show', [
             'category' => $category,
             'championship' => $category->championship,
+            'activities' => $category->activities,
         ]);
     }
 

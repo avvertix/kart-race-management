@@ -78,7 +78,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
 
         return [
             $participant->bib,
-            $participant->category()->name,
+            $participant->categoryConfiguration()->name,
             $participant->registration_completed_at ? __('completed') : null,
 
             $participant->first_name,

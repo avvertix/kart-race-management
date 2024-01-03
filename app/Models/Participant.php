@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Categories\Category;
+use App\Categories\Category as CategoryConfiguration;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -43,6 +43,7 @@ class Participant extends Model implements HasLocalePreference
     protected $fillable = [
         'bib',
         'category',
+        'category_id',
         'first_name',
         'last_name',
         'added_by',
@@ -90,6 +91,15 @@ class Participant extends Model implements HasLocalePreference
     ];
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = [
+        'racingCategory',
+    ];
+
+    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array
@@ -123,6 +133,14 @@ class Participant extends Model implements HasLocalePreference
     public function race()
     {
         return $this->belongsTo(Race::class);
+    }
+    
+    /**
+     * Category
+     */
+    public function racingCategory()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
     /**
@@ -183,14 +201,24 @@ class Participant extends Model implements HasLocalePreference
         return str()->title($this->first_name .' '. $this->last_name);
     }
     
-    public function category(): Category|null
+    /**
+     * @deprecated
+     */
+    public function categoryConfiguration(): CategoryConfiguration|null
     {
-        return Category::find($this->category);
+        if($this->category_id){
+            return $this->racingCategory->asCategoryConfiguration();
+        }
+
+        return CategoryConfiguration::find($this->category);
     }
     
-    public function tire(): TireOption|null
+    /**
+     * @deprecated
+     */
+    public function tireConfiguration(): TireOption|null
     {
-        return optional($this->category())->tire();
+        return optional($this->categoryConfiguration())->tire();
     }
     
     /**
@@ -354,7 +382,7 @@ class Participant extends Model implements HasLocalePreference
      */
     public function price(): Collection
     {
-        $tires = $this->tire();
+        $tires = $this->tireConfiguration();
 
         $order = collect([
             __('Race fee') => (int)config('races.price'),
@@ -377,6 +405,7 @@ class Participant extends Model implements HasLocalePreference
         ->logOnly([
             'bib',
             'category',
+            'category_id',
             'first_name',
             'last_name',
             'added_by',

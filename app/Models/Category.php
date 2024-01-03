@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Categories\Category as CategoryConfiguration;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +19,15 @@ class Category extends Model
 
     protected $hidden = [
         'id',
+    ];
+
+    /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = [
+        'tire'
     ];
 
     protected $fillable = [
@@ -101,5 +111,19 @@ class Category extends Model
             ->dontLogIfAttributesChangedOnly(['updated_at'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+
+    public function asCategoryConfiguration(): CategoryConfiguration
+    {
+        return new CategoryConfiguration([
+            'name' => $this->name,
+            'description' => $this->description,
+            'tires' => $this->tire->code,
+            'tire_name' => $this->tire->name,
+            'tire_price' => $this->tire->price,
+            'timekeeper_label' => $this->short_name,
+            'enabled' => $this->enabled,
+        ]);
     }
 }

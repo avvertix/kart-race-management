@@ -11,8 +11,6 @@ use Illuminate\Support\Str;
 /**
  * @property string $name
  * @property string $price
- * 
- * @deprecated Use \App\Models\ChampionshipTire
  */
 class TireOption extends Fluent
 {
@@ -22,6 +20,8 @@ class TireOption extends Fluent
     
     /**
      * Get all defined tire options
+     * 
+     * @deprecated Use \App\Models\ChampionshipTire
      */
     public static function all(): Collection 
     {
@@ -33,12 +33,17 @@ class TireOption extends Fluent
 
     /**
      * Get a tire option by its key
+     * 
+     * @deprecated Use \App\Models\ChampionshipTire
      */
     public static function find($key): TireOption|null 
     {
         return self::all()->get($key);
     }
 
+    /**
+     * @deprecated Use \App\Models\ChampionshipTire
+     */
     public static function search($term): Collection
     {
         return self::all()->filter(function($value, $key) use ($term){

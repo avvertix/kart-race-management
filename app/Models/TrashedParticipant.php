@@ -115,14 +115,20 @@ class TrashedParticipant extends Model
         return $this->driver['email'] ?? null;
     }
     
-    public function category(): Category|null
+    /**
+     * @deprecated
+     */
+    public function categoryConfiguration(): Category|null
     {
         return Category::find($this->category);
     }
     
-    public function tire(): TireOption|null
+    /**
+     * @deprecated
+     */
+    public function tireConfiguration(): TireOption|null
     {
-        return optional($this->category())->tire();
+        return optional($this->categoryConfiguration())->tire();
     }
     
 

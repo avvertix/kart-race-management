@@ -6,8 +6,8 @@
             <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $item->bib }}</span>
             <span>{{ $item->first_name }} {{ $item->last_name }}</span>
         </button>
-        <p class="mb-1 text-xl">{{ $item->category()->name }} / {{ $item->engine }}</p>
-        <p class="mb-6 text-xl">{{ $item->tire()->name }}</p>
+        <p class="mb-1 text-xl">{{ $item->categoryConfiguration()->name }} / {{ $item->engine }}</p>
+        <p class="mb-6 text-xl">{{ $item->tireConfiguration()->name }}</p>
     </div>
     <div class="flex gap-3 items-start">
         <span wire:loading wire:target="confirm({{ $item->getKey() }})">

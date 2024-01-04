@@ -31,7 +31,7 @@ class BackfillChampionshipTiresTest extends TestCase
 
         $this->artisan("operations:process", [
                 '--test' => true,
-                '2023_12_30_120021_backfill_championship_tires',
+                'name' => '2023_12_30_120021_backfill_championship_tires',
             ])
             ->assertSuccessful();
 
@@ -67,7 +67,7 @@ class BackfillChampionshipTiresTest extends TestCase
         
         $this->artisan("operations:process", [
                 '--test' => true,
-                '2023_12_30_120021_backfill_championship_tires',
+                'name' => '2023_12_30_120021_backfill_championship_tires',
             ])
             ->assertSuccessful();
 

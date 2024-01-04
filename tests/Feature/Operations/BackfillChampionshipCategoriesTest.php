@@ -39,7 +39,7 @@ class BackfillChampionshipCategoriesTest extends TestCase
 
         $this->artisan("operations:process", [
                 '--test' => true,
-                '2023_12_31_125844_backfill_championship_categories',
+                'name' => '2023_12_31_125844_backfill_championship_categories',
             ])
             ->assertSuccessful();
 
@@ -84,7 +84,7 @@ class BackfillChampionshipCategoriesTest extends TestCase
 
         $this->artisan("operations:process", [
                 '--test' => true,
-                '2023_12_31_125844_backfill_championship_categories',
+                'name' => '2023_12_31_125844_backfill_championship_categories',
             ])
             ->assertSuccessful();
 
@@ -114,7 +114,7 @@ class BackfillChampionshipCategoriesTest extends TestCase
         
         $this->artisan("operations:process", [
                 '--test' => true,
-                '2023_12_31_125844_backfill_championship_categories',
+                'name' => '2023_12_31_125844_backfill_championship_categories',
             ])
             ->assertSuccessful();
 

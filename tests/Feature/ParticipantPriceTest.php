@@ -30,7 +30,7 @@ class ParticipantPriceTest extends TestCase
         ]);
     }
 
-    public function test_participant_price_()
+    public function test_participant_price()
     {
         $this->setAvailableCategories();
 

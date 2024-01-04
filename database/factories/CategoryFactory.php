@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Championship;
+use App\Models\ChampionshipTire;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,35 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'championship_id' => Championship::factory(),
+            'name' => fake()->randomElement([
+                'Minikart',
+                'Mini GR.3',
+                '125 OK Senior'
+            ]),
+            'enabled' => true,
+            'code' => null,
+            'short_name' => null,
+            'description' => null,
         ];
+    }
+
+
+    public function disabled()
+    {
+        return $this->state(function (array $attributes){
+            return [
+                'enabled' => false,
+            ];
+        });
+    }
+    
+    public function withTire(?ChampionshipTire $tire = null)
+    {
+        return $this->state(function (array $attributes){
+            return [
+                'championship_tire_id' => $tire ?? ChampionshipTire::factory()->state(['championship_id' => $attributes['championship_id']]),
+            ];
+        });
     }
 }

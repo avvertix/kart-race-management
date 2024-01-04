@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
  * @property string $name
  * @property string $description
  * @property string $tires
+ * 
+ * 
  */
 class Category extends Fluent implements Describable
 {
@@ -26,12 +28,22 @@ class Category extends Fluent implements Describable
 
     public function tire(): TireOption
     {
+        if($this->get('tire_name') && $this->get('tire_price')){
+            
+            return new TireOption([
+                'name' => $this->get('tire_name'),
+                'price' => $this->get('tire_price'),
+            ]);
+        }
+
         return TireOption::find($this->tires);
     }
 
     
     /**
      * Get all defined categories
+     * 
+     * @deprecated Use \App\Models\Category
      */
     public static function all(): Collection 
     {
@@ -44,12 +56,17 @@ class Category extends Fluent implements Describable
 
     /**
      * Get a category by its key
+     * 
+     * @deprecated Use \App\Models\Category
      */
     public static function find($key): Category|null 
     {
         return self::all()->get($key);
     }
 
+    /**
+     * @deprecated Use \App\Models\Category
+     */
     public static function search($term): Collection
     {
         return self::all()->filter(function($value, $key) use ($term){

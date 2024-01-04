@@ -44,8 +44,8 @@
                     {{ $item->first_name }} {{ $item->last_name }}
 
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->category()?->name ?? $item->category }} / {{ $item->engine }}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->tires_count }} &times; {{ $item->category()?->tire()?->name ?? __('unspecified') }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->categoryConfiguration()?->name ?? $item->category }} / {{ $item->engine }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->tires_count }} &times; {{ $item->categoryConfiguration()?->tire()?->name ?? __('unspecified') }}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
                     @include('participant.partials.status')
                 </td>

@@ -31,7 +31,7 @@ class RaceTiresController extends Controller
                 return [
                     'category' => $p->category,
                     'total' => $p->total,
-                    'tire' => $p->category()->tires,
+                    'tire' => $p->categoryConfiguration()->tires,
                 ];
             })
             ->mapToGroups(function($p){

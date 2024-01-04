@@ -174,8 +174,8 @@
                         <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                         <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                     </h3>
-                    <p class="mb-1 text-xl">{{ $participant->category()->name }} / {{ $participant->engine }}</p>
-                    <p class="mb-6 text-xl">{{ $participant->tire()->name }}</p>
+                    <p class="mb-1 text-xl">{{ $participant->categoryConfiguration()->name }} / {{ $participant->engine }}</p>
+                    <p class="mb-6 text-xl">{{ $participant->tireConfiguration()->name }}</p>
                     
                     <div class="grid md:grid-cols-2 mb-2">
                         <p class="font-bold md:col-span-2">{{ __('Driver') }}</p>

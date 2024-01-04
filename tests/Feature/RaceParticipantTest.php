@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Championship;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
@@ -29,32 +30,14 @@ class RaceParticipantTest extends TestCase
     use CreateMechanic;
     use CreateVehicle;
 
-    protected function setAvailableCategories()
-    {
-        config([
-            'categories.default' => [
-                'category_key' => [
-                    'name' => 'CAT 1',
-                    'tires' => 'T1',
-                ],
-            ],
-            'races.tires' => [
-                'T1' => [
-                    'name' => 'T1',
-                    'price' => 10,
-                ],
-            ],
-        ]);
-    }
-
     
     public function test_registration_form_loads()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
-
+        
         $race = Race::factory()->create();
+        
+        $category = Category::factory()->recycle($race->championship)->create();
         
         $response = $this
             ->actingAs($user)
@@ -70,11 +53,11 @@ class RaceParticipantTest extends TestCase
     
     public function test_template_participant_included_when_race_within_same_championship()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
-
+        
         $race = Race::factory()->create();
+        
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $existingParticipant = Participant::factory()->create([
             'bib' => 100,
@@ -97,14 +80,14 @@ class RaceParticipantTest extends TestCase
     }
     
     public function test_template_participant_ignored_if_from_other_championship()
-    {
-        $this->setAvailableCategories();
-
+    {        
         $user = User::factory()->racemanager()->create();
-
+        
         $race = Race::factory()->create();
         
         $otherRace = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $existingParticipant = Participant::factory()->create([
             'bib' => 100,
@@ -130,17 +113,17 @@ class RaceParticipantTest extends TestCase
     {
         Notification::fake();
 
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
-
+        
         $race = Race::factory()->create();
+        
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $response = $this->actingAs($user)
             ->from(route('races.participants.create', $race))
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -160,7 +143,8 @@ class RaceParticipantTest extends TestCase
         $this->assertInstanceOf(Participant::class, $participant);
         
         $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
 
@@ -229,17 +213,17 @@ class RaceParticipantTest extends TestCase
     }
     public function test_participant_without_competitor_can_be_registered()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
-
+        
         $race = Race::factory()->create();
+        
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $response = $this->actingAs($user)
             ->from(route('races.participants.create', $race))
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
 
                 'driver_licence_type' => DriverLicence::LOCAL_NATIONAL->value,
 
@@ -277,7 +261,8 @@ class RaceParticipantTest extends TestCase
         $this->assertInstanceOf(Participant::class, $participant);
         
         $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
 
@@ -322,23 +307,23 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_cannot_register_using_existing_bib_in_same_race()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
-
+        
         $race = Race::factory()->create();
-
-        $existingParticipant = Participant::factory()->create([
-            'bib' => 100,
-            'championship_id' => $race->championship_id,
-            'race_id' => $race->getKey(),
-        ]);
+        
+        $existingParticipant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
+            ->create([
+                'bib' => 100,
+                'race_id' => $race->getKey(),
+            ]);
 
         $response = $this->actingAs($user)
             ->from(route('races.participants.create', $race))
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $race->championship->categories()->first()->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -357,27 +342,27 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_cannot_register_using_same_licence_twice_in_race()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
-
+        
         $race = Race::factory()->create();
-
-        $existingParticipant = Participant::factory()->create([
-            'bib' => 100,
-            'championship_id' => $race->championship_id,
-            'race_id' => $race->getKey(),
-            'driver_licence' => hash('sha512', 'D0001'),
-            'driver' => [
-                'licence_number' => 'D0001',
-            ]
-        ]);
+        
+        $existingParticipant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
+            ->create([
+                'bib' => 100,
+                'race_id' => $race->getKey(),
+                'driver_licence' => hash('sha512', 'D0001'),
+                'driver' => [
+                    'licence_number' => 'D0001',
+                ]
+            ]);
 
         $response = $this->actingAs($user)
             ->from(route('races.participants.create', $race))
             ->post(route('races.participants.store', $race), [
                 'bib' => 200,
-                'category' => 'category_key',
+                'category' => $race->championship->categories()->first()->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidVehicle(),
                 'consent_privacy' => true,
@@ -394,13 +379,13 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_cannot_register_using_existing_bib_in_championship()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
 
         $championship = Championship::factory()
             ->has(Race::factory()->count(2))
             ->create();
+
+        $category = Category::factory()->recycle($championship)->create();
 
         list($race, $otherRace) = $championship->races;
 
@@ -414,7 +399,7 @@ class RaceParticipantTest extends TestCase
             ->from(route('races.participants.create', $race))
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -433,19 +418,19 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_cannot_register_while_another_is_submitting_with_same_bib()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
 
         $race = Race::factory()->create();
 
-        $response =Cache::lock('participant:100', 10)->get(function() use ($race, $user){
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $response =Cache::lock('participant:100', 10)->get(function() use ($race, $user, $category){
 
             return $this->actingAs($user)
                 ->from(route('races.participants.create', $race))
                 ->post(route('races.participants.store', $race), [
                     'bib' => 100,
-                    'category' => 'category_key',
+                    'category' => $category->ulid,
                     ...$this->generateValidDriver(),
                     ...$this->generateValidCompetitor(),
                     ...$this->generateValidMechanic(),
@@ -466,17 +451,17 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_can_register_to_more_races()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
 
         $championship = Championship::factory()
             ->has(Race::factory()->count(2))
             ->create();
 
+        $category = Category::factory()->recycle($championship)->create();
+
         list($pastRace, $race) = $championship->races;
 
-        $existingParticipant = Participant::factory()->create([
+        $existingParticipant = Participant::factory()->category($category)->create([
             'bib' => 100,
             'championship_id' => $championship->getKey(),
             'race_id' => $pastRace->getKey(),
@@ -490,7 +475,7 @@ class RaceParticipantTest extends TestCase
             ->from(route('races.participants.create', $race))
             ->post(route('races.participants.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 'driver_licence_number' => $existingParticipant->driver['licence_number'],
                 ...$this->generateValidVehicle(),
@@ -509,24 +494,24 @@ class RaceParticipantTest extends TestCase
         $this->assertInstanceOf(Participant::class, $participant);
         
         $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals($category->ulid, $participant->category);
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
     }
 
     public function test_participant_can_be_updated()
     {
-        $this->setAvailableCategories();
-
         $user = User::factory()->racemanager()->create();
 
         $championship = Championship::factory()
             ->has(Race::factory()->count(2))
             ->create();
 
+        $category = Category::factory()->recycle($championship)->create();
+
         list($pastRace, $race) = $championship->races;
 
-        $existingParticipant = Participant::factory()->create([
+        $existingParticipant = Participant::factory()->category($category)->create([
             'bib' => 100,
             'championship_id' => $championship->getKey(),
             'race_id' => $race->getKey(),
@@ -540,7 +525,7 @@ class RaceParticipantTest extends TestCase
             ->from(route('participants.edit', $existingParticipant))
             ->put(route('participants.update', $existingParticipant), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 'driver_licence_number' => $existingParticipant->driver['licence_number'],
                 ...$this->generateValidVehicle(),
@@ -558,7 +543,8 @@ class RaceParticipantTest extends TestCase
         $this->assertInstanceOf(Participant::class, $participant);
         
         $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
     }

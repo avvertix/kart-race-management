@@ -33,7 +33,7 @@ class RaceRegistrationController extends Controller
 
         return view('race-registration.create', [
             'race' => $race,
-            'categories' => Category::all(),
+            'categories' => $race->championship->categories()->enabled()->get(),
             'registration_open' => $race->isRegistrationOpen,
         ]);
     }

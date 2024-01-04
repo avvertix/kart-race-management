@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Exports;
 
+use App\Models\Category;
 use App\Models\CompetitorLicence;
 use App\Models\Participant;
 use App\Models\Race;
@@ -45,11 +46,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
     public function test_export_participants_with_transponders()
     {
         config(['races.organizer.name' => 'Organizer name']);
-        config(['categories.default' => ['category_key' => [
-            'name' => 'Category Name',
-            'description' => 'category description',
-            'tires' => 'VEGA_MINI',
-        ]]]);
 
         $user = User::factory()->timekeeper()->create();
 
@@ -61,6 +57,8 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ]);
         
         $participant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
             ->has(Transponder::factory()->state([
                     'code' => 11,
                     'race_id' => $race->getKey()
@@ -68,7 +66,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'driver_licence' => 'a1234567890',
                 'race_id' => $race->getKey(),
-                'championship_id' => $race->championship->getKey(),
             ]);
 
         $vehicle = $participant->vehicles[0];
@@ -111,7 +108,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                'category_key',
+                $participant->categoryConfiguration()->name,
                 strtoupper($participant->first_name),
                 strtoupper($participant->last_name),
                 "a1234567", // car registration
@@ -133,12 +130,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
     public function test_export_participants_with_transponders_respect_timekeeping_label_if_present()
     {
         config(['races.organizer.name' => 'Organizer name']);
-        config(['categories.default' => ['category_key' => [
-            'name' => 'Category Name',
-            'description' => 'category description',
-            'tires' => 'VEGA_MINI',
-            'timekeeper_label' => 'OTHER NAME',
-        ]]]);
 
         $user = User::factory()->timekeeper()->create();
 
@@ -147,8 +138,14 @@ class RaceParticipantsForTimingExportTest extends TestCase
                 'event_start_at' => Carbon::parse("2023-02-28"),
                 'title' => 'Race title'
             ]);
+
+        $category = Category::factory()->recycle($race->championship)->withTire()->create([
+            'short_name' => 'OTHER NAME',
+        ]);
         
         $participant = Participant::factory()
+            ->recycle($race->championship)
+            ->category($category)
             ->has(Transponder::factory()->state([
                     'code' => 11,
                     'race_id' => $race->getKey()
@@ -156,7 +153,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'driver_licence' => 'a1234567890',
                 'race_id' => $race->getKey(),
-                'championship_id' => $race->championship->getKey(),
             ]);
 
         $vehicle = $participant->vehicles[0];
@@ -221,11 +217,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
     public function test_export_participants_with_out_of_zone_state()
     {
         config(['races.organizer.name' => 'Organizer name']);
-        config(['categories.default' => ['category_key' => [
-            'name' => 'Category Name',
-            'description' => 'category description',
-            'tires' => 'VEGA_MINI',
-        ]]]);
 
         $user = User::factory()->timekeeper()->create();
 
@@ -237,6 +228,8 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ]);
         
         $participant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
             ->has(Transponder::factory()->state([
                     'code' => 11,
                     'race_id' => $race->getKey()
@@ -244,7 +237,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'driver_licence' => 'a1234567890',
                 'race_id' => $race->getKey(),
-                'championship_id' => $race->championship->getKey(),
                 'properties' => ['out_of_zone' => true],
             ]);
 
@@ -288,7 +280,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                'category_key',
+                $participant->categoryConfiguration()->get('name'),
                 strtoupper($participant->first_name),
                 strtoupper($participant->last_name),
                 "a1234567", // car registration
@@ -310,11 +302,6 @@ class RaceParticipantsForTimingExportTest extends TestCase
     public function test_export_participants_does_not_include_participants_without_transponder()
     {
         config(['races.organizer.name' => 'Organizer name']);
-        config(['categories.default' => ['category_key' => [
-            'name' => 'Category Name',
-            'description' => 'category description',
-            'tires' => 'VEGA_MINI',
-        ]]]);
 
         $user = User::factory()->timekeeper()->create();
 
@@ -326,10 +313,11 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ]);
         
         $participant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
             ->create([
                 'driver_licence' => 'a1234567890',
                 'race_id' => $race->getKey(),
-                'championship_id' => $race->championship->getKey(),
             ]);
 
         $vehicle = $participant->vehicles[0];

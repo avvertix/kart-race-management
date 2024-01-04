@@ -11,7 +11,6 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Vitorccs\LaravelCsv\Helpers\CsvHelper;
 
 class RaceParticipantsExportTest extends TestCase
 {
@@ -69,11 +68,6 @@ class RaceParticipantsExportTest extends TestCase
     public function test_export_lists_driver_details()
     {
         config(['races.organizer.name' => 'Organizer name']);
-        config(['categories.default' => ['category_key' => [
-            'name' => 'Category Name',
-            'description' => 'category description',
-            'tires' => 'VEGA_MINI',
-        ]]]);
 
         $user = User::factory()->organizer()->create();
 
@@ -83,10 +77,12 @@ class RaceParticipantsExportTest extends TestCase
                 'title' => 'Race title'
             ]);
         
-        $participant = Participant::factory()->create([
-            'race_id' => $race->getKey(),
-            'championship_id' => $race->championship->getKey(),
-        ]);
+        $participant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
+            ->create([
+                'race_id' => $race->getKey(),
+            ]);
 
         $vehicle = $participant->vehicles[0];
         
@@ -180,11 +176,6 @@ class RaceParticipantsExportTest extends TestCase
     public function test_export_lists_participants_marked_registration_completed()
     {
         config(['races.organizer.name' => 'Organizer name']);
-        config(['categories.default' => ['category_key' => [
-            'name' => 'Category Name',
-            'description' => 'category description',
-            'tires' => 'VEGA_MINI',
-        ]]]);
 
         $user = User::factory()->organizer()->create();
 
@@ -195,10 +186,11 @@ class RaceParticipantsExportTest extends TestCase
             ]);
         
         $participant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
             ->markCompleted()
             ->create([
                 'race_id' => $race->getKey(),
-                'championship_id' => $race->championship->getKey(),
             ]);
 
         $vehicle = $participant->vehicles[0];
@@ -293,11 +285,6 @@ class RaceParticipantsExportTest extends TestCase
     public function test_export_lists_includes_competitor_and_mechanic()
     {
         config(['races.organizer.name' => 'Organizer name']);
-        config(['categories.default' => ['category_key' => [
-            'name' => 'Category Name',
-            'description' => 'category description',
-            'tires' => 'VEGA_MINI',
-        ]]]);
 
         $user = User::factory()->organizer()->create();
 
@@ -310,6 +297,7 @@ class RaceParticipantsExportTest extends TestCase
         $participant = Participant::factory()
             ->withCompetitor()
             ->withMechanic()
+            ->category()
             ->create([
                 'race_id' => $race->getKey(),
                 'championship_id' => $race->championship->getKey(),

@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Actions\RegisterParticipant;
-use App\Categories\Category;
+use App\Models\Category;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
-use App\Rules\ExistsCategory;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -80,7 +79,7 @@ class RaceParticipantController extends Controller
 
         return view('participant.create', [
             'race' => $race,
-            'categories' => Category::all(),
+            'categories' => $race->championship->categories()->enabled()->get(),
             'participant' => $templateParticipant,
         ]);
     }
@@ -156,7 +155,7 @@ class RaceParticipantController extends Controller
             'race' => $participant,
             'championship' => $participant->championship,
             'participant' => $participant,
-            'categories' => Category::all(),
+            'categories' => $participant->championship->categories()->enabled()->get(),
         ]);
     }
 
@@ -173,7 +172,9 @@ class RaceParticipantController extends Controller
             'bib' => [
                 'required', 'integer', 'min:1', 
             ],
-            'category' => ['required', 'string', new ExistsCategory],
+            'category' => ['required', 'string', 'ulid', Rule::exists((new Category())->getTable(), 'ulid')->where(function ($query) use ($participant) {
+                return $query->where('championship_id', $participant->championship_id)->where('enabled', true);
+            }),],
             'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
             
             'driver_first_name' => ['required', 'string', 'max:250'],
@@ -227,9 +228,11 @@ class RaceParticipantController extends Controller
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
         ]);
 
+        $category = Category::whereUlid($validated['category'])->firstOrFail();
+
         try {
 
-            $participant = Cache::lock("participant:{$validated['bib']}", 10)->block(5, function() use ($validated, $participant, $request){
+            $participant = Cache::lock("participant:{$validated['bib']}", 10)->block(5, function() use ($validated, $participant, $request, $category){
 
                 $validatedBib = Validator::make($validated, [
                     'bib' => [
@@ -244,6 +247,7 @@ class RaceParticipantController extends Controller
                 $participant->update([
                     'bib' => $validated['bib'],
                     'category' => $validated['category'],
+                    'category_id' => $category->getKey(),
                     'first_name' => $validated['driver_first_name'],
                     'last_name' => $validated['driver_last_name'],
                     'driver_licence' => hash('sha512', $validated['driver_licence_number']),

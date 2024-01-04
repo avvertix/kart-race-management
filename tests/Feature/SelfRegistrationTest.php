@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
@@ -23,33 +24,13 @@ class SelfRegistrationTest extends TestCase
     use CreateDriver;
     use CreateCompetitor;
     use CreateMechanic;
-    use CreateVehicle;
-
-    protected function setAvailableCategories()
-    {
-        config([
-            'categories.default' => [
-                'category_key' => [
-                    'name' => 'CAT 1',
-                    'tires' => 'T1',
-                ],
-            ],
-            'races.tires' => [
-                'T1' => [
-                    'name' => 'T1',
-                    'price' => 10,
-                ],
-            ],
-        ]);
-    }
-
-    
+    use CreateVehicle;   
 
     public function test_registration_form_loads()
-    {        
-        $this->setAvailableCategories();
-
+    {
         $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
 
@@ -74,8 +55,6 @@ class SelfRegistrationTest extends TestCase
 
     public function test_participant_limit_message_visible_on_registration_form()
     {        
-        $this->setAvailableCategories();
-
         $race = Race::factory()->withTotalParticipantLimit()->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
@@ -93,7 +72,6 @@ class SelfRegistrationTest extends TestCase
 
     public function test_participant_limit_reached_message_visible_on_registration_form()
     {        
-        $this->setAvailableCategories();
 
         $race = Race::factory()
             ->withTotalParticipantLimit(1)
@@ -115,10 +93,10 @@ class SelfRegistrationTest extends TestCase
     public function test_participant_can_self_register()
     {
         Notification::fake();
-        
-        $this->setAvailableCategories();
 
         $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
 
@@ -126,7 +104,7 @@ class SelfRegistrationTest extends TestCase
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -141,7 +119,8 @@ class SelfRegistrationTest extends TestCase
 
         $this->assertInstanceOf(Participant::class, $participant);
         $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
         $this->assertEquals('en', $participant->locale);
@@ -171,12 +150,11 @@ class SelfRegistrationTest extends TestCase
     {
         Notification::fake();
         
-        $this->setAvailableCategories();
-
-        
         $championship = Championship::factory()
             ->has(Race::factory()->count(2))
             ->create();
+
+        $category = Category::factory()->recycle($championship)->create();
 
         $firstRace = $championship->races->first();
         $race = $championship->races->last();
@@ -184,6 +162,7 @@ class SelfRegistrationTest extends TestCase
         $participationToFirstRace = Participant::factory()
             ->for($firstRace)
             ->for($championship)
+            ->category($category)
             ->driver([
                 'first_name' => 'John',
                 'last_name' => 'Racer',
@@ -198,7 +177,7 @@ class SelfRegistrationTest extends TestCase
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -226,13 +205,13 @@ class SelfRegistrationTest extends TestCase
     public function test_last_participant_can_self_register()
     {
         Notification::fake();
-        
-        $this->setAvailableCategories();
 
         $race = Race::factory()
             ->withTotalParticipantLimit(2)
-            ->has(Participant::factory(), 'participants')
+            ->has(Participant::factory()->category(), 'participants')
             ->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
 
@@ -240,7 +219,7 @@ class SelfRegistrationTest extends TestCase
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -255,7 +234,7 @@ class SelfRegistrationTest extends TestCase
 
         $this->assertInstanceOf(Participant::class, $participant);
         $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('category_key', $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
         $this->assertEquals('en', $participant->locale);
@@ -283,13 +262,13 @@ class SelfRegistrationTest extends TestCase
     public function test_participant_cannot_register_if_limit_is_reached()
     {
         Notification::fake();
-        
-        $this->setAvailableCategories();
 
         $race = Race::factory()
             ->withTotalParticipantLimit(1)
-            ->has(Participant::factory(), 'participants')
+            ->has(Participant::factory()->category(), 'participants')
             ->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
 
@@ -297,7 +276,7 @@ class SelfRegistrationTest extends TestCase
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -323,10 +302,10 @@ class SelfRegistrationTest extends TestCase
     public function test_participant_preferred_language_saved()
     {
         Notification::fake();
-        
-        $this->setAvailableCategories();
 
         $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
 
@@ -335,7 +314,7 @@ class SelfRegistrationTest extends TestCase
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
                 'bib' => 100,
-                'category' => 'category_key',
+                'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
@@ -350,7 +329,8 @@ class SelfRegistrationTest extends TestCase
 
         $this->assertInstanceOf(Participant::class, $participant);
         $this->assertEquals(100, $participant->bib);
-        $this->assertEquals('category_key', $participant->category);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
         $this->assertEquals('it', $participant->locale);
@@ -377,11 +357,9 @@ class SelfRegistrationTest extends TestCase
 
     public function test_participant_can_access_registration_receipt()
     {
-        $this->setAvailableCategories();
-
         $race = Race::factory()->create();
 
-        $participant = Participant::factory()->for($race)->create();
+        $participant = Participant::factory()->for($race)->recycle($race->championship)->category()->create();
 
         $response = $this
             ->get(URL::signedRoute('registration.show', ['registration' => $participant, 'p' => $participant->signatureContent()]));

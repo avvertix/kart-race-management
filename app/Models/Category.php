@@ -104,6 +104,17 @@ class Category extends Model
         return $query->where('enabled', false);
     }
 
+    /**
+     * Filter for enabled categories
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearch($query, $term)
+    {
+        return $query->where('enabled', true);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -120,9 +131,9 @@ class Category extends Model
             'name' => $this->name,
             'description' => $this->description,
             'tires' => $this->tire->code,
-            'tire_name' => $this->tire->name,
-            'tire_price' => $this->tire->price,
-            'timekeeper_label' => $this->short_name,
+            'tire_name' => $this->tire?->name,
+            'tire_price' => $this->tire?->price,
+            'timekeeper_label' => $this->short_name ?? $this->name,
             'enabled' => $this->enabled,
         ]);
     }

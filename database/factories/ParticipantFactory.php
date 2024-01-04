@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Competitor;
 use App\Models\CompetitorLicence;
@@ -214,6 +215,21 @@ class ParticipantFactory extends Factory
 
             return [
                 'use_bonus' => true,
+            ];
+        });
+    }
+    
+    /**
+     * Indicate that the participant requested to use the bonus.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     */
+    public function category(?Category $category = null)
+    {
+        return $this->state(function (array $attributes) use ($category) {
+
+            return [
+                'category_id' => optional($category)->getKey() ?? Category::factory(),
             ];
         });
     }

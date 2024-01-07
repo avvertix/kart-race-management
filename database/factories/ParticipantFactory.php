@@ -229,7 +229,8 @@ class ParticipantFactory extends Factory
         return $this->state(function (array $attributes) use ($category) {
 
             return [
-                'category_id' => optional($category)->getKey() ?? Category::factory(),
+                'category_id' => optional($category)->getKey() ?? Category::factory()->withTire(),
+                'category' => optional($category)->ulid ?? 'category_key',
             ];
         });
     }

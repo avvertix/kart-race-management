@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Categories\Category;
+use App\Models\Category;
 use Livewire\Component;
 
 class CategorySelector extends Component
@@ -16,6 +16,11 @@ class CategorySelector extends Component
      * @var \Illuminate\Support\Collection
      */
     public $categories;
+    
+    /**
+     * @var \App\Models\Championship
+     */
+    public $championship;
 
     public $search;
     
@@ -27,10 +32,7 @@ class CategorySelector extends Component
     
     public function render()
     {
-        $this->categories = ($this->search ? Category::search($this->search) : Category::all())->filter(function($category){
-            return $category->get('enabled', true);
-        });
-
+        $this->categories = $this->search ? $this->championship->categories()->enabled()->search($this->search) : $this->championship->categories()->enabled()->get();
 
         return view('livewire.category-selector');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\Category;
 use App\Models\Race;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -31,10 +32,14 @@ class RegisterParticipant
     public function __invoke(Race $race, array $input, ?User $user = null)
     {
         $validated = Validator::make($input, [
-            'bib' => [
-                'required', 'integer', 'min:1', 
-            ],
-            'category' => ['required', 'string', new ExistsCategory],
+            'bib' => ['required', 'integer', 'min:1',],
+            'category' => [
+                'required',
+                'string',
+                'ulid',
+                Rule::exists((new Category())->getTable(), 'ulid')->where(function ($query) use ($race) {
+                    return $query->where('championship_id', $race->championship_id)->where('enabled', true);
+                }),],
             'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
             
             'driver_first_name' => ['required', 'string', 'max:250'],
@@ -86,11 +91,14 @@ class RegisterParticipant
             'bonus' => ['nullable', 'in:true,false'],
         ])->validate();
 
+
+        $category = Category::whereUlid($validated['category'])->firstOrFail();
+
         try {
 
             $race->loadCount('participants');
         
-            $participant = Cache::lock($this->getLockKey($race, $validated['bib']), 10)->block(5, function() use($race, $validated, $user){
+            $participant = Cache::lock($this->getLockKey($race, $validated['bib']), 10)->block(5, function() use($race, $validated, $user, $category){
 
                 $input = array_merge($validated, ['driver_licence_number' => hash('sha512', $validated['driver_licence_number'])]);
 
@@ -108,7 +116,7 @@ class RegisterParticipant
                             ->where(fn ($query) => $query->where('race_id', $race->getKey())),
                     ]
                 ])
-                ->after(function($validator) use ($race) {
+                ->after(function($validator) use ($race, $category) {
 
                     $validated = $validator->validated();
 
@@ -137,6 +145,7 @@ class RegisterParticipant
                 return $race->participants()->create([
                     'bib' => $validated['bib'],
                     'category' => $validated['category'],
+                    'category_id' => $category->getKey(),
                     'first_name' => $validated['driver_first_name'],
                     'last_name' => $validated['driver_last_name'],
                     'added_by' => $user?->getKey(),

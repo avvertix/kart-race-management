@@ -206,11 +206,7 @@ class Participant extends Model implements HasLocalePreference
      */
     public function categoryConfiguration(): CategoryConfiguration|null
     {
-        if($this->category_id){
-            return $this->racingCategory->asCategoryConfiguration();
-        }
-
-        return CategoryConfiguration::find($this->category);
+        return $this->racingCategory?->asCategoryConfiguration();
     }
     
     /**

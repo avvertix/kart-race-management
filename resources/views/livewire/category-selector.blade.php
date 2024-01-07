@@ -3,17 +3,17 @@
     <x-search-input id="category_search" wire:model="search" type="text" placeholder="{{ __('Search category') }}" name="category_search" class="block w-full"  />
 
     <div class="flex flex-col gap-2 h-96 max-h-96 overflow-y-scroll">    
-        @forelse ($categories as $key => $item)
+        @forelse ($categories as $category)
             <label class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none focus:ring-2 focus-within:ring-2 focus-within:ring-orange-300 focus:ring-orange-300">
-                <input type="radio" name="{{ $name }}" value="{{ $key }}" @checked($key === $value) class="peer sr-only" aria-labelledby="{{ $name }}-{{ $key }}-label" aria-describedby="{{ $name }}-{{ $key }}-description">
+                <input type="radio" name="{{ $name }}" value="{{ $category->ulid }}" @checked($category->ulid === $value) class="peer sr-only" aria-labelledby="{{ $name }}-{{ $category->ulid }}-label" aria-describedby="{{ $name }}-{{ $category->ulid }}-description">
                 
                 <span class="flex flex-1">
                     <span class="flex flex-col">
-                        <span id="{{ $name }}-{{ $key }}-label" class="block text-sm font-medium text-zinc-900">{{ $item->name }}</span>
-                        @if ($item instanceof \App\Support\Describable)
-                            <span id="{{ $name }}-{{ $key }}-description" class="mt-1 flex items-center text-sm text-zinc-500">{{ $item->description() }}</span>
+                        <span id="{{ $name }}-{{ $category->ulid }}-label" class="block text-sm font-medium text-zinc-900">{{ $category->name }}</span>
+                        @if ($category->description)
+                            <span id="{{ $name }}-{{ $category->ulid }}-description" class="mt-1 flex items-center text-sm text-zinc-500">{{ $category->description }}</span>
                         @endif
-                        <span class="mt-1 flex items-center text-sm text-zinc-500">{{ optional($item->tire())->name ?? __('Tires not defined') }}</span>
+                        <span class="mt-1 flex items-center text-sm text-zinc-500">{{ optional($category->tire)->name ?? __('Tires not defined') }}</span>
                     </span>
                 </span>
 

@@ -38,41 +38,5 @@ class Category extends Fluent implements Describable
 
         return TireOption::find($this->tires);
     }
-
-    
-    /**
-     * Get all defined categories
-     * 
-     * @deprecated Use \App\Models\Category
-     */
-    public static function all(): Collection 
-    {
-        self::$categories = collect(config('categories.default'))
-            ->merge(json_decode(Storage::disk(config('categories.disk'))->get(config('categories.file')) ?? '{}', true))
-            ->mapInto(Category::class);
-        
-        return self::$categories;
-    }
-
-    /**
-     * Get a category by its key
-     * 
-     * @deprecated Use \App\Models\Category
-     */
-    public static function find($key): Category|null 
-    {
-        return self::all()->get($key);
-    }
-
-    /**
-     * @deprecated Use \App\Models\Category
-     */
-    public static function search($term): Collection
-    {
-        return self::all()->filter(function($value, $key) use ($term){
-            return Str::contains($value->get('name'), $term, true)
-                || Str::contains($value->description(), $term, true);
-        });
-    }
     
 }

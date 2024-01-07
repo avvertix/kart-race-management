@@ -22,7 +22,7 @@
                     <x-label for="category" value="{{ __('Category') }}*" />
                     <x-input-error for="category" class="mt-2" />
                     
-                    <livewire:category-selector name="category" class="" :value="old('category', optional($participant ?? null)->category)" />
+                    <livewire:category-selector name="category" class="" :championship="$race->championship" :value="old('category', optional($participant ?? null)->category)" />
                 </div>
             </div>
         </div>

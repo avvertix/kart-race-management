@@ -96,9 +96,11 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
 
         $engine_mapping = config('engine.normalization');
 
+        $categoryConfiguration = $participant->categoryConfiguration();
+
         return [
             $participant->bib,
-            $participant->categoryConfiguration()->get('timekeeper_label', $participant->category),
+            $categoryConfiguration->get('timekeeper_label', $categoryConfiguration->name),
             strtoupper($participant->first_name),
             strtoupper($participant->last_name),
             $registration_identifier, 

@@ -50,4 +50,16 @@ class CategoryFactory extends Factory
             ];
         });
     }
+    
+    public function withTireState(array $state)
+    {
+        return $this->state(function (array $attributes) use ($state){
+            return [
+                'championship_tire_id' => ChampionshipTire::factory()->state([
+                    ...$state,
+                    'championship_id' => $attributes['championship_id'],
+                ]),
+            ];
+        });
+    }
 }

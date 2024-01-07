@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
+use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -12,29 +14,23 @@ class ParticipantPriceTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setAvailableCategories()
+    protected function setAvailableCategories(): Category
     {
-        config([
-            'categories.default' => [
-                'category_key' => [
-                    'name' => 'CAT 1',
-                    'tires' => 'T1',
-                ],
-            ],
-            'races.tires' => [
-                'T1' => [
-                    'name' => 'T1',
-                    'price' => 10,
-                ],
-            ],
-        ]);
+        return Category::factory()
+            ->withTireState([
+                'name' => 'T1',
+                'price' => 10,
+            ])
+            ->create([
+                'name' => 'CAT 1',
+            ]);
     }
 
     public function test_participant_price()
     {
-        $this->setAvailableCategories();
+        $category = $this->setAvailableCategories();
 
-        $price = Participant::factory()->make()->price();
+        $price = Participant::factory()->category($category)->create()->price();
 
         $this->assertInstanceOf(Collection::class, $price);
 
@@ -47,9 +43,9 @@ class ParticipantPriceTest extends TestCase
     
     public function test_participant_price_consider_bonus()
     {
-        $this->setAvailableCategories();
+        $category = $this->setAvailableCategories();
 
-        $price = Participant::factory()->usingBonus()->make()->price();
+        $price = Participant::factory()->category($category)->usingBonus()->create()->price();
 
         $this->assertInstanceOf(Collection::class, $price);
 

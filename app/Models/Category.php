@@ -112,7 +112,11 @@ class Category extends Model
      */
     public function scopeSearch($query, $term)
     {
-        return $query->where('enabled', true);
+        return $query->where('enabled', true)
+            ->where(function($subQuery) use ($term){ 
+                return $subQuery->where('name', 'LIKE', "%{$term}%")
+                    ->orWhere('description', 'LIKE', "%{$term}%");
+            });
     }
 
     public function getActivitylogOptions(): LogOptions

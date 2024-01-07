@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Category;
 use Livewire\Component;
@@ -32,7 +32,7 @@ class CategorySelector extends Component
     
     public function render()
     {
-        $this->categories = $this->search ? $this->championship->categories()->enabled()->search($this->search) : $this->championship->categories()->enabled()->get();
+        $this->categories = $this->search ? $this->championship->categories()->enabled()->search($this->search)->get() : $this->championship->categories()->enabled()->get();
 
         return view('livewire.category-selector');
     }

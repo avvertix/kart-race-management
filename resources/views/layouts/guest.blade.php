@@ -9,10 +9,15 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Styles -->
+        @livewireStyles
     </head>
     <body>
         <div class="font-sans text-zinc-900 antialiased">
             {{ $slot }}
         </div>
+
+        @livewireScripts
     </body>
 </html>

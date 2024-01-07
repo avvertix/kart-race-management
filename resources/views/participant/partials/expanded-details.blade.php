@@ -232,7 +232,7 @@
             {{ __('Participant id') }} <span class="font-mono">{{ $item->getKey() }}</span>
         </p>
 
-        <form wire:submit.prevent="resendSignatureNotification({{ $item->getKey() }})">
+        <form wire:submit="resendSignatureNotification({{ $item->getKey() }})">
             <x-button type="submit" class="">
                 {{ __('Resend Verification Email') }}
             </x-button>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Participant;
 use App\Models\Race;
@@ -31,7 +31,7 @@ class ParticipantListing extends Component
         'sort' => ['except' => '', 'as' => 'order'],
     ];
 
-    public function __construct($race)
+    public function mount($race)
     {
         $this->race = $race;
         $this->search = null;

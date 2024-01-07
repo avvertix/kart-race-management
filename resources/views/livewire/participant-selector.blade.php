@@ -1,5 +1,5 @@
 <div class="relative">
-    <x-search-input id="participant_search" wire:model.debounce.750ms="search" wire:keydown.enter="$set('search', $event.target.value);" type="text" placeholder="{{ __('Search participant within championship') }}" name="participant_search" class="block w-full"  />
+    <x-search-input id="participant_search" wire:model.live.debounce.750ms="search" wire:keydown.enter="$set('search', $event.target.value);" type="text" placeholder="{{ __('Search participant within championship') }}" name="participant_search" class="block w-full"  />
 
     @if ($this->participants)
         

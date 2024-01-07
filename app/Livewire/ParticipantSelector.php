@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Livewire;
 
 use App\Models\Participant;
 use Livewire\Component;
@@ -19,7 +19,7 @@ class ParticipantSelector extends Component
 
     public $search;
 
-    public function __construct($race)
+    public function mount($race)
     {
         $this->race = $race;
         $this->search = null;

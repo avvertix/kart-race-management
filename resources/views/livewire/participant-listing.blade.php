@@ -1,6 +1,6 @@
 <div>
 
-    <x-search-input id="participant_search" wire:model.debounce.750ms="search" wire:keydown.enter="$set('search', $event.target.value);" type="text" autofocus placeholder="{{ __('Search participant using bib, name, last name or licence number') }}" name="participant_search" class="block w-full sticky top-0"  />
+    <x-search-input id="participant_search" wire:model.live.debounce.750ms="search" wire:keydown.enter="$set('search', $event.target.value);" type="text" autofocus placeholder="{{ __('Search participant using bib, name, last name or licence number') }}" name="participant_search" class="block w-full sticky top-0"  />
 
     <div class="h-4"></div>
     

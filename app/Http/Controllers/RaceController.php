@@ -51,8 +51,9 @@ class RaceController extends Controller
         $statistics->transponders = $race->participants()->has('transponders')->count();
 
         $participantsPerCategory = $race->participants()
-            ->selectRaw('category, count(*) as total, count(confirmed_at) as total_confirmed')
-            ->groupBy('category')
+            ->selectRaw('category_id, count(*) as total, count(confirmed_at) as total_confirmed')
+            ->groupBy('category_id')
+            ->with('racingCategory')
             ->get();
         
         $participantsPerEngine = DB::query()

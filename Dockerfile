@@ -1,5 +1,5 @@
 
-FROM klinktechnology/k-box-ci-pipeline-php:8.1 AS builder
+FROM klinktechnology/k-box-ci-pipeline-php:8.2 AS builder
 
 COPY --chown=php:php . /var/www/html
 RUN \
@@ -26,7 +26,7 @@ RUN \
 
 ## second step, assemble the image
 
-FROM php:8.1.13-fpm AS php
+FROM php:8.2.14-fpm-bullseye AS php
 
 LABEL maintainer="Alessio <alessio@avsoft.it>" \
   org.label-schema.name="avvertix/kart-race-management" \
@@ -78,28 +78,30 @@ RUN locale-gen "en_US.UTF-8" \
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-RUN set -e; \
-	NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
-	NGINX_VERSION=1.20.2-1~bullseye; \
-	found=''; \
-	apt-get update; \
-	apt-get install --no-install-recommends --no-install-suggests -y gnupg1 ca-certificates; \
-	for server in \
-		hkp://keyserver.ubuntu.com:80 \
-		pgp.mit.edu \
-	; do \
-		echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-		apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
-	done; \
-	test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-    echo "deb https://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list.d/nginx.list \
+ENV NGINX_VERSION "1.24.0-1~bullseye"
+RUN set -ex \
+    && apt-get update \
+    && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 \
+    && \
+    NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
+    NGINX_GPGKEY_PATH=/usr/share/keyrings/nginx-archive-keyring.gpg; \
+    export GNUPGHOME="$(mktemp -d)"; \
+    found=''; \
+    for server in \
+        hkp://keyserver.ubuntu.com:80 \
+        pgp.mit.edu \
+    ; do \
+        echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
+        gpg1 --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
+    done; \
+    test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
+    gpg1 --export "$NGINX_GPGKEY" > "$NGINX_GPGKEY_PATH" ; \
+    rm -rf "$GNUPGHOME"; \
+    apt-get remove --purge --auto-remove -y gnupg1 && rm -rf /var/lib/apt/lists/* \
+    && echo "deb [signed-by=$NGINX_GPGKEY_PATH] https://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list.d/nginx.list \
 	&& apt-get update \
-	&& apt-get install --no-install-recommends --no-install-suggests -y \
-						ca-certificates \
-						nginx=${NGINX_VERSION} \
-    && apt-get remove --purge --auto-remove -y gnupg1  \
-    && apt-get remove --purge --auto-remove -y \
-    && rm -rf /etc/apt/sources.list.d/nginx.list
+	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} \
+    && apt-get remove --purge --auto-remove -y && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list
 
 ## Configure cron to run Laravel scheduler
 RUN echo '* * * * * su www-data -s /bin/bash -c "cd /var/www/ && /usr/local/bin/php artisan schedule:run" >> /dev/null 2>&1' | crontab -

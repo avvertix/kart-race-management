@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Race;
 use App\Models\User;
@@ -37,9 +38,11 @@ class GenerateRaceNumber
     {
         $existing = Participant::where('championship_id', $championship->getKey())->distinct()->get('bib')->pluck('bib');
 
+        $reserved = BibReservation::where('championship_id', $championship->getKey())->distinct()->get('bib')->pluck('bib');
+
         $max = $existing->max() % self::MAXIMUM_SUGGESTION;
 
-        $options = collect()->range(1, $max)->diff($existing);
+        $options = collect()->range(1, $max)->diff($existing)->diff($reserved);
 
         $range = $options->count() > 4 ? $options->random(4) : $options;
 

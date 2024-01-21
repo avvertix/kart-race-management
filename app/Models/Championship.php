@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Championship extends Model
 {
@@ -91,6 +92,14 @@ class Championship extends Model
     public function tires()
     {
         return $this->hasMany(ChampionshipTire::class);
+    }
+    
+    /**
+     * Get the BIB reservations.
+     */
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(BibReservation::class)->orderBy('bib', 'ASC');
     }
 
 }

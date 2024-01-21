@@ -45,4 +45,33 @@ class BibReservation extends Model
         return $this->belongsTo(Championship::class);
     }
 
+
+    public function scopeInChamphionship($query, Championship|int $championship)
+    {
+        return $query->where('championship_id', is_int($championship) ? $championship : $championship->getKey());
+    }
+
+    public function scopeLicenceHash($query, $licence)
+    {
+        return $query->where('driver_licence_hash', $licence);
+    }
+
+    public function scopeLicence($query, $licence)
+    {
+        return $query->licenceHash(hash('sha512', $licence));
+    }
+    
+    public function scopeRaceNumber($query, $bib)
+    {
+        return $query->where('bib', $bib);
+    }
+    
+    public function scopeNotExpired($query)
+    {
+        return $query->where(function($subQuery){
+            return $subQuery->whereNull('reservation_expires_at')
+                ->orWhere('reservation_expires_at', '>', now());
+        });
+    }
+
 }

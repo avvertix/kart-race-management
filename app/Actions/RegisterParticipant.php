@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\BibReservation;
 use App\Models\Category;
 use App\Models\Race;
 use App\Models\User;
@@ -92,6 +93,8 @@ class RegisterParticipant
         ])->validate();
 
 
+        // TODO: check reserved bib matches
+
         $category = Category::whereUlid($validated['category'])->firstOrFail();
 
         try {
@@ -102,7 +105,7 @@ class RegisterParticipant
 
                 $input = array_merge($validated, ['driver_licence_number' => hash('sha512', $validated['driver_licence_number'])]);
 
-                Validator::make($input, [
+                $validator = Validator::make($input, [
                     'bib' => [
                         Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),
                         
@@ -133,8 +136,35 @@ class RegisterParticipant
                         );
                     }
 
-                })
-                ->validate();
+                    // check if bib was reserved to other driver
+
+                    $reservedBibWithSameLicence = BibReservation::query()
+                        ->notExpired()
+                        ->inChamphionship($race->championship_id)
+                        ->licenceHash($validated['driver_licence_number'])
+                        ->first()?->bib;
+
+                    if($reservedBibWithSameLicence && $reservedBibWithSameLicence != $validated['bib']){
+                        $validator->errors()->add(
+                            'bib', 'The entered bib does not reflect what has been reserved to the driven with the given licence.'
+                        );
+                    }
+                    
+                    $reservedBib = BibReservation::query()
+                        ->notExpired()
+                        ->inChamphionship($race->championship_id)
+                        ->raceNumber($validated['bib'])
+                        ->first()?->driver_licence_hash;
+
+                    if($reservedBib && $reservedBib !== $validated['driver_licence_number']){
+                        $validator->errors()->add(
+                            'bib', 'The entered bib is already reserved to another driver. Please check your licence number or contact the support.'
+                        );
+                    }
+                    
+                });
+
+                $validator->validate();
 
                 if($race->hasTotalParticipantLimit() && ($race->participants_count + 1) > $race->getTotalParticipantLimit()){
                     throw ValidationException::withMessages([

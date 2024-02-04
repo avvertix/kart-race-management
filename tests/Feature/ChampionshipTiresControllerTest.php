@@ -109,6 +109,39 @@ class ChampionshipTiresControllerTest extends TestCase
         $this->assertNull($tire->code);
         $this->assertEquals(12000, $tire->price);
     }
+    
+    public function test_tire_created_with_same_name_as_tire_in_another_championship(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $otherTire = ChampionshipTire::factory()
+            ->create([
+                'name' => 'Tire name',
+            ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.tire-options.create', $championship))
+            ->post(route('championships.tire-options.store', $championship), [
+                'name' => 'Tire name',
+                'price' => 12000
+            ]);
+
+        $response->assertRedirectToRoute('championships.tire-options.index', $championship);
+
+        $response->assertSessionHas('flash.banner', 'Tire name created.');
+
+        $tire = $championship->tires()->first();
+
+        $this->assertInstanceOf(ChampionshipTire::class, $tire);
+
+        $this->assertEquals('Tire name', $tire->name);
+        $this->assertNull($tire->code);
+        $this->assertEquals(12000, $tire->price);
+    }
 
 
     public function test_tire_edit_form_shown(): void
@@ -157,6 +190,45 @@ class ChampionshipTiresControllerTest extends TestCase
         $this->assertInstanceOf(ChampionshipTire::class, $updatedTire);
 
         $this->assertEquals('Tire name', $updatedTire->name);
+        $this->assertNull($updatedTire->code);
+        $this->assertEquals(40000, $updatedTire->price);
+        $this->assertEquals(['price' => 40000], $lastActivity->changes()->get('attributes'));
+        $this->assertEquals(['price' => $tire->price], $lastActivity->changes()->get('old'));
+    }
+
+    public function test_tire_price_updated_when_same_tire_is_present_in_another_championship(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $otherTire = ChampionshipTire::factory()
+            ->create([
+                'name' => 'MG',
+            ]);
+
+        $tire = ChampionshipTire::factory()
+            ->create([
+                'name' => 'MG',
+            ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('tire-options.edit', $tire))
+            ->put(route('tire-options.update', $tire), [
+                'name' => $tire->name,
+                'price' => 40000,
+            ]);
+
+        $response->assertRedirectToRoute('championships.tire-options.index', $tire->championship);
+
+        $response->assertSessionHas('flash.banner', "{$tire->name} updated.");
+
+        $updatedTire = $tire->fresh();
+
+        $lastActivity = $updatedTire->activities()->get()->last();
+
+        $this->assertInstanceOf(ChampionshipTire::class, $updatedTire);
+
+        $this->assertEquals($tire->name, $updatedTire->name);
         $this->assertNull($updatedTire->code);
         $this->assertEquals(40000, $updatedTire->price);
         $this->assertEquals(['price' => 40000], $lastActivity->changes()->get('attributes'));

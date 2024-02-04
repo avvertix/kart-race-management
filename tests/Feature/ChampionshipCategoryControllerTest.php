@@ -153,6 +153,49 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertTrue($category->tire->is($championship->tires()->first()));
     }
     
+    public function test_category_can_use_same_name_within_different_championships(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $otherChampionship = Championship::factory()
+            ->create();
+
+        $otherCategory = Category::factory()
+            ->recycle($otherChampionship)
+            ->create([
+                'name' => 'Category name',
+            ]);
+
+        $championship = Championship::factory()
+            ->has(ChampionshipTire::factory()->count(2), 'tires')
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.categories.create', $championship))
+            ->post(route('championships.categories.store', $championship), [
+                'name' => 'Category name',
+                'short_name' => 'Alternate name',
+                'enabled' => true,
+                'tire' => $championship->tires()->first()->getKey(),
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.index', $championship);
+
+        $response->assertSessionHas('flash.banner', 'Category name created.');
+
+        $category = $championship->categories()->first();
+
+        $this->assertInstanceOf(Category::class, $category);
+
+        $this->assertEquals('Category name', $category->name);
+        $this->assertEquals('Alternate name', $category->short_name);
+        $this->assertNull($category->description);
+        $this->assertNull($category->code);
+        $this->assertTrue($category->enabled);
+        $this->assertTrue($category->tire->is($championship->tires()->first()));
+    }
+    
     public function test_category_not_created_when_tire_not_in_championship(): void
     {
         $user = User::factory()->organizer()->create();
@@ -232,6 +275,52 @@ class ChampionshipCategoryControllerTest extends TestCase
     public function test_category_updated(): void
     {
         $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $category = Category::factory()
+            ->recycle($championship)
+            ->withTire()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('categories.edit', $category))
+            ->put(route('categories.update', $category), [
+                'name' => 'Category name',
+                'description' => 'Added description',
+                'enabled' => false,
+                'tire' => $category->tire->getKey(),
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.index', $category->championship);
+
+        $response->assertSessionHas('flash.banner', 'Category name updated.');
+
+        $updatedCategory = $category->fresh();
+
+        $this->assertInstanceOf(Category::class, $updatedCategory);
+
+        $this->assertEquals('Category name', $updatedCategory->name);
+        $this->assertEquals('Added description', $updatedCategory->description);
+        $this->assertNull($updatedCategory->short_name);
+        $this->assertFalse($updatedCategory->enabled);
+        $this->assertTrue($updatedCategory->tire->is($category->tire));
+    }
+
+    public function test_category_updated_with_name_of_a_category_in_another_championship(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $otherChampionship = Championship::factory()
+            ->create();
+
+        $otherCategory = Category::factory()
+            ->recycle($otherChampionship)
+            ->create([
+                'name' => 'Category name',
+            ]);
 
         $championship = Championship::factory()
             ->create();

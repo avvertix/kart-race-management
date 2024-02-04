@@ -41,7 +41,15 @@ class ChampionshipTireController extends Controller
     public function store(Request $request, Championship $championship)
     {
         $validated = $this->validate($request, [
-            'name' => 'required|string|max:250|unique:' . ChampionshipTire::class .',name',
+            'name' => [
+                'required',
+                'string',
+                'max:250',
+                Rule::unique((new ChampionshipTire())->getTable(), 'name')
+                    ->where(function ($query) use ($championship) {
+                        return $query->where('championship_id', $championship->getKey());
+                    })
+            ],
             'price' => 'required|integer|min:0',
         ]);
 
@@ -85,7 +93,16 @@ class ChampionshipTireController extends Controller
     public function update(Request $request, ChampionshipTire $tireOption)
     {
         $validated = $this->validate($request, [
-            'name' => ['required','string','max:250', Rule::unique((new ChampionshipTire())->getTable(), 'name')->ignore($tireOption)],
+            'name' => [
+                'required',
+                'string',
+                'max:250',
+                Rule::unique((new ChampionshipTire())->getTable(), 'name')
+                    ->ignore($tireOption)
+                    ->where(function ($query) use ($tireOption) {
+                        return $query->where('championship_id', $tireOption->championship_id);
+                    })
+                ],
             'price' => 'required|integer|min:0',
         ]);
 

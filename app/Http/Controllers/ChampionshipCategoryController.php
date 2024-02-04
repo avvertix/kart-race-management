@@ -44,7 +44,15 @@ class ChampionshipCategoryController extends Controller
     public function store(Request $request, Championship $championship)
     {
         $validated = $this->validate($request, [
-            'name' => 'required|string|max:250|unique:' . Category::class .',name',
+            'name' => [
+                'required',
+                'string',
+                'max:250',
+                Rule::unique((new Category())->getTable(), 'name')
+                    ->where(function ($query) use ($championship) {
+                        return $query->where('championship_id', $championship->getKey());
+                    })
+            ],
             'short_name' => 'nullable|string|max:250',
             'description' => 'nullable|string|max:1000',
             'enabled' => 'nullable|boolean',
@@ -104,7 +112,16 @@ class ChampionshipCategoryController extends Controller
         $championship = $category->championship;
 
         $validated = $this->validate($request, [
-            'name' => ['required','string','max:250', Rule::unique((new Category())->getTable(), 'name')->ignore($category)],
+            'name' => [
+                'required',
+                'string',
+                'max:250',
+                Rule::unique((new Category())->getTable(), 'name')
+                    ->ignore($category)
+                    ->where(function ($query) use ($championship) {
+                        return $query->where('championship_id', $championship->getKey());
+                    })
+            ],
             'short_name' => 'nullable|string|max:250',
             'description' => 'nullable|string|max:1000',
             'enabled' => 'nullable|boolean',

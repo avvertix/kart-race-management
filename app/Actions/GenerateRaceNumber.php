@@ -42,7 +42,7 @@ class GenerateRaceNumber
 
         $max = $existing->max() % self::MAXIMUM_SUGGESTION;
 
-        $options = collect()->range(1, $max)->diff($existing)->diff($reserved);
+        $options = collect()->range(1, $max == 0 ? 100 : $max)->diff($existing)->diff($reserved);
 
         $range = $options->count() > 4 ? $options->random(4) : $options;
 

@@ -23,6 +23,7 @@ trait CreateCompetitor
             'competitor_residence_city' => 'Milan',
             'competitor_residence_province' => 'Milan',
             'competitor_residence_postal_code' => '20146',
+            'competitor_fiscal_code' => 'CMPT-FC',
         ];
     }
 

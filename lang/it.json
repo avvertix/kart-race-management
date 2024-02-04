@@ -329,5 +329,6 @@
     "Edit reservation": "Modifica prenotazione",
     "Driver licence not specified. The reservation might not be enforced.": "Numero di licenza non indicato. La prenotazione non è attiva e chiunque può usare il numero di gara.",
     "Race Number Reservations": "Prenotazione Numeri Gara",
-    "Race Number": "Numero Gara"
+    "Race Number": "Numero Gara",
+    "Fiscal Code": "Codice Fiscale"
 }

@@ -228,6 +228,8 @@ class SelfRegistrationTest extends TestCase
                 'use_bonus' => 'false',
             ]);
 
+        $response->assertSessionDoesntHaveErrors();
+        
         $this->travelBack();
 
         $participant = Participant::latest()->first();

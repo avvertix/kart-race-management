@@ -67,6 +67,7 @@ class ParticipantFactory extends Factory
                     'postal_code' => '20146',
                 ],
                 'sex' => Sex::UNSPECIFIED,
+                'fiscal_code' => fake()->ssn(),
             ],
 
             'vehicles' => [
@@ -116,6 +117,7 @@ class ParticipantFactory extends Factory
                         'postal_code' => '20146',
                     ],
                     'sex' => Sex::UNSPECIFIED,
+                    'fiscal_code' => fake()->ssn(),
                 ], $driver),
             ];
         });
@@ -181,6 +183,7 @@ class ParticipantFactory extends Factory
                         'province' => 'Milan',
                         'postal_code' => '20146',
                     ],
+                    'fiscal_code' => fake()->ssn(),
                 ]
             ];
         });

@@ -89,6 +89,10 @@
                                     {{ $participant->last_name }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
+                                    <x-label for="driver_licence_number" value="{{ __('Fiscal Code') }}*" />
+                                    {{ $participant->driver['fiscal_code'] ?? '' }}
+                                </div>
+                                <div class="col-span-6 sm:col-span-4">
                                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                                     {{ $participant->licence_type?->value }}
                                 </div>
@@ -171,6 +175,10 @@
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-label for="competitor_last_name" value="{{ __('Surname') }}*" />
                                     {{ $participant->competitor['last_name'] }}
+                                </div>
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-label for="competitor_licence_number" value="{{ __('Fiscal Code') }}*" />
+                                    {{ $participant->competitor['fiscal_code'] ?? '' }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />

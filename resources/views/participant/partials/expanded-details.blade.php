@@ -123,6 +123,7 @@
         {{ $item->first_name }}
         {{ $item->last_name }}
     </p>
+    <p>{{ $item->driver['fiscal_code'] ?? '' }}</p>
     <p>
         {{ $item->driver['nationality'] }}
         {{ $item->licence_type?->localizedName() }}
@@ -163,6 +164,7 @@
                     {{ $item->competitor['first_name'] }}
                     {{ $item->competitor['last_name'] }}
                 </p>
+                <p>{{ $item->competitor['fiscal_code'] ?? '' }}</p>
                 <p>
                     {{ $item->competitor['nationality'] }}
                     {{ \App\Models\CompetitorLicence::from($item->competitor['licence_type'])->localizedName() }}

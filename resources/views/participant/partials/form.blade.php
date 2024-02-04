@@ -62,6 +62,11 @@
                     <x-input-error for="driver_last_name" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
+                    <x-label for="driver_fiscal_code" value="{{ __('Fiscal code') }}*" />
+                    <x-input id="driver_fiscal_code" type="text" name="driver_fiscal_code" class="mt-1 block w-full" :value="old('driver_fiscal_code', $driver['fiscal_code'] ?? null)"  />
+                    <x-input-error for="driver_fiscal_code" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="driver_licence_type" class="mt-2" />
                     <x-options-selector id="driver_licence_type" name="driver_licence_type" class="mt-1" :value="old('driver_licence_type', $driver['licence_type'] ?? null)"  />
@@ -154,6 +159,11 @@
                     <x-label for="competitor_last_name" value="{{ __('Surname') }}*" />
                     <x-input id="competitor_last_name" type="text" name="competitor_last_name" class="mt-1 block w-full" :value="old('competitor_last_name', $competitor['last_name'] ?? null)"  />
                     <x-input-error for="competitor_last_name" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="competitor_fiscal_code" value="{{ __('Fiscal Code') }}*" />
+                    <x-input id="competitor_fiscal_code" type="text" name="competitor_fiscal_code" class="mt-1 block w-full" :value="old('competitor_fiscal_code', $competitor['fiscal_code'] ?? null)"  />
+                    <x-input-error for="competitor_fiscal_code" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />

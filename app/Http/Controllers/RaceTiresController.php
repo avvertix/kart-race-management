@@ -23,31 +23,16 @@ class RaceTiresController extends Controller
 
         $race->load(['championship']);
 
-        $tires = $race->participants()
-            ->selectRaw('category, count(*) as total')
-            ->groupBy('category')
-            ->get()
+        $tires = $race->championship
+            ->tires()
+            ->withCount('participants')->get()
             ->map(function($p){
-                return [
-                    'category' => $p->category,
-                    'total' => $p->total,
-                    'tire' => $p->categoryConfiguration()->tires,
-                ];
-            })
-            ->mapToGroups(function($p){
-
-                return [ $p['tire'] => $p];
-            })
-            ->mapWithKeys(function($p, $tire){
                 return [ 
-                    $tire => [
-                        'name' => TireOption::find($tire)->name,
-                        'total' => collect($p)->sum('total'),
-                        'raw' => $p,
-                    ]
+                    'name' => $p->name,
+                    'total' => $p->participants_count,
+                    'raw' => $p,
                 ];
-            })
-            ->values();
+            });
 
         $search_term = $request->has('tire_search') ? e($request->get('tire_search')) : null;
         

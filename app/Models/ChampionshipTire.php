@@ -68,6 +68,11 @@ class ChampionshipTire extends Model
     {
         return $this->hasMany(Category::class);
     }
+    
+    public function participants()
+    {
+        return $this->hasManyThrough(Participant::class, Category::class);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

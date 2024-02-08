@@ -56,7 +56,12 @@ class RaceParticipantController extends Controller
 
         $templateParticipant = null;
 
-        $race->load('championship')->loadCount('participants');
+        $race
+            ->load([
+                'championship',
+                'championship.tires',
+            ])
+            ->loadCount('participants');
 
         try {
             $validated = $this->validate($request, [
@@ -81,6 +86,7 @@ class RaceParticipantController extends Controller
             'race' => $race,
             'categories' => $race->championship->categories()->enabled()->get(),
             'participant' => $templateParticipant,
+            'tires' => $race->championship->tires,
         ]);
     }
 

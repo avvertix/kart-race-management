@@ -27,7 +27,7 @@
                                 <td class="font-bold">{{ __('Tires') }}</td>
                                 <td></td>
                             </tr>
-                            @foreach (\App\Models\TireOption::all() as $tire)
+                            @foreach ($tires as $tire)
                                 <tr>
                                     <td>{{ $tire->name }}</td>
                                     <td><x-price>{{ $tire->price }}</x-price></td>

@@ -47,7 +47,7 @@ class SelfRegistrationTest extends TestCase
         $response->assertSee("Competitor");
         $response->assertSee("Mechanic");
         $response->assertSee("Vehicle");
-        $response->assertSee("Bonus");
+        $response->assertDontSee("Bonus");
         $response->assertSee("Consents");
         $response->assertSee("Rules");
         $response->assertSee("Participation price");

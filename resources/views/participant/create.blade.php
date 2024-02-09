@@ -26,8 +26,6 @@
 
                 @include('participant.partials.form')
 
-                @include('participant.partials.bonus')
-
                 <x-section-border />
                 
                 <div class="md:grid md:grid-cols-3 md:gap-6">

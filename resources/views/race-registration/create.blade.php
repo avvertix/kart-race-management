@@ -48,8 +48,6 @@
             @csrf
         
             @include('participant.partials.form')
-
-            @include('participant.partials.bonus')
             
             @include('participant.partials.consents')
 

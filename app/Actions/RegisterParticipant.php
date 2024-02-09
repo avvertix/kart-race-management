@@ -90,8 +90,6 @@ class RegisterParticipant
             'vehicle_oil_percentage' => ['required', 'string', 'max:250'],
 
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
-            
-            'bonus' => ['nullable', 'in:true,false'],
         ])->validate();
 
         $category = Category::whereUlid($validated['category'])->firstOrFail();
@@ -171,7 +169,13 @@ class RegisterParticipant
                     ]);
                 }
 
-                return $race->participants()->create([
+                $licenceHash = hash('sha512', $validated['driver_licence_number']);
+
+                $bonus = $race->championship->bonuses()->licenceHash($licenceHash)->first();
+
+                $useBonus = $bonus?->hasRemaining() ?? false;
+
+                $participant = $race->participants()->create([
                     'bib' => $validated['bib'],
                     'category' => $validated['category'],
                     'category_id' => $category->getKey(),
@@ -179,7 +183,7 @@ class RegisterParticipant
                     'last_name' => $validated['driver_last_name'],
                     'added_by' => $user?->getKey(),
                     'championship_id' => $race->championship_id,
-                    'driver_licence' => hash('sha512', $validated['driver_licence_number']),
+                    'driver_licence' => $licenceHash,
                     'competitor_licence' => isset($validated['competitor_licence_number']) ? hash('sha512', $validated['competitor_licence_number']) : null,
                     'licence_type' => $validated['driver_licence_type'],
                     'driver' => [
@@ -220,9 +224,15 @@ class RegisterParticipant
                     'consents' => [
                         'privacy' => ($validated['consent_privacy'] ?? false) ? true : false,
                     ],
-                    'use_bonus' => ($validated['bonus'] ?? false) ? true : false,
+                    'use_bonus' => $useBonus,
                     'locale' => App::currentLocale(),
                 ]);
+
+                if($bonus && $useBonus){
+                    $participant->bonuses()->attach($bonus);
+                }
+
+                return $participant;
             });
 
             $participant->sendConfirmParticipantNotification();

@@ -101,5 +101,13 @@ class Championship extends Model
     {
         return $this->hasMany(BibReservation::class)->orderBy('bib', 'ASC');
     }
+    
+    /**
+     * Get the bonus for drivers in this championship.
+     */
+    public function bonuses(): HasMany
+    {
+        return $this->hasMany(Bonus::class);
+    }
 
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BibReservationController;
+use App\Http\Controllers\ChampionshipBonusController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
@@ -75,6 +76,8 @@ Route::middleware([
         
         Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
         
+        Route::resource('championships.bonuses', ChampionshipBonusController::class)->shallow()->except(['destroy']);
+
         Route::resource('championships.categories', ChampionshipCategoryController::class)->shallow()->except(['destroy']);
         
         Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);

@@ -248,8 +248,6 @@ class RaceParticipantTest extends TestCase
 
                 'consent_privacy' => true,
 
-                'bonus' => 'true',
-
             ]);
 
         $response->assertRedirectToRoute('races.participants.index', $race);
@@ -297,7 +295,7 @@ class RaceParticipantTest extends TestCase
 
         $this->assertCount(1, $participant->vehicles);
 
-        $this->assertTrue($participant->use_bonus);
+        $this->assertFalse($participant->use_bonus);
 
         $this->assertEquals('Chassis', $participant->vehicles[0]['chassis_manufacturer']);
         $this->assertEquals('engine manufacturer', $participant->vehicles[0]['engine_manufacturer']);

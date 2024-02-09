@@ -180,6 +180,11 @@ class Participant extends Model implements HasLocalePreference
         return $this->hasMany(Participant::class, 'driver_licence', 'driver_licence')->orderBy('created_at');
     }
 
+    public function bonuses()
+    {
+        return $this->belongsToMany(Bonus::class, 'participant_bonus');
+    }
+
 
     public function getEngineAttribute($value = null)
     {

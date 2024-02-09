@@ -330,5 +330,10 @@
     "Driver licence not specified. The reservation might not be enforced.": "Numero di licenza non indicato. La prenotazione non è attiva e chiunque può usare il numero di gara.",
     "Race Number Reservations": "Prenotazione Numeri Gara",
     "Race Number": "Numero Gara",
-    "Fiscal Code": "Codice Fiscale"
+    "Fiscal Code": "Codice Fiscale",
+    "Amount": "Quantità",
+    "Remaining": "Rimanenti",
+    "Bonus type": "Tipo di bonus",
+    "The total amount of bonus/discount that can use during the championship.": "Il numero totali di buoni usufruibili nel campionato.",
+    "Add details about the bonus type and quantity for a specific driver.": "Il tipo di buono, la quantità disponibile e il pilota destinatario del buono."
 }

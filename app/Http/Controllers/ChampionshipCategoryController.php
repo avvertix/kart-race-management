@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
+use App\Models\Participant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ChampionshipCategoryController extends Controller
 {
@@ -132,6 +134,15 @@ class ChampionshipCategoryController extends Controller
                     return $query->where('championship_id', $championship->getKey());
                 })]
         ]);
+
+
+        if(!($request->boolean('enabled') ?? false)){
+            $hasParticipants = Participant::where('championship_id', $championship->getKey())->where('category_id', $category->getKey())->exists();
+
+            if($hasParticipants){
+                throw ValidationException::withMessages(['enabled' => __('The category cannot be deactivated because one or more competitors are registered in it.')]);
+            }
+        }
 
         $category->update([
             'name' => $validated['name'],

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
+use App\Models\Participant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -404,6 +405,38 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertEquals('Category name', $updatedCategory->name);
         $this->assertNull($updatedCategory->short_name);
         $this->assertFalse($updatedCategory->enabled);
+    }
+
+    public function test_category_cannot_be_disabled_when_assigned_to_a_participant(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $category = Category::factory()
+            ->create([
+                'enabled' => true,
+            ]);
+
+        $existingParticipant = Participant::factory()
+            ->recycle($category->championship)
+            ->category($category)
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('categories.edit', $category))
+            ->put(route('categories.update', $category), [
+                'name' => 'Category name',
+            ]);
+
+        $response->assertRedirectToRoute('categories.edit', $category);
+
+        $response->assertSessionHasErrors(['enabled' => 'The category cannot be deactivated because one or more competitors are registered in it.']);
+
+        $updatedCategory = $category->fresh();
+
+        $this->assertInstanceOf(Category::class, $updatedCategory);
+
+        $this->assertTrue($updatedCategory->enabled);
     }
 
     public function test_category_details_shown(): void

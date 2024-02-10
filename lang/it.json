@@ -339,5 +339,6 @@
     "Registration": "Iscrizione",
     "Tune the registration opening period.": "Aggiusta il periodo di apertura delle iscrizioni",
     "Open the registration at": "Apri le iscrizioni alle (giorno e ora)",
-    "Close the registration at": "Chiudi le iscrizioni alle (giorno e ora)"
+    "Close the registration at": "Chiudi le iscrizioni alle (giorno e ora)",
+    "The category cannot be deactivated because one or more competitors are registered in it.": "La categoria non può essere disattivata poiché utilizzata da uno o più participanti."
 }

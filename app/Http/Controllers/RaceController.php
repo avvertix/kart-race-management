@@ -99,13 +99,15 @@ class RaceController extends Controller
     {
         $validated = $this->validate($request, [
             'start' => 'required|date|after:today',
-            'end' => 'nullable|date|after:event_start',
+            'end' => 'nullable|date|after_or_equal:start',
             'title' => ['required', 'string', 'max:250', Rule::unique((new Race())->getTable(), 'title')->ignore($race)],
             'description' => 'nullable|string|max:1000',
             'track' => 'required|string|max:250',
             'hidden' => 'nullable|in:true,false',
             'participants_total_limit' => 'nullable|integer|min:1',
             'race_type' => ['nullable', 'integer', new Enum(RaceType::class)],
+            'registration_opens_at' => ['nullable', 'date', 'before:start'],
+            'registration_closes_at' => ['nullable', 'date', 'after:registration_opens_at'],
         ]);
 
         $configuredStartTime = config('races.start_time');
@@ -117,6 +119,9 @@ class RaceController extends Controller
         $utc_start_date = $start_date->setTimezone(config('app.timezone'));
         $utc_end_date = $end_date->setTimezone(config('app.timezone'));
 
+        $utc_registration_opens_at = ($validated['registration_opens_at'] ?? false) ? Carbon::parse($validated['registration_opens_at'], config('races.timezone'))->setTimezone(config('app.timezone')) : null;
+        $utc_registration_closes_at = ($validated['registration_closes_at'] ?? false) ? Carbon::parse($validated['registration_closes_at'], config('races.timezone'))->setTimezone(config('app.timezone')) : null;
+
 
         $race->update([
             'title' => $validated['title'],
@@ -124,8 +129,8 @@ class RaceController extends Controller
             'event_start_at' => $utc_start_date,
             'event_end_at' => $utc_end_date,
             'track' => $validated['track'],
-            'registration_opens_at' => $utc_start_date->copy()->subHours(config('races.registration.opens')),
-            'registration_closes_at' => $utc_start_date->copy()->subHours(config('races.registration.closes')),
+            'registration_opens_at' => $utc_registration_opens_at ?? $utc_start_date->copy()->subHours(config('races.registration.opens')),
+            'registration_closes_at' => $utc_registration_closes_at ?? $utc_start_date->copy()->subHours(config('races.registration.closes')),
             'hide' => ($validated['hidden'] ?? '') === 'true' ? true : false,
             'participant_limits' => $validated['participants_total_limit'] ? ($race->participant_limits ?? collect())->merge(['total' => $validated['participants_total_limit']]) : null,
             'type' => $validated['race_type'] ?? RaceType::LOCAL,

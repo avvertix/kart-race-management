@@ -12,7 +12,7 @@
             <div class="px-4 py-5">
                 <div class="grid grid-cols-6 gap-6">
                     <div class="col-span-6 sm:col-span-4 prose prose-zinc">
-                        <p>{{ __('Race cost is calculated from a fixed fee plus one tire set, based on the selected category.') }}</p>
+                        <p>{{ __('Race cost is calculated from a fixed fee and an eventual tire set, based on the selected category.') }}</p>
                         <p>{{ __('Here is the price list. The final price is given after submitting the registration.') }}</p>
                         <table>
                             <tr>
@@ -23,16 +23,19 @@
                                 <td>{{ __('Participation fee') }}</td>
                                 <td><x-price>{{ config('races.price') }}</x-price></td>
                             </tr>
-                            <tr>
-                                <td class="font-bold">{{ __('Tires') }}</td>
-                                <td></td>
-                            </tr>
-                            @foreach ($tires as $tire)
+
+                            @if ($tires->isNotEmpty())
                                 <tr>
-                                    <td>{{ $tire->name }}</td>
-                                    <td><x-price>{{ $tire->price }}</x-price></td>
+                                    <td class="font-bold">{{ __('Tires') }}</td>
+                                    <td></td>
                                 </tr>
-                            @endforeach
+                                @foreach ($tires as $tire)
+                                    <tr>
+                                        <td>{{ $tire->name }}</td>
+                                        <td><x-price>{{ $tire->price }}</x-price></td>
+                                    </tr>
+                                @endforeach
+                            @endif
                         </table>
                     </div>
                 </div>

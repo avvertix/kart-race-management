@@ -20,6 +20,11 @@ return [
     'registration' => [
         'opens' => env('RACE_REGISTRATION_OPENS_HOURS', 7 * Carbon::HOURS_PER_DAY),
         'closes' => env('RACE_REGISTRATION_CLOSES_HOURS', 1),
+
+        /*
+         * Acceptable values: complete, minimal
+         */
+        'form' => env('RACE_REGISTRATION_FORM', 'complete'),
     ],
 
     'organizer' => [

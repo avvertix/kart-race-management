@@ -10,6 +10,7 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,5 +38,9 @@ class AppServiceProvider extends ServiceProvider
         ]);
         
         Participant::addLogChange(new EncryptSensibleParticipantData());
+
+        Blade::if('useCompleteRegistrationForm', function () {
+            return config('races.registration.form') === 'complete';
+        });
     }
 }

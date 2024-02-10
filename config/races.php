@@ -29,7 +29,7 @@ return [
 
     'organizer' => [
         'name' => env('RACE_ORGANIZER_NAME'),
-        'email' => env('RACE_ORGANIZER_EMAIL'),
+        'email' => env('RACE_ORGANIZER_EMAIL'), // TODO: usare questo indirizzo come reply-to nelle email se configurato
         'url' => env('RACE_ORGANIZER_URL'),
         'address' => env('RACE_ORGANIZER_ADDRESS'),
         'bank_account' => env('RACE_ORGANIZER_BANK_ACCOUNT'),

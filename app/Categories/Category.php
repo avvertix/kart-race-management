@@ -26,7 +26,7 @@ class Category extends Fluent implements Describable
         return $this->get('description', '') ?? '';
     }
 
-    public function tire(): TireOption
+    public function tire(): ?TireOption
     {
         if($this->get('tire_name') && $this->get('tire_price')){
             

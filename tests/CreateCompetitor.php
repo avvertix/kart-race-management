@@ -3,12 +3,13 @@
 namespace Tests;
 
 use App\Models\CompetitorLicence;
+use Illuminate\Support\Arr;
 
 trait CreateCompetitor
 {
-    protected function generateValidCompetitor()
+    protected function generateValidCompetitor(array $exclude = []): array
     {
-        return [
+        return Arr::except([
             'competitor_first_name' => 'Parent',
             'competitor_last_name' => 'Racer',
             'competitor_licence_number' => 'C0002',
@@ -24,7 +25,7 @@ trait CreateCompetitor
             'competitor_residence_province' => 'Milan',
             'competitor_residence_postal_code' => '20146',
             'competitor_fiscal_code' => 'CMPT-FC',
-        ];
+        ], $exclude);
     }
 
 }

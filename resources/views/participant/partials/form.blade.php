@@ -66,11 +66,13 @@
                     <x-input id="driver_fiscal_code" type="text" name="driver_fiscal_code" class="mt-1 block w-full" :value="old('driver_fiscal_code', $driver['fiscal_code'] ?? null)"  />
                     <x-input-error for="driver_fiscal_code" class="mt-2" />
                 </div>
+                @useCompleteRegistrationForm()
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="driver_licence_type" class="mt-2" />
                     <x-options-selector id="driver_licence_type" name="driver_licence_type" class="mt-1" :value="old('driver_licence_type', $driver['licence_type'] ?? null)"  />
                 </div>
+                @enduseCompleteRegistrationForm
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
                     <x-input id="driver_licence_number" type="text" name="driver_licence_number" class="mt-1 block w-full" :value="old('driver_licence_number', $driver['licence_number'] ?? null)"  />
@@ -107,11 +109,13 @@
                     <x-input-error for="driver_birth_place" class="mt-2" />
                 </div>
 
+                @useCompleteRegistrationForm()
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
                     <x-input id="driver_medical_certificate_expiration_date" type="date" name="driver_medical_certificate_expiration_date" class="mt-1 block w-full" :value="old('driver_medical_certificate_expiration_date', $driver['medical_certificate_expiration_date'] ?? null)"   pattern="\d{4}-\d{2}-\d{2}"/>
                     <x-input-error for="driver_medical_certificate_expiration_date" class="mt-2" />
                 </div>
+                @enduseCompleteRegistrationForm
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_residence" value="{{ __('Residence address') }}*" />
@@ -119,11 +123,13 @@
                     <x-address id="driver_residence" type="text" name="driver_residence" class="mt-1 block w-full" :value="$driver['residence_address'] ?? null"  />
                 </div>
 
+                @useCompleteRegistrationForm()
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_sex" value="{{ __('Sex') }}*" />
                     <x-input-error for="driver_sex" class="mt-2" />
                     <x-options-selector :options="\App\Models\Sex::class" id="driver_sex" name="driver_sex" class="mt-1 " :value="old('driver_sex', $driver['sex'] ?? null)"  />
                 </div>
+                @enduseCompleteRegistrationForm
                 
             </div>
         </div>
@@ -165,11 +171,13 @@
                     <x-input id="competitor_fiscal_code" type="text" name="competitor_fiscal_code" class="mt-1 block w-full" :value="old('competitor_fiscal_code', $competitor['fiscal_code'] ?? null)"  />
                     <x-input-error for="competitor_fiscal_code" class="mt-2" />
                 </div>
+                @useCompleteRegistrationForm()
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="competitor_licence_type" class="mt-2" />
                     <x-options-selector :options="\App\Models\CompetitorLicence::class" id="competitor_licence_type" name="competitor_licence_type" class="mt-1  " :value="old('competitor_licence_type', $competitor['licence_type'] ?? null)"  />
                 </div>
+                @enduseCompleteRegistrationForm
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />
                     <x-input id="competitor_licence_number" type="text" name="competitor_licence_number" class="mt-1 block w-full" :value="old('competitor_licence_number', $competitor['licence_number'] ?? null)"  />
@@ -217,6 +225,7 @@
     </div>
 </div>
 
+@useCompleteRegistrationForm()
 <x-section-border />
 
 <div class="md:grid md:grid-cols-3 md:gap-6">
@@ -292,3 +301,4 @@
         </div>
     </div>
 </div>
+@enduseCompleteRegistrationForm

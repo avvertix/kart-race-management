@@ -134,7 +134,7 @@ class Category extends Model
         return new CategoryConfiguration([
             'name' => $this->name,
             'description' => $this->description,
-            'tires' => $this->tire->code,
+            'tires' => $this->tire?->code,
             'tire_name' => $this->tire?->name,
             'tire_price' => $this->tire?->price,
             'timekeeper_label' => $this->short_name ?? $this->name,

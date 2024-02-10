@@ -387,10 +387,10 @@ class Participant extends Model implements HasLocalePreference
 
         $order = collect([
             __('Race fee') => (int)config('races.price'),
-            __('Tires (:model)', ['model' => $tires->name]) => $tires->price,
+            __('Tires (:model)', ['model' => $tires?->name]) => $tires?->price,
             __('Bonus') => $this->use_bonus ? 0-config('races.bonus_amount', 0) : 0,
             __('Total') => null,
-        ]);
+        ])->filter();
 
         $total = $order->sum();
 

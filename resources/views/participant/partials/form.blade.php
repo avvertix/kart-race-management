@@ -109,11 +109,13 @@
                     <x-input-error for="driver_birth_place" class="mt-2" />
                 </div>
 
+                @useCompleteRegistrationForm()
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
                     <x-input id="driver_medical_certificate_expiration_date" type="date" name="driver_medical_certificate_expiration_date" class="mt-1 block w-full" :value="old('driver_medical_certificate_expiration_date', $driver['medical_certificate_expiration_date'] ?? null)"   pattern="\d{4}-\d{2}-\d{2}"/>
                     <x-input-error for="driver_medical_certificate_expiration_date" class="mt-2" />
                 </div>
+                @enduseCompleteRegistrationForm
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_residence" value="{{ __('Residence address') }}*" />

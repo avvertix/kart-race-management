@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Models\DriverLicence;
 use App\Models\Sex;
+use Illuminate\Support\Arr;
 
 trait CreateDriver
 {
@@ -12,9 +13,9 @@ trait CreateDriver
      * 
      * @return array
      */
-    protected function generateValidDriver()
+    protected function generateValidDriver(array $exclude = []): array
     {
-        return [
+        return Arr::except([
             'driver_first_name' => 'John',
             'driver_last_name' => 'Racer',
             'driver_licence_number' => 'D0001',
@@ -32,7 +33,7 @@ trait CreateDriver
             'driver_residence_postal_code' => '20146',
             'driver_sex' => Sex::MALE->value,
             'driver_fiscal_code' => 'DRV-FC',
-        ];
+        ], $exclude);
     }
 
 }

@@ -28,6 +28,8 @@ class SelfRegistrationTest extends TestCase
 
     public function test_registration_form_loads()
     {
+        config(['races.registration.form' => 'complete']);
+
         $race = Race::factory()->create();
 
         $category = Category::factory()->recycle($race->championship)->create();
@@ -68,6 +70,31 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertSee("Limited number competition");
         $response->assertSee("In this race we can only accept a maximum of 10 participants.");
+    }
+
+    public function test_minimal_form_used()
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        $race = Race::factory()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertDontSee("Licence Type");
+        $response->assertDontSee("Sex");
+        $response->assertDontSee("Mechanic");
+        $response->assertDontSee("Vehicle");
+        $response->assertDontSee("Bonus");
+        $response->assertSee("Consents");
+        $response->assertSee("Rules");
+        $response->assertSee("Participation price");
     }
 
     public function test_participant_limit_reached_message_visible_on_registration_form()

@@ -7,7 +7,9 @@
             <span>{{ $item->first_name }} {{ $item->last_name }}</span>
         </button>
         <p class="mb-1 text-xl">{{ $item->categoryConfiguration()->name }} / {{ $item->engine }}</p>
-        <p class="mb-6 text-xl">{{ $item->tireConfiguration()->name }}</p>
+        @if ($item->tireConfiguration())
+            <p class="mb-6 text-xl">{{ $item->tireConfiguration()->name }}</p>
+        @endif
     </div>
     <div class="flex gap-3 items-start">
         <span wire:loading wire:target="confirm({{ $item->getKey() }})">

@@ -17,7 +17,9 @@
                                 <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                             </h3>
                             <p class="mb-1 text-xl">{{ $participant->categoryConfiguration()->name }} / {{ $participant->engine }}</p>
-                            <p class="mb-6 text-xl">{{ $participant->tireConfiguration()->name }}</p>
+                            @if ($participant->tireConfiguration())
+                                <p class="mb-6 text-xl">{{ $participant->tireConfiguration()->name }}</p>
+                            @endif
                             
                             <div class="mb-2">
                                 <p class="font-bold ">{{ __('Driver') }}</p>

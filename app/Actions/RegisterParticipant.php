@@ -16,6 +16,7 @@ use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\CompetitorLicence;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,9 @@ class RegisterParticipant
      */
     public function __invoke(Race $race, array $input, ?User $user = null)
     {
+
+        // TODO: take into consideration the config races.registration.form == complete or minimal
+
         $validated = Validator::make($input, [
             'bib' => ['required', 'integer', 'min:1',],
             'category' => [
@@ -41,54 +45,12 @@ class RegisterParticipant
                 Rule::exists((new Category())->getTable(), 'ulid')->where(function ($query) use ($race) {
                     return $query->where('championship_id', $race->championship_id)->where('enabled', true);
                 }),],
-            'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
-            
-            'driver_first_name' => ['required', 'string', 'max:250'],
-            'driver_last_name' => ['required', 'string', 'max:250'],
-            
-            'driver_licence_number' => ['required', 'string', 'max:250'],
-            'driver_licence_renewed_at' => ['nullable'],
-            'driver_nationality' => ['required', 'string', 'max:250'],
-            'driver_email' => ['required', 'string', 'email'],
-            'driver_phone' => ['required', 'string', ],
-            'driver_birth_date' => ['required', 'string', ],
-            'driver_birth_place' => ['required', 'string', ],
-            'driver_medical_certificate_expiration_date' => ['required', 'string', ],
-            'driver_residence_address' => [ 'required', 'string' ],
-            'driver_sex' => [ 'required', new Enum(Sex::class) ],
-            'driver_residence_address' => ['required', 'string', 'max:250'],
-            'driver_residence_city' => ['required', 'string',  'max:250'],
-            'driver_residence_province' => ['nullable', 'string',  'max:250'],
-            'driver_residence_postal_code' => ['required', 'string', 'max:250'],
-            'driver_fiscal_code' => ['required', 'string', 'max:250'],
-            
-            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
-            'competitor_licence_type' => ['nullable','required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
-            'competitor_first_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_last_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_fiscal_code' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_licence_renewed_at' => ['nullable'],
-            'competitor_nationality' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_email' => ['nullable','required_with:competitor_licence_number', 'string', 'email'],
-            'competitor_phone' => ['nullable','required_with:competitor_licence_number', 'string', ],
-            'competitor_birth_date' => ['nullable','required_with:competitor_licence_number', 'string', ],
-            'competitor_birth_place' => ['nullable','required_with:competitor_licence_number', 'string', ],
-            'competitor_residence_address' => [ 'nullable','required_with:competitor_licence_number', 'string' ],
-            'competitor_residence_address' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_residence_city' => ['nullable','required_with:competitor_licence_number', 'string',  'max:250'],
-            'competitor_residence_province' => ['nullable', 'string',  'max:250'],
-            'competitor_residence_postal_code' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
-            
-            'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
-            'mechanic_name' => ['nullable', 'required_with:mechanic_licence_number', 'string', 'max:250'],
 
-            'vehicle_chassis_manufacturer' => ['required', 'string', 'max:250'],
-            'vehicle_engine_manufacturer' => ['required', 'string',  'max:250'],
-            'vehicle_engine_model' => ['required', 'string',  'max:250'],
-            'vehicle_oil_manufacturer' => ['required', 'string', 'max:250'],
-            'vehicle_oil_type' => ['nullable', 'string',  'max:250'],
-            'vehicle_oil_percentage' => ['required', 'string', 'max:250'],
-
+            ...$this->getDriverValidationRules(),
+            ...$this->getCompetitorValidationRules(),
+            ...$this->getMechanicValidationRules(),
+            ...$this->getVehicleValidationRules(),
+            
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
         ])->validate();
 
@@ -185,11 +147,11 @@ class RegisterParticipant
                     'championship_id' => $race->championship_id,
                     'driver_licence' => $licenceHash,
                     'competitor_licence' => isset($validated['competitor_licence_number']) ? hash('sha512', $validated['competitor_licence_number']) : null,
-                    'licence_type' => $validated['driver_licence_type'],
+                    'licence_type' => $validated['driver_licence_type'] ?? DriverLicence::LOCAL_NATIONAL->value,
                     'driver' => [
                         'first_name' => $validated['driver_first_name'],
                         'last_name' => $validated['driver_last_name'],
-                        'licence_type' => $validated['driver_licence_type'],
+                        'licence_type' => $validated['driver_licence_type'] ?? DriverLicence::LOCAL_NATIONAL->value,
                         'licence_number' => $validated['driver_licence_number'],
                         'fiscal_code' => $validated['driver_fiscal_code'],
                         'licence_renewed_at' => $validated['driver_licence_renewed_at'] ?? null,
@@ -198,14 +160,14 @@ class RegisterParticipant
                         'phone' => $validated['driver_phone'],
                         'birth_date' => $validated['driver_birth_date'],
                         'birth_place' => $validated['driver_birth_place'],
-                        'medical_certificate_expiration_date' => $validated['driver_medical_certificate_expiration_date'],
+                        'medical_certificate_expiration_date' => $validated['driver_medical_certificate_expiration_date'] ?? null,
                         'residence_address' =>  $this->processAddressInput($validated, 'driver_residence'),
-                        'sex' => $validated['driver_sex'],
+                        'sex' => $validated['driver_sex'] ?? Sex::UNSPECIFIED,
                     ],
                     'competitor' => isset($validated['competitor_licence_number']) ? [
                         'first_name' => $validated['competitor_first_name'],
                         'last_name' => $validated['competitor_last_name'],
-                        'licence_type' => $validated['competitor_licence_type'],
+                        'licence_type' => $validated['competitor_licence_type'] ?? CompetitorLicence::LOCAL->value,
                         'licence_number' => $validated['competitor_licence_number'],
                         'fiscal_code' => $validated['competitor_fiscal_code'],
                         'licence_renewed_at' => $validated['competitor_licence_renewed_at'] ?? null,
@@ -267,6 +229,10 @@ class RegisterParticipant
 
     protected function processVehicle($input)
     {
+        if($this->useMinimalForm()){
+            return [];
+        }
+
         return [[
             'chassis_manufacturer' => $input['vehicle_chassis_manufacturer'] ?? null,
             'engine_manufacturer' => strtolower($input['vehicle_engine_manufacturer'] ?? ''),
@@ -275,5 +241,107 @@ class RegisterParticipant
             'oil_type' => $input['vehicle_oil_type'] ?? null,
             'oil_percentage' => $input['vehicle_oil_percentage'] ?? null,
         ]];
+    }
+
+
+    protected function getDriverValidationRules(): array
+    {
+        $rules = [
+            'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
+            
+            'driver_first_name' => ['required', 'string', 'max:250'],
+            'driver_last_name' => ['required', 'string', 'max:250'],
+            
+            'driver_licence_number' => ['required', 'string', 'max:250'],
+            'driver_licence_renewed_at' => ['nullable'],
+            'driver_nationality' => ['required', 'string', 'max:250'],
+            'driver_email' => ['required', 'string', 'email'],
+            'driver_phone' => ['required', 'string', ],
+            'driver_birth_date' => ['required', 'string', ],
+            'driver_birth_place' => ['required', 'string', ],
+            'driver_medical_certificate_expiration_date' => ['required', 'string', ],
+            'driver_residence_address' => [ 'required', 'string' ],
+            'driver_sex' => [ 'required', new Enum(Sex::class) ],
+            'driver_residence_address' => ['required', 'string', 'max:250'],
+            'driver_residence_city' => ['required', 'string',  'max:250'],
+            'driver_residence_province' => ['nullable', 'string',  'max:250'],
+            'driver_residence_postal_code' => ['required', 'string', 'max:250'],
+            'driver_fiscal_code' => ['required', 'string', 'max:250'],
+        ];
+
+        if($this->useMinimalForm()){
+            return Arr::except($rules, [
+                'driver_licence_type',
+                'driver_licence_renewed_at',
+                'driver_medical_certificate_expiration_date',
+                'driver_sex',
+            ]);
+        }
+
+        return $rules;
+    }
+
+    protected function getCompetitorValidationRules(): array
+    {
+        $rules = [
+            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
+            'competitor_licence_type' => ['nullable','required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
+            'competitor_first_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_last_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_fiscal_code' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_licence_renewed_at' => ['nullable'],
+            'competitor_nationality' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_email' => ['nullable','required_with:competitor_licence_number', 'string', 'email'],
+            'competitor_phone' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_date' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_place' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_residence_address' => [ 'nullable','required_with:competitor_licence_number', 'string' ],
+            'competitor_residence_address' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_residence_city' => ['nullable','required_with:competitor_licence_number', 'string',  'max:250'],
+            'competitor_residence_province' => ['nullable', 'string',  'max:250'],
+            'competitor_residence_postal_code' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+        ];
+
+        if($this->useMinimalForm()){
+            return Arr::except($rules, [
+                'competitor_licence_type',
+                'competitor_licence_renewed_at',
+            ]);
+        }
+
+        return $rules;
+    }
+
+    protected function getMechanicValidationRules(): array
+    {
+        if($this->useMinimalForm()){
+            return [];
+        }
+
+        return [
+            'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
+            'mechanic_name' => ['nullable', 'required_with:mechanic_licence_number', 'string', 'max:250'],
+        ];
+    }
+
+    protected function getVehicleValidationRules(): array
+    {
+        if($this->useMinimalForm()){
+            return [];
+        }
+
+        return [
+            'vehicle_chassis_manufacturer' => ['required', 'string', 'max:250'],
+            'vehicle_engine_manufacturer' => ['required', 'string',  'max:250'],
+            'vehicle_engine_model' => ['required', 'string',  'max:250'],
+            'vehicle_oil_manufacturer' => ['required', 'string', 'max:250'],
+            'vehicle_oil_type' => ['nullable', 'string',  'max:250'],
+            'vehicle_oil_percentage' => ['required', 'string', 'max:250'],
+        ];
+    }
+
+    protected function useMinimalForm(): bool
+    {
+        return config('races.registration.form') !== 'complete';
     }
 }

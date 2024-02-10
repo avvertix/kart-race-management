@@ -31,8 +31,10 @@ class RegisterParticipantTest extends TestCase
     use CreateVehicle;   
 
     
-    public function test_participant_registered()
+    public function test_participant_registered_using_complete_form()
     {
+        config(['races.registration.form' => 'complete']);
+
         Notification::fake();
 
         $race = Race::factory()->create();
@@ -63,6 +65,130 @@ class RegisterParticipantTest extends TestCase
         $this->assertEquals('Racer', $participant->last_name);
         $this->assertEquals('en', $participant->locale);
         $this->assertFalse($participant->use_bonus);
+
+        $this->assertEquals([
+            "first_name" => "Parent",
+            "last_name" => "Racer",
+            "licence_type" => 10,
+            "licence_number" => "C0002",
+            "fiscal_code" => "CMPT-FC",
+            "licence_renewed_at" => null,
+            "nationality" => "Italy",
+            "email" => "parent@racer.local",
+            "phone" => "54444444",
+            "birth_date" => "1979-11-11",
+            "birth_place" => "Milan",
+            "residence_address" => [
+                "address" => "via dei Platani, 40",
+                "city" => "Milan",
+                "province" => "Milan",
+                "postal_code" => "20146",
+            ]
+        ], $participant->competitor);
+
+        $this->assertCount(1, $participant->vehicles);
+        $this->assertEquals([
+            "chassis_manufacturer" => "Chassis",
+            "engine_manufacturer" => "engine manufacturer",
+            "engine_model" => "engine model",
+            "oil_manufacturer" => "Oil Manufacturer",
+            "oil_type" => "Oil Type",
+            "oil_percentage" => "4",
+        ], $participant->vehicles[0]);
+
+        $this->assertEquals([
+            "name" => "Mechanic Racer",
+            "licence_number" => "M0003",
+        ], $participant->mechanic);
+        
+
+        Notification::assertCount(2);
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'driver';
+        });
+
+        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+            return $notification->target === 'competitor';
+        });
+    }
+    
+    public function test_participant_registered_using_minimal_form()
+    {
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(['driver_licence_type','driver_sex', 'driver_medical_certificate_expiration_date']),
+            ...$this->generateValidCompetitor(['competitor_licence_type']),
+            'consent_privacy' => true,
+        ]);
+
+        $this->travelBack();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('en', $participant->locale);
+        $this->assertFalse($participant->use_bonus);
+
+        $this->assertEquals([
+            "first_name" => "John",
+            "last_name" => "Racer",
+            "licence_type" => 10,
+            "licence_number" => "D0001",
+            "fiscal_code" => "DRV-FC",
+            "licence_renewed_at" => null,
+            "nationality" => "Italy",
+            "email" => "john@racer.local",
+            "phone" => "555555555",
+            "birth_date" => "1999-11-11",
+            "birth_place" => "Milan",
+            "medical_certificate_expiration_date" => null,
+            "residence_address" => [
+                "address" => "via dei Platani, 40",
+                "city" => "Milan",
+                "province" => "Milan",
+                "postal_code" => "20146",
+            ],
+            "sex" => 30,
+        ], $participant->driver);
+
+        $this->assertEquals([
+            "first_name" => "Parent",
+            "last_name" => "Racer",
+            "licence_type" => 10,
+            "licence_number" => "C0002",
+            "fiscal_code" => "CMPT-FC",
+            "licence_renewed_at" => null,
+            "nationality" => "Italy",
+            "email" => "parent@racer.local",
+            "phone" => "54444444",
+            "birth_date" => "1979-11-11",
+            "birth_place" => "Milan",
+            "residence_address" => [
+                "address" => "via dei Platani, 40",
+                "city" => "Milan",
+                "province" => "Milan",
+                "postal_code" => "20146",
+            ]
+        ], $participant->competitor);
+
+        $this->assertCount(0, $participant->vehicles);
+
+        $this->assertEmpty($participant->mechanic);
 
         Notification::assertCount(2);
 

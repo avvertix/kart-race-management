@@ -115,6 +115,8 @@ class RegisterParticipantTest extends TestCase
     
     public function test_participant_registered_using_minimal_form()
     {
+        config(['races.registration.form' => 'minimal']);
+
         Notification::fake();
 
         $race = Race::factory()->create();

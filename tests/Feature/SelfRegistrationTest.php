@@ -259,7 +259,7 @@ class SelfRegistrationTest extends TestCase
         
         $this->travelBack();
 
-        $participant = Participant::latest()->first();
+        $participant = $race->participants()->where('bib', 100)->first();
 
         $this->assertInstanceOf(Participant::class, $participant);
         $this->assertEquals(100, $participant->bib);

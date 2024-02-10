@@ -335,5 +335,9 @@
     "Remaining": "Rimanenti",
     "Bonus type": "Tipo di bonus",
     "The total amount of bonus/discount that can use during the championship.": "Il numero totali di buoni usufruibili nel campionato.",
-    "Add details about the bonus type and quantity for a specific driver.": "Il tipo di buono, la quantità disponibile e il pilota destinatario del buono."
+    "Add details about the bonus type and quantity for a specific driver.": "Il tipo di buono, la quantità disponibile e il pilota destinatario del buono.",
+    "Registration": "Iscrizione",
+    "Tune the registration opening period.": "Aggiusta il periodo di apertura delle iscrizioni",
+    "Open the registration at": "Apri le iscrizioni alle (giorno e ora)",
+    "Close the registration at": "Chiudi le iscrizioni alle (giorno e ora)"
 }

@@ -141,6 +141,32 @@ class ChampionshipBonusControllerTest extends TestCase
 
         $this->assertNull($bonus);
     }
+    
+    public function test_bonus_not_created_when_already_existing_with_same_licence(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $bonus = Bonus::factory()
+            ->recycle($championship)
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.bonuses.create', $championship))
+            ->post(route('championships.bonuses.store', $championship), [
+                'driver' => 'Driver name',
+                'driver_licence' => $bonus->driver_licence,
+                'bonus_type' => BonusType::REGISTRATION_FEE->value,
+                'amount' => 1,
+            ]);
+
+        $response->assertRedirectToRoute('championships.bonuses.create', $championship);
+
+        $response->assertSessionHasErrors('driver_licence');
+    }
 
 
     public function test_bonus_edit_form_shown(): void

@@ -6,6 +6,8 @@ use App\Models\Bonus;
 use App\Models\BonusType;
 use App\Models\Championship;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class ChampionshipBonusController extends Controller
@@ -43,15 +45,32 @@ class ChampionshipBonusController extends Controller
     {
         $validated = $this->validate($request, [
             'driver' => 'required|string|max:250',
-            'driver_licence' => 'required|string|max:250',
+            'driver_licence' => [
+                'required',
+                'string',
+                'max:250',
+            ],
             'bonus_type' => ['required', 'integer', new Enum(BonusType::class)],
             'amount' => 'required|integer|min:1',
+        ]);
+
+        $licenceHash = hash('sha512', $validated['driver_licence']);
+
+        Validator::validate([
+            'driver_licence' => $licenceHash,
+        ], [
+            'driver_licence' => [
+                'required',
+                'string',
+                Rule::unique('bonuses', 'driver_licence_hash')
+                    ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
+            ],
         ]);
 
         $bonus = $championship->bonuses()->create([
             'driver' => $validated['driver'],
             'driver_licence' => $validated['driver_licence'] ?? null,
-            'driver_licence_hash' => hash('sha512', $validated['driver_licence']),
+            'driver_licence_hash' => $licenceHash,
             'amount' => $validated['amount'],
             'bonus_type' => BonusType::from($validated['bonus_type']),
         ]);
@@ -98,15 +117,33 @@ class ChampionshipBonusController extends Controller
 
         $validated = $this->validate($request, [
             'driver' => 'required|string|max:250',
-            'driver_licence' => 'required|string|max:250',
+            'driver_licence' => [
+                'required',
+                'string',
+                'max:250',
+            ],
             'bonus_type' => ['required', 'integer', new Enum(BonusType::class)],
             'amount' => 'required|integer|min:1',
+        ]);
+
+        $licenceHash =  hash('sha512', $validated['driver_licence']);
+
+        Validator::validate([
+            'driver_licence' => $licenceHash,
+        ], [
+            'driver_licence' => [
+                'required',
+                'string',
+                Rule::unique('bonuses', 'driver_licence_hash')
+                    ->ignoreModel($bonus)
+                    ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
+            ],
         ]);
 
         $bonus->update([
             'driver' => $validated['driver'],
             'driver_licence' => $validated['driver_licence'] ?? null,
-            'driver_licence_hash' => hash('sha512', $validated['driver_licence']),
+            'driver_licence_hash' => $licenceHash,
             'amount' => $validated['amount'],
             'bonus_type' => BonusType::from($validated['bonus_type']),
         ]);

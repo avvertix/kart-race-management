@@ -62,8 +62,8 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
         return [
             "No",
             "Class",
-            "FirstName",
             "LastName",
+            "FirstName",
             "CarRegistration",
             "DriverRegistration",
             "Transponder1",

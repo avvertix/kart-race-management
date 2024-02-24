@@ -64,6 +64,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
                     'race_id' => $race->getKey()
                 ]), 'transponders')
             ->create([
+                'first_name' => 'Nicàèùlò',
                 'driver_licence' => 'a1234567890',
                 'race_id' => $race->getKey(),
             ]);
@@ -109,7 +110,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             [
                 ''.$participant->bib,
                 $participant->categoryConfiguration()->name,
-                strtoupper($participant->first_name),
+                'NICA\'E\'U\'LO\'',
                 strtoupper($participant->last_name),
                 "a1234567", // car registration
                 'a1234567', // driver registration

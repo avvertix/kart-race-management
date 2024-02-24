@@ -154,6 +154,7 @@
     "Here is the price list. The final price is given after submitting the registration.": "Ecco la lista dei prezzi. Il costo finale verrà indicato dopo aver completato la registrazione.",
     "Participation fee": "Quota di partecipazione",
     "Tires": "Gomme",
+    "Tire": "Gomma",
     "Rules": "Regolamento",
     "Here some regulation remarks.": "Alcune note dal regolamento",
     "For allowed tires please refer to the category regulation.": "Per la tipologia di gomme autorizzate far riferimento al regolamento di categoria.",
@@ -340,5 +341,11 @@
     "Tune the registration opening period.": "Aggiusta il periodo di apertura delle iscrizioni",
     "Open the registration at": "Apri le iscrizioni alle (giorno e ora)",
     "Close the registration at": "Chiudi le iscrizioni alle (giorno e ora)",
-    "The category cannot be deactivated because one or more competitors are registered in it.": "La categoria non può essere disattivata poiché utilizzata da uno o più participanti."
+    "The category cannot be deactivated because one or more competitors are registered in it.": "La categoria non può essere disattivata poiché utilizzata da uno o più participanti.",
+    "Remove transponder": "Rimuovi transponder",
+    "Categories": "Categorie",
+    "Short Name": "Nome per cronometraggio",
+    "Code": "Codice",
+    "Price": "Costo",
+    "Add bonus": "Inserisci bonus"
 }

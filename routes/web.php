@@ -94,7 +94,7 @@ Route::middleware([
         
         Route::get('races/{race}/transponders', RaceTranspondersController::class)->name('races.transponders');
         
-        Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->except(['destroy', 'show']);
+        Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->except(['show']);
         
         Route::get('races/{race}/export-participants', ExportRaceParticipantsController::class)->name('races.export.participants');
         

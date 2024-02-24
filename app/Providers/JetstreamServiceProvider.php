@@ -135,6 +135,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'transponder:view',
             'transponder:create',
             'transponder:update',
+            'transponder:delete',
         ])->description('Time-keeping service');
 
     }

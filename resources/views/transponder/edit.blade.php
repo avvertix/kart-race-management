@@ -49,6 +49,19 @@
                     </div>
             
             </form>
+
+            @can('delete', $transponder)
+                
+            @endcan
+            <x-section-border />
+
+            <form action="{{ route('transponders.destroy', $transponder) }}" method="post">
+                @method('DELETE')
+                @csrf
+
+                <x-danger-button type="submit">{{ __('Remove transponder') }}</x-danger-button>
+            </form>
+
         </div>
     </div>
 </x-app-layout>

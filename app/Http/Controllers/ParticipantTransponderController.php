@@ -146,5 +146,23 @@ class ParticipantTransponderController extends Controller
                 'participant' => "{$transponder->participant->bib} {$transponder->participant->first_name} {$transponder->participant->last_name}",
             ]));
     }
+    
+    public function destroy(Transponder $transponder)
+    {
+        $transponder->load(['participant']);
+
+        $participant = $transponder->participant;
+
+        $participantLabel = "{$transponder->participant->bib} {$transponder->participant->first_name} {$transponder->participant->last_name}";
+
+        $transponder->delete();
+
+        return redirect()
+            ->route('participants.transponders.index', $participant)
+            ->with('flash.banner', __('Transponder :number removed from :participant.', [
+                'number' => $transponder->code,
+                'participant' => $participantLabel,
+            ]));
+    }
 
 }

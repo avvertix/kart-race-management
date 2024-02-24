@@ -53,7 +53,8 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
         return $this->race
             ->participants()
             ->has('transponders')
-            ->orderBy('bib');
+            ->orderBy('category_id', 'ASC')
+            ->orderBy('bib', 'ASC');
     }
 
     public function headings(): array
@@ -98,25 +99,22 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
 
         $categoryConfiguration = $participant->categoryConfiguration();
 
+        $swap = [
+            'à' => 'a\'',
+            'è' => 'e\'',
+            'é' => 'e\'',
+            'ì' => 'i\'',
+            'ò' => 'o\'',
+            'ó' => 'o\'',
+            'ù' => 'u\'',
+            '’' => '\'',
+        ];
+
         return [
             $participant->bib,
             $categoryConfiguration->get('timekeeper_label', $categoryConfiguration->name),
-            str($participant->first_name)->lower()->swap([
-                'à' => 'a\'',
-                'è' => 'e\'',
-                'é' => 'e\'',
-                'ì' => 'i\'',
-                'ò' => 'o\'',
-                'ù' => 'u\'',
-            ])->upper()->toString(),
-            str($participant->last_name)->lower()->swap([
-                'à' => 'a\'',
-                'è' => 'e\'',
-                'é' => 'e\'',
-                'ì' => 'i\'',
-                'ò' => 'o\'',
-                'ù' => 'u\'',
-            ])->upper()->toString(),
+            str($participant->first_name)->lower()->swap($swap)->upper()->toString(),
+            str($participant->last_name)->lower()->swap($swap)->upper()->toString(),
             $registration_identifier, 
             $registration_identifier, 
             $transponders->first(),

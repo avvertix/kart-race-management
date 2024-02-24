@@ -264,8 +264,8 @@ class RaceParticipantsForTimingExportTest extends TestCase
             [
                 "No",
                 "Class",
-                "FirstName",
                 "LastName",
+                "FirstName",
                 "CarRegistration",
                 "DriverRegistration",
                 "Transponder1",
@@ -344,8 +344,8 @@ class RaceParticipantsForTimingExportTest extends TestCase
             [
                 "No",
                 "Class",
-                "FirstName",
                 "LastName",
+                "FirstName",
                 "CarRegistration",
                 "DriverRegistration",
                 "Transponder1",

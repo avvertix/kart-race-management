@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="title">
-        {{ $participant->full_name }} - {{ __('Edit participant') }} - {{ $participant->race->title }}
+        {{ __('Add new participant') }} - {{ $race->title }}
     </x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">

@@ -22,10 +22,9 @@ class SwitchLanguageController extends Controller
 
         $lang = $validated['lang'];
         
-        // Set the preference in session
+        session()->put('language', $lang);
 
         return redirect()
-            ->back()
-            ->with('language', $lang);
+            ->back();
     }
 }

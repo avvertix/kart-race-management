@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ $championship->title }} - {{ __('Edit championship') }}
+    </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
             {{ __('Edit :championship', ['championship' => $championship->title]) }}

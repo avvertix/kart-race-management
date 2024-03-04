@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ $participant->full_name }} - {{ $participant->race->title }}
+    </x-slot>
     <x-slot name="header">
         <div class="relative border-b-2 border-zinc-200 pb-5 sm:pb-0">
             <div class="md:flex md:items-center md:justify-between">

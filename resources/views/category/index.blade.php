@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ __('Categories') }} - {{ $championship->title }}
+    </x-slot>
     <x-slot name="header">
 
         @section('actions')

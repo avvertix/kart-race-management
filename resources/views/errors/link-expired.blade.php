@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ __('Link Expired') }}
+    </x-slot>
     <x-slot name="header">
         <div class="relative pb-5 sm:pb-0 print:hidden">
             <div class="md:flex md:items-center md:justify-between">

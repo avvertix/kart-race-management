@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ __('Modify reservation for :bib', ['bib' => $reservation->bib]) }} - {{ $championship->title }}
+    </x-slot>
     <x-slot name="header">
 
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">

@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ __('Participants') }} - {{ $championship->title }}
+    </x-slot>
     <x-slot name="header">
         @include('championship.partials.heading')
     </x-slot>

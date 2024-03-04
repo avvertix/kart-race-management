@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ __('Add new race') }} - {{ $championship->title }}
+    </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
             <span><a href="{{ route('championships.show', $championship) }}">{{ $championship->title }}</a></span>

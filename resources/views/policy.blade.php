@@ -1,4 +1,7 @@
 <x-guest-layout>
+    <x-slot name="title">
+        {{ __('Privacy Policy') }}
+    </x-slot>
     <div class="pt-4 bg-zinc-100">
         <div class="min-h-screen flex flex-col items-center pt-6 sm:pt-0">
             <div>

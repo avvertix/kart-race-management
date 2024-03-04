@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ __('Print participants') }} - {{ $race->title }}
+    </x-slot>
     <x-slot name="header">
         @include('race.partials.heading')
     </x-slot>

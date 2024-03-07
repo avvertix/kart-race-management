@@ -112,7 +112,7 @@ class RegisterParticipant
                         ->raceNumber($validated['bib'])
                         ->first();
 
-                    if($reservedBib && $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToLicenceHash($validated['driver_licence_number'])){
+                    if($reservedBib && ! $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToLicenceHash($validated['driver_licence_number'])){
                         $validator->errors()->add(
                             'bib', 'The entered bib is already reserved to another driver. Please check your licence number or contact the support.'
                         );

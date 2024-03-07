@@ -23,9 +23,13 @@ class BibReservationController extends Controller
      */
     public function index(Championship $championship)
     {
+
+        $areThereSomeReservationNotEnforced = $championship->reservations()->withoutLicence()->exists();
+
         return view('bib-reservation.index', [
             'championship' => $championship,
             'reservations' => $championship->reservations()->get(),
+            'areThereSomeReservationNotEnforced' => $areThereSomeReservationNotEnforced,
         ]);
     }
 

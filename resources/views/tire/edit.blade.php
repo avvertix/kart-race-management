@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ $participant->full_name }} - {{ __('Edit tire') }} - {{ $race->title }}
+    </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
             <span><a href="{{ route('races.participants.index', $race) }}">{{ $race->title }}</a></span>

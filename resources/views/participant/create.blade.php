@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="title">
+        {{ __('Add new participant') }} - {{ $race->title }}
+    </x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">
 

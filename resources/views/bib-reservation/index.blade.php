@@ -21,10 +21,15 @@
     <div class="pb-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            @if ($areThereSomeReservationNotEnforced)
+                <x-banner style="danger" message="{{ __('Some reservation are created without a licence. Such reservations might not be verified upon registration.') }}" />
+                <div class="h-4"></div>
+            @endif
+
             <x-table>
                 <x-slot name="head">
                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Race number and driver name') }} ▼</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Contact') }}</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Status') }}</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Reserved until') }}</th>
                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                         <span class="sr-only">{{ __('Edit') }}</span>
@@ -43,9 +48,17 @@
                             <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $item->bib }}</span>
                             {{ $item->driver }}
                         </a></p>
+                        <p><span class="font-mono">{{ $item->driver_licence }}</span> <span class="text-zinc-600">{{ $item->contact_email }}</span></p>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                        {{ $item->contact_email }}
+                        @if ($item->isExpired())
+                            <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{{ __('expired') }}</span>
+                        @elseif($item->isEnforcedUsingLicence())
+                            <span class="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">{{ __('enforced') }}</span>
+                        @else
+                            <span class="inline-flex items-center rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700">{{ __('licence required') }}</span>
+                        @endif
+                        
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                         @if ($item->reservation_expires_at)

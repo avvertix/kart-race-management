@@ -73,5 +73,43 @@ class BibReservation extends Model
                 ->orWhere('reservation_expires_at', '>', now());
         });
     }
+    
+    public function scopeWithoutLicence($query)
+    {
+        return $query->whereNull('driver_licence_hash');
+    }
+
+    public function isExpired(): bool
+    {
+        if(!$this->reservation_expires_at){
+            return false;
+        }
+
+        return $this->reservation_expires_at->lessThanOrEqualTo(now());
+    }
+
+    public function isEnforcedUsingLicence(): bool
+    {
+        return !$this->driver_licence_hash;
+    }
+
+    public function isReservedToLicenceHash($hash): bool
+    {
+        if(!$this->driver_licence_hash){
+            return false;
+        }
+
+        return $this->driver_licence_hash === $hash;
+    }
+    
+    public function isReservedToDriver(string|array $driver): bool
+    {
+        
+        $reservationDriver = str($this->driver)->split('/[\s,]+/');
+
+        $requestedDriver = is_string($driver) ? str($this->driver)->split('/[\s,]+/') : collect($driver);
+
+        return $reservationDriver->diff($requestedDriver)->isEmpty();
+    }
 
 }

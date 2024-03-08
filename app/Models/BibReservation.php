@@ -90,7 +90,7 @@ class BibReservation extends Model
 
     public function isEnforcedUsingLicence(): bool
     {
-        return !$this->driver_licence_hash;
+        return !is_null($this->driver_licence_hash);
     }
 
     public function isReservedToLicenceHash($hash): bool

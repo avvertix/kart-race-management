@@ -35,7 +35,7 @@ class DeleteParticipant
 
             return DB::transaction(function() use($participant){
 
-                $replica = $participant->replicate(['properties']);
+                $replica = $participant->replicate(['properties', 'racing_category', 'bonuses']);
 
                 $trashedParticipant = (new TrashedParticipant)->forceFill([
                     ...['uuid' => $participant->uuid],
@@ -47,8 +47,16 @@ class DeleteParticipant
                 $participant->signatures()->delete();
                 
                 $participant->tires()->delete();
+                
+                $participant->transponders()->delete();
 
                 $participant->activities()->delete();
+
+                $activeBonuses = $participant->bonuses()->get();
+
+                if($activeBonuses->isNotEmpty()){
+                    $participant->bonuses()->detach($activeBonuses);
+                }
 
                 $participant->delete();
     

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Categories\Category;
+use App\Models\Category as ModelsCategory;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -23,6 +24,7 @@ class TrashedParticipant extends Model
     protected $fillable = [
         'bib',
         'category',
+        'category_id',
         'first_name',
         'last_name',
         'added_by',
@@ -102,6 +104,14 @@ class TrashedParticipant extends Model
     public function race()
     {
         return $this->belongsTo(Race::class);
+    }
+
+    /**
+     * Category
+     */
+    public function racingCategory()
+    {
+        return $this->belongsTo(ModelsCategory::class, 'category_id', 'id');
     }
 
 

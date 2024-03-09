@@ -1,0 +1,249 @@
+<?php
+
+namespace App\Validation;
+
+use App\Models\BibReservation;
+use App\Models\Category;
+use App\Models\Championship;
+use App\Models\Race;
+use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
+use App\Models\Sex;
+use App\Models\DriverLicence;
+use App\Models\Participant;
+use App\Models\CompetitorLicence;
+use Illuminate\Support\Arr;
+
+trait ParticipantValidationRules
+{
+    
+    protected function processAddressInput($input, $fieldPrefix)
+    {
+        return [
+            'address' => $input[$fieldPrefix.'_address'] ?? null,
+            'city' => $input[$fieldPrefix.'_city'] ?? null,
+            'province' => $input[$fieldPrefix.'_province'] ?? null,
+            'postal_code' => $input[$fieldPrefix.'_postal_code'] ?? null,
+        ];
+    }
+
+    protected function processVehicle($input)
+    {
+        if($this->useMinimalForm()){
+            return [];
+        }
+
+        return [[
+            'chassis_manufacturer' => $input['vehicle_chassis_manufacturer'] ?? null,
+            'engine_manufacturer' => strtolower($input['vehicle_engine_manufacturer'] ?? ''),
+            'engine_model' => strtolower($input['vehicle_engine_model'] ?? ''),
+            'oil_manufacturer' => $input['vehicle_oil_manufacturer'] ?? null,
+            'oil_type' => $input['vehicle_oil_type'] ?? null,
+            'oil_percentage' => $input['vehicle_oil_percentage'] ?? null,
+        ]];
+    }
+
+    protected function getBibValidationRules(): array
+    {
+        return [
+            'bib' => ['required', 'integer', 'min:1',],
+        ];
+    }
+    
+    protected function getCategoryValidationRules(Championship|int $championship): array
+    {
+        $championship_key = $championship instanceof Championship ? $championship->getKey() : $championship;
+
+        return [
+            'category' => [
+                'required',
+                'string',
+                'ulid',
+                Rule::exists((new Category())->getTable(), 'ulid')->where(function ($query) use ($championship_key) {
+                    return $query->where('championship_id', $championship_key)->where('enabled', true);
+                }),],
+        ];
+    }
+
+
+    protected function getDriverValidationRules(): array
+    {
+        $rules = [
+            'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
+            
+            'driver_first_name' => ['required', 'string', 'max:250'],
+            'driver_last_name' => ['required', 'string', 'max:250'],
+            
+            'driver_licence_number' => ['required', 'string', 'max:250'],
+            'driver_licence_renewed_at' => ['nullable'],
+            'driver_nationality' => ['required', 'string', 'max:250'],
+            'driver_email' => ['required', 'string', 'email'],
+            'driver_phone' => ['required', 'string', ],
+            'driver_birth_date' => ['required', 'string', ],
+            'driver_birth_place' => ['required', 'string', ],
+            'driver_medical_certificate_expiration_date' => ['required', 'string', ],
+            'driver_residence_address' => [ 'required', 'string' ],
+            'driver_sex' => [ 'required', new Enum(Sex::class) ],
+            'driver_residence_address' => ['required', 'string', 'max:250'],
+            'driver_residence_city' => ['required', 'string',  'max:250'],
+            'driver_residence_province' => ['nullable', 'string',  'max:250'],
+            'driver_residence_postal_code' => ['required', 'string', 'max:250'],
+            'driver_fiscal_code' => ['required', 'string', 'max:250'],
+        ];
+
+        if($this->useMinimalForm()){
+            return Arr::except($rules, [
+                'driver_licence_type',
+                'driver_licence_renewed_at',
+                'driver_medical_certificate_expiration_date',
+                'driver_sex',
+            ]);
+        }
+
+        return $rules;
+    }
+
+    protected function getCompetitorValidationRules(): array
+    {
+        $rules = [
+            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
+            'competitor_licence_type' => ['nullable','required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
+            'competitor_first_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_last_name' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_fiscal_code' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_licence_renewed_at' => ['nullable'],
+            'competitor_nationality' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_email' => ['nullable','required_with:competitor_licence_number', 'string', 'email'],
+            'competitor_phone' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_date' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_birth_place' => ['nullable','required_with:competitor_licence_number', 'string', ],
+            'competitor_residence_address' => [ 'nullable','required_with:competitor_licence_number', 'string' ],
+            'competitor_residence_address' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_residence_city' => ['nullable','required_with:competitor_licence_number', 'string',  'max:250'],
+            'competitor_residence_province' => ['nullable', 'string',  'max:250'],
+            'competitor_residence_postal_code' => ['nullable','required_with:competitor_licence_number', 'string', 'max:250'],
+        ];
+
+        if($this->useMinimalForm()){
+            return Arr::except($rules, [
+                'competitor_licence_type',
+                'competitor_licence_renewed_at',
+            ]);
+        }
+
+        return $rules;
+    }
+
+    protected function getMechanicValidationRules(): array
+    {
+        if($this->useMinimalForm()){
+            return [];
+        }
+
+        return [
+            'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
+            'mechanic_name' => ['nullable', 'required_with:mechanic_licence_number', 'string', 'max:250'],
+        ];
+    }
+
+    protected function getVehicleValidationRules(): array
+    {
+        if($this->useMinimalForm()){
+            return [];
+        }
+
+        return [
+            'vehicle_chassis_manufacturer' => ['required', 'string', 'max:250'],
+            'vehicle_engine_manufacturer' => ['required', 'string',  'max:250'],
+            'vehicle_engine_model' => ['required', 'string',  'max:250'],
+            'vehicle_oil_manufacturer' => ['required', 'string', 'max:250'],
+            'vehicle_oil_type' => ['nullable', 'string',  'max:250'],
+            'vehicle_oil_percentage' => ['required', 'string', 'max:250'],
+        ];
+    }
+
+    protected function useMinimalForm(): bool
+    {
+        return config('races.registration.form') !== 'complete';
+    }
+
+    /**
+     * Check if the driver is using the assigned bib or choose a unique number within the championship
+     */
+    protected function ensureDriverUsesUniqueOrAssignedBib(array $input, Race $race, ?User $user = null): array
+    {
+        $licenceHash = $input['driver_licence_number'];
+
+        $validator = Validator::make($input, [
+            'bib' => [
+                Rule::unique('participants', 'bib')->where(fn ($query) => $query->where('race_id', $race->getKey())),
+                
+                Rule::unique('participants', 'bib')
+                    ->where(fn ($query) => $query
+                        ->where('championship_id', $race->championship_id)
+                        ->where('driver_licence', '!=', $input['driver_licence_number'])),
+            ],
+            'driver_licence_number' => [
+                Rule::unique('participants', 'driver_licence')
+                    ->where(fn ($query) => $query->where('race_id', $race->getKey())),
+            ]
+        ])
+        ->after(function($validator) use ($race, $input, $licenceHash) {
+
+            $validated = $validator->validated();
+
+            $bibs = collect(Participant::query()
+                ->where('championship_id', $race->championship_id)
+                ->licenceHash($validated['driver_licence_number'])
+                ->select(["bib"])
+                ->get(["bib"])->pluck("bib"))->unique()->filter();
+
+            // check if participant by licence has equal bib
+            if($bibs->isNotEmpty() && !$bibs->contains($validated['bib'])){
+                $validator->errors()->add(
+                    'bib', 'The entered bib does not reflect what has been used so far in the championship by the same driver.'
+                );
+            }
+
+            // check if bib was reserved to other driver
+
+            $reservedBibWithSameLicence = BibReservation::query()
+                ->notExpired()
+                ->inChamphionship($race->championship_id)
+                ->licenceHash($validated['driver_licence_number'])
+                ->first()?->bib;
+
+            if($reservedBibWithSameLicence && $reservedBibWithSameLicence != $validated['bib']){
+                $validator->errors()->add(
+                    'bib', 'The entered bib does not reflect what has been reserved to the driven with the given licence.'
+                );
+            }
+            
+            $reservedBib = BibReservation::query()
+                ->notExpired()
+                ->inChamphionship($race->championship_id)
+                ->raceNumber($validated['bib'])
+                ->first();
+
+            if($reservedBib && $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToLicenceHash($licenceHash)){
+                $validator->errors()->add(
+                    'bib', 'The entered bib is already reserved to another driver. Please check your licence number or contact the support.'
+                );
+            }
+
+            // This covers an edge case when the organized doesn't know the licence number
+            // when adding a reservation. The registration is denied if driver name is
+            // not exactly equal to what is inserted in the reservation
+            if($reservedBib && ! $reservedBib->isEnforcedUsingLicence() && !$reservedBib->isReservedToDriver([$input['driver_first_name'], $input['driver_last_name']])){
+                $validator->errors()->add(
+                    'bib', 'The entered bib might be reserved to another driver. Please contact the organizer.'
+                );
+            }
+            
+        });
+
+        return $validator->validate();
+    }
+}

@@ -15,6 +15,7 @@ use App\Models\Participant;
 use App\Models\CompetitorLicence;
 use App\Models\TrashedParticipant;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -35,11 +36,32 @@ class DeleteParticipant
 
             return DB::transaction(function() use($participant){
 
-                $replica = $participant->replicate(['properties', 'racing_category', 'bonuses']);
+                $replica = Arr::only($participant->toArray(), [
+                    'bib',
+                    'category',
+                    'category_id',
+                    'first_name',
+                    'last_name',
+                    'added_by',
+                    'confirmed_at',
+                    'consents',
+                    'race_id',
+                    'championship_id',
+                    'driver_licence',
+                    'licence_type',
+                    'competitor_licence',
+                    'driver',
+                    'competitor',
+                    'mechanic',
+                    'vehicles',
+                    'use_bonus',
+                    'locale',
+                    'registration_completed_at',
+                ]);
 
                 $trashedParticipant = (new TrashedParticipant)->forceFill([
                     ...['uuid' => $participant->uuid],
-                    ...$replica->toArray()
+                    ...$replica
                 ]);
 
                 $trashedParticipant->save();

@@ -47,13 +47,15 @@ class DeleteParticipantTest extends TestCase
             'race_id' => $race->getKey(),
         ]);
 
+        $participant->load('racingCategory');
+
         $trashedParticipant = (new DeleteParticipant)($participant);
 
         $this->assertInstanceOf(TrashedParticipant::class, $trashedParticipant);
 
         $this->assertEquals((string)$participant->uuid, (string)$trashedParticipant->uuid);
 
-        $this->assertEquals(collect($participant->toArray())->forget(['uuid', 'created_at', 'updated_at']) , collect($trashedParticipant->toArray())->forget(['uuid', 'created_at', 'updated_at']));
+        $this->assertEquals(collect($participant->toArray())->forget(['uuid', 'created_at', 'updated_at', 'racing_category']) , collect($trashedParticipant->toArray())->forget(['uuid', 'created_at', 'updated_at']));
 
         $this->assertNull($participant->fresh());
         $this->assertNotNull($trashedParticipant->fresh());

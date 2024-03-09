@@ -502,6 +502,8 @@ class RaceParticipantTest extends TestCase
 
     public function test_participant_can_be_updated()
     {
+        config(['races.registration.form' => 'complete']);
+
         $user = User::factory()->racemanager()->create();
 
         $championship = Championship::factory()

@@ -15,6 +15,7 @@ use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\CompetitorLicence;
 use Illuminate\Support\Arr;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 
 trait ParticipantValidationRules
 {
@@ -209,41 +210,52 @@ trait ParticipantValidationRules
 
             // check if bib was reserved to other driver
 
-            $reservedBibWithSameLicence = BibReservation::query()
-                ->notExpired()
-                ->inChamphionship($race->championship_id)
-                ->licenceHash($validated['driver_licence_number'])
-                ->first()?->bib;
-
-            if($reservedBibWithSameLicence && $reservedBibWithSameLicence != $validated['bib']){
-                $validator->errors()->add(
-                    'bib', 'The entered bib does not reflect what has been reserved to the driven with the given licence.'
-                );
-            }
-            
-            $reservedBib = BibReservation::query()
-                ->notExpired()
-                ->inChamphionship($race->championship_id)
-                ->raceNumber($validated['bib'])
-                ->first();
-
-            if($reservedBib && $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToLicenceHash($licenceHash)){
-                $validator->errors()->add(
-                    'bib', 'The entered bib is already reserved to another driver. Please check your licence number or contact the support.'
-                );
-            }
-
-            // This covers an edge case when the organized doesn't know the licence number
-            // when adding a reservation. The registration is denied if driver name is
-            // not exactly equal to what is inserted in the reservation
-            if($reservedBib && ! $reservedBib->isEnforcedUsingLicence() && !$reservedBib->isReservedToDriver([$input['driver_first_name'], $input['driver_last_name']])){
-                $validator->errors()->add(
-                    'bib', 'The entered bib might be reserved to another driver. Please contact the organizer.'
-                );
-            }
+            $this->ensureBibNotReservedByOtherDriver($validator, $race->championship_id, [
+                'driver_first_name' => $input['driver_first_name'],
+                'driver_last_name' => $input['driver_last_name'],
+                'bib' => $validated['bib'],
+                'driver_licence_number' => $validated['driver_licence_number'],
+            ]);
             
         });
 
         return $validator->validate();
+    }
+
+
+    protected function ensureBibNotReservedByOtherDriver(ValidatorContract $validator, $championship_id, $input)
+    {
+        $reservedBibWithSameLicence = BibReservation::query()
+            ->notExpired()
+            ->inChamphionship($championship_id)
+            ->licenceHash($input['driver_licence_number'])
+            ->first()?->bib;
+
+        if($reservedBibWithSameLicence && $reservedBibWithSameLicence != $input['bib']){
+            $validator->errors()->add(
+                'bib', 'The entered bib does not reflect what has been reserved to the driven with the given licence.'
+            );
+        }
+        
+        $reservedBib = BibReservation::query()
+            ->notExpired()
+            ->inChamphionship($championship_id)
+            ->raceNumber($input['bib'])
+            ->first();
+
+        if($reservedBib && $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToLicenceHash($input['driver_licence_number'])){
+            $validator->errors()->add(
+                'bib', 'The entered bib is already reserved to another driver. Please check your licence number or contact the support.'
+            );
+        }
+
+        // This covers an edge case when the organized doesn't know the licence number
+        // when adding a reservation. The registration is denied if driver name is
+        // not exactly equal to what is inserted in the reservation
+        if($reservedBib && ! $reservedBib->isEnforcedUsingLicence() && !$reservedBib->isReservedToDriver([$input['driver_first_name'], $input['driver_last_name']])){
+            $validator->errors()->add(
+                'bib', 'The entered bib might be reserved to another driver. Please contact the organizer.'
+            );
+        }
     }
 }

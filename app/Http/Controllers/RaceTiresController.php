@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Race;
 use App\Models\Tire;
 use App\Models\TireOption;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -25,14 +26,24 @@ class RaceTiresController extends Controller
 
         $tires = $race->championship
             ->tires()
-            ->withCount('participants')->get()
+            ->withCount([
+                'participants' => function (Builder $query) use ($race) {
+                    $query->where('race_id', $race->getKey());
+                },
+                'participants as participants_with_tires' => function (Builder $query) use ($race) {
+                    $query->where('race_id', $race->getKey())->has('tires');
+                },
+            ])
+            ->get()
             ->map(function($p){
                 return [ 
                     'name' => $p->name,
                     'total' => $p->participants_count,
+                    'assigned' => $p->participants_with_tires,
                     'raw' => $p,
                 ];
-            });
+            })
+            ->filter(fn($e) => $e['total'] > 0);
 
         $search_term = $request->has('tire_search') ? e($request->get('tire_search')) : null;
         

@@ -16,11 +16,13 @@
 
             <div class="h-6"></div>
 
-            <div class="grid grid-flow-col-dense gap-4">
+            <div class="grid grid-cols-8 gap-4">
                 @foreach ($tires as $item)
-                    <div class="text-lg p-4 bg-white shadow rounded">
+                    <div class=" p-4 bg-white shadow rounded">
+                        <p class="text-4xl font-black">{{ $item['total'] }}</p>
                         <p>{{ $item['name'] }}</p>
-                        <p class="text-3xl font-black">{{ $item['total'] }}</p>
+                        <p class="text-zinc-600">{{ $item['assigned'] }} {{ __('assigned') }}</p>
+                        <p class="text-zinc-600">{{ $item['total'] - $item['assigned'] }} {{ __('remaining') }}</p>
                     </div>
                 @endforeach
             </div>

@@ -11,6 +11,7 @@
         "laravel/jetstream": "^4.0",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "league/flysystem-path-prefixing": "^3.23",
         "livewire/livewire": "^3.0",
         "rinvex/countries": "^9.0",
         "spatie/laravel-activitylog": "^4.7",

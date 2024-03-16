@@ -56,6 +56,13 @@ return [
             'throw' => false,
         ],
 
+        'payments' => [
+            'driver' => 'scoped',
+            'disk' => 'local',
+            'prefix' => 'payments',
+        ],
+
+
     ],
 
     /*

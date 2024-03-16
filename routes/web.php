@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BibReservationController;
+use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
@@ -71,6 +72,14 @@ Route::middleware([
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
         
         Route::post('championships/{championship}/races/import', [RaceImportController::class, 'store'])->name('championships.races.import.store');
+
+        Route::get('championships/{championship}/banner', [ChampionshipBannerController::class, 'index'])
+            ->middleware('cache.headers:public;max_age=3600')
+            ->name('championships.banner.index');
+        
+        Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
+
+        Route::delete('championships/{championship}/banner', [ChampionshipBannerController::class, 'destroy'])->name('championships.banner.destroy');
         
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
         

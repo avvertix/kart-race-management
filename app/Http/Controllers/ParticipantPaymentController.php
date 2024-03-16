@@ -46,12 +46,12 @@ class ParticipantPaymentController extends Controller
             ]);
         }
 
-        $path = $request->proof->store('payments', 'local');
+        $path = $request->proof->store('', 'payments');
 
 
         $participant->payments()->create([
             'path' => $path,
-            'hash' => hash_file('sha512', Storage::disk('local')->path($path)),
+            'hash' => hash_file('sha512', Storage::disk('payments')->path($path)),
         ]);
 
         return redirect($participant->qrCodeUrl())->with('status', 'payment-uploaded');
@@ -67,6 +67,6 @@ class ParticipantPaymentController extends Controller
     {
 
         return response()
-            ->file(Storage::disk('local')->path($payment->path));
+            ->file(Storage::disk('payments')->path($payment->path));
     }
 }

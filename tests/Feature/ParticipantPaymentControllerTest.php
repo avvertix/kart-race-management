@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Participant;
+use App\Models\Payment;
 use App\Models\Race;
 use App\Models\Signature;
 use App\Notifications\ConfirmParticipantRegistration;
@@ -21,7 +22,7 @@ class ParticipantPaymentControllerTest extends TestCase
     
     public function test_participant_can_upload_payment_proof()
     {
-        Storage::fake('local');
+        Storage::fake('payments');
 
         $race = Race::factory()->create();
 
@@ -40,13 +41,13 @@ class ParticipantPaymentControllerTest extends TestCase
 
         $response->assertSessionHas('status', 'payment-uploaded');
 
-        Storage::disk('local')->assertExists('payments/'.$file->hashName());
+        Storage::disk('payments')->assertExists($file->hashName());
     }
     
     
     public function test_payment_not_uploaded_with_wrong_signature()
     {
-        Storage::fake('local');
+        Storage::fake('payments');
 
         $race = Race::factory()->create();
 
@@ -61,5 +62,35 @@ class ParticipantPaymentControllerTest extends TestCase
             ]);
 
         $response->assertForbidden();
+    }
+
+
+    public function test_participant_payment_proof_downloadable()
+    {
+        Storage::fake('payments');
+
+        $race = Race::factory()->create();
+
+        $participant = Participant::factory()
+            ->for($race)
+            ->has(Payment::factory())
+            ->create();
+
+
+        $file = UploadedFile::fake()->image('proof.jpg', 200, 200);
+
+        Storage::disk('payments')->putFileAs('', $file, 'proof.jpg');
+
+        $payment = $participant->payments->first();
+
+        $response = $this
+            ->from(route('registration.show', $participant))
+            ->get($payment->download_url);
+
+        $response->assertSuccessful();
+
+        $response->assertHeader('content-type', 'image/jpeg');
+
+        Storage::disk('payments')->assertExists($payment->path);
     }
 }

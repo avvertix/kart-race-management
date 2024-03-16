@@ -10,39 +10,87 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                
+
         <x-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('championships.update', $championship) }}">
-            @method('PUT')
-            @csrf
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <x-section-title>
+                <x-slot name="title">{{ __('Championship details') }}</x-slot>
+                <x-slot name="description">
+                    
+                </x-slot>
+            </x-section-title>
 
-            <div>
-                <x-label for="start" value="{{ __('Start date') }}*" />
-                <x-input id="start" class="block mt-1 w-full" type="date" pattern="\d{4}-\d{2}-\d{2}" name="start" :value="old('start', $championship->start_at->toDateString())" required autofocus />
-            </div>
-            
-            <div>
-                <x-label for="end" value="{{ __('End date') }}" />
-                <x-input id="end" class="block mt-1 w-full" type="date" pattern="\d{4}-\d{2}-\d{2}" name="end" :value="old('end', $championship?->end_at?->toDateString())" />
-            </div>
+            <div class="mt-5 md:mt-0 md:col-span-2">
 
-            <div class="mt-4">
-                <x-label for="title" value="{{ __('Title') }}" />
-                <x-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title', $championship->title)" />
-            </div>
-            
-            <div class="mt-4">
-                <x-label for="description" value="{{ __('Description') }}" />
-                <x-input id="description" class="block mt-1 w-full" type="text" name="description" :value="old('description', $championship->description)" />
-            </div>
+                <form method="POST" action="{{ route('championships.update', $championship) }}">
+                    @method('PUT')
+                    @csrf
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button class="ml-4">
-                    {{ __('Save') }}
-                </x-button>
+                    @include('championship.partials.form')
+
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4">
+                            {{ __('Save') }}
+                        </x-button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
+
+        <x-section-border />
+        
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <x-section-title>
+                <x-slot name="title">{{ __('Banner') }}</x-slot>
+                <x-slot name="description">
+                    {{ __('The championship banner image') }}
+                </x-slot>
+            </x-section-title>
+
+            <div class="mt-5 md:mt-0 md:col-span-2">
+
+                <div>
+                
+                    @if ($championship->banner_path)
+                        <img src="{{ route('championships.banner.index', $championship) }}" >
+
+                        <form method="POST" action="{{ route('championships.banner.destroy', $championship) }}">
+                            @method('DELETE')
+                            @csrf
+
+                            <div class="flex items-center justify-end mt-4">
+                                <x-danger-button type="submit" class="ml-4">
+                                    {{ __('Remove banner') }}
+                                </x-danger-button>
+                            </div>
+                        </form>
+
+                        <x-section-border />
+                    @endif
+                
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" action="{{ route('championships.banner.store', $championship) }}">
+                    @csrf
+
+                    <div>
+                        <x-label for="banner" value="{{ __('Banner image') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('Image file (jpg, png). Maximum 1200x600 pixels or 10 MB.') }}</p>
+                        <x-input-error for="banner" />
+                        <x-input id="banner" class="block mt-1 w-full" type="file" name="banner" />
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4">
+                            {{ __('Save') }}
+                        </x-button>
+                    </div>
+                </form>
+            </div>
+        </div>
+                
+        
         
         </div>
     </div>

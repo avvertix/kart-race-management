@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Participant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,17 @@ class PaymentFactory extends Factory
     {
         return [
             'hash' => fake()->md5(),
-            'path' => 'payments/proof.jpg',
+            'path' => 'proof.jpg',
         ];
+    }
+
+
+    public function forParticipant(?Participant $participant = null)
+    {
+        return $this->state(function (array $attributes) use ($participant) {
+            return [
+                'participant_id' => $participant?->getKey() ?? Participant::factory(),
+            ];
+        });
     }
 }

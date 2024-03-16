@@ -56,6 +56,19 @@ return [
             'throw' => false,
         ],
 
+        'payments' => [
+            'driver' => 'scoped',
+            'disk' => 'local',
+            'prefix' => 'payments',
+        ],
+        
+        'championship-banners' => [
+            'driver' => 'scoped',
+            'disk' => 'local',
+            'prefix' => 'championship/banners',
+        ],
+
+
     ],
 
     /*

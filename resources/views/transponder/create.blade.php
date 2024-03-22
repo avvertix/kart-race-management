@@ -15,7 +15,9 @@
             </p>
             
             <p>{{ $participant->categoryConfiguration()?->name ?? $participant->category }} / {{ $participant->engine }}</p>
-            <p>{{ $participant->categoryConfiguration()?->tire()->name }}</p>
+            @if ($participant->categoryConfiguration()?->tire())
+                <p>{{ $participant->categoryConfiguration()?->tire()->name }}</p>
+            @endif
         </div>
     </x-slot>
 

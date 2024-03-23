@@ -352,5 +352,14 @@
     "Short Name": "Nome per cronometraggio",
     "Code": "Codice",
     "Price": "Costo",
-    "Add bonus": "Inserisci bonus"
+    "Add bonus": "Inserisci bonus",
+    "Upload a backup": "Carica un backup",
+    "Upload backup": "Carica backup",
+    "Maximum 50 MB. Accepted formats are oxb, zip and 7z archives.": "Massima dimensione accettata: 50 MB. Formati supportati: oxb, zip, 7z.",
+    "Championship": "Campionato",
+    "Select the reference championship for this backup, if any.": "Opzionale. Seleziona il campionato a cui si riferisce questo backup.",
+    "Select the reference championship": "Seleziona il campionato di riferimento",
+    "Filename": "Nome del file",
+    "Creation date": "Data di creazione",
+    "Download": "Scarica"
 }

@@ -26,6 +26,11 @@
                         <x-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
                             {{ __('Communications') }}
                         </x-nav-link>
+                        @can('viewAny', \App\Models\OrbitsBackup::class)
+                            <x-nav-link href="{{ route('orbits-backups.index') }}" :active="request()->routeIs('orbits-backups.*')">
+                                {{ __('Orbits Backup') }}
+                            </x-nav-link>
+                        @endcan
                     @endauth
                 </div>
             </div>

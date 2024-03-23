@@ -12,6 +12,7 @@ use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
@@ -94,6 +95,8 @@ Route::middleware([
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
         
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
+        
+        Route::resource('orbits-backups', OrbitsBackupController::class)->except(['create', 'edit', 'update']);
         
         Route::get('races/{race}/participants/print', PrintRaceParticipantsController::class)->name('races.participants.print');
         

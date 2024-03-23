@@ -7,6 +7,7 @@ use App\Exports\RaceParticipantsForTimingExport;
 use App\Models\Race;
 use App\Models\Transponder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ExportRaceParticipantsForTimingController extends Controller
@@ -23,6 +24,14 @@ class ExportRaceParticipantsForTimingController extends Controller
 
         $filename = Str::slug('mylaps-' . config('races.organizer.name') . '-' . $race->event_start_at->toDateString() . '-' . $race->title);
 
-        return (new RaceParticipantsForTimingExport($race))->download("{$filename}.csv");
+        $path = (new RaceParticipantsForTimingExport($race))->store("{$filename}.csv", 'local');
+
+        $content = Storage::disk('local')->get($path);
+
+        Storage::disk('local')->delete($path);
+
+        return response()->streamDownload(function() use ($content){
+            echo Str::replace('"', '', $content);
+        }, $path);
     }
 }

@@ -84,7 +84,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
      */
     public function map($participant): array
     {
-        $vehicle = $participant->vehicles[0];
+        $vehicle = $participant->vehicles[0] ?? [];
 
         $transponders = $participant->transponders->map(function($t){
             return $this->mappings->get($t->code, $t->code);
@@ -124,8 +124,8 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
             ($this->race->isZonal() && isset($participant->properties['out_of_zone']) && $participant->properties['out_of_zone']) ? __('Out of zone') : "",
             $this->race->event_start_at->toDateString(),
             $participant->licence_type->localizedName(),
-            $engine_mapping[strtolower($vehicle['engine_manufacturer'])] ?? strtoupper($vehicle['engine_manufacturer']),
-            strtoupper($vehicle['engine_model']),
+            !empty($vehicle) ? $engine_mapping[strtolower($vehicle['engine_manufacturer'])] ?? strtoupper($vehicle['engine_manufacturer']) : "",
+            !empty($vehicle) ? strtoupper($vehicle['engine_model']) : "",
             $participant->driver['phone'] . ' - ' . ($participant->competitor['phone'] ?? ''),
         ];
     }

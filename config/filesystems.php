@@ -67,6 +67,12 @@ return [
             'disk' => 'local',
             'prefix' => 'championship/banners',
         ],
+        
+        'orbits-backups' => [
+            'driver' => 'scoped',
+            'disk' => 'local',
+            'prefix' => 'orbits/backups',
+        ],
 
 
     ],

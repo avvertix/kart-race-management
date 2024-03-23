@@ -105,6 +105,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'transponder:view',
             'transponder:create',
             'transponder:update',
+            'transponder:delete',
             'payment:view',
             'communication:list',
             'communication:view',
@@ -136,6 +137,9 @@ class JetstreamServiceProvider extends ServiceProvider
             'transponder:create',
             'transponder:update',
             'transponder:delete',
+            'orbits-backup:view',
+            'orbits-backup:create',
+            'orbits-backup:update',
         ])->description('Time-keeping service');
 
     }

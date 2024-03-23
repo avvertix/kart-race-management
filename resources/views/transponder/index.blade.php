@@ -20,7 +20,9 @@
                 </p>
                 
                 <p>{{ $participant->categoryConfiguration()?->name ?? $participant->category }} / {{ $participant->engine }}</p>
-                <p>{{ $participant->categoryConfiguration()?->tire()->name }}</p>
+                @if ($participant->categoryConfiguration()?->tire())
+                    <p>{{ $participant->categoryConfiguration()?->tire()->name }}</p>
+                @endif
             </div>
             
             <div class="bg-white text-xl p-2 print:p-0 space-y-2 grow basis-1/2">

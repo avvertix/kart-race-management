@@ -75,6 +75,7 @@
                 @enduseCompleteRegistrationForm
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
+                    <p class="text-sm text-zinc-700">{{ __('Use a licence number provided by :provider.', ['provider' => config('races.licence.provider')]) }} <a class="underline" href="mailto:{{config('races.organizer.email')}}?subject=Non%20ho%20una%20licenza%20valida%20per%20l'iscrizione">{{ __('Don\'t have a licence, contact the organizer!') }}</a></p>
                     <x-input id="driver_licence_number" type="text" name="driver_licence_number" class="mt-1 block w-full" :value="old('driver_licence_number', $driver['licence_number'] ?? null)"  />
                     <x-input-error for="driver_licence_number" class="mt-2" />
                 </div>

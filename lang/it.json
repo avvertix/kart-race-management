@@ -361,5 +361,7 @@
     "Select the reference championship": "Seleziona il campionato di riferimento",
     "Filename": "Nome del file",
     "Creation date": "Data di creazione",
-    "Download": "Scarica"
+    "Download": "Scarica",
+    "Use a licence number provided by :provider.":"Inserisci un numero di licenza :provider valido per l'anno in corso.",
+    "Don't have a licence, contact the organizer!": "Non hai una licenza, contatta l'organizzatore"
 }

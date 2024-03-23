@@ -98,7 +98,7 @@ class RaceController extends Controller
     public function update(Request $request, Race $race)
     {
         $validated = $this->validate($request, [
-            'start' => 'required|date|after:today',
+            'start' => 'required|date|after_or_equal:today',
             'end' => 'nullable|date|after_or_equal:start',
             'title' => ['required', 'string', 'max:250', Rule::unique((new Race())->getTable(), 'title')->ignore($race)],
             'description' => 'nullable|string|max:1000',

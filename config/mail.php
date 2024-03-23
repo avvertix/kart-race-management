@@ -112,6 +112,11 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'reply_to' => [
+        'address' => env('MAIL_REPLY_TO_ADDRESS', env('RACE_ORGANIZER_EMAIL', env('MAIL_FROM_ADDRESS', 'hello@example.com'))),
+        'name' => env('MAIL_REPLY_TO_NAME', env('RACE_ORGANIZER_NAME', env('MAIL_FROM_NAME', 'Example'))),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Markdown Mail Settings

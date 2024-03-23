@@ -74,7 +74,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
      */
     public function map($participant): array
     {
-        $vehicle = $participant->vehicles[0];
+        $vehicle = $participant->vehicles[0] ?? [];
 
         return [
             $participant->bib,

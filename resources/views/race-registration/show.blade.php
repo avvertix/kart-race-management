@@ -140,7 +140,7 @@
 
                 <div class="prose prose-zinc">
                     <p>{{ __('Race participation can be paid via bank transfer to') }}</p>
-                    <p class="bg-zinc-50 p-2 shadow">{{ config('races.organizer.name') }}
+                    <p class="bg-zinc-50 p-2 shadow">{{ config('races.organizer.bank_holder') }}
                         <br>{{ config('races.organizer.bank') }}
                         <br><span class="font-mono">{{ config('races.organizer.bank_account') }}</span>
                     </p>

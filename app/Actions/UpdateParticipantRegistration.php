@@ -53,6 +53,7 @@ class UpdateParticipantRegistration
                     'bib' => [
                         Rule::unique('participants', 'bib')->ignore($participant)->where(fn ($query) => $query->where('race_id', $participant->race->getKey())),
                         Rule::unique('participants', 'bib')
+                            ->ignore($participant)
                             ->where(fn ($query) => $query
                                 ->where('championship_id', $participant->race->championship_id)
                                 ->where('driver_licence', '!=', $licenceHash)),

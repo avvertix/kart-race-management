@@ -32,7 +32,9 @@ class CategorySelector extends Component
     
     public function render()
     {
-        $this->categories = $this->search ? $this->championship->categories()->enabled()->search($this->search)->get() : $this->championship->categories()->enabled()->get();
+        $this->categories = $this->search
+            ? $this->championship->categories()->enabled()->orderBy('name', 'ASC')->search($this->search)->get()
+            : $this->championship->categories()->orderBy('name', 'ASC')->enabled()->get();
 
         return view('livewire.category-selector');
     }

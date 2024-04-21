@@ -14,5 +14,6 @@ return [
     'registration_open' => 'Iscrizioni aperte',
     'scheduled' => 'In programma',
     'concluded' => 'Conclusa',
+    'canceled' => 'Annullata',
     
 ];

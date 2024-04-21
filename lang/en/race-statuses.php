@@ -14,5 +14,6 @@ return [
     'registration_open' => 'Registration open',
     'scheduled' => 'Scheduled',
     'concluded' => 'Concluded',
+    'canceled' => 'Canceled',
     
 ];

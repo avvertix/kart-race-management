@@ -89,7 +89,10 @@
                 </form>
             </div>
         </div>
-                
+
+        <x-section-border />
+
+        <livewire:wildcard-settings :championship="$championship" /> 
         
         
         </div>

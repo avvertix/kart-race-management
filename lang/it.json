@@ -366,5 +366,7 @@
     "Don't have a licence, contact the organizer!": "Non hai una licenza, contatta l'organizzatore",
     "Cancel Race": "Annulla gara",
     "Cancel the race.": "Annulla la gara.",
-    ":race canceled.": ":race annullata."
+    ":race canceled.": ":race annullata.",
+    "Wildcard": "Wildcard",
+    "Configure when championship entrants are considered wildcards (i.e. the do not score points).": "Configura quando i partecipanti sono considerati wildcard (i.e. non prendono punti)."
 }

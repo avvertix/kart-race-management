@@ -112,7 +112,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
 
         return [
             $participant->bib,
-            $categoryConfiguration->get('timekeeper_label', $categoryConfiguration->name),
+            $categoryConfiguration->get('timekeeper_label', $categoryConfiguration->name) . ($participant->wildcard ? ' W' : ''),
             str($participant->first_name)->lower()->swap($swap)->upper()->toString(),
             str($participant->last_name)->lower()->swap($swap)->upper()->toString(),
             $registration_identifier, 
@@ -120,7 +120,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
             $transponders->first(),
             $transponders->skip(1)->last(),
             "",
-            "",
+            $participant->wildcard ? 'WILDCARD': '',
             ($this->race->isZonal() && isset($participant->properties['out_of_zone']) && $participant->properties['out_of_zone']) ? __('Out of zone') : "",
             $this->race->event_start_at->toDateString(),
             $participant->licence_type->localizedName(),

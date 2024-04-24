@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Wildcard\AttributeWildcardBasedOnFirstRace;
 use Illuminate\Support\Str;
 
 enum WildcardStrategy: int
@@ -18,5 +19,11 @@ enum WildcardStrategy: int
     public function localizedName(): string
     {
         return trans("wildcard-options.{$this->name}");
+    }
+
+
+    public function resolve()
+    {
+        return app()->make(AttributeWildcardBasedOnFirstRace::class);
     }
 }

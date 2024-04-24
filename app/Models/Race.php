@@ -174,8 +174,24 @@ class Race extends Model
         $now = now();
 
         return $query
+            ->whereNull('canceled_at')
             ->where('registration_closes_at', '<=', $now)
             ->where('event_end_at', '>=', $now);
+    }
+    
+    /**
+     * Filter closed and completed races
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeClosed($query)
+    {
+        $now = now();
+
+        return $query
+            ->whereNull('canceled_at')
+            ->where('event_end_at', '<', $now);
     }
     
     /**

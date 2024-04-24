@@ -88,6 +88,7 @@ class Participant extends Model implements HasLocalePreference
         'consents' => AsArrayObject::class,
         'use_bonus' => 'boolean',
         'properties' => AsArrayObject::class,
+        'wildcard' => 'boolean',
     ];
 
     /**

@@ -35,6 +35,46 @@
             </div>
 
 </form>
+
+<x-section-border />
+
+
+<form method="POST" action="{{ route('races.destroy', $race) }}">
+    @method('DELETE')
+    @csrf
+        
+    
+<div class="md:grid md:grid-cols-3 md:gap-6">
+    <x-section-title>
+        <x-slot name="title">{{ __('Cancel Race') }}</x-slot>
+        <x-slot name="description">{{ __('Cancel the race.') }}</x-slot>
+    </x-section-title>
+
+    <div class="mt-5 md:mt-0 md:col-span-2">
+        
+            <div class="px-4 py-5">
+                <div class="">
+                    <x-danger-button class="" type="submit">
+                        {{ __('Cancel race') }}
+                    </x-danger-button>
+                </div>
+            </div>
+    </div>
+</div>
+            
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                
+                <div></div>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    
+                        <div class="px-4 py-5">
+                            
+                        </div>
+                </div>
+            </div>
+
+</form>
         </div>
     </div>
 </x-app-layout>

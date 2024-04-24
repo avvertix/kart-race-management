@@ -150,6 +150,12 @@ class RaceController extends Controller
      */
     public function destroy(Race $race)
     {
-        //
+        $race->canceled_at = now();
+        $race->save();
+
+        return to_route('races.show', $race)
+            ->with('flash.banner', __(':race canceled.', [
+                'race' => $race->title,
+            ]));
     }
 }

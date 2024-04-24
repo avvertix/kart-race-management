@@ -363,5 +363,10 @@
     "Creation date": "Data di creazione",
     "Download": "Scarica",
     "Use a licence number provided by :provider.":"Inserisci un numero di licenza :provider valido per l'anno in corso.",
-    "Don't have a licence, contact the organizer!": "Non hai una licenza, contatta l'organizzatore"
+    "Don't have a licence, contact the organizer!": "Non hai una licenza, contatta l'organizzatore",
+    "Cancel Race": "Annulla gara",
+    "Cancel the race.": "Annulla la gara.",
+    ":race canceled.": ":race annullata.",
+    "Wildcard": "Wildcard",
+    "Configure when championship entrants are considered wildcards (i.e. the do not score points).": "Configura quando i partecipanti sono considerati wildcard (i.e. non prendono punti)."
 }

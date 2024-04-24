@@ -6,7 +6,12 @@
             <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $item->bib }}</span>
             <span>{{ $item->first_name }} {{ $item->last_name }}</span>
         </button>
-        <p class="mb-1 text-xl">{{ $item->categoryConfiguration()->name }} / {{ $item->engine }}</p>
+        <div class="flex items-center mt-2 gap-4 mb-1">
+            @if ($item->wildcard)
+                <span class="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">{{ __('wildcard') }}</span>
+            @endif
+            <p class="text-xl">{{ $item->categoryConfiguration()->name }} / {{ $item->engine }}</p>
+        </div>
         @if ($item->tireConfiguration())
             <p class="mb-6 text-xl">{{ $item->tireConfiguration()->name }}</p>
         @endif

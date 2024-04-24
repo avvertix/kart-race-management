@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\ParticipantRegistered;
+use App\Events\ParticipantUpdated;
 use App\Listeners\ApplyBonusToParticipant;
+use App\Listeners\CheckParticipantForWildcard;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,7 +29,11 @@ class EventServiceProvider extends ServiceProvider
         ],
         ParticipantRegistered::class => [
             ApplyBonusToParticipant::class,
-        ]
+            CheckParticipantForWildcard::class,
+        ],
+        ParticipantUpdated::class => [
+            CheckParticipantForWildcard::class,
+        ],
     ];
 
     /**

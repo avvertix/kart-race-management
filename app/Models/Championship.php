@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Data\WildcardSettingsData;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -41,6 +42,7 @@ class Championship extends Model
     protected $casts = [
         'start_at' => 'datetime',
         'end_at' => 'datetime',
+        'wildcard' => WildcardSettingsData::class . ':default',
     ];
 
     /**

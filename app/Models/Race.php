@@ -52,6 +52,7 @@ class Race extends Model
         'event_end_at' => 'datetime',
         'registration_opens_at' => 'datetime',
         'registration_closes_at' => 'datetime',
+        'canceled_at' => 'datetime',
         'tags' => AsCollection::class,
         'properties' => AsArrayObject::class,
         'hide' => 'boolean',
@@ -118,6 +119,10 @@ class Race extends Model
 
     public function getStatusAttribute()
     {
+        if(!is_null($this->canceled_at)){
+            return 'canceled';
+        }
+
         $todayStartOfDay = today();
         $todayEndOfDay = today()->endOfDay();
         
@@ -169,8 +174,24 @@ class Race extends Model
         $now = now();
 
         return $query
+            ->whereNull('canceled_at')
             ->where('registration_closes_at', '<=', $now)
             ->where('event_end_at', '>=', $now);
+    }
+    
+    /**
+     * Filter closed and completed races
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeClosed($query)
+    {
+        $now = now();
+
+        return $query
+            ->whereNull('canceled_at')
+            ->where('event_end_at', '<', $now);
     }
     
     /**

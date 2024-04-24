@@ -42,7 +42,7 @@ class Championship extends Model
     protected $casts = [
         'start_at' => 'datetime',
         'end_at' => 'datetime',
-        'wildcard' => WildcardSettingsData::class,
+        'wildcard' => WildcardSettingsData::class . ':default',
     ];
 
     /**

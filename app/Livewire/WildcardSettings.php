@@ -37,7 +37,7 @@ class WildcardSettings extends Component
         $this->championship_id = $championship->getKey();
 
         $this->wildcardForm['enabled'] = $championship->wildcard?->enabled ?? false;
-        $this->wildcardForm['strategy'] = $championship->wildcard?->strategy ?? null;
+        $this->wildcardForm['strategy'] = $championship->wildcard?->strategy?->value ?? null;
     }
 
     public function updateWildcardSettings()
@@ -52,13 +52,11 @@ class WildcardSettings extends Component
             'wildcard_strategy' => ['required', 'integer', new Enum(WildcardStrategy::class)],
         ])->validateWithBag('updateWildcardSettings');
 
-        // $this->displayTokenValue($this->user->createToken(
-        //     $this->wildcardForm['name'],
-        //     Jetstream::validPermissions($this->wildcardForm['permissions'])
-        // ));
+        auth()->user()->can('update', $this->championship);
 
-        // $this->wildcardForm['name'] = '';
-        // $this->wildcardForm['permissions'] = Jetstream::$defaultPermissions;
+        $this->championship->wildcard->enabled = $this->wildcardForm['enabled'];
+        $this->championship->wildcard->strategy = WildcardStrategy::from($this->wildcardForm['strategy']);
+        $this->championship->save();
 
         $this->dispatch('saved');
     }

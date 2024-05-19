@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers;
+namespace Tests\Feature;
 
 use App\Models\Bonus;
 use App\Models\BonusType;

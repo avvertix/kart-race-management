@@ -26,7 +26,7 @@ RUN \
 
 ## second step, assemble the image
 
-FROM php:8.2.15-fpm-bullseye AS php
+FROM php:8.2.18-fpm-bullseye AS php
 
 LABEL maintainer="Alessio <alessio@avsoft.it>" \
   org.label-schema.name="avvertix/kart-race-management" \

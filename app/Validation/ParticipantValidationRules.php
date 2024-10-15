@@ -20,6 +20,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Throwable;
+use App\Models\Sex;
+use App\Models\DriverLicence;
+use App\Models\Participant;
+use App\Models\CompetitorLicence;
+use App\Rules\LicenceNumber;
+use Illuminate\Support\Arr;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 
 trait ParticipantValidationRules
 {
@@ -89,6 +96,16 @@ trait ParticipantValidationRules
             'driver_medical_certificate_expiration_date' => ['required', 'string', new DateFormat],
             'driver_residence_address' => ['required', 'string'],
             'driver_sex' => ['required', new Enum(Sex::class)],
+            
+            'driver_licence_number' => ['required', 'string', 'max:250', 'alpha_num:ascii'],
+            'driver_licence_renewed_at' => ['nullable'],
+            'driver_nationality' => ['required', 'string', 'max:250'],
+            'driver_email' => ['required', 'string', 'email'],
+            'driver_phone' => ['required', 'string', ],
+            'driver_birth_date' => ['required', 'string', ],
+            'driver_birth_place' => ['required', 'string', ],
+            'driver_medical_certificate_expiration_date' => ['required', 'string', ],
+            'driver_sex' => [ 'required', new Enum(Sex::class) ],
             'driver_residence_address' => ['required', 'string', 'max:250'],
             'driver_residence_city' => ['required', 'string',  'max:250'],
             'driver_residence_province' => ['nullable', 'string',  'max:250'],

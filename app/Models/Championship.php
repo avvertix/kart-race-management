@@ -66,6 +66,11 @@ class Championship extends Model
         return $this->hasMany(Race::class)->orderBy('event_start_at');
     }
 
+    public function drivers(): HasMany
+    {
+        return $this->hasMany(Driver::class);
+    }
+    
     /**
      * Get the categories that can participate.
      */

@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Actions\GenerateRaceNumber;
-use App\Models\Generators\RaceNumberGenerator;
 use Livewire\Component;
 
 class RaceNumber extends Component

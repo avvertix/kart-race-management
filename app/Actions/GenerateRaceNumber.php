@@ -38,9 +38,9 @@ class GenerateRaceNumber
     {
         $count = abs($count);
 
-        $existing = Participant::where('championship_id', $championship->getKey())->distinct()->get('bib')->pluck('bib');
+        $existing = Participant::where('championship_id', $championship->getKey())->distinct()->select('bib')->pluck('bib');
 
-        $reserved = BibReservation::where('championship_id', $championship->getKey())->distinct()->get('bib')->pluck('bib');
+        $reserved = BibReservation::where('championship_id', $championship->getKey())->distinct()->select('bib')->pluck('bib');
 
         $max = max($existing->max(), self::HIGHEST_SUGGESTED_RACE_NUMBER);
 

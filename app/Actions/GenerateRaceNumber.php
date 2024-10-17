@@ -25,7 +25,7 @@ use Illuminate\Validation\ValidationException;
 class GenerateRaceNumber
 {
 
-    private const MAXIMUM_SUGGESTION = 500;
+    private const HIGHEST_SUGGESTED_RACE_NUMBER = 999;
 
     /**
      * Generate a set of race numbers based on available ones within the championship
@@ -34,19 +34,21 @@ class GenerateRaceNumber
      * @param  int  $count How many suggestions to generate
      * @return array|\Illuminate\Support\Collection
      */
-    public function __invoke(Championship $championship, $count = 1)
+    public function __invoke(Championship $championship, $count = 4)
     {
-        $existing = Participant::where('championship_id', $championship->getKey())->distinct()->get('bib')->pluck('bib');
+        $count = abs($count);
 
-        $reserved = BibReservation::where('championship_id', $championship->getKey())->distinct()->get('bib')->pluck('bib');
+        $existing = Participant::where('championship_id', $championship->getKey())->distinct()->select('bib')->pluck('bib');
 
-        $max = $existing->max() % self::MAXIMUM_SUGGESTION;
+        $reserved = BibReservation::where('championship_id', $championship->getKey())->distinct()->select('bib')->pluck('bib');
+
+        $max = max($existing->max(), self::HIGHEST_SUGGESTED_RACE_NUMBER);
 
         $options = collect()->range(1, $max == 0 ? 100 : $max)->diff($existing)->diff($reserved);
 
-        $range = $options->count() > 4 ? $options->random(4) : $options;
+        $range = $options->count() > $count ? $options->take($count) : $options;
 
-        return $range->toArray();
+        return $range->values()->toArray();
     }
 
     

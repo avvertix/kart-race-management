@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\ActivityLog\EncryptSensibleParticipantData;
@@ -36,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
             'championship' => Championship::class,
             'race' => Race::class,
         ]);
-        
+
         Participant::addLogChange(new EncryptSensibleParticipantData());
 
         Blade::if('useCompleteRegistrationForm', function () {

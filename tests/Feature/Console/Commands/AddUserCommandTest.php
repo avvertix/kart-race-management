@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AddUserCommandTest extends TestCase
@@ -14,8 +15,8 @@ class AddUserCommandTest extends TestCase
     public function test_new_users_can_register()
     {
         $this->artisan('user:add', [
-                '--email' => 'test@local.host'
-            ])
+            '--email' => 'test@local.host',
+        ])
             ->expectsQuestion('Please specify an 8 character password for the administrator', 'password')
             ->assertSuccessful()
             ->expectsOutputToContain('User test@local.host created');
@@ -29,9 +30,9 @@ class AddUserCommandTest extends TestCase
     public function test_new_users_can_register_with_role()
     {
         $this->artisan('user:add', [
-                '--email' => 'test@local.host',
-                '--role' => 'admin',
-            ])
+            '--email' => 'test@local.host',
+            '--role' => 'admin',
+        ])
             ->expectsQuestion('Please specify an 8 character password for the administrator', 'password')
             ->assertSuccessful()
             ->expectsOutputToContain('User test@local.host created');
@@ -53,10 +54,10 @@ class AddUserCommandTest extends TestCase
     public function test_user_creation_requires_existing_role()
     {
         $this->artisan('user:add', [
-                '--email' => 'test@local.host',
-                '--role' => 'unknown',
-                '--password' => 'password'
-            ])
+            '--email' => 'test@local.host',
+            '--role' => 'unknown',
+            '--password' => 'password',
+        ])
             ->assertFailed()
             ->expectsOutputToContain('The role must be a valid role.');
 

@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Operations;
 
 use App\Models\Payment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UpdatePaymentPathToDiskTest extends TestCase
@@ -17,7 +18,7 @@ class UpdatePaymentPathToDiskTest extends TestCase
             'path' => 'payments/test.jpg',
         ]);
 
-        $this->artisan("operations:process 2024_03_16_101941_update_payments_path_to_disk")
+        $this->artisan('operations:process 2024_03_16_101941_update_payments_path_to_disk')
             ->assertSuccessful();
 
         $updatedPayment = $payment->fresh();
@@ -31,7 +32,7 @@ class UpdatePaymentPathToDiskTest extends TestCase
             'path' => 'paymenttest.jpg',
         ]);
 
-        $this->artisan("operations:process 2024_03_16_101941_update_payments_path_to_disk")
+        $this->artisan('operations:process 2024_03_16_101941_update_payments_path_to_disk')
             ->assertSuccessful();
 
         $updatedPayment = $payment->fresh();
@@ -47,7 +48,7 @@ class UpdatePaymentPathToDiskTest extends TestCase
             'updated_at' => $updatedAt,
         ]);
 
-        $this->artisan("operations:process 2024_03_16_101941_update_payments_path_to_disk")
+        $this->artisan('operations:process 2024_03_16_101941_update_payments_path_to_disk')
             ->assertSuccessful();
 
         $updatedPayment = $payment->fresh();
@@ -56,6 +57,4 @@ class UpdatePaymentPathToDiskTest extends TestCase
 
         $this->assertTrue($updatedAt->isSameDay($updatedPayment->updated_at) && $updatedAt->isSameMinute($updatedPayment->updated_at));
     }
-    
-    
 }

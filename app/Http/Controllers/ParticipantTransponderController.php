@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Participant;
-use App\Models\Tire;
 use App\Models\Transponder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,6 @@ class ParticipantTransponderController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \App\Models\Participant  $participant
      * @return \Illuminate\Http\Response
      */
     public function index(Participant $participant)
@@ -35,14 +35,13 @@ class ParticipantTransponderController extends Controller
             'participant' => $participant,
             'race' => $participant->race,
             'transponders' => $participant->transponders,
-            'transponderLimit' => $participant->transponders->count() == 0 ? 1 : (2 - $participant->transponders->count()),
+            'transponderLimit' => $participant->transponders->count() === 0 ? 1 : (2 - $participant->transponders->count()),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \App\Models\Participant  $participant
      * @return \Illuminate\Http\Response
      */
     public function create(Participant $participant)
@@ -52,19 +51,17 @@ class ParticipantTransponderController extends Controller
         return view('transponder.create', [
             'participant' => $participant,
             'race' => $participant->race,
-            'transponderLimit' => $participant->transponders_count == 0 ? 1 : (2 - $participant->transponders_count),
+            'transponderLimit' => $participant->transponders_count === 0 ? 1 : (2 - $participant->transponders_count),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Participant  $participant
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, Participant $participant)
-    {        
+    {
         $validated = $this->validate($request, [
             'transponders' => 'required|array|min:1|max:2',
             'transponders.*' => [
@@ -75,13 +72,13 @@ class ParticipantTransponderController extends Controller
             ],
         ]);
 
-        if($participant->transponders()->count() >= 2){
+        if ($participant->transponders()->count() >= 2) {
             throw ValidationException::withMessages([
                 'transponders' => __('Participant already have 2 transponders assigned'),
             ]);
         }
 
-        $transponders = collect($validated['transponders'])->map(function($transponder) use ($participant) {
+        $transponders = collect($validated['transponders'])->map(function ($transponder) use ($participant) {
             return ['code' => $transponder, 'race_id' => $participant->race_id];
         });
 
@@ -98,7 +95,6 @@ class ParticipantTransponderController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Transponder  $transponder
      * @return \Illuminate\Http\Response
      */
     public function edit(Transponder $transponder)
@@ -116,8 +112,6 @@ class ParticipantTransponderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Transponder  $transponder
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Transponder $transponder)
@@ -146,7 +140,7 @@ class ParticipantTransponderController extends Controller
                 'participant' => "{$transponder->participant->bib} {$transponder->participant->first_name} {$transponder->participant->last_name}",
             ]));
     }
-    
+
     public function destroy(Transponder $transponder)
     {
         $transponder->load(['participant']);
@@ -164,5 +158,4 @@ class ParticipantTransponderController extends Controller
                 'participant' => $participantLabel,
             ]));
     }
-
 }

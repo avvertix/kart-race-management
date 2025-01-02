@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Bonus;
@@ -77,7 +79,7 @@ class ChampionshipBonusController extends Controller
 
         return redirect()->route('championships.bonuses.index', $championship)
             ->with('flash.banner', __('Bonus activated for :driver.', [
-                'driver' => $bonus->driver
+                'driver' => $bonus->driver,
             ]));
     }
 
@@ -87,7 +89,7 @@ class ChampionshipBonusController extends Controller
     public function show(Bonus $bonus)
     {
         $bonus->load('championship');
-        
+
         return view('bonus.show', [
             'bonus' => $bonus,
             'championship' => $bonus->championship,
@@ -101,7 +103,7 @@ class ChampionshipBonusController extends Controller
     public function edit(Bonus $bonus)
     {
         $bonus->load('championship');
-        
+
         return view('bonus.edit', [
             'bonus' => $bonus,
             'championship' => $bonus->championship,
@@ -126,7 +128,7 @@ class ChampionshipBonusController extends Controller
             'amount' => 'required|integer|min:1',
         ]);
 
-        $licenceHash =  hash('sha512', $validated['driver_licence']);
+        $licenceHash = hash('sha512', $validated['driver_licence']);
 
         Validator::validate([
             'driver_licence' => $licenceHash,
@@ -150,7 +152,7 @@ class ChampionshipBonusController extends Controller
 
         return redirect()->route('championships.bonuses.index', $championship)
             ->with('flash.banner', __('Bonus for :driver updated.', [
-                'driver' => $bonus->driver
+                'driver' => $bonus->driver,
             ]));
     }
 

@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Competitor;
 use App\Models\CompetitorLicence;
-use App\Models\Driver;
 use App\Models\DriverLicence;
 use App\Models\Race;
 use App\Models\Sex;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Participant>
@@ -123,11 +124,10 @@ class ParticipantFactory extends Factory
         });
     }
 
-
     /**
      * Indicate that the participant is confirmed.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     * @return Factory|ParticipantFactory
      */
     public function confirmed()
     {
@@ -141,7 +141,7 @@ class ParticipantFactory extends Factory
     /**
      * Indicate that the participant registratio is completed.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     * @return Factory|ParticipantFactory
      */
     public function markCompleted()
     {
@@ -151,11 +151,11 @@ class ParticipantFactory extends Factory
             ];
         });
     }
-    
+
     /**
      * Indicate that the participant has a competitor.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     * @return Factory|ParticipantFactory
      */
     public function withCompetitor()
     {
@@ -184,15 +184,15 @@ class ParticipantFactory extends Factory
                         'postal_code' => '20146',
                     ],
                     'fiscal_code' => fake()->ssn(),
-                ]
+                ],
             ];
         });
     }
-    
+
     /**
      * Indicate that the participant has a mechanic.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     * @return Factory|ParticipantFactory
      */
     public function withMechanic()
     {
@@ -202,15 +202,15 @@ class ParticipantFactory extends Factory
                 'mechanic' => [
                     'name' => fake()->name(),
                     'licence_number' => fake()->numerify(),
-                ]
+                ],
             ];
         });
     }
-    
+
     /**
      * Indicate that the participant requested to use the bonus.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     * @return Factory|ParticipantFactory
      */
     public function usingBonus()
     {
@@ -221,11 +221,11 @@ class ParticipantFactory extends Factory
             ];
         });
     }
-    
+
     /**
      * Indicate that the participant requested to use the bonus.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory|\Database\Factories\ParticipantFactory
+     * @return Factory|ParticipantFactory
      */
     public function category(?Category $category = null)
     {

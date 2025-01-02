@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Support\Describable;
@@ -19,7 +21,7 @@ enum CompetitorLicence: int implements Describable
     {
         $country = country(config('races.licence.country'));
 
-        if($this == CompetitorLicence::FOREIGN){
+        if ($this === CompetitorLicence::FOREIGN) {
             return __('Licence issued out of :country', [
                 'country' => $country->getName(),
             ]);

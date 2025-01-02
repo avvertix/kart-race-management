@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
@@ -64,7 +66,6 @@ class OrbitsBackupController extends Controller
             'path' => $path,
             'hash' => $hash,
         ]);
-
 
         return redirect()->route('orbits-backups.index')
             ->with('flash.banner', __('Backup file uploaded.'));

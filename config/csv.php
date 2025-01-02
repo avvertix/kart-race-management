@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -59,5 +61,5 @@ return [
     */
     'job_timeout' => 60 * 10,
     'job_attempts' => 1,
-    'job_delay' => 0
+    'job_delay' => 0,
 ];

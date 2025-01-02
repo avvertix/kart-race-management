@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Bonus;
@@ -7,9 +9,8 @@ use App\Models\BonusType;
 use App\Models\Championship;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Illuminate\Support\Str;
+use Tests\TestCase;
 
 class ChampionshipBonusControllerTest extends TestCase
 {
@@ -83,7 +84,7 @@ class ChampionshipBonusControllerTest extends TestCase
 
         $response->assertViewHas('championship', $championship);
     }
-    
+
     public function test_bonus_created(): void
     {
         $user = User::factory()->organizer()->create();
@@ -115,7 +116,7 @@ class ChampionshipBonusControllerTest extends TestCase
         $this->assertEquals(1, $bonus->amount);
         $this->assertEquals(BonusType::REGISTRATION_FEE, $bonus->bonus_type);
     }
-    
+
     public function test_bonus_not_created_when_name_above_maximum_length(): void
     {
         $user = User::factory()->organizer()->create();
@@ -127,7 +128,7 @@ class ChampionshipBonusControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.bonuses.create', $championship))
             ->post(route('championships.bonuses.store', $championship), [
-                'driver' => 'Driver name ' . Str::random(250),
+                'driver' => 'Driver name '.Str::random(250),
                 'driver_licence' => 'DRV-LC',
                 'bonus_type' => BonusType::REGISTRATION_FEE->value,
                 'amount' => 1,
@@ -141,7 +142,7 @@ class ChampionshipBonusControllerTest extends TestCase
 
         $this->assertNull($bonus);
     }
-    
+
     public function test_bonus_not_created_when_already_existing_with_same_licence(): void
     {
         $user = User::factory()->organizer()->create();
@@ -167,7 +168,6 @@ class ChampionshipBonusControllerTest extends TestCase
 
         $response->assertSessionHasErrors('driver_licence');
     }
-
 
     public function test_bonus_edit_form_shown(): void
     {

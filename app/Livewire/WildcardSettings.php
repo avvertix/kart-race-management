@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Models\Championship;
@@ -7,14 +9,12 @@ use App\Models\WildcardStrategy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Enum;
-use Laravel\Jetstream\Jetstream;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class WildcardSettings extends Component
 {
-
-/**
+    /**
      * The create API token form state.
      *
      * @var array
@@ -70,18 +70,16 @@ class WildcardSettings extends Component
     {
         return Auth::user();
     }
-    
-    
+
     public function getChampionshipProperty()
     {
         return Championship::find($this->championship_id);
     }
-    
+
     public function getStrategiesProperty()
     {
         return WildcardStrategy::cases();
     }
-
 
     public function render()
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Actions\Jetstream\DeleteUser;
@@ -49,7 +51,7 @@ class JetstreamServiceProvider extends ServiceProvider
         Jetstream::role('admin', 'Administrator', [
             '*',
         ])->description('Platform administrator');
-        
+
         Jetstream::role('organizer', 'Organizer', [
             'championship:list',
             'championship:create',
@@ -86,7 +88,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'communication:update',
             'communication:delete',
         ])->description('Race and Championship organizer');
-        
+
         Jetstream::role('racemanager', 'Race manager', [
             'championship:list',
             'category:list',
@@ -125,7 +127,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'tire:create',
             'tire:update',
         ])->description('Responsible of tire management');
-        
+
         Jetstream::role('timekeeper', 'Timekeeper', [
             'championship:list',
             'category:list',

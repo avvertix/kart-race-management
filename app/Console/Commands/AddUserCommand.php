@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
-use App\Models\User;
-use Illuminate\Console\Command;
 use App\Actions\Fortify\CreateNewUser;
+use Illuminate\Console\Command;
 use Illuminate\Validation\ValidationException;
 use Laravel\Jetstream\Jetstream;
 
@@ -39,14 +40,14 @@ class AddUserCommand extends Command
         $name = $this->option('name') ?? $this->getUsernameFrom($email);
         $password = $this->option('password');
         $role = $this->option('role') ?? 'racemanager';
-            
+
         if (empty($password) && $this->input->isInteractive()) {
-            $password = $this->secret("Please specify an 8 character password for the administrator");
+            $password = $this->secret('Please specify an 8 character password for the administrator');
         }
 
         $createUserAction = new CreateNewUser();
 
-        try{
+        try {
             $user = $createUserAction->create([
                 'name' => $name,
                 'email' => $email,
@@ -55,28 +56,25 @@ class AddUserCommand extends Command
                 'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
                 'role' => $role,
             ]);
-    
+
             $this->line('');
-            $this->line("User <comment>$email</comment> created.");       
+            $this->line("User <comment>$email</comment> created.");
             $this->line('');
-    
+
             return self::SUCCESS;
-        }
-        catch(ValidationException $ex)
-        {
-            if($ex->validator->errors()->has('email') && 
-               $ex->validator->errors()->first('email') === 'The email has already been taken.'){
+        } catch (ValidationException $ex) {
+            if ($ex->validator->errors()->has('email') &&
+               $ex->validator->errors()->first('email') === 'The email has already been taken.') {
 
                 $this->line('');
-                $this->error("User already existing");
+                $this->error('User already existing');
                 $this->line('');
 
                 return self::INVALID;
             }
-  
 
             $this->line('');
-            $this->error("Validation errors");
+            $this->error('Validation errors');
             $this->line('');
 
             foreach ($ex->errors() as $key => $messages) {
@@ -95,7 +93,12 @@ class AddUserCommand extends Command
 
     private function getUsernameFrom($email)
     {
-        $et_offset = strpos($email, '@');
-        return $et_offset !== false ? substr($email, 0, $et_offset) : $email;
+        if (is_null($email)) {
+            return null;
+        }
+
+        $et_offset = mb_strpos($email, '@');
+
+        return $et_offset !== false ? mb_substr($email, 0, $et_offset) : $email;
     }
 }

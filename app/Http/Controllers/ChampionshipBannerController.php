@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
@@ -10,9 +12,7 @@ use Illuminate\Validation\Rules\File;
 
 class ChampionshipBannerController extends Controller
 {
-
     private const DISK_NAME = 'championship-banners';
-
 
     /**
      * Create the controller instance.
@@ -40,7 +40,6 @@ class ChampionshipBannerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Championship $championship, Request $request)
@@ -63,7 +62,7 @@ class ChampionshipBannerController extends Controller
 
         $championship->save();
 
-        if($oldPath){
+        if ($oldPath) {
             Storage::disk(self::DISK_NAME)->delete($oldPath);
         }
 
@@ -74,7 +73,6 @@ class ChampionshipBannerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Championship  $championship
      * @return \Illuminate\Http\Response
      */
     public function destroy(Championship $championship)

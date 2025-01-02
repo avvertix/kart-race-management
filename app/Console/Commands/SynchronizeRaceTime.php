@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\Race;
@@ -28,24 +30,23 @@ class SynchronizeRaceTime extends Command
      */
     public function handle()
     {
-        $this->line("Synchonizing race times...");
+        $this->line('Synchonizing race times...');
 
         $query = Race::where('event_start_at', '>=', now()->startOfDay());
 
         $bar = $this->output->createProgressBar($query->count());
-        
+
         $bar->start();
 
-        $query->chunk(50, function($races) use ($bar) {
+        $query->chunk(50, function ($races) use ($bar) {
 
             foreach ($races as $race) {
                 $start_date = $race->event_start_at->setTimezone(config('races.timezone'))->setTimeFromTimeString(config('races.start_time'));
                 $end_date = $race->event_end_at->setTimezone(config('races.timezone'))->setTimeFromTimeString(config('races.end_time'));
-                
+
                 $utc_start_date = $start_date->setTimezone(config('app.timezone'));
                 $utc_end_date = $end_date->setTimezone(config('app.timezone'));
-                
-                
+
                 $race->update([
                     'event_start_at' => $utc_start_date,
                     'event_end_at' => $utc_end_date,
@@ -55,7 +56,7 @@ class SynchronizeRaceTime extends Command
 
                 $bar->advance();
             }
-            
+
         });
 
         $bar->finish();

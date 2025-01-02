@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Race;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class SynchronizeRaceTimeTest extends TestCase
@@ -33,7 +34,7 @@ class SynchronizeRaceTimeTest extends TestCase
             ->assertSuccessful();
 
         $this->travelBack();
-        
+
         $updatedRace = $race->fresh();
 
         $this->assertEquals(Carbon::parse('2023-03-05 09:00:00', config('races.timezone'))->setTimezone(config('app.timezone'))->toDateTimeString(), $updatedRace->event_start_at->toDateTimeString());

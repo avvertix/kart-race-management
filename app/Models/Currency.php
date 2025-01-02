@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Support\HtmlString;
@@ -10,18 +12,17 @@ enum Currency: string
 {
     case EUR = 'EUR';
 
-
     /**
      * Format the given amount using the specific currency
-     * 
-     * @param \Illuminate\View\ComponentSlot|int $amount
+     *
+     * @param  ComponentSlot|int  $amount
      */
     public function format($amount): string
     {
-        $amount = $amount instanceof HtmlString || $amount instanceof ComponentSlot ? intval(trim($amount->toHtml())) : $amount;
+        $amount = $amount instanceof HtmlString || $amount instanceof ComponentSlot ? (int) (mb_trim($amount->toHtml())) : $amount;
 
-        $fmt = new NumberFormatter( 'en_EN', NumberFormatter::CURRENCY );
+        $fmt = new NumberFormatter('en_EN', NumberFormatter::CURRENCY);
 
-        return $fmt->formatCurrency($amount/100, $this->value);
+        return $fmt->formatCurrency($amount / 100, $this->value);
     }
 }

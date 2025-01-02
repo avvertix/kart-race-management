@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -22,12 +24,12 @@ return new class extends Migration
             $table->unsignedInteger('bib')->index(); // or race number
 
             $table->string('driver_licence_hash', 250)->nullable();
-            
+
             $table->mediumText('driver_licence')->nullable(); // an encrypted string
-            
+
             $table->string('driver'); // Driver name
 
-            $table->string('contact_email')->nullable(); 
+            $table->string('contact_email')->nullable();
 
             $table->unsignedTinyInteger('licence_type')->nullable();
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -13,5 +15,5 @@ return [
     'BASED_ON_FIRST_RACE' => 'Participants to first race of the championship can gain points, others are considered wildcards.',
     'BASED_ON_BIB_RESERVATION' => 'Participants that has a bib reservation can gain points, others are considered wildcards.',
     'BASED_ON_BONUS' => 'Participants that have a bonus can gain points, others are considered wildcards.',
-    
+
 ];

@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -49,7 +50,6 @@ class ChampionshipController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -57,7 +57,7 @@ class ChampionshipController extends Controller
         $validated = $this->validate($request, [
             'start' => 'required|date|after:yesterday',
             'end' => 'nullable|date|after:start',
-            'title' => 'nullable|string|max:250|unique:' . Championship::class .',title',
+            'title' => 'nullable|string|max:250|unique:'.Championship::class.',title',
             'description' => 'nullable|string|max:1000',
         ]);
 
@@ -73,14 +73,13 @@ class ChampionshipController extends Controller
 
         return to_route('championships.index')
             ->with('flash.banner', __(':championship created.', [
-                'championship' => $championship->title
+                'championship' => $championship->title,
             ]));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Championship  $championship
      * @return \Illuminate\Http\Response
      */
     public function show(Championship $championship)
@@ -104,7 +103,6 @@ class ChampionshipController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Championship  $championship
      * @return \Illuminate\Http\Response
      */
     public function edit(Championship $championship)
@@ -115,8 +113,6 @@ class ChampionshipController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Championship  $championship
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Championship $championship)
@@ -124,7 +120,7 @@ class ChampionshipController extends Controller
         // update is permitted unless races are defined
         // if races are there no changes can be made
 
-        if($championship->races()->exists()){
+        if ($championship->races()->exists()) {
             throw ValidationException::withMessages(['races' => __('Championship contains races. Update is allowed only when no races are present.')]);
         }
 
@@ -147,14 +143,13 @@ class ChampionshipController extends Controller
 
         return to_route('championships.show', $championship)
             ->with('flash.banner', __(':championship updated.', [
-                'championship' => $validated['title']
+                'championship' => $validated['title'],
             ]));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Championship  $championship
      * @return \Illuminate\Http\Response
      */
     public function destroy(Championship $championship)

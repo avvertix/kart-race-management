@@ -1,19 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Laravel\Jetstream\Jetstream;
 
 class PrivacyPolicyController extends Controller
 {
     /**
      * Show the privacy policy for the application.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
     public function show(Request $request)
@@ -24,7 +24,6 @@ class PrivacyPolicyController extends Controller
             'policy' => Str::markdown(file_get_contents($policyFile)),
         ]);
     }
-
 
     /**
      * Find the path to a localized Markdown resource.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Exports;
 
 use App\Models\CompetitorLicence;
@@ -9,13 +11,11 @@ use App\Models\Sex;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RaceParticipantsExportTest extends TestCase
 {
     use RefreshDatabase;
-
 
     public function test_export_requires_authentication()
     {
@@ -25,7 +25,7 @@ class RaceParticipantsExportTest extends TestCase
 
         $response->assertRedirect(route('login'));
     }
-    
+
     public function test_export_forbidden_for_tireagent()
     {
         $user = User::factory()->tireagent()->create();
@@ -38,7 +38,7 @@ class RaceParticipantsExportTest extends TestCase
 
         $response->assertForbidden();
     }
-    
+
     public function test_export_forbidden_for_timekeeper()
     {
         $user = User::factory()->timekeeper()->create();
@@ -51,7 +51,7 @@ class RaceParticipantsExportTest extends TestCase
 
         $response->assertForbidden();
     }
-    
+
     public function test_export_forbidden_for_racemanager()
     {
         $user = User::factory()->racemanager()->create();
@@ -73,10 +73,10 @@ class RaceParticipantsExportTest extends TestCase
 
         $race = Race::factory()
             ->create([
-                'event_start_at' => Carbon::parse("2023-02-28"),
-                'title' => 'Race title'
+                'event_start_at' => Carbon::parse('2023-02-28'),
+                'title' => 'Race title',
             ]);
-        
+
         $participant = Participant::factory()
             ->recycle($race->championship)
             ->category()
@@ -85,12 +85,12 @@ class RaceParticipantsExportTest extends TestCase
             ]);
 
         $vehicle = $participant->vehicles[0];
-        
+
         $response = $this
             ->actingAs($user)
             ->get(route('races.export.participants', $race));
 
-        $expected_filename = "organizer-name-2023-02-28-race-title.csv";
+        $expected_filename = 'organizer-name-2023-02-28-race-title.csv';
 
         $response->assertDownload($expected_filename);
 
@@ -181,10 +181,10 @@ class RaceParticipantsExportTest extends TestCase
 
         $race = Race::factory()
             ->create([
-                'event_start_at' => Carbon::parse("2023-02-28"),
-                'title' => 'Race title'
+                'event_start_at' => Carbon::parse('2023-02-28'),
+                'title' => 'Race title',
             ]);
-        
+
         $participant = Participant::factory()
             ->recycle($race->championship)
             ->category()
@@ -194,12 +194,12 @@ class RaceParticipantsExportTest extends TestCase
             ]);
 
         $vehicle = $participant->vehicles[0];
-        
+
         $response = $this
             ->actingAs($user)
             ->get(route('races.export.participants', $race));
 
-        $expected_filename = "organizer-name-2023-02-28-race-title.csv";
+        $expected_filename = 'organizer-name-2023-02-28-race-title.csv';
 
         $response->assertDownload($expected_filename);
 
@@ -290,10 +290,10 @@ class RaceParticipantsExportTest extends TestCase
 
         $race = Race::factory()
             ->create([
-                'event_start_at' => Carbon::parse("2023-02-28"),
-                'title' => 'Race title'
+                'event_start_at' => Carbon::parse('2023-02-28'),
+                'title' => 'Race title',
             ]);
-        
+
         $participant = Participant::factory()
             ->withCompetitor()
             ->withMechanic()
@@ -304,12 +304,12 @@ class RaceParticipantsExportTest extends TestCase
             ]);
 
         $vehicle = $participant->vehicles[0];
-        
+
         $response = $this
             ->actingAs($user)
             ->get(route('races.export.participants', $race));
 
-        $expected_filename = "organizer-name-2023-02-28-race-title.csv";
+        $expected_filename = 'organizer-name-2023-02-28-race-title.csv';
 
         $response->assertDownload($expected_filename);
 
@@ -389,15 +389,14 @@ class RaceParticipantsExportTest extends TestCase
                 $participant->mechanic['name'],
                 $participant->mechanic['licence_number'],
 
-                $vehicle['chassis_manufacturer'] ,
-                $vehicle['engine_manufacturer'] ,
-                $vehicle['engine_model'] ,
-                $vehicle['oil_manufacturer'] ,
-                $vehicle['oil_type'] ,
-                ''.$vehicle['oil_percentage'] ,
+                $vehicle['chassis_manufacturer'],
+                $vehicle['engine_manufacturer'],
+                $vehicle['engine_model'],
+                $vehicle['oil_manufacturer'],
+                $vehicle['oil_type'],
+                ''.$vehicle['oil_percentage'],
 
             ],
         ], $csv->toArray());
     }
-    
 }

@@ -1,16 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Participant;
 use App\Models\Payment;
 use App\Models\Race;
-use App\Models\Signature;
-use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
@@ -19,7 +17,6 @@ class ParticipantPaymentControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    
     public function test_participant_can_upload_payment_proof()
     {
         Storage::fake('payments');
@@ -34,7 +31,7 @@ class ParticipantPaymentControllerTest extends TestCase
             ->from(route('registration.show', $participant))
             ->post(URL::signedRoute('payment-verification.store', $participant->signedUrlParameters()), [
                 'participant' => $participant->uuid,
-                'proof' => $file
+                'proof' => $file,
             ]);
 
         $response->assertRedirect($participant->qrCodeUrl());
@@ -43,8 +40,7 @@ class ParticipantPaymentControllerTest extends TestCase
 
         Storage::disk('payments')->assertExists($file->hashName());
     }
-    
-    
+
     public function test_payment_not_uploaded_with_wrong_signature()
     {
         Storage::fake('payments');
@@ -64,7 +60,6 @@ class ParticipantPaymentControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-
     public function test_participant_payment_proof_downloadable()
     {
         Storage::fake('payments');
@@ -75,7 +70,6 @@ class ParticipantPaymentControllerTest extends TestCase
             ->for($race)
             ->has(Payment::factory())
             ->create();
-
 
         $file = UploadedFile::fake()->image('proof.jpg', 200, 200);
 

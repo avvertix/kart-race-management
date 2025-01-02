@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
 use App\Events\ParticipantRegistered;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class ApplyBonusToParticipant
 {
@@ -25,7 +25,7 @@ class ApplyBonusToParticipant
 
         $useBonus = $bonus?->hasRemaining() ?? false;
 
-        if($bonus && $useBonus){
+        if ($bonus && $useBonus) {
             $event->participant->update(['use_bonus' => true]);
             $event->participant->bonuses()->attach($bonus);
         }

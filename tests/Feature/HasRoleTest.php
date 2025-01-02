@@ -1,16 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Jetstream\Role;
 use Tests\TestCase;
 
 class HasRoleTest extends TestCase
 {
-
     public function test_role_can_be_retrieved()
     {
         $user = User::make([
@@ -23,7 +22,7 @@ class HasRoleTest extends TestCase
         $this->assertEquals(['*'], $user->permissions());
         $this->assertTrue($user->hasPermission('test'));
     }
-    
+
     public function test_null_role_handled()
     {
         $user = User::make([

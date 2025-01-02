@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -15,5 +17,5 @@ return [
     'scheduled' => 'Scheduled',
     'concluded' => 'Concluded',
     'canceled' => 'Canceled',
-    
+
 ];

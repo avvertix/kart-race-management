@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -20,5 +22,5 @@ return [
         'LOCAL' => 'Nazionale',
         'FOREIGN' => 'Estera',
     ],
-    
+
 ];

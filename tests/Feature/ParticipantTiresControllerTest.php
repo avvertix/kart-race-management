@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Participant;
@@ -7,7 +9,6 @@ use App\Models\Race;
 use App\Models\Tire;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ParticipantTiresControllerTest extends TestCase
@@ -24,7 +25,7 @@ class ParticipantTiresControllerTest extends TestCase
         $response->assertRedirectToRoute('login');
 
     }
-    
+
     public function test_tire_creation_page_not_accessible_by_timekeeper()
     {
         $user = User::factory()->timekeeper()->create();
@@ -38,7 +39,7 @@ class ParticipantTiresControllerTest extends TestCase
         $response->assertForbidden();
 
     }
-    
+
     public function test_tire_creation_page_loads()
     {
         $user = User::factory()->tireagent()->create();
@@ -52,9 +53,9 @@ class ParticipantTiresControllerTest extends TestCase
         $response->assertSuccessful();
 
         $response->assertViewHas('participant', $participant);
-        
+
         $response->assertViewHas('race', $participant->race);
-        
+
         $response->assertViewHas('tireLimit', 4);
 
     }
@@ -105,7 +106,7 @@ class ParticipantTiresControllerTest extends TestCase
             ]);
 
         $response->assertSessionHasErrors([
-            'tires' => 'Participant already have 5 tires assigned'
+            'tires' => 'Participant already have 5 tires assigned',
         ]);
 
         $response->assertRedirectToRoute('participants.tires.create', $participant);
@@ -142,7 +143,6 @@ class ParticipantTiresControllerTest extends TestCase
         $this->assertEquals(2, $participant->fresh()->tires()->count());
     }
 
-    
     public function test_tire_edit_page_loads()
     {
         $user = User::factory()->tireagent()->create();
@@ -157,7 +157,7 @@ class ParticipantTiresControllerTest extends TestCase
                 'race_id' => $race->getKey(),
                 'championship_id' => $race->championship->getKey(),
             ]);
-        
+
         $tire = $participant->tires()->first();
 
         $response = $this
@@ -167,13 +167,13 @@ class ParticipantTiresControllerTest extends TestCase
         $response->assertSuccessful();
 
         $response->assertViewHas('participant', $participant);
-        
+
         $response->assertViewHas('race', $participant->race);
-        
+
         $response->assertViewHas('tire', $tire);
 
     }
-    
+
     public function test_tire_can_be_updated()
     {
         $user = User::factory()->tireagent()->create();
@@ -188,14 +188,14 @@ class ParticipantTiresControllerTest extends TestCase
                 'race_id' => $race->getKey(),
                 'championship_id' => $race->championship->getKey(),
             ]);
-        
+
         $tire = $participant->tires()->first();
 
         $response = $this
             ->actingAs($user)
             ->from(route('tires.edit', $tire))
             ->put(route('tires.update', $tire), [
-                'tire' => 'TNEW'
+                'tire' => 'TNEW',
             ]);
 
         $response->assertRedirectToRoute('participants.tires.index', $participant);
@@ -204,11 +204,11 @@ class ParticipantTiresControllerTest extends TestCase
 
         $this->assertNotEquals($tire->code, $freshTire->code);
         $this->assertEquals('TNEW', $freshTire->code);
-        
+
         $response->assertSessionHas('flash.banner', 'Tire code updated.');
 
     }
-    
+
     public function test_tire_can_be_updated_with_existing_code()
     {
         $user = User::factory()->tireagent()->create();
@@ -223,7 +223,7 @@ class ParticipantTiresControllerTest extends TestCase
                 'race_id' => $race->getKey(),
                 'championship_id' => $race->championship->getKey(),
             ]);
-        
+
         $tire = $participant->tires->first();
         $code = $participant->tires->last()->code;
 
@@ -231,7 +231,7 @@ class ParticipantTiresControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('tires.edit', $tire))
             ->put(route('tires.update', $tire), [
-                'tire' => $code
+                'tire' => $code,
             ]);
 
         $response->assertRedirectToRoute('tires.edit', $tire);

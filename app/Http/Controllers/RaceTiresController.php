@@ -1,21 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Race;
 use App\Models\Tire;
-use App\Models\TireOption;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 class RaceTiresController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
     public function __invoke(Request $request, Race $race)
@@ -35,25 +33,25 @@ class RaceTiresController extends Controller
                 },
             ])
             ->get()
-            ->map(function($p){
-                return [ 
+            ->map(function ($p) {
+                return [
                     'name' => $p->name,
                     'total' => $p->participants_count,
                     'assigned' => $p->participants_with_tires,
                     'raw' => $p,
                 ];
             })
-            ->filter(fn($e) => $e['total'] > 0);
+            ->filter(fn ($e) => $e['total'] > 0);
 
         $search_term = $request->has('tire_search') ? e($request->get('tire_search')) : null;
-        
+
         // List participants with tires
 
         $participants = $race->participants()
             ->withCount('tires')
             ->withCount('signatures')
             ->has('tires')
-            ->when($search_term, function($query, $search_term){
+            ->when($search_term, function ($query, $search_term) {
                 $query->search($search_term)
                     ->orWhereRelation('tires', 'code', e($search_term));
             })
@@ -68,5 +66,4 @@ class RaceTiresController extends Controller
             'search_term' => $search_term,
         ]);
     }
-    
 }

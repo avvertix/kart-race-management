@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Participant;
 use TimoKoerber\LaravelOneTimeOperations\OneTimeOperation;
 
@@ -34,13 +36,12 @@ return new class extends OneTimeOperation
             '125 SENIOR TDM X30 SUPER' => '125 SENIOR TERR',
         ];
 
-
         Participant::query()
             ->whereIn('category', array_keys($categoriesToTransfer))
-            ->lazy()->each(function($participant) use ($categoriesToTransfer) {
+            ->lazy()->each(function ($participant) use ($categoriesToTransfer) {
                 $participant->category = $categoriesToTransfer[$participant->category] ?? $participant->category;
-                
-                logs()->info("Migrating participant category", [
+
+                logs()->info('Migrating participant category', [
                     'id' => $participant->getKey(),
                     'new' => $participant->category,
                     'old' => $participant->getOriginal('category'),

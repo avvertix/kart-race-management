@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\URL;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\URL;
 class Payment extends Model
 {
     use HasFactory;
-
 
     /**
      * The attributes that should be hidden for serialization.
@@ -36,7 +36,6 @@ class Payment extends Model
     {
         return $this->belongsTo(Participant::class);
     }
-
 
     protected function downloadUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -25,5 +27,5 @@ return [
         'NATIONAL' => 'The race is also part of a national championship',
         'INTERNATIONAL' => 'The race is also part of an international championship',
     ],
-    
+
 ];

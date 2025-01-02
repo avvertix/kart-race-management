@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
             $table->timestamp('event_start_at')->nullable();
             $table->timestamp('event_end_at')->nullable(); // in case it starts on saturday and end on sunday
-            
+
             $table->timestamp('registration_opens_at')->nullable();
             $table->timestamp('registration_closes_at')->nullable();
 
@@ -31,9 +33,8 @@ return new class extends Migration
             $table->mediumText('description')->nullable();
 
             $table->json('tags')->default('[]');
-            
-            $table->json('properties')->default('[]');
 
+            $table->json('properties')->default('[]');
 
         });
     }

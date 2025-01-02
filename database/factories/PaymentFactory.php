@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Participant;
@@ -22,7 +24,6 @@ class PaymentFactory extends Factory
             'path' => 'proof.jpg',
         ];
     }
-
 
     public function forParticipant(?Participant $participant = null)
     {

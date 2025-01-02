@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Championship;
@@ -21,7 +23,7 @@ class CompetitorFactory extends Factory
     {
         return [
             'championship_id' => Championship::factory(),
-            'name' => fake()->name() . ' ' . fake()->lastName(),
+            'name' => fake()->name().' '.fake()->lastName(),
             'licence_type' => CompetitorLicence::LOCAL,
             'licence_number' => fake()->numerify(),
             'licence_renewed_at' => null,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +24,6 @@ class OrbitsBackup extends Model
         'hash',
     ];
 
-
     /**
      * Get the reference championship to this backup.
      */
@@ -30,7 +31,7 @@ class OrbitsBackup extends Model
     {
         return $this->belongsTo(Championship::class);
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Categories\Category as CategoryConfiguration;
@@ -12,9 +14,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Category extends Model
 {
     use HasFactory;
-
     use HasUlids;
-
     use LogsActivity;
 
     protected $hidden = [
@@ -27,7 +27,7 @@ class Category extends Model
      * @var array
      */
     protected $with = [
-        'tire'
+        'tire',
     ];
 
     protected $fillable = [
@@ -59,7 +59,6 @@ class Category extends Model
         return 'ulid';
     }
 
-
     /**
      * Get the championship
      */
@@ -67,7 +66,6 @@ class Category extends Model
     {
         return $this->belongsTo(Championship::class);
     }
-
 
     /**
      * Get the selectable tire for the category
@@ -77,10 +75,9 @@ class Category extends Model
         return $this->hasOne(ChampionshipTire::class, 'id', 'championship_tire_id');
     }
 
-
     /**
      * Filter for enabled categories
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -91,7 +88,7 @@ class Category extends Model
 
     /**
      * Filter for disabled categories
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -102,14 +99,14 @@ class Category extends Model
 
     /**
      * Filter for enabled categories
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSearch($query, $term)
     {
         return $query->where('enabled', true)
-            ->where(function($subQuery) use ($term){ 
+            ->where(function ($subQuery) use ($term) {
                 return $subQuery->where('name', 'LIKE', "%{$term}%")
                     ->orWhere('description', 'LIKE', "%{$term}%");
             });
@@ -124,7 +121,6 @@ class Category extends Model
             ->dontSubmitEmptyLogs();
     }
 
-
     public function asCategoryConfiguration(): CategoryConfiguration
     {
         return new CategoryConfiguration([
@@ -137,6 +133,7 @@ class Category extends Model
             'enabled' => $this->enabled,
         ]);
     }
+
     protected function casts(): array
     {
         return [

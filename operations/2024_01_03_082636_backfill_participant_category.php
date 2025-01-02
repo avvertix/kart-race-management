@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Participant;
 use TimoKoerber\LaravelOneTimeOperations\OneTimeOperation;
 
@@ -29,11 +31,11 @@ return new class extends OneTimeOperation
             ->with('championship')
             ->has('championship.categories')
             ->whereNull('category_id')
-            ->each(function($participant) {
+            ->each(function ($participant) {
 
                 $category = $participant->championship->categories()->whereCode($participant->category)->first();
 
-                if(is_null($category)){
+                if (is_null($category)) {
                     return;
                 }
 

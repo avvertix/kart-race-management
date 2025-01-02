@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -61,19 +63,18 @@ return [
             'disk' => 'local',
             'prefix' => 'payments',
         ],
-        
+
         'championship-banners' => [
             'driver' => 'scoped',
             'disk' => 'local',
             'prefix' => 'championship/banners',
         ],
-        
+
         'orbits-backups' => [
             'driver' => 'scoped',
             'disk' => 'local',
             'prefix' => 'orbits/backups',
         ],
-
 
     ],
 

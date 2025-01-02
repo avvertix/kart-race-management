@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 use Illuminate\Support\Str;
@@ -7,7 +9,6 @@ use Laravel\Jetstream\Jetstream;
 
 trait HasRole
 {
-
     /**
      * Get the user's role.
      *
@@ -23,7 +24,6 @@ trait HasRole
     /**
      * Determine if the user has the given role.
      *
-     * @param  string  $role
      * @return bool
      */
     public function hasRole(string $role)
@@ -44,7 +44,6 @@ trait HasRole
     /**
      * Determine if the user has the given permission.
      *
-     * @param  string  $permission
      * @return bool
      */
     public function hasPermission(string $permission)

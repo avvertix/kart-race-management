@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Database\Migrations\Migration;
@@ -16,7 +18,7 @@ return new class extends Migration
         Schema::create('transponders', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            
+
             $table->ulid('uuid')->unique();
 
             $table->foreignIdFor(Participant::class);

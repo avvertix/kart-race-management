@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\User;
@@ -23,8 +25,6 @@ class UserFactory extends Factory
 
     /**
      * Define the model's default state.
-     *
-     * @return array
      */
     public function definition(): array
     {
@@ -40,7 +40,7 @@ class UserFactory extends Factory
     /**
      * Indicate that the model's email address should be unverified.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function unverified(): static
     {
@@ -54,7 +54,7 @@ class UserFactory extends Factory
     /**
      * Indicate that the user's role is admin.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function admin(): static
     {
@@ -68,7 +68,7 @@ class UserFactory extends Factory
     /**
      * Indicate that the user's role is organizer.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function organizer(): static
     {
@@ -78,10 +78,11 @@ class UserFactory extends Factory
             ];
         });
     }
+
     /**
      * Indicate that the user's role is racemanager.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function racemanager(): static
     {
@@ -91,10 +92,11 @@ class UserFactory extends Factory
             ];
         });
     }
+
     /**
      * Indicate that the user's role is tireagent.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function tireagent(): static
     {
@@ -104,10 +106,11 @@ class UserFactory extends Factory
             ];
         });
     }
+
     /**
      * Indicate that the user's role is timekeeper.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function timekeeper(): static
     {

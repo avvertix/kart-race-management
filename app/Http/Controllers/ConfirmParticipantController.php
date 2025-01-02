@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Participant;
@@ -10,7 +12,6 @@ class ConfirmParticipantController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function __invoke(Request $request)
@@ -28,7 +29,7 @@ class ConfirmParticipantController extends Controller
 
         // if the signature already exists the user clicked two times within the expiration of the link
 
-        if($participant->signatures()->where('signature', $validated['hash'])->exists()){
+        if ($participant->signatures()->where('signature', $validated['hash'])->exists()) {
             return redirect($participant->qrCodeUrl());
         }
 

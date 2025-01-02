@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Championship;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -13,7 +14,6 @@ use Tests\TestCase;
 class ChampionshipBannerControllerTest extends TestCase
 {
     use RefreshDatabase;
-
 
     public function test_get_banner_requires_login(): void
     {
@@ -35,12 +35,11 @@ class ChampionshipBannerControllerTest extends TestCase
         $response = $this
             ->from(route('championships.edit', $championship))
             ->post(route('championships.banner.store', $championship), [
-                'banner' => $file
+                'banner' => $file,
             ]);
 
         $response->assertRedirect(route('login'));
     }
-
 
     public function test_championship_banner_uploaded()
     {
@@ -56,7 +55,7 @@ class ChampionshipBannerControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.edit', $championship))
             ->post(route('championships.banner.store', $championship), [
-                'banner' => $file
+                'banner' => $file,
             ]);
 
         $response->assertRedirect(route('championships.edit', $championship));
@@ -69,7 +68,7 @@ class ChampionshipBannerControllerTest extends TestCase
 
         Storage::disk('championship-banners')->assertExists($updatedChampionship->banner_path);
     }
-    
+
     public function test_championship_banner_replaced()
     {
         Storage::fake('championship-banners');
@@ -88,7 +87,7 @@ class ChampionshipBannerControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.edit', $championship))
             ->post(route('championships.banner.store', $championship), [
-                'banner' => $file
+                'banner' => $file,
             ]);
 
         $response->assertRedirect(route('championships.edit', $championship));
@@ -102,8 +101,7 @@ class ChampionshipBannerControllerTest extends TestCase
         Storage::disk('championship-banners')->assertExists($updatedChampionship->banner_path);
         Storage::disk('championship-banners')->assertMissing('old-banner.jpg');
     }
-    
-    
+
     public function test_championship_banner_must_be_an_image()
     {
         Storage::fake('championship-banners');
@@ -118,7 +116,7 @@ class ChampionshipBannerControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.edit', $championship))
             ->post(route('championships.banner.store', $championship), [
-                'banner' => $file
+                'banner' => $file,
             ]);
 
         $response->assertRedirect(route('championships.edit', $championship));
@@ -129,7 +127,6 @@ class ChampionshipBannerControllerTest extends TestCase
 
         $this->assertNull($updatedChampionship->banner_path);
     }
-
 
     public function test_banner_downloadable()
     {

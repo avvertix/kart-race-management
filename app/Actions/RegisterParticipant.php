@@ -1,44 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions;
 
 use App\Events\ParticipantRegistered;
 use App\Models\Category;
-use App\Models\Race;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Sex;
-use App\Models\DriverLicence;
 use App\Models\CompetitorLicence;
+use App\Models\DriverLicence;
+use App\Models\Race;
+use App\Models\Sex;
+use App\Models\User;
 use App\Validation\ParticipantValidationRules;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class RegisterParticipant
 {
-
     use ParticipantValidationRules;
 
     /**
      * Creates a new race participant.
      *
-     * @param \App\Models\Race $race
-     * @param  array  $input
-     * @param \App\Models\User|null $user The user that is performing the operation
+     * @param  User|null  $user  The user that is performing the operation
      * @return \App\Models\Participant
      */
     public function __invoke(Race $race, array $input, ?User $user = null)
     {
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
-            ...$this->getCategoryValidationRules((int)$race->championship_id),
+            ...$this->getCategoryValidationRules((int) $race->championship_id),
             ...$this->getDriverValidationRules(),
             ...$this->getCompetitorValidationRules(),
             ...$this->getMechanicValidationRules(),
             ...$this->getVehicleValidationRules(),
-            
+
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
         ])->validate();
 
@@ -49,15 +48,15 @@ class RegisterParticipant
             $race->loadCount('participants');
 
             $licenceHash = hash('sha512', $validatedInput['driver_licence_number']);
-        
+
             $participant = Cache::lock($this->getLockKey($race, $validatedInput['bib']), 10)
-                ->block(5, function() use($race, $validatedInput, $user, $category, $licenceHash){
+                ->block(5, function () use ($race, $validatedInput, $user, $category, $licenceHash) {
 
                     // Check if participants is below race limit
 
-                    if($race->hasTotalParticipantLimit() && ($race->participants_count + 1) > $race->getTotalParticipantLimit()){
+                    if ($race->hasTotalParticipantLimit() && ($race->participants_count + 1) > $race->getTotalParticipantLimit()) {
                         throw ValidationException::withMessages([
-                            'participants_limit' => __('We reached the maximum allowed participants to this race.')
+                            'participants_limit' => __('We reached the maximum allowed participants to this race.'),
                         ]);
                     }
 
@@ -67,7 +66,6 @@ class RegisterParticipant
                         'bib' => $validatedInput['bib'],
                         'driver_licence_number' => $licenceHash,
                     ], $race, $user);
-
 
                     $participant = $race->participants()->create([
                         'bib' => $validatedInput['bib'],
@@ -93,7 +91,7 @@ class RegisterParticipant
                             'birth_date' => $validatedInput['driver_birth_date'],
                             'birth_place' => $validatedInput['driver_birth_place'],
                             'medical_certificate_expiration_date' => $validatedInput['driver_medical_certificate_expiration_date'] ?? null,
-                            'residence_address' =>  $this->processAddressInput($validatedInput, 'driver_residence'),
+                            'residence_address' => $this->processAddressInput($validatedInput, 'driver_residence'),
                             'sex' => $validatedInput['driver_sex'] ?? Sex::UNSPECIFIED,
                         ],
                         'competitor' => isset($validatedInput['competitor_licence_number']) ? [
@@ -128,7 +126,7 @@ class RegisterParticipant
             event(new ParticipantRegistered($participant, $race));
 
             $participant->sendConfirmParticipantNotification();
-            
+
             return $participant;
 
         } catch (LockTimeoutException $th) {
@@ -140,11 +138,10 @@ class RegisterParticipant
 
     protected function getLockKey(Race $race, $seed)
     {
-        if($race->hasTotalParticipantLimit()){
+        if ($race->hasTotalParticipantLimit()) {
             return "participant:{$race->uuid}";
         }
-        
+
         return "participant:{$seed}";
     }
-    
 }

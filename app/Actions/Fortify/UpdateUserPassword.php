@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Fortify;
 
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +16,6 @@ class UpdateUserPassword implements UpdatesUserPasswords
      * Validate and update the user's password.
      *
      * @param  mixed  $user
-     * @param  array  $input
      * @return void
      */
     public function update($user, array $input)

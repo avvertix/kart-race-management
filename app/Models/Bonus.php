@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +19,7 @@ class Bonus extends Model
         'contact_email',
         'amount',
     ];
-    
+
     protected $withCount = [
         'usages',
     ];
@@ -29,7 +31,7 @@ class Bonus extends Model
     {
         return $this->belongsTo(Championship::class);
     }
-    
+
     public function usages()
     {
         return $this->belongsToMany(Participant::class, 'participant_bonus');
@@ -45,9 +47,6 @@ class Bonus extends Model
         return $query->where('driver_licence_hash', hash('sha512', $licence));
     }
 
-
-
-
     public function remaining(): int
     {
         return $this->amount - $this->usages()->count();
@@ -57,10 +56,9 @@ class Bonus extends Model
     {
         return $this->remaining() > 0;
     }
+
     /**
      * The attributes that should be cast.
-     *
-     * @return array
      */
     protected function casts(): array
     {

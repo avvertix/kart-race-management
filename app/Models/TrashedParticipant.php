@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Categories\Category;
@@ -13,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 class TrashedParticipant extends Model
 {
     use HasFactory;
-    
     use HasUlids;
 
     /**
@@ -97,38 +98,21 @@ class TrashedParticipant extends Model
         return $this->belongsTo(ModelsCategory::class, 'category_id', 'id');
     }
 
-
-    protected function engine(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
-            return $this->vehicles[0]['engine_manufacturer'] ?? null;
-        });
-    }
-    
-    protected function email(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
-            return $this->driver['email'] ?? null;
-        });
-    }
-    
     /**
      * @deprecated
      */
-    public function categoryConfiguration(): Category|null
+    public function categoryConfiguration(): ?Category
     {
         return Category::find($this->category);
     }
-    
+
     /**
      * @deprecated
      */
-    public function tireConfiguration(): TireOption|null
+    public function tireConfiguration(): ?TireOption
     {
         return optional($this->categoryConfiguration())->tire();
     }
-    
-
 
     /**
      * Get the participant's preferred locale.
@@ -139,10 +123,23 @@ class TrashedParticipant extends Model
     {
         return $this->locale ?? config('app.locale');
     }
+
+    protected function engine(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->vehicles[0]['engine_manufacturer'] ?? null;
+        });
+    }
+
+    protected function email(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->driver['email'] ?? null;
+        });
+    }
+
     /**
      * The attributes that should be cast.
-     *
-     * @return array
      */
     protected function casts(): array
     {

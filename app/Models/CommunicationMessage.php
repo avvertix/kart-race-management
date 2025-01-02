@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Contracts\Support\Htmlable;
@@ -21,23 +23,6 @@ class CommunicationMessage extends Model implements Htmlable
         'dismissable',
     ];
 
-    protected function status(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
-            $now = now();
-            if ($this->ends_at && $now->greaterThan($this->ends_at)) {
-                return __('Expired');
-            }
-            if ($this->starts_at && $now->greaterThan($this->starts_at)) {
-                return __('Active');
-            }
-            if (!$this->starts_at) {
-                return __('Inactive');
-            }
-            return __('Scheduled');
-        });
-    }
-
     /**
      * Selects the messages that are configured to be displayed
      */
@@ -51,7 +36,7 @@ class CommunicationMessage extends Model implements Htmlable
                     ->orWhereNull('ends_at');
             });
     }
-    
+
     public function scopeTargetUser($query, $role)
     {
         return $query
@@ -62,9 +47,28 @@ class CommunicationMessage extends Model implements Htmlable
     public function toHtml()
     {
         return str($this->message)->markdown([
-            'html_input'=>'strip',
+            'html_input' => 'strip',
         ]);
     }
+
+    protected function status(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            $now = now();
+            if ($this->ends_at && $now->greaterThan($this->ends_at)) {
+                return __('Expired');
+            }
+            if ($this->starts_at && $now->greaterThan($this->starts_at)) {
+                return __('Active');
+            }
+            if (! $this->starts_at) {
+                return __('Inactive');
+            }
+
+            return __('Scheduled');
+        });
+    }
+
     protected function casts(): array
     {
         return [

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Championship;
@@ -7,14 +9,12 @@ use App\Models\Race;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RaceImportTest extends TestCase
 {
     use RefreshDatabase;
 
-    
     public function test_can_import_races()
     {
         $user = User::factory()->organizer()->create();
@@ -27,18 +27,17 @@ class RaceImportTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.races.import.create', $championship))
             ->post(route('championships.races.import.store', $championship), [
-                'races' => '2023-03-05;2023-03-05;Race title;Track;Description of the race;' . PHP_EOL . '2023-03-07;2023-03-07;Second Race;Track;Description of the race',
+                'races' => '2023-03-05;2023-03-05;Race title;Track;Description of the race;'.PHP_EOL.'2023-03-07;2023-03-07;Second Race;Track;Description of the race',
             ]);
 
         $this->travelBack();
 
         $response->assertRedirectToRoute('championships.races.index', $championship);
-        
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', 'Races imported.');
-        
-        
+
         $this->assertEquals(2, Race::count());
 
         $race = Race::first();
@@ -53,7 +52,7 @@ class RaceImportTest extends TestCase
         $this->assertEquals('2023-02-26 09:00:00', $race->registration_opens_at->toDateTimeString());
         $this->assertEquals('2023-03-05 08:00:00', $race->registration_closes_at->toDateTimeString());
     }
-    
+
     public function test_invalid_race_cannot_be_imported()
     {
         $user = User::factory()->organizer()->create();
@@ -64,13 +63,13 @@ class RaceImportTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.races.import.create', $championship))
             ->post(route('championships.races.import.store', $championship), [
-                'races' => '2023-03-05;2023-03-05;;Track;Description of the race;' . PHP_EOL . '2023-03-07;2023-03-07;Second Race;Track;Description of the race',
+                'races' => '2023-03-05;2023-03-05;;Track;Description of the race;'.PHP_EOL.'2023-03-07;2023-03-07;Second Race;Track;Description of the race',
             ]);
 
         $response->assertRedirectToRoute('championships.races.import.create', $championship);
-        
+
         $response->assertSessionHasErrors();
-        
+
         $this->assertEquals(0, Race::count());
 
     }

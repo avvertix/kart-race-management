@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -13,5 +15,5 @@ return [
     'MALE' => 'Male',
     'FEMALE' => 'Female',
     'UNSPECIFIED' => 'Prefer not to say',
-    
+
 ];

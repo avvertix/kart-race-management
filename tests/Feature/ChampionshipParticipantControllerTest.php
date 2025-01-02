@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ChampionshipParticipantControllerTest extends TestCase
@@ -34,7 +34,7 @@ class ChampionshipParticipantControllerTest extends TestCase
 
         $firstRace = $championship->races->first();
         $lastRace = $championship->races->last();
-        
+
         $participationToFirstRace = Participant::factory()
             ->for($firstRace)
             ->for($championship)
@@ -45,7 +45,7 @@ class ChampionshipParticipantControllerTest extends TestCase
                 'bib' => 100,
             ])
             ->create();
-        
+
         $participationToLastRace = Participant::factory()
             ->for($lastRace)
             ->for($championship)
@@ -56,7 +56,6 @@ class ChampionshipParticipantControllerTest extends TestCase
                 'bib' => 101,
             ])
             ->create();
-
 
         $response = $this
             ->actingAs($user)
@@ -75,17 +74,16 @@ class ChampionshipParticipantControllerTest extends TestCase
         $this->assertEquals(101, $participant->bib);
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
-        
+
         $this->assertTrue($participant->participationHistory->first()->is($participationToFirstRace));
         $this->assertTrue($participant->participationHistory->last()->is($participationToLastRace));
 
-        $response->assertSee("John Racer");
+        $response->assertSee('John Racer');
         $response->assertSeeInOrder([
-            "border border-red-500 bg-red-50",
+            'border border-red-500 bg-red-50',
             $firstRace->title,
-            '100'
+            '100',
         ]);
-
 
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
 use App\Models\CompetitorLicence;
@@ -27,5 +29,4 @@ trait CreateCompetitor
             'competitor_fiscal_code' => 'CMPT-FC',
         ], $exclude);
     }
-
 }

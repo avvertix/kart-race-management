@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Models\Championship;
 use App\Models\Race;
 use App\Models\RaceType;
 use Carbon\Carbon;
@@ -38,16 +39,15 @@ class RaceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
     public function show(Race $race)
     {
         $statistics = $race->participants()
             ->selectRaw('count(*) as total')
-            ->selectRaw("count(case when confirmed_at is not null then 1 end) as confirmed")
+            ->selectRaw('count(case when confirmed_at is not null then 1 end) as confirmed')
             ->first();
-        
+
         $statistics->transponders = $race->participants()->has('transponders')->count();
 
         $participantsPerCategory = $race->participants()
@@ -55,11 +55,11 @@ class RaceController extends Controller
             ->groupBy('category_id')
             ->with('racingCategory')
             ->get();
-        
+
         $participantsPerEngine = DB::query()
             ->fromRaw("participants, JSON_TABLE(vehicles, '$[*].engine_manufacturer' COLUMNS (engine_manufacturer TEXT PATH '$')) AS jt")
             ->selectRaw('jt.engine_manufacturer, COUNT(*) AS total')
-            ->groupBy(["jt.engine_manufacturer"])
+            ->groupBy(['jt.engine_manufacturer'])
             ->whereNotNull('jt.engine_manufacturer')
             ->where('race_id', $race->getKey())
             ->orderBy('jt.engine_manufacturer')
@@ -77,7 +77,6 @@ class RaceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
     public function edit(Race $race)
@@ -91,8 +90,6 @@ class RaceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Race $race)
@@ -122,7 +119,6 @@ class RaceController extends Controller
         $utc_registration_opens_at = ($validated['registration_opens_at'] ?? false) ? Carbon::parse($validated['registration_opens_at'], config('races.timezone'))->setTimezone(config('app.timezone')) : null;
         $utc_registration_closes_at = ($validated['registration_closes_at'] ?? false) ? Carbon::parse($validated['registration_closes_at'], config('races.timezone'))->setTimezone(config('app.timezone')) : null;
 
-
         $race->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
@@ -138,14 +134,13 @@ class RaceController extends Controller
 
         return to_route('races.show', $race)
             ->with('flash.banner', __(':race saved.', [
-                'race' => $validated['title']
+                'race' => $validated['title'],
             ]));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
     public function destroy(Race $race)

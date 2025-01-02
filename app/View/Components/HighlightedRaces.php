@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components;
 
 use App\Models\Championship;
 use App\Models\Race;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\Component;
 
 class HighlightedRaces extends Component
 {
-
     public $races;
 
     /**
@@ -20,7 +22,7 @@ class HighlightedRaces extends Component
     public function __construct(Championship $championship)
     {
         $this->races = Race::query()
-            ->when($championship->exists, function($query, $state) use ($championship){
+            ->when($championship->exists, function ($query, $state) use ($championship) {
                 $query->where('championship_id', $championship->getKey());
             })
             ->withRegistrationOpen()
@@ -35,7 +37,7 @@ class HighlightedRaces extends Component
     /**
      * Get the view / contents that represent the component.
      *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
+     * @return \Illuminate\Contracts\View\View|Closure|string
      */
     public function render()
     {

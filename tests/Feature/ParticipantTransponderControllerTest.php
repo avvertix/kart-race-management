@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Participant;
@@ -7,7 +9,6 @@ use App\Models\Race;
 use App\Models\Transponder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ParticipantTransponderControllerTest extends TestCase
@@ -27,9 +28,9 @@ class ParticipantTransponderControllerTest extends TestCase
         $response->assertSuccessful();
 
         $response->assertViewHas('participant', $participant);
-        
+
         $response->assertViewHas('race', $participant->race);
-        
+
         $response->assertViewHas('transponderLimit', 1);
 
     }

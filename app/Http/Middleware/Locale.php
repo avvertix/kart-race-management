@@ -1,21 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class Locale
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param  Closure(Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next)
@@ -26,7 +26,7 @@ class Locale
 
         return $next($request);
     }
-    
+
     /**
      * Retrieve the browser requested locale, if available
      *
@@ -43,8 +43,8 @@ class Locale
         $languages = collect(explode(',', $browser_language_preference));
 
         $keyed = $languages->map(function ($item) {
-            $lang = substr(ltrim($item), 0, 2);
-            if (strlen($lang) < 2) {
+            $lang = mb_substr(mb_ltrim($item), 0, 2);
+            if (mb_strlen($lang) < 2) {
                 $lang = config('app.locale');
             }
             $factor = '1.0';
@@ -58,5 +58,4 @@ class Locale
 
         return $keyed['lang'] ?? null;
     }
-
 }

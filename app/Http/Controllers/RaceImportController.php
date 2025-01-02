@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
@@ -12,7 +14,6 @@ use Illuminate\Validation\ValidationException;
 
 class RaceImportController extends Controller
 {
-    
     /**
      * Show the form for creating a new resource.
      *
@@ -30,7 +31,6 @@ class RaceImportController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, Championship $championship)
@@ -41,14 +41,14 @@ class RaceImportController extends Controller
             'races' => 'required|string',
         ]);
 
-        $data = collect(Str::of($validated['races'])->split('/[\n\r]+/'))->map(function($line){
-            
-            if(empty($line)){
+        $data = collect(Str::of($validated['races'])->split('/[\n\r]+/'))->map(function ($line) {
+
+            if (empty($line)) {
                 return null;
             }
 
             $parsedLine = str_getcsv($line, ';');
-            
+
             return [
                 'start' => $parsedLine[0] ?? null,
                 'end' => $parsedLine[1] ?? null,
@@ -63,7 +63,7 @@ class RaceImportController extends Controller
             [
                 'races.*.start' => 'required|date|after:today',
                 'races.*.end' => 'nullable|date|after:start',
-                'races.*.title' => 'required|string|max:250|unique:' . Race::class .',title',
+                'races.*.title' => 'required|string|max:250|unique:'.Race::class.',title',
                 'races.*.description' => 'nullable|string|max:1000',
                 'races.*.track' => 'required|string|max:250',
             ],
@@ -76,13 +76,13 @@ class RaceImportController extends Controller
                 'races.*.track' => 'track',
             ]
         );
-        
-        if($validator->fails()){
+
+        if ($validator->fails()) {
             $errors = $validator->errors();
 
-            $messages = collect($errors->messages())->groupBy(function($value, $key){
+            $messages = collect($errors->messages())->groupBy(function ($value, $key) {
                 return Str::between($key, '.', '.');
-            })->sortKeys()->mapWithKeys(function($values, $line){
+            })->sortKeys()->mapWithKeys(function ($values, $line) {
 
                 $msg = __('Line :line contains invalid data', [
                     'line' => $line,
@@ -96,7 +96,7 @@ class RaceImportController extends Controller
             ]);
         }
 
-        $toCreate = collect($validator->validated()['races'])->map(function($d) use($request){
+        $toCreate = collect($validator->validated()['races'])->map(function ($d) {
 
             $start_date = Str::contains($d['start'], ':') ? Carbon::parse($d['start']) : Carbon::parse("{$d['start']} 09:00");
 
@@ -117,5 +117,4 @@ class RaceImportController extends Controller
             ->with('flash.banner', __('Races imported.'));
 
     }
-
 }

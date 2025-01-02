@@ -1,14 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Categories\Category as CategoryConfiguration;
 use App\Notifications\ConfirmParticipantRegistration;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Casts\AsCollection;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -17,8 +14,12 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Illuminate\Contracts\Translation\HasLocalePreference;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
@@ -28,12 +29,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Participant extends Model implements HasLocalePreference
 {
     use HasFactory;
-    
     use HasUlids;
-
-    use Notifiable;
-
     use LogsActivity;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -116,7 +114,7 @@ class Participant extends Model implements HasLocalePreference
     {
         return $this->belongsTo(Race::class);
     }
-    
+
     /**
      * Category
      */
@@ -140,7 +138,7 @@ class Participant extends Model implements HasLocalePreference
     {
         return $this->hasMany(Payment::class);
     }
-    
+
     /**
      * Get the tires assigned to the participant
      */
@@ -148,7 +146,7 @@ class Participant extends Model implements HasLocalePreference
     {
         return $this->hasMany(Tire::class);
     }
-    
+
     /**
      * Get the transponders assigned to the participant
      */
@@ -156,10 +154,10 @@ class Participant extends Model implements HasLocalePreference
     {
         return $this->hasMany(Transponder::class);
     }
-    
+
     public function participationHistory()
     {
-        return $this->hasMany(Participant::class, 'driver_licence', 'driver_licence')->orderBy('created_at');
+        return $this->hasMany(self::class, 'driver_licence', 'driver_licence')->orderBy('created_at');
     }
 
     public function bonuses()
@@ -167,67 +165,37 @@ class Participant extends Model implements HasLocalePreference
         return $this->belongsToMany(Bonus::class, 'participant_bonus');
     }
 
-
-    protected function engine(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
-            return $this->vehicles[0]['engine_manufacturer'] ?? null;
-        });
-    }
-    
-    protected function email(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
-            return $this->driver['email'] ?? null;
-        });
-    }
-    
-    protected function competitorEmail(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
-            return $this->competitor['email'] ?? null;
-        });
-    }
-    
-    protected function fullName(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
-            return str()->title($this->first_name .' '. $this->last_name);
-        });
-    }
-    
     /**
      * @deprecated
      */
-    public function categoryConfiguration(): CategoryConfiguration|null
+    public function categoryConfiguration(): ?CategoryConfiguration
     {
         return $this->racingCategory?->asCategoryConfiguration();
     }
-    
+
     /**
      * @deprecated
      */
-    public function tireConfiguration(): TireOption|null
+    public function tireConfiguration(): ?TireOption
     {
         return optional($this->categoryConfiguration())->tire();
     }
-    
+
     /**
      * Filter races available for registration
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSearch($query, $terms)
     {
-        return $query->when($terms, function($query, $search){
-            $query->where(function($query) use($search){
+        return $query->when($terms, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
                 $query->where('bib', e($search))
                     ->orWhere('first_name', 'LIKE', e($search).'%')
                     ->orWhere('last_name', 'LIKE', e($search).'%')
                     ->orWhere('driver_licence', hash('sha512', $search))
-                    ->orWhere('competitor_licence', hash('sha512', $search))
-                    ;
+                    ->orWhere('competitor_licence', hash('sha512', $search));
             });
         });
     }
@@ -251,9 +219,9 @@ class Participant extends Model implements HasLocalePreference
             )
         ))->writeString($this->qrCodeUrl());
 
-        return trim(substr($svg, strpos($svg, "\n") + 1));
+        return mb_trim(mb_substr($svg, mb_strpos($svg, "\n") + 1));
     }
-    
+
     public function tiresQrCodeSvg()
     {
         $svg = (new Writer(
@@ -263,7 +231,7 @@ class Participant extends Model implements HasLocalePreference
             )
         ))->writeString($this->tiresQrCodeUrl());
 
-        return trim(substr($svg, strpos($svg, "\n") + 1));
+        return mb_trim(mb_substr($svg, mb_strpos($svg, "\n") + 1));
     }
 
     public function signedUrlParameters(): array
@@ -278,15 +246,15 @@ class Participant extends Model implements HasLocalePreference
             $this->signedUrlParameters()
         );
     }
-    
+
     public function tiresQrCodeUrl(): string
     {
         return URL::signedRoute(
             'tires-verification.show',
-            ['registration' => $this, 'p' => md5($this->uuid)]
+            ['registration' => $this, 'p' => md5((string) $this->uuid)]
         );
     }
-    
+
     public function signatureContent(): string
     {
         return "{$this->bib}-{$this->driver_licence}";
@@ -310,9 +278,9 @@ class Participant extends Model implements HasLocalePreference
     public function sendConfirmParticipantNotification()
     {
         $this->notify(new ConfirmParticipantRegistration);
-        
-        if($this->competitor['email'] ?? false){
-            
+
+        if ($this->competitor['email'] ?? false) {
+
             $this->notify(new ConfirmParticipantRegistration('competitor'));
         }
     }
@@ -328,16 +296,16 @@ class Participant extends Model implements HasLocalePreference
         // returning multiple values result in a single notification with more recipients
         // since we want a specific notification to verify the email addresses
         // we need to enqueue it twice and have identifiable recipients
-        
-        if($notification instanceof ConfirmParticipantRegistration && $notification->target === 'competitor' && $this->competitor){
+
+        if ($notification instanceof ConfirmParticipantRegistration && $notification->target === 'competitor' && $this->competitor) {
             return [
                 // $this->driver['email'] => "{$this->first_name} {$this->last_name}",
-                $this->competitor['email'] => "{$this->competitor['first_name']} {$this->competitor['last_name']}"
+                $this->competitor['email'] => "{$this->competitor['first_name']} {$this->competitor['last_name']}",
             ];
         }
-        
+
         return [
-            $this->driver['email'] => "{$this->first_name} {$this->last_name}"
+            $this->driver['email'] => "{$this->first_name} {$this->last_name}",
         ];
     }
 
@@ -361,7 +329,7 @@ class Participant extends Model implements HasLocalePreference
             'participant.sign.create',
             Carbon::now()->addMinutes(Config::get('participant.verification.expire', 12 * Carbon::MINUTES_PER_HOUR)),
             [
-                'p' => (string)$this->uuid,
+                'p' => (string) $this->uuid,
                 't' => $target,
                 'hash' => sha1($this->getEmailForVerification($target)),
             ]
@@ -376,42 +344,41 @@ class Participant extends Model implements HasLocalePreference
         $tires = $this->tireConfiguration();
 
         $order = collect([
-            __('Race fee') => (int)config('races.price'),
+            __('Race fee') => (int) config('races.price'),
             __('Tires (:model)', ['model' => $tires?->name]) => $tires?->price,
-            __('Bonus') => $this->use_bonus ? 0-config('races.bonus_amount', 0) : 0,
+            __('Bonus') => $this->use_bonus ? 0 - config('races.bonus_amount', 0) : 0,
             __('Total') => null,
         ])->filter();
 
         $total = $order->sum();
 
-        return  $order->merge([
+        return $order->merge([
             __('Total') => $total,
         ])->filter();
     }
 
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly([
-            'bib',
-            'category',
-            'category_id',
-            'first_name',
-            'last_name',
-            'added_by',
-            'confirmed_at',
-            'driver_licence',
-            'licence_type',
-            'competitor_licence',
-            'vehicles',
-            'use_bonus',
-            'driver->email',
-            'competitor->email',
-        ])
-        ->dontLogIfAttributesChangedOnly(['updated_at'])
-        ->logOnlyDirty()
-        ->dontSubmitEmptyLogs();
+            ->logOnly([
+                'bib',
+                'category',
+                'category_id',
+                'first_name',
+                'last_name',
+                'added_by',
+                'confirmed_at',
+                'driver_licence',
+                'licence_type',
+                'competitor_licence',
+                'vehicles',
+                'use_bonus',
+                'driver->email',
+                'competitor->email',
+            ])
+            ->dontLogIfAttributesChangedOnly(['updated_at'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 
     /**
@@ -429,28 +396,55 @@ class Participant extends Model implements HasLocalePreference
         $this->properties['out_of_zone'] = $outOfZone;
         $this->save();
     }
-    
+
     public function wasProcessedForOutOfZone()
     {
-        if(is_null($this->properties['out_of_zone'] ?? null)){
+        if (is_null($this->properties['out_of_zone'] ?? null)) {
             return false;
         }
 
         return true;
     }
-    
+
     public function outOfZoneStatus()
     {
-        if(! $this->wasProcessedForOutOfZone()){
+        if (! $this->wasProcessedForOutOfZone()) {
             return __('Out of zone not yet evaluated');
         }
 
         return $this->properties['out_of_zone'] ? __('Out of zone') : __('Within zone');
     }
+
+    protected function engine(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->vehicles[0]['engine_manufacturer'] ?? null;
+        });
+    }
+
+    protected function email(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->driver['email'] ?? null;
+        });
+    }
+
+    protected function competitorEmail(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->competitor['email'] ?? null;
+        });
+    }
+
+    protected function fullName(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return str()->title($this->first_name.' '.$this->last_name);
+        });
+    }
+
     /**
      * The attributes that should be cast.
-     *
-     * @return array
      */
     protected function casts(): array
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Participant;
@@ -7,7 +9,6 @@ use App\Models\Race;
 use App\Models\Transponder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RaceTranspondersControllerTest extends TestCase
@@ -60,7 +61,7 @@ class RaceTranspondersControllerTest extends TestCase
         $response->assertViewHas('race', $race);
 
         $response->assertViewHas('championship', $race->championship);
-        
+
         $response->assertViewHas('participants');
 
         $participants = $response->viewData('participants');

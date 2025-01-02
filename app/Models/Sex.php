@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+declare(strict_types=1);
 
-use Illuminate\Support\Str;
+namespace App\Models;
 
 enum Sex: int
 {

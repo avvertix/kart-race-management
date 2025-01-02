@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ChampionshipTiresControllerTest extends TestCase
@@ -81,7 +82,7 @@ class ChampionshipTiresControllerTest extends TestCase
 
         $response->assertViewHas('championship', $championship);
     }
-    
+
     public function test_tire_created(): void
     {
         $user = User::factory()->organizer()->create();
@@ -94,7 +95,7 @@ class ChampionshipTiresControllerTest extends TestCase
             ->from(route('championships.tire-options.create', $championship))
             ->post(route('championships.tire-options.store', $championship), [
                 'name' => 'Tire name',
-                'price' => 12000
+                'price' => 12000,
             ]);
 
         $response->assertRedirectToRoute('championships.tire-options.index', $championship);
@@ -109,7 +110,7 @@ class ChampionshipTiresControllerTest extends TestCase
         $this->assertNull($tire->code);
         $this->assertEquals(12000, $tire->price);
     }
-    
+
     public function test_tire_created_with_same_name_as_tire_in_another_championship(): void
     {
         $user = User::factory()->organizer()->create();
@@ -127,7 +128,7 @@ class ChampionshipTiresControllerTest extends TestCase
             ->from(route('championships.tire-options.create', $championship))
             ->post(route('championships.tire-options.store', $championship), [
                 'name' => 'Tire name',
-                'price' => 12000
+                'price' => 12000,
             ]);
 
         $response->assertRedirectToRoute('championships.tire-options.index', $championship);
@@ -142,7 +143,6 @@ class ChampionshipTiresControllerTest extends TestCase
         $this->assertNull($tire->code);
         $this->assertEquals(12000, $tire->price);
     }
-
 
     public function test_tire_edit_form_shown(): void
     {

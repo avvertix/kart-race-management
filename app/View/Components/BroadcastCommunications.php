@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components;
 
-use Illuminate\View\Component;
 use App\Models\CommunicationMessage;
+use Closure;
+use Illuminate\View\Component;
 
 class BroadcastCommunications extends Component
 {
@@ -24,6 +27,16 @@ class BroadcastCommunications extends Component
             ->get();
     }
 
+    /**
+     * Get the view / contents that represent the component.
+     *
+     * @return \Illuminate\Contracts\View\View|Closure|string
+     */
+    public function render()
+    {
+        return view('components.broadcast-communications');
+    }
+
     protected function getUserRole()
     {
         $user = auth()->user();
@@ -33,15 +46,5 @@ class BroadcastCommunications extends Component
         }
 
         return $user->userRole()?->key;
-    }
-
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
-    public function render()
-    {
-        return view('components.broadcast-communications');
     }
 }

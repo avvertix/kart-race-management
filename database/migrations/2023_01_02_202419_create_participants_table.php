@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
-use App\Models\Competitor;
-use App\Models\Driver;
 use App\Models\Race;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
@@ -22,21 +22,21 @@ return new class extends Migration
             $table->ulid('uuid')->unique();
 
             $table->timestamps();
-            
+
             $table->foreignIdFor(Championship::class);
 
             $table->foreignIdFor(Race::class);
 
             $table->unsignedInteger('bib'); // or race number
-            
+
             $table->string('category', 250);
-            
+
             $table->string('first_name', 250);
 
             $table->string('last_name', 250);
 
             $table->string('driver_licence', 250);
-            
+
             $table->string('competitor_licence', 250)->nullable();
 
             $table->mediumText('driver'); // an encrypted json
@@ -46,13 +46,13 @@ return new class extends Migration
             $table->mediumText('competitor')->nullable(); // an encrypted json
 
             $table->mediumText('mechanic')->nullable(); // an encrypted json
-            
+
             $table->json('vehicles')->nullable(); // the list of vehicles that a participant can have (minimum 1, maximum 2). Properties chassis_manufacturer, engine_manufacturer, engine_model, oil_manufacturer, oil_type, oil_percentage
-            
+
             $table->dateTime('confirmed_at')->nullable();
-            
+
             $table->json('consents')->default('[]');
-            
+
             $table->foreignIdFor(User::class, 'added_by')->nullable();
 
         });

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Actions\Wildcard\AttributeWildcardBasedOnFirstRace;
-use Illuminate\Support\Str;
 
 enum WildcardStrategy: int
 {
@@ -20,7 +21,6 @@ enum WildcardStrategy: int
     {
         return trans("wildcard-options.{$this->name}");
     }
-
 
     public function resolve()
     {

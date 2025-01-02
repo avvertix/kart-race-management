@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exports;
 
 use App\Models\CompetitorLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
-use App\User;
 use Vitorccs\LaravelCsv\Concerns\Exportable;
 use Vitorccs\LaravelCsv\Concerns\FromQuery;
 use Vitorccs\LaravelCsv\Concerns\WithHeadings;
@@ -18,11 +19,8 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
 
     public function __construct(
         private Race $race
-        )
-    {
-        
-    }
-    
+    ) {}
+
     public function query()
     {
         return $this->race
@@ -70,7 +68,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
     }
 
     /**
-     * @param \App\Models\Participant $participant
+     * @param  Participant  $participant
      */
     public function map($participant): array
     {
@@ -104,7 +102,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             $participant->competitor['nationality'] ?? null,
             $participant->competitor['birth_date'] ?? null,
             $participant->competitor['birth_place'] ?? null,
-            trim(__(':address :city :province :postal_code', [
+            mb_trim(__(':address :city :province :postal_code', [
                 'address' => $participant->competitor['residence_address']['address'] ?? null,
                 'city' => $participant->competitor['residence_address']['city'] ?? null,
                 'postal_code' => $participant->competitor['residence_address']['postal_code'] ?? null,
@@ -114,13 +112,12 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             $participant->mechanic['name'] ?? null,
             $participant->mechanic['licence_number'] ?? null,
 
-            $vehicle['chassis_manufacturer']  ?? null,
-            $vehicle['engine_manufacturer']  ?? null,
-            $vehicle['engine_model']  ?? null,
-            $vehicle['oil_manufacturer']  ?? null,
-            $vehicle['oil_type']  ?? null,
-            $vehicle['oil_percentage']  ?? null,
+            $vehicle['chassis_manufacturer'] ?? null,
+            $vehicle['engine_manufacturer'] ?? null,
+            $vehicle['engine_model'] ?? null,
+            $vehicle['oil_manufacturer'] ?? null,
+            $vehicle['oil_type'] ?? null,
+            $vehicle['oil_percentage'] ?? null,
         ];
     }
 }
-

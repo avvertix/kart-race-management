@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\BonusType;
@@ -22,7 +24,7 @@ class BonusFactory extends Factory
 
         return [
             'championship_id' => Championship::factory(),
-            'driver' => fake()->name() . ' ' .fake()->lastName(),
+            'driver' => fake()->name().' '.fake()->lastName(),
             'driver_licence' => $licenceNumber,
             'driver_licence_hash' => hash('sha512', $licenceNumber),
             'bonus_type' => BonusType::REGISTRATION_FEE,

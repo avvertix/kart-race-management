@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Operations;
 
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BackfillChampionshipCategoriesTest extends TestCase
@@ -26,21 +27,21 @@ class BackfillChampionshipCategoriesTest extends TestCase
                 'category_two' => [
                     'name' => 'CAT 2',
                     'tires' => 'VEGA_SL4',
-                    'enabled' => false
+                    'enabled' => false,
                 ],
             ],
         ]);
-        
+
         $championship = Championship::factory()
             ->has(ChampionshipTire::factory()->count(2)->sequence(
-                    ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
-                ), 'tires')
+                ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
+            ), 'tires')
             ->create();
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2023_12_31_125844_backfill_championship_categories',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2023_12_31_125844_backfill_championship_categories',
+        ])
             ->assertSuccessful();
 
         $categories = $championship->fresh()->categories;
@@ -57,7 +58,7 @@ class BackfillChampionshipCategoriesTest extends TestCase
         $this->assertEquals('CAT 1', $firstCategory->name);
         $this->assertTrue($firstCategory->enabled);
         $this->assertTrue($firstCategory->tire->is($expectedTire));
-        
+
         $this->assertEquals('category_two', $lastCategory->code);
         $this->assertNull($lastCategory->short_name);
         $this->assertEquals('CAT 2', $lastCategory->name);
@@ -66,7 +67,7 @@ class BackfillChampionshipCategoriesTest extends TestCase
 
         $this->assertEquals(2, $expectedTire->categories()->count());
     }
-    
+
     public function test_championship_categories_not_backfilled_when_missing_tires()
     {
         config([
@@ -78,14 +79,14 @@ class BackfillChampionshipCategoriesTest extends TestCase
                 ],
             ],
         ]);
-        
+
         $championship = Championship::factory()
             ->create();
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2023_12_31_125844_backfill_championship_categories',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2023_12_31_125844_backfill_championship_categories',
+        ])
             ->assertSuccessful();
 
         $categories = $championship->fresh()->categories;
@@ -105,17 +106,16 @@ class BackfillChampionshipCategoriesTest extends TestCase
             ],
         ]);
 
-        
         $championship = Championship::factory()
             ->has(Category::factory()->count(1), 'categories')
             ->create();
 
         $configuredCategory = $championship->categories()->first();
-        
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2023_12_31_125844_backfill_championship_categories',
-            ])
+
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2023_12_31_125844_backfill_championship_categories',
+        ])
             ->assertSuccessful();
 
         $categories = $championship->fresh()->categories;

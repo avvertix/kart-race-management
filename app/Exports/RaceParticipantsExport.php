@@ -102,7 +102,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             $participant->competitor['nationality'] ?? null,
             $participant->competitor['birth_date'] ?? null,
             $participant->competitor['birth_place'] ?? null,
-            trim(__(':address :city :province :postal_code', [
+            mb_trim(__(':address :city :province :postal_code', [
                 'address' => $participant->competitor['residence_address']['address'] ?? null,
                 'city' => $participant->competitor['residence_address']['city'] ?? null,
                 'postal_code' => $participant->competitor['residence_address']['postal_code'] ?? null,

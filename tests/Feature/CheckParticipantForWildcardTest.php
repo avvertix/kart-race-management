@@ -74,10 +74,10 @@ class CheckParticipantForWildcardTest extends TestCase
                 ['event_start_at' => now()->subDay(), 'event_end_at' => now()->addDays(1)],
             ))
             ->create([
-            'wildcard' => [
-                'enabled' => true,
-                'strategy' => WildcardStrategy::BASED_ON_FIRST_RACE,
-            ],
+                'wildcard' => [
+                    'enabled' => true,
+                    'strategy' => WildcardStrategy::BASED_ON_FIRST_RACE,
+                ],
             ]);
 
         $race = $championship->races[1];
@@ -102,10 +102,10 @@ class CheckParticipantForWildcardTest extends TestCase
                 ['event_start_at' => now()->subDay(), 'event_end_at' => now()->addDays(1)],
             ))
             ->create([
-            'wildcard' => [
-                'enabled' => true,
-                'strategy' => WildcardStrategy::BASED_ON_FIRST_RACE,
-            ],
+                'wildcard' => [
+                    'enabled' => true,
+                    'strategy' => WildcardStrategy::BASED_ON_FIRST_RACE,
+                ],
             ]);
 
         $race = $championship->races[1];

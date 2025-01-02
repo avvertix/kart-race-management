@@ -43,7 +43,7 @@ class Locale
         $languages = collect(explode(',', $browser_language_preference));
 
         $keyed = $languages->map(function ($item) {
-            $lang = mb_substr(ltrim($item), 0, 2);
+            $lang = mb_substr(mb_ltrim($item), 0, 2);
             if (mb_strlen($lang) < 2) {
                 $lang = config('app.locale');
             }

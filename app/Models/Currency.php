@@ -19,7 +19,7 @@ enum Currency: string
      */
     public function format($amount): string
     {
-        $amount = $amount instanceof HtmlString || $amount instanceof ComponentSlot ? (int) (trim($amount->toHtml())) : $amount;
+        $amount = $amount instanceof HtmlString || $amount instanceof ComponentSlot ? (int) (mb_trim($amount->toHtml())) : $amount;
 
         $fmt = new NumberFormatter('en_EN', NumberFormatter::CURRENCY);
 

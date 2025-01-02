@@ -219,7 +219,7 @@ class Participant extends Model implements HasLocalePreference
             )
         ))->writeString($this->qrCodeUrl());
 
-        return trim(mb_substr($svg, mb_strpos($svg, "\n") + 1));
+        return mb_trim(mb_substr($svg, mb_strpos($svg, "\n") + 1));
     }
 
     public function tiresQrCodeSvg()
@@ -231,7 +231,7 @@ class Participant extends Model implements HasLocalePreference
             )
         ))->writeString($this->tiresQrCodeUrl());
 
-        return trim(mb_substr($svg, mb_strpos($svg, "\n") + 1));
+        return mb_trim(mb_substr($svg, mb_strpos($svg, "\n") + 1));
     }
 
     public function signedUrlParameters(): array

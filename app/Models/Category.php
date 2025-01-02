@@ -39,10 +39,6 @@ class Category extends Model
         'championship_tire_id',
     ];
 
-    protected $casts = [
-        'enabled' => 'boolean',
-    ];
-
     /**
      * Get the columns that should receive a unique identifier.
      *
@@ -140,5 +136,11 @@ class Category extends Model
             'timekeeper_label' => $this->short_name ?? $this->name,
             'enabled' => $this->enabled,
         ]);
+    }
+    protected function casts(): array
+    {
+        return [
+            'enabled' => 'boolean',
+        ];
     }
 }

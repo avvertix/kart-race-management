@@ -32,17 +32,6 @@ class Signature extends Model
         'signed_at',
     ];
 
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'signed_by' => 'encrypted',
-        'signed_at' => 'datetime',
-    ];
-
     /**
      * Get the columns that should receive a unique identifier.
      *
@@ -66,5 +55,17 @@ class Signature extends Model
     public function participant()
     {
         return $this->belongsTo(Participant::class);
+    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'signed_by' => 'encrypted',
+            'signed_at' => 'datetime',
+        ];
     }
 }

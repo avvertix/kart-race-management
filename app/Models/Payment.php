@@ -38,8 +38,10 @@ class Payment extends Model
     }
 
 
-    public function getDownloadUrlAttribute($value = null)
+    protected function downloadUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return URL::temporarySignedRoute('payment-verification.show', 15 * Carbon::SECONDS_PER_MINUTE, ['payment' => $this->getKey()]);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return URL::temporarySignedRoute('payment-verification.show', 15 * Carbon::SECONDS_PER_MINUTE, ['payment' => $this->getKey()]);
+        });
     }
 }

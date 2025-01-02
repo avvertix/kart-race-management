@@ -9,16 +9,6 @@ class Bonus extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'bonus_type' => BonusType::class,
-        'driver_licence' => 'encrypted',
-    ];
-
     protected $fillable = [
         'driver',
         'bonus_type',
@@ -66,5 +56,17 @@ class Bonus extends Model
     public function hasRemaining(): bool
     {
         return $this->remaining() > 0;
+    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'bonus_type' => BonusType::class,
+            'driver_licence' => 'encrypted',
+        ];
     }
 }

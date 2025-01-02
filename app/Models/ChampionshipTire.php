@@ -29,10 +29,6 @@ class ChampionshipTire extends Model
         'championship_id',
     ];
 
-    protected $casts = [
-        'price' => 'int',
-    ];
-
     /**
      * Get the columns that should receive a unique identifier.
      *
@@ -88,5 +84,11 @@ class ChampionshipTire extends Model
     public function formattedPrice(): string
     {
         return Number::currency($this->price / 100, in: 'EUR');
+    }
+    protected function casts(): array
+    {
+        return [
+            'price' => 'int',
+        ];
     }
 }

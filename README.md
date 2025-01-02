@@ -30,7 +30,7 @@ the UI styling.
 
 Given the selected stack the development requires:
 
-- [PHP 8.1](https://www.php.net/) or above
+- [PHP 8.3](https://www.php.net/) or above
 - [Composer](https://getcomposer.org/)
 - [NodeJS](https://nodejs.org/en/) version 14 or above with [Yarn](https://yarnpkg.com/getting-started/install) package manager (tested with v1.x)
 - [MariaDB](https://mariadb.org/) version 10.8 or above

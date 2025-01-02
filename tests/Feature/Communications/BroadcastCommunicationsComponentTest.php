@@ -45,7 +45,7 @@ class BroadcastCommunicationsComponentTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertSee('<p>Test <strong>communication</strong> with <a href="http://localhost">link</a></p>', false);
+        $response->assertSeeHtml('<p>Test <strong>communication</strong> with <a href="http://localhost">link</a></p>');
     }
 
     public function test_communications_are_bound_to_user_role()
@@ -73,7 +73,7 @@ class BroadcastCommunicationsComponentTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertSee('<p>Organizer\'s message</p>', false);
-        $response->assertDontSee('<p>Only for admin</p>', false);
+        $response->assertSeeHtml('<p>Organizer\'s message</p>');
+        $response->assertDontSeeHtml('<p>Only for admin</p>');
     }
 }

@@ -11,13 +11,6 @@ class CommunicationMessage extends Model implements Htmlable
 {
     use HasFactory;
 
-    protected $casts = [
-        'starts_at' => 'datetime',
-        'ends_at' => 'datetime',
-        'dismissable' => 'boolean',
-        'target_user_role' => AsCollection::class,
-    ];
-
     protected $fillable = [
         'message',
         'theme',
@@ -28,19 +21,21 @@ class CommunicationMessage extends Model implements Htmlable
         'dismissable',
     ];
 
-    public function getStatusAttribute($value = null)
+    protected function status(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $now = now();
-
-        if ($this->ends_at && $now->greaterThan($this->ends_at)) {
-            return __('Expired');
-        }
-
-        if ($now->greaterThan($this->starts_at)) {
-            return __('Active');
-        }
-
-        return __('Scheduled');
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            $now = now();
+            if ($this->ends_at && $now->greaterThan($this->ends_at)) {
+                return __('Expired');
+            }
+            if ($this->starts_at && $now->greaterThan($this->starts_at)) {
+                return __('Active');
+            }
+            if (!$this->starts_at) {
+                return __('Inactive');
+            }
+            return __('Scheduled');
+        });
     }
 
     /**
@@ -69,5 +64,14 @@ class CommunicationMessage extends Model implements Htmlable
         return str($this->message)->markdown([
             'html_input'=>'strip',
         ]);
+    }
+    protected function casts(): array
+    {
+        return [
+            'starts_at' => 'datetime',
+            'ends_at' => 'datetime',
+            'dismissable' => 'boolean',
+            'target_user_role' => AsCollection::class,
+        ];
     }
 }

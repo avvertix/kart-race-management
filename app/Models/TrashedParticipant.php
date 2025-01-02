@@ -54,23 +54,6 @@ class TrashedParticipant extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'licence_type' => DriverLicence::class,
-        'driver' => 'encrypted:json',
-        'competitor' => 'encrypted:json',
-        'mechanic' => 'encrypted:json',
-        'vehicles' => AsCollection::class,
-        'confirmed_at' => 'datetime',
-        'registration_completed_at' => 'datetime',
-        'consents' => AsArrayObject::class,
-        'use_bonus' => 'boolean',
-    ];
-
-    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array
@@ -115,14 +98,18 @@ class TrashedParticipant extends Model
     }
 
 
-    public function getEngineAttribute($value = null)
+    protected function engine(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->vehicles[0]['engine_manufacturer'] ?? null;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->vehicles[0]['engine_manufacturer'] ?? null;
+        });
     }
     
-    public function getEmailAttribute($value = null)
+    protected function email(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->driver['email'] ?? null;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->driver['email'] ?? null;
+        });
     }
     
     /**
@@ -151,5 +138,24 @@ class TrashedParticipant extends Model
     public function preferredLocale()
     {
         return $this->locale ?? config('app.locale');
+    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'licence_type' => DriverLicence::class,
+            'driver' => 'encrypted:json',
+            'competitor' => 'encrypted:json',
+            'mechanic' => 'encrypted:json',
+            'vehicles' => AsCollection::class,
+            'confirmed_at' => 'datetime',
+            'registration_completed_at' => 'datetime',
+            'consents' => AsArrayObject::class,
+            'use_bonus' => 'boolean',
+        ];
     }
 }

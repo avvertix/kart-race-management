@@ -23,7 +23,7 @@ class TireOption extends Fluent
      * 
      * @deprecated Use \App\Models\ChampionshipTire
      */
-    public static function all(): Collection 
+    public static function allTires(): Collection 
     {
         self::$types = collect(config('races.tires'))
             ->mapInto(TireOption::class);

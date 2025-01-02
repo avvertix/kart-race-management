@@ -43,24 +43,6 @@ class Race extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'event_start_at' => 'datetime',
-        'event_end_at' => 'datetime',
-        'registration_opens_at' => 'datetime',
-        'registration_closes_at' => 'datetime',
-        'canceled_at' => 'datetime',
-        'tags' => AsCollection::class,
-        'properties' => AsArrayObject::class,
-        'hide' => 'boolean',
-        'participant_limits' => AsCollection::class,
-        'type' => RaceType::class,
-    ];
-
-    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array
@@ -96,55 +78,56 @@ class Race extends Model
         return $this->hasMany(Participant::class);
     }
 
-    public function getPeriodAttribute()
+    protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if($this->event_end_at && !$this->event_end_at->isSameDay($this->event_start_at)){
-            return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l') . ' — ' . $this->event_end_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
-        }
-
-        return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            if($this->event_end_at && !$this->event_end_at->isSameDay($this->event_start_at)){
+                return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l') . ' — ' . $this->event_end_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
+            }
+            return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
+        });
     }
 
     /**
      * Is the registration open for the race?
      */
-    public function getIsRegistrationOpenAttribute()
+    protected function isRegistrationOpen(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        $now = now();
-
-        return 
-            $this->registration_opens_at->lessThanOrEqualTo($now) &&
-            $this->registration_closes_at->greaterThanOrEqualTo($now);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            $now = now();
+            return 
+                $this->registration_opens_at->lessThanOrEqualTo($now) &&
+                $this->registration_closes_at->greaterThanOrEqualTo($now);
+        });
     }
 
-    public function getStatusAttribute()
+    protected function status(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if(!is_null($this->canceled_at)){
-            return 'canceled';
-        }
-
-        $todayStartOfDay = today();
-        $todayEndOfDay = today()->endOfDay();
-        
-        if($this->event_start_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)
-           || $this->event_end_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)){
-            return 'active';
-        };
-
-        if($this->isRegistrationOpen){
-            return 'registration_open';
-        }
-
-        if($todayStartOfDay->lessThan($this->event_start_at)){
-            return 'scheduled';
-        };
-        
-        return 'concluded';
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            if(!is_null($this->canceled_at)){
+                return 'canceled';
+            }
+            $todayStartOfDay = today();
+            $todayEndOfDay = today()->endOfDay();
+            if($this->event_start_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)
+               || $this->event_end_at->betweenIncluded($todayStartOfDay, $todayEndOfDay)){
+                return 'active';
+            }
+            if($this->isRegistrationOpen){
+                return 'registration_open';
+            }
+            if($todayStartOfDay->lessThan($this->event_start_at)){
+                return 'scheduled';
+            }
+            return 'concluded';
+        });
     }
 
-    public function getTimezoneAttribute()
+    protected function timezone(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return config('races.timezone', 'UTC');
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return config('races.timezone', 'UTC');
+        });
     }
 
 
@@ -234,6 +217,26 @@ class Race extends Model
     public function isZonal()
     {
         return $this->type == RaceType::ZONE;
+    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'event_start_at' => 'datetime',
+            'event_end_at' => 'datetime',
+            'registration_opens_at' => 'datetime',
+            'registration_closes_at' => 'datetime',
+            'canceled_at' => 'datetime',
+            'tags' => AsCollection::class,
+            'properties' => AsArrayObject::class,
+            'hide' => 'boolean',
+            'participant_limits' => AsCollection::class,
+            'type' => RaceType::class,
+        ];
     }
 
 }

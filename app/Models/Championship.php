@@ -35,17 +35,6 @@ class Championship extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'start_at' => 'datetime',
-        'end_at' => 'datetime',
-        'wildcard' => WildcardSettingsData::class . ':default',
-    ];
-
-    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array
@@ -66,9 +55,11 @@ class Championship extends Model
     }
 
 
-    public function getPeriodAttribute()
+    protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->start_at->toDateString() . ' — ' . (optional($this->end_at)->toDateString() ?? '...');
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->start_at->toDateString() . ' — ' . (optional($this->end_at)->toDateString() ?? '...');
+        });
     }
 
 
@@ -110,6 +101,19 @@ class Championship extends Model
     public function bonuses(): HasMany
     {
         return $this->hasMany(Bonus::class);
+    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'start_at' => 'datetime',
+            'end_at' => 'datetime',
+            'wildcard' => WildcardSettingsData::class . ':default',
+        ];
     }
 
 }

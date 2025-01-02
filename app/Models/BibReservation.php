@@ -25,18 +25,6 @@ class BibReservation extends Model
         'reservation_expires_at',
     ];
 
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'licence_type' => DriverLicence::class,
-        'driver_licence' => 'encrypted',
-        'reservation_expires_at' => 'datetime',
-    ];
-
     /**
      * Get the championship
      */
@@ -110,6 +98,19 @@ class BibReservation extends Model
         $requestedDriver = is_string($driver) ? str($this->driver)->split('/[\s,]+/') : collect($driver);
 
         return $reservationDriver->diff($requestedDriver)->isEmpty();
+    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'licence_type' => DriverLicence::class,
+            'driver_licence' => 'encrypted',
+            'reservation_expires_at' => 'datetime',
+        ];
     }
 
 }

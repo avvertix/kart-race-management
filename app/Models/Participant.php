@@ -73,25 +73,6 @@ class Participant extends Model implements HasLocalePreference
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'licence_type' => DriverLicence::class,
-        'driver' => 'encrypted:json',
-        'competitor' => 'encrypted:json',
-        'mechanic' => 'encrypted:json',
-        'vehicles' => AsCollection::class,
-        'confirmed_at' => 'datetime',
-        'registration_completed_at' => 'datetime',
-        'consents' => AsArrayObject::class,
-        'use_bonus' => 'boolean',
-        'properties' => AsArrayObject::class,
-        'wildcard' => 'boolean',
-    ];
-
-    /**
      * The relationships that should always be loaded.
      *
      * @var array
@@ -187,24 +168,32 @@ class Participant extends Model implements HasLocalePreference
     }
 
 
-    public function getEngineAttribute($value = null)
+    protected function engine(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->vehicles[0]['engine_manufacturer'] ?? null;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->vehicles[0]['engine_manufacturer'] ?? null;
+        });
     }
     
-    public function getEmailAttribute($value = null)
+    protected function email(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->driver['email'] ?? null;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->driver['email'] ?? null;
+        });
     }
     
-    public function getCompetitorEmailAttribute($value = null)
+    protected function competitorEmail(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return $this->competitor['email'] ?? null;
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->competitor['email'] ?? null;
+        });
     }
     
-    public function getFullNameAttribute($value = null)
+    protected function fullName(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return str()->title($this->first_name .' '. $this->last_name);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return str()->title($this->first_name .' '. $this->last_name);
+        });
     }
     
     /**
@@ -457,5 +446,26 @@ class Participant extends Model implements HasLocalePreference
         }
 
         return $this->properties['out_of_zone'] ? __('Out of zone') : __('Within zone');
+    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'licence_type' => DriverLicence::class,
+            'driver' => 'encrypted:json',
+            'competitor' => 'encrypted:json',
+            'mechanic' => 'encrypted:json',
+            'vehicles' => AsCollection::class,
+            'confirmed_at' => 'datetime',
+            'registration_completed_at' => 'datetime',
+            'consents' => AsArrayObject::class,
+            'use_bonus' => 'boolean',
+            'properties' => AsArrayObject::class,
+            'wildcard' => 'boolean',
+        ];
     }
 }

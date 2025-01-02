@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Communications;
 
-use App\Models\Communication;
 use App\Models\CommunicationMessage;
 use App\Models\User;
 use App\View\Components\BroadcastCommunications;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,7 +20,7 @@ class BroadcastCommunicationsComponentTest extends TestCase
             ->create([
                 'message' => 'Test **communication** with [link](http://localhost)',
                 'starts_at' => today()->startOfDay()->toDateString(),
-                'ends_at' => today()->addDays(1)->endOfDay()->toDateString()
+                'ends_at' => today()->addDays(1)->endOfDay()->toDateString(),
             ]);
 
         $view = $this->component(BroadcastCommunications::class);
@@ -36,7 +36,7 @@ class BroadcastCommunicationsComponentTest extends TestCase
             ->create([
                 'message' => 'Test **communication** with [link](http://localhost)',
                 'starts_at' => today()->startOfDay()->toDateString(),
-                'ends_at' => today()->addDays(1)->endOfDay()->toDateString()
+                'ends_at' => today()->addDays(1)->endOfDay()->toDateString(),
             ]);
 
         $response = $this
@@ -59,7 +59,7 @@ class BroadcastCommunicationsComponentTest extends TestCase
                 'ends_at' => today()->addDays(1)->endOfDay()->toDateString(),
                 'target_user_role' => ['organizer'],
             ]);
-        
+
         $admin_communication = CommunicationMessage::factory()
             ->create([
                 'message' => 'Only for admin',

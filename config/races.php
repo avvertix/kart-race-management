@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Carbon\Carbon;
 
 return [
@@ -12,7 +14,7 @@ return [
     */
 
     'start_time' => env('RACE_START_TIME', '09:00:00'),
-    
+
     'end_time' => env('RACE_END_TIME', '18:00:00'),
 
     'timezone' => env('RACE_TIMEZONE', 'Europe/Rome'),
@@ -39,15 +41,13 @@ return [
 
     'licence' => [
         'provider' => env('RACE_LICENCE_PROVIDER', 'ACI Sport'),
-        'country' => env('RACE_LICENCE_COUNTRY', 'it')
+        'country' => env('RACE_LICENCE_COUNTRY', 'it'),
     ],
 
     'price' => env('RACE_PRICE', '15000'), // Expressed in decimal notation
     'price_currency' => env('RACE_PRICE_CURRENCY', 'EUR'),
-    'bonus_amount' => env('RACE_BONUS_AMOUNT', env('RACE_PRICE', '15000'),),
+    'bonus_amount' => env('RACE_BONUS_AMOUNT', env('RACE_PRICE', '15000')),
 
-
-    
     'tires' => [
         'VEGA_SL4' => [
             'name' => 'VEGA SL4',

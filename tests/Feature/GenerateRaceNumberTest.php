@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Actions\GenerateRaceNumber;
@@ -8,42 +10,39 @@ use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class GenerateRaceNumberTest extends TestCase
 {
     use RefreshDatabase;
 
-    
     public function test_race_numbers_suggested(): void
     {
         $championship = Championship::factory()->create();
 
         $numbers = (new GenerateRaceNumber())($championship);
 
-        $this->assertEquals([1,2,3,4], $numbers);
+        $this->assertEquals([1, 2, 3, 4], $numbers);
     }
-    
+
     public function test_suggestion_respect_given_amount(): void
     {
         $championship = Championship::factory()->create();
 
         $numbers = (new GenerateRaceNumber())($championship, 2);
 
-        $this->assertEquals([1,2], $numbers);
+        $this->assertEquals([1, 2], $numbers);
     }
-    
+
     public function test_requested_amount_considered_as_absolute_value(): void
     {
         $championship = Championship::factory()->create();
 
         $numbers = (new GenerateRaceNumber())($championship, -2);
 
-        $this->assertEquals([1,2], $numbers);
+        $this->assertEquals([1, 2], $numbers);
     }
-    
+
     public function test_suggestion_dont_include_participants(): void
     {
         $championship = Championship::factory()
@@ -52,7 +51,7 @@ class GenerateRaceNumberTest extends TestCase
 
         $firstRace = $championship->races->first();
         $lastRace = $championship->races->last();
-        
+
         $participationToFirstRace = Participant::factory()
             ->for($firstRace)
             ->for($championship)
@@ -77,9 +76,9 @@ class GenerateRaceNumberTest extends TestCase
 
         $numbers = (new GenerateRaceNumber())($championship);
 
-        $this->assertEquals([3,4,5,6], $numbers);
+        $this->assertEquals([3, 4, 5, 6], $numbers);
     }
-    
+
     public function test_reservations_not_suggested(): void
     {
         $championship = Championship::factory()
@@ -88,15 +87,15 @@ class GenerateRaceNumberTest extends TestCase
 
         $numbers = (new GenerateRaceNumber())($championship);
 
-        $this->assertEquals([2,3,4,5], $numbers);
+        $this->assertEquals([2, 3, 4, 5], $numbers);
     }
-    
+
     public function test_suggestion_tops_at_a_thousand(): void
     {
         $championship = Championship::factory()
             ->has(Race::factory())
             ->create();
-        
+
         $participationToFirstRace = Participant::factory()
             ->for($championship->races->first())
             ->for($championship)
@@ -114,12 +113,12 @@ class GenerateRaceNumberTest extends TestCase
         $this->assertEquals(1, $numbers[0]);
         $this->assertEquals(999, $numbers[998]);
     }
-    
+
     public function test_suggestion_is_specific_to_given_championship(): void
     {
         $championship = Championship::factory()
             ->create();
-        
+
         Participant::factory()
             ->driver([
                 'bib' => 1,
@@ -128,6 +127,6 @@ class GenerateRaceNumberTest extends TestCase
 
         $numbers = (new GenerateRaceNumber())($championship);
 
-        $this->assertEquals([1,2,3,4], $numbers);
+        $this->assertEquals([1, 2, 3, 4], $numbers);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Category;
@@ -8,8 +10,6 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Tests\CreateCompetitor;
@@ -20,11 +20,11 @@ use Tests\TestCase;
 
 class SelfRegistrationTest extends TestCase
 {
-    use RefreshDatabase;
-    use CreateDriver;
     use CreateCompetitor;
+    use CreateDriver;
     use CreateMechanic;
-    use CreateVehicle;   
+    use CreateVehicle;
+    use RefreshDatabase;
 
     public function test_registration_form_loads()
     {
@@ -44,19 +44,19 @@ class SelfRegistrationTest extends TestCase
         $response->assertOk();
 
         $response->assertSee("Register for {$race->name}");
-        $response->assertSee("Race number and category");
-        $response->assertSee("Driver");
-        $response->assertSee("Competitor");
-        $response->assertSee("Mechanic");
-        $response->assertSee("Vehicle");
-        $response->assertDontSee("Bonus");
-        $response->assertSee("Consents");
-        $response->assertSee("Rules");
-        $response->assertSee("Participation price");
+        $response->assertSee('Race number and category');
+        $response->assertSee('Driver');
+        $response->assertSee('Competitor');
+        $response->assertSee('Mechanic');
+        $response->assertSee('Vehicle');
+        $response->assertDontSee('Bonus');
+        $response->assertSee('Consents');
+        $response->assertSee('Rules');
+        $response->assertSee('Participation price');
     }
 
     public function test_participant_limit_message_visible_on_registration_form()
-    {        
+    {
         $race = Race::factory()->withTotalParticipantLimit()->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
@@ -68,8 +68,8 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertSee("Limited number competition");
-        $response->assertSee("In this race we can only accept a maximum of 10 participants.");
+        $response->assertSee('Limited number competition');
+        $response->assertSee('In this race we can only accept a maximum of 10 participants.');
     }
 
     public function test_minimal_form_used()
@@ -87,18 +87,18 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertDontSee("Licence Type");
-        $response->assertDontSee("Sex");
-        $response->assertDontSee("Mechanic");
-        $response->assertDontSee("Vehicle");
-        $response->assertDontSee("Bonus");
-        $response->assertSee("Consents");
-        $response->assertSee("Rules");
-        $response->assertSee("Participation price");
+        $response->assertDontSee('Licence Type');
+        $response->assertDontSee('Sex');
+        $response->assertDontSee('Mechanic');
+        $response->assertDontSee('Vehicle');
+        $response->assertDontSee('Bonus');
+        $response->assertSee('Consents');
+        $response->assertSee('Rules');
+        $response->assertSee('Participation price');
     }
 
     public function test_participant_limit_reached_message_visible_on_registration_form()
-    {        
+    {
 
         $race = Race::factory()
             ->withTotalParticipantLimit(1)
@@ -114,7 +114,7 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertSee("We reached the maximum allowed participants to this race.");
+        $response->assertSee('We reached the maximum allowed participants to this race.');
     }
 
     public function test_participant_can_self_register()
@@ -154,7 +154,7 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertRedirectToSignedRoute('registration.show', [
             'registration' => $participant,
-            'p' => $participant->signatureContent()
+            'p' => $participant->signatureContent(),
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -163,20 +163,19 @@ class SelfRegistrationTest extends TestCase
 
         Notification::assertCount(2);
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'driver';
         });
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'competitor';
         });
     }
 
-    
     public function test_participant_bib_cannot_be_changed_during_championship()
     {
         Notification::fake();
-        
+
         $championship = Championship::factory()
             ->has(Race::factory()->count(2))
             ->create();
@@ -185,7 +184,7 @@ class SelfRegistrationTest extends TestCase
 
         $firstRace = $championship->races->first();
         $race = $championship->races->last();
-        
+
         $participationToFirstRace = Participant::factory()
             ->for($firstRace)
             ->for($championship)
@@ -215,7 +214,6 @@ class SelfRegistrationTest extends TestCase
 
         $this->travelBack();
 
-        
         $response->assertRedirectToRoute('races.registration.create', $race);
 
         $response->assertSessionHasErrors([
@@ -226,8 +224,6 @@ class SelfRegistrationTest extends TestCase
 
         Notification::assertNothingSent();
     }
-
-
 
     public function test_last_participant_can_self_register()
     {
@@ -256,7 +252,7 @@ class SelfRegistrationTest extends TestCase
             ]);
 
         $response->assertSessionDoesntHaveErrors();
-        
+
         $this->travelBack();
 
         $participant = $race->participants()->where('bib', 100)->first();
@@ -270,7 +266,7 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertRedirectToSignedRoute('registration.show', [
             'registration' => $participant,
-            'p' => $participant->signatureContent()
+            'p' => $participant->signatureContent(),
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -279,15 +275,15 @@ class SelfRegistrationTest extends TestCase
 
         Notification::assertCount(2);
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'driver';
         });
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'competitor';
         });
     }
-    
+
     public function test_participant_cannot_register_if_limit_is_reached()
     {
         Notification::fake();
@@ -315,7 +311,6 @@ class SelfRegistrationTest extends TestCase
             ]);
 
         $this->travelBack();
-
 
         $response->assertRedirectToRoute('races.registration.create', $race);
 
@@ -366,7 +361,7 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertRedirectToSignedRoute('registration.show', [
             'registration' => $participant,
-            'p' => $participant->signatureContent()
+            'p' => $participant->signatureContent(),
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -375,11 +370,11 @@ class SelfRegistrationTest extends TestCase
 
         Notification::assertCount(2);
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'driver';
         });
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'competitor';
         });
     }

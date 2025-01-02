@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Str;
 
 return [
@@ -15,7 +17,7 @@ return [
     | is explicitly specified when you execute a query / statement.
     |
     | **Warning**: Although Laravel 11 has a specific MariaDB driver we are
-    | not ready yet for migrating to it as we use UUID columns 
+    | not ready yet for migrating to it as we use UUID columns
     |
     */
 

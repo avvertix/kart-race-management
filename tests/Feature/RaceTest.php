@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Championship;
@@ -8,14 +10,12 @@ use App\Models\RaceType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class RaceTest extends TestCase
 {
     use RefreshDatabase;
-
 
     public function test_races_screen_can_be_rendered()
     {
@@ -34,7 +34,7 @@ class RaceTest extends TestCase
         $this->assertInstanceOf(Collection::class, $races);
         $this->assertTrue($races->first()->is($race));
         $this->assertTrue($response->viewData('championship')->is($race->championship));
-        
+
     }
 
     public function test_new_race_can_be_created()
@@ -55,11 +55,11 @@ class RaceTest extends TestCase
                 'title' => 'First Race',
                 'description' => 'a little description',
             ]);
-        
+
         $this->travelBack();
 
         $response->assertRedirectToRoute('championships.races.index', ['championship' => $championship]);
-        
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', 'First Race created.');
@@ -98,11 +98,11 @@ class RaceTest extends TestCase
                 'registration_opens_at' => '2023-02-20 08:00:00',
                 'registration_closes_at' => '2023-03-04 19:00:00',
             ]);
-        
+
         $this->travelBack();
 
         $response->assertRedirectToRoute('championships.races.index', ['championship' => $championship]);
-        
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', 'First Race created.');
@@ -140,7 +140,7 @@ class RaceTest extends TestCase
                 'description' => 'a little description',
                 'participants_total_limit' => 10,
             ]);
-        
+
         $this->travelBack();
 
         $response->assertSessionHasNoErrors();
@@ -171,7 +171,7 @@ class RaceTest extends TestCase
                 'description' => 'a little description',
                 'race_type' => RaceType::ZONE->value,
             ]);
-        
+
         $this->travelBack();
 
         $response->assertSessionHasNoErrors();
@@ -202,11 +202,11 @@ class RaceTest extends TestCase
                 'participants_total_limit' => 10,
                 'race_type' => RaceType::INTERNATIONAL->value,
             ]);
-        
+
         $this->travelBack();
 
         $response->assertRedirectToRoute('races.show', $existingRace);
-        
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', 'First Updated Race saved.');
@@ -226,7 +226,7 @@ class RaceTest extends TestCase
         $this->assertEquals(10, $race->getTotalParticipantLimit());
         $this->assertEquals(RaceType::INTERNATIONAL, $race->type);
     }
-    
+
     public function test_race_can_be_updated_with_custom_registration_openings()
     {
         $user = User::factory()->organizer()->create();
@@ -249,11 +249,11 @@ class RaceTest extends TestCase
                 'registration_opens_at' => '2023-02-20 08:00:00',
                 'registration_closes_at' => '2023-03-04 19:00:00',
             ]);
-        
+
         $this->travelBack();
 
         $response->assertRedirectToRoute('races.show', $existingRace);
-        
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', 'First Updated Race saved.');
@@ -273,5 +273,4 @@ class RaceTest extends TestCase
         $this->assertEquals(10, $race->getTotalParticipantLimit());
         $this->assertEquals(RaceType::INTERNATIONAL, $race->type);
     }
-
 }

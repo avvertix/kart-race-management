@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Participant;
@@ -12,7 +14,6 @@ class ParticipantSignatureNotificationController extends Controller
     /**
      * Send a new email verification notification.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -24,7 +25,7 @@ class ParticipantSignatureNotificationController extends Controller
 
         $participant = Participant::whereUuid($request->participant)->first();
 
-        if($participant->hasSignedTheRequest()){
+        if ($participant->hasSignedTheRequest()) {
             return $request->wantsJson()
                     ? new JsonResponse('', 204)
                     : redirect($participant->qrCodeUrl());

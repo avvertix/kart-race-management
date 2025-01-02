@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Payment;
 use Illuminate\Support\Str;
 use TimoKoerber\LaravelOneTimeOperations\OneTimeOperation;
@@ -28,9 +30,9 @@ return new class extends OneTimeOperation
     {
         Payment::query()
             ->lazy()
-            ->each(function($payment) {
+            ->each(function ($payment) {
 
-                if(Str::startsWith($payment->path, 'payments/')){
+                if (Str::startsWith($payment->path, 'payments/')) {
                     $payment->path = Str::after($payment->path, 'payments/');
 
                     $payment->save();

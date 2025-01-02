@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use App\Support\Describable;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
 
@@ -16,27 +16,25 @@ class TireOption extends Fluent
 {
     protected static $types = null;
 
-
-    
     /**
      * Get all defined tire options
-     * 
+     *
      * @deprecated Use \App\Models\ChampionshipTire
      */
-    public static function allTires(): Collection 
+    public static function allTires(): Collection
     {
         self::$types = collect(config('races.tires'))
-            ->mapInto(TireOption::class);
-        
+            ->mapInto(self::class);
+
         return self::$types;
     }
 
     /**
      * Get a tire option by its key
-     * 
+     *
      * @deprecated Use \App\Models\ChampionshipTire
      */
-    public static function find($key): TireOption|null 
+    public static function find($key): ?self
     {
         return self::all()->get($key);
     }
@@ -46,9 +44,8 @@ class TireOption extends Fluent
      */
     public static function search($term): Collection
     {
-        return self::all()->filter(function($value, $key) use ($term){
+        return self::all()->filter(function ($value, $key) use ($term) {
             return Str::contains($value->get('name'), $term, true);
         });
     }
-    
 }

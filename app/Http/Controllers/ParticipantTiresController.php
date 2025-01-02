@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Participant;
@@ -23,7 +25,6 @@ class ParticipantTiresController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \App\Models\Participant  $participant
      * @return \Illuminate\Http\Response
      */
     public function index(Participant $participant)
@@ -40,7 +41,6 @@ class ParticipantTiresController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \App\Models\Participant  $participant
      * @return \Illuminate\Http\Response
      */
     public function create(Participant $participant)
@@ -50,21 +50,19 @@ class ParticipantTiresController extends Controller
         return view('tire.create', [
             'participant' => $participant,
             'race' => $participant->race,
-            'tireLimit' => $participant->tires_count == 0 ? 4 : (5 - $participant->tires_count),
+            'tireLimit' => $participant->tires_count === 0 ? 4 : (5 - $participant->tires_count),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Participant  $participant
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, Participant $participant)
-    {        
+    {
         $validated = $this->validate($request, [
-            'tires' => ['required','array','min:1','max:5'],
+            'tires' => ['required', 'array', 'min:1', 'max:5'],
             'tires.*' => [
                 'required',
                 'string',
@@ -73,13 +71,13 @@ class ParticipantTiresController extends Controller
             ],
         ]);
 
-        if($participant->tires()->count() >= 5){
+        if ($participant->tires()->count() >= 5) {
             throw ValidationException::withMessages([
                 'tires' => __('Participant already have 5 tires assigned'),
             ]);
         }
 
-        $participant->tires()->createMany(collect($validated['tires'])->map(function($tire) use ($participant) {
+        $participant->tires()->createMany(collect($validated['tires'])->map(function ($tire) use ($participant) {
             return ['code' => $tire, 'race_id' => $participant->race_id];
         }));
 
@@ -88,11 +86,10 @@ class ParticipantTiresController extends Controller
             ->with('flash.banner', __('Tires assigned. Print a copy for the participant.'));
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \App\Models\Participant  $participant
+     * @param  Participant  $participant
      * @return \Illuminate\Http\Response
      */
     public function edit(Tire $tire)
@@ -106,14 +103,13 @@ class ParticipantTiresController extends Controller
         ]);
     }
 
-
     public function update(Request $request, Tire $tire)
-    {        
+    {
         $validated = $this->validate($request, [
             'tire' => [
                 'required',
                 'string',
-                
+
                 Rule::unique('tires', 'code')
                     ->ignore($tire)
                     ->where(fn ($query) => $query->where('race_id', $tire->race_id)),
@@ -121,12 +117,11 @@ class ParticipantTiresController extends Controller
         ]);
 
         $tire->code = $validated['tire'];
-        
+
         $tire->save();
 
         return redirect()
             ->route('participants.tires.index', $tire->participant)
             ->with('flash.banner', __('Tire code updated.'));
     }
-
 }

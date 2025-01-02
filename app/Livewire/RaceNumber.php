@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Actions\GenerateRaceNumber;
@@ -7,9 +9,8 @@ use Livewire\Component;
 
 class RaceNumber extends Component
 {
-    
     public $value;
-    
+
     public $championship;
 
     public $suggestions = [];

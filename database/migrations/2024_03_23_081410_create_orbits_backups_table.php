@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
@@ -19,13 +21,13 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreignIdFor(User::class)->nullable();
-            
+
             $table->foreignIdFor(Championship::class)->nullable();
 
             $table->text('filename');
 
             $table->text('path');
-            
+
             $table->text('hash');
         });
     }

@@ -1,14 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Operations;
 
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
-use App\Models\Participant;
-use App\Models\Race;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BackfillChampionshipTiresTest extends TestCase
@@ -25,14 +23,14 @@ class BackfillChampionshipTiresTest extends TestCase
                 ],
             ],
         ]);
-        
+
         $championship = Championship::factory()
             ->create();
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2023_12_30_120021_backfill_championship_tires',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2023_12_30_120021_backfill_championship_tires',
+        ])
             ->assertSuccessful();
 
         $tires = $championship->fresh()->tires;
@@ -58,17 +56,16 @@ class BackfillChampionshipTiresTest extends TestCase
             ],
         ]);
 
-        
         $championship = Championship::factory()
             ->has(ChampionshipTire::factory()->count(1), 'tires')
             ->create();
 
         $configuredTire = $championship->tires()->first();
-        
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2023_12_30_120021_backfill_championship_tires',
-            ])
+
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2023_12_30_120021_backfill_championship_tires',
+        ])
             ->assertSuccessful();
 
         $tires = $championship->fresh()->tires;

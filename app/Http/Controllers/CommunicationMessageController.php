@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\CommunicationMessage;
@@ -28,7 +30,6 @@ class CommunicationMessageController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -38,7 +39,7 @@ class CommunicationMessageController extends Controller
             'theme' => ['required', 'string', 'in:info'],
             'target_path' => ['sometimes', 'nullable', 'string'],
             'target_user_role' => ['sometimes', 'nullable', 'array', 'max:4'],
-            'target_user_role.*' => ['required', 'string', 'in:' . collect(Jetstream::$roles)->keys()->join(',')],
+            'target_user_role.*' => ['required', 'string', 'in:'.collect(Jetstream::$roles)->keys()->join(',')],
             'starts_at' => ['required', 'date', 'after_or_equal:today'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ]);
@@ -66,7 +67,6 @@ class CommunicationMessageController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Communication  $communication
      * @return \Illuminate\Http\Response
      */
@@ -77,7 +77,7 @@ class CommunicationMessageController extends Controller
             'theme' => ['required', 'string', 'in:info'],
             'target_path' => ['sometimes', 'nullable', 'string'],
             'target_user_role' => ['sometimes', 'nullable', 'array', 'max:4'],
-            'target_user_role.*' => ['required', 'string', 'in:' . collect(Jetstream::$roles)->keys()->join(',')],
+            'target_user_role.*' => ['required', 'string', 'in:'.collect(Jetstream::$roles)->keys()->join(',')],
             'starts_at' => ['required', 'date', 'after_or_equal:today'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ]);

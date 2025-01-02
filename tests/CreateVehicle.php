@@ -1,7 +1,8 @@
 <?php
 
-namespace Tests;
+declare(strict_types=1);
 
+namespace Tests;
 
 trait CreateVehicle
 {
@@ -16,5 +17,4 @@ trait CreateVehicle
             'vehicle_oil_percentage' => '4',
         ];
     }
-
 }

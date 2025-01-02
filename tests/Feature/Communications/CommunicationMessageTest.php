@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Communications;
 
 use App\Models\Communication;
 use App\Models\CommunicationMessage;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,9 +17,9 @@ class CommunicationMessageTest extends TestCase
     public static function communication_dates_provider()
     {
         return [
-            ["2023-03-31", '2023-04-01', '2023-04-01', 'Scheduled'],
-            ["2023-03-31", '2023-03-01', '2023-04-01', 'Active'],
-            ["2023-03-31", '2023-03-01', '2023-03-30', 'Expired'],
+            ['2023-03-31', '2023-04-01', '2023-04-01', 'Scheduled'],
+            ['2023-03-31', '2023-03-01', '2023-04-01', 'Active'],
+            ['2023-03-31', '2023-03-01', '2023-03-30', 'Expired'],
         ];
     }
 
@@ -32,7 +33,7 @@ class CommunicationMessageTest extends TestCase
                 'starts_at' => $startsAt,
                 'ends_at' => $endsAt,
             ]);
-    
+
             $this->assertEquals($expectedStatus, $communication->status);
         });
     }
@@ -49,9 +50,9 @@ class CommunicationMessageTest extends TestCase
             )
             ->create();
 
-        $this->travelTo(Carbon::parse("2023-03-31"), function () {
+        $this->travelTo(Carbon::parse('2023-03-31'), function () {
             $communications = CommunicationMessage::query()->active()->get();
-    
+
             $this->assertEquals(2, $communications->count());
             $this->assertEquals('2023-03-01', $communications[0]->starts_at->toDateString());
             $this->assertEquals('2023-04-01', $communications[0]->ends_at->toDateString());

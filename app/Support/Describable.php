@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Support;
+declare(strict_types=1);
 
+namespace App\Support;
 
 interface Describable
 {
     /**
      * Run the description of the entry.
-     *
-     * @return string
      */
     public function description(): string;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Operations;
 
 use App\Models\Category;
@@ -8,7 +10,6 @@ use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BackfillParticipantCategoryTest extends TestCase
@@ -28,22 +29,22 @@ class BackfillParticipantCategoryTest extends TestCase
                 'category_two' => [
                     'name' => 'CAT 2',
                     'tires' => 'VEGA_SL4',
-                    'enabled' => false
+                    'enabled' => false,
                 ],
             ],
         ]);
-        
+
         $championship = Championship::factory()
             ->has(ChampionshipTire::factory()->count(1)->sequence(
-                    ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
-                ), 'tires')
+                ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
+            ), 'tires')
             ->has(Category::factory()->count(1)->sequence(
                 ['name' => 'CAT 1', 'code' => 'category_one']
             ), 'categories')
             ->create();
 
         $race = Race::factory()->create();
-    
+
         $participant = Participant::factory()
             ->recycle($championship)
             ->recycle($race)
@@ -52,10 +53,10 @@ class BackfillParticipantCategoryTest extends TestCase
                 'bib' => 100,
             ]);
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2024_01_03_082636_backfill_participant_category',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2024_01_03_082636_backfill_participant_category',
+        ])
             ->assertSuccessful();
 
         $updatedParticipant = $participant->fresh();
@@ -66,7 +67,7 @@ class BackfillParticipantCategoryTest extends TestCase
 
         $this->assertTrue($category->is($championship->categories()->first()));
     }
-    
+
     public function test_participant_category_not_backfilled_when_missing_category()
     {
         config([
@@ -80,19 +81,19 @@ class BackfillParticipantCategoryTest extends TestCase
                 'category_two' => [
                     'name' => 'CAT 2',
                     'tires' => 'VEGA_SL4',
-                    'enabled' => false
+                    'enabled' => false,
                 ],
             ],
         ]);
-        
+
         $championship = Championship::factory()
             ->has(ChampionshipTire::factory()->count(1)->sequence(
-                    ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
-                ), 'tires')
+                ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
+            ), 'tires')
             ->create();
-        
+
         $race = Race::factory()->create();
-    
+
         $participant = Participant::factory()
             ->recycle($championship)
             ->recycle($race)
@@ -101,10 +102,10 @@ class BackfillParticipantCategoryTest extends TestCase
                 'bib' => 100,
             ]);
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2024_01_03_082636_backfill_participant_category',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2024_01_03_082636_backfill_participant_category',
+        ])
             ->assertSuccessful();
 
         $updatedParticipant = $participant->fresh();
@@ -125,22 +126,22 @@ class BackfillParticipantCategoryTest extends TestCase
                 'category_two' => [
                     'name' => 'CAT 2',
                     'tires' => 'VEGA_SL4',
-                    'enabled' => false
+                    'enabled' => false,
                 ],
             ],
         ]);
-        
+
         $championship = Championship::factory()
             ->has(ChampionshipTire::factory()->count(1)->sequence(
-                    ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
-                ), 'tires')
+                ['name' => 'VEGA SL4', 'code' => 'VEGA_SL4', 'price' => 100],
+            ), 'tires')
             ->has(Category::factory()->count(1)->sequence(
                 ['name' => 'CAT 1', 'code' => 'category_one']
             ), 'categories')
             ->create();
 
         $race = Race::factory()->create();
-    
+
         $participant = Participant::factory()
             ->recycle($championship)
             ->recycle($race)
@@ -149,10 +150,10 @@ class BackfillParticipantCategoryTest extends TestCase
                 'bib' => 100,
             ]);
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                'name' => '2024_01_03_082636_backfill_participant_category',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            'name' => '2024_01_03_082636_backfill_participant_category',
+        ])
             ->assertSuccessful();
 
         $updatedParticipant = $participant->fresh();
@@ -162,6 +163,6 @@ class BackfillParticipantCategoryTest extends TestCase
         $category = $updatedParticipant->racingCategory;
 
         $this->assertTrue($category->is($championship->categories()->first()));
-        
+
     }
 }

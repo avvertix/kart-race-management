@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Actions\RegisterParticipant;
@@ -40,7 +42,6 @@ class RaceParticipantController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function create(Race $race, Request $request)
@@ -58,13 +59,13 @@ class RaceParticipantController extends Controller
         try {
             $validated = $this->validate($request, [
                 'from' => [
-                    'sometimes', 
-                    'nullable', 
-                    'string', 
+                    'sometimes',
+                    'nullable',
+                    'string',
                     Rule::exists('participants', 'uuid')->where(function ($query) use ($race) {
                         return $query->where('championship_id', $race->championship_id);
                     }),
-                ]
+                ],
             ]);
 
             $templateParticipant = ($validated['from'] ?? false) ? Participant::whereUuid($validated['from'])->first() : null;
@@ -72,7 +73,6 @@ class RaceParticipantController extends Controller
         } catch (ValidationException $th) {
 
         }
-
 
         return view('participant.create', [
             'race' => $race,
@@ -85,18 +85,77 @@ class RaceParticipantController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Race $race, Request $request, RegisterParticipant $registerParticipant)
     {
 
         $participant = $registerParticipant($race, $request->all(), $request->user());
-        
+
         return to_route('races.participants.index', $race)
             ->with('flash.banner', __(':participant added.', [
-                'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}" 
+                'participant' => "{$participant->bib} {$participant->first_name} {$participant->last_name}",
             ]));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Participant $participant)
+    {
+
+        $participant->load(['race', 'championship']);
+
+        return view('participant.show', [
+            'race' => $participant,
+            'championship' => $participant->championship,
+            'participant' => $participant,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Participant $participant)
+    {
+        $participant->load(['race', 'championship']);
+
+        return view('participant.edit', [
+            'race' => $participant,
+            'championship' => $participant->championship,
+            'participant' => $participant,
+            'categories' => $participant->championship->categories()->enabled()->get(),
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Participant $participant, UpdateParticipantRegistration $updateRegistration)
+    {
+
+        $updatedParticipant = $updateRegistration($participant->race, $participant, $request->all(), $request->user());
+
+        return to_route('races.participants.index', $updatedParticipant->race)
+            ->with('flash.banner', __(':participant updated.', [
+                'participant' => "{$updatedParticipant->bib} {$updatedParticipant->first_name} {$updatedParticipant->last_name}",
+            ]));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Participant $participant)
+    {
+        //
     }
 
     protected function processAddressInput($input, $fieldPrefix)
@@ -119,70 +178,5 @@ class RaceParticipantController extends Controller
             'oil_type' => $input['vehicle_oil_type'],
             'oil_percentage' => $input['vehicle_oil_percentage'],
         ]];
-    }
-    
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Participant $participant)
-    {
-
-        $participant->load(['race', 'championship']);
-
-        return view('participant.show', [
-            'race' => $participant,
-            'championship' => $participant->championship,
-            'participant' => $participant,
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Participant $participant)
-    {
-        $participant->load(['race', 'championship']);
-
-        return view('participant.edit', [
-            'race' => $participant,
-            'championship' => $participant->championship,
-            'participant' => $participant,
-            'categories' => $participant->championship->categories()->enabled()->get(),
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Participant $participant, UpdateParticipantRegistration $updateRegistration)
-    {
-
-        $updatedParticipant = $updateRegistration($participant->race, $participant, $request->all(), $request->user());
-        
-        return to_route('races.participants.index', $updatedParticipant->race)
-            ->with('flash.banner', __(':participant updated.', [
-                'participant' => "{$updatedParticipant->bib} {$updatedParticipant->first_name} {$updatedParticipant->last_name}" 
-            ]));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Participant  $participant
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Participant $participant)
-    {
-        //
     }
 }

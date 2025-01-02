@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
 use App\Models\Participant;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ChampionshipParticipantController extends Controller
@@ -38,7 +39,7 @@ class ChampionshipParticipantController extends Controller
             ->orderBy('bib', 'asc')
             ->with(['participationHistory', 'participationHistory.race'])
             ->get();
-        
+
         $uniqueParticipantsCount = $participants->count();
 
         return view('championship.participant.index', [

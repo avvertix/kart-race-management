@@ -1,21 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Race;
-use App\Models\Tire;
-use App\Models\TireOption;
 use App\Models\Transponder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 class RaceTranspondersController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Race  $race
      * @return \Illuminate\Http\Response
      */
     public function __invoke(Request $request, Race $race)
@@ -23,7 +20,6 @@ class RaceTranspondersController extends Controller
         $this->authorize('viewAny', Transponder::class);
 
         $race->load(['championship']);
-
 
         // List participants with transponder
 
@@ -42,5 +38,4 @@ class RaceTranspondersController extends Controller
             'participants' => $participants,
         ]);
     }
-    
 }

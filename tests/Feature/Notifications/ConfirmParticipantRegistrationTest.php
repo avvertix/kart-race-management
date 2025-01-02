@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Notifications;
 
 use App\Models\Participant;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -30,7 +30,7 @@ class ConfirmParticipantRegistrationTest extends TestCase
 
         $this->assertEquals("Verify the email and confirm the participation to {$notifiable->race->title}", $mail->subject);
 
-        $rendered = $mail->render();
+        $rendered = (string) $mail->render();
 
         $this->assertNotNull($rendered);
 
@@ -41,7 +41,7 @@ class ConfirmParticipantRegistrationTest extends TestCase
             'participant.sign.create',
             Carbon::now()->addMinutes(Config::get('participant.verification.expire', 12 * Carbon::MINUTES_PER_HOUR)),
             [
-                'p' => (string)$notifiable->uuid,
+                'p' => (string) $notifiable->uuid,
                 't' => 'driver',
                 'hash' => sha1($notifiable->getEmailForVerification('driver')),
             ]
@@ -50,11 +50,10 @@ class ConfirmParticipantRegistrationTest extends TestCase
         $this->travelBack();
     }
 
-
     public function test_driver_can_sign_the_participation_request()
     {
         /**
-         * @var \App\Models\Participant
+         * @var Participant
          */
         $participant = Participant::factory()->create();
 
@@ -74,7 +73,7 @@ class ConfirmParticipantRegistrationTest extends TestCase
     public function test_competitor_can_sign_the_participation_request()
     {
         /**
-         * @var \App\Models\Participant
+         * @var Participant
          */
         $participant = Participant::factory()->withCompetitor()->create();
 

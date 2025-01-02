@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Data\WildcardSettingsData;
@@ -54,15 +56,6 @@ class Championship extends Model
         return 'uuid';
     }
 
-
-    protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            return $this->start_at->toDateString() . ' — ' . (optional($this->end_at)->toDateString() ?? '...');
-        });
-    }
-
-
     /**
      * Get the races within the championship.
      */
@@ -70,7 +63,7 @@ class Championship extends Model
     {
         return $this->hasMany(Race::class)->orderBy('event_start_at');
     }
-    
+
     /**
      * Get the categories that can participate.
      */
@@ -78,7 +71,7 @@ class Championship extends Model
     {
         return $this->hasMany(Category::class);
     }
-    
+
     /**
      * Get the allowed tire models.
      */
@@ -86,7 +79,7 @@ class Championship extends Model
     {
         return $this->hasMany(ChampionshipTire::class);
     }
-    
+
     /**
      * Get the BIB reservations.
      */
@@ -94,7 +87,7 @@ class Championship extends Model
     {
         return $this->hasMany(BibReservation::class)->orderBy('bib', 'ASC');
     }
-    
+
     /**
      * Get the bonus for drivers in this championship.
      */
@@ -102,18 +95,23 @@ class Championship extends Model
     {
         return $this->hasMany(Bonus::class);
     }
+
+    protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->start_at->toDateString().' — '.(optional($this->end_at)->toDateString() ?? '...');
+        });
+    }
+
     /**
      * The attributes that should be cast.
-     *
-     * @return array
      */
     protected function casts(): array
     {
         return [
             'start_at' => 'datetime',
             'end_at' => 'datetime',
-            'wildcard' => WildcardSettingsData::class . ':default',
+            'wildcard' => WildcardSettingsData::class.':default',
         ];
     }
-
 }

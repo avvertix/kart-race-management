@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use Illuminate\Database\Migrations\Migration;
@@ -15,20 +17,18 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            
+
             $table->ulid()->index();
 
             $table->timestamps();
 
             $table->foreignIdFor(Championship::class)->index();
 
-
             // Category name
             $table->string('name', 250);
 
             // Category is enabled and selectable by participants
             $table->boolean('enabled')->default(true);
-
 
             // Short name for time keeping
             $table->string('short_name', 250)->nullable();

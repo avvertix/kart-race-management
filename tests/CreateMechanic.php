@@ -1,7 +1,8 @@
 <?php
 
-namespace Tests;
+declare(strict_types=1);
 
+namespace Tests;
 
 trait CreateMechanic
 {
@@ -12,5 +13,4 @@ trait CreateMechanic
             'mechanic_licence_number' => 'M0003',
         ];
     }
-
 }

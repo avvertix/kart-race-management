@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Championship;
@@ -27,11 +29,10 @@ class BibReservationFactory extends Factory
         ];
     }
 
-
     public function withLicence(): Factory
     {
         return $this->state(function (array $attributes) {
-            
+
             $licenceNumber = fake()->numerify();
 
             return [
@@ -41,7 +42,6 @@ class BibReservationFactory extends Factory
             ];
         });
     }
-
 
     public function expired(?Carbon $expirationTime = null): Factory
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
 use App\Models\DriverLicence;
@@ -10,8 +12,6 @@ trait CreateDriver
 {
     /**
      * Generate a driver request parameters
-     * 
-     * @return array
      */
     protected function generateValidDriver(array $exclude = []): array
     {
@@ -35,5 +35,4 @@ trait CreateDriver
             'driver_fiscal_code' => 'DRV-FC',
         ], $exclude);
     }
-
 }

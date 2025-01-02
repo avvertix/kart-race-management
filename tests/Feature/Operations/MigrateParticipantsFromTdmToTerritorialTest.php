@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Operations;
 
 use App\Models\Participant;
 use App\Models\Race;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class MigrateParticipantsFromTdmToTerritorialTest extends TestCase
@@ -24,7 +25,7 @@ class MigrateParticipantsFromTdmToTerritorialTest extends TestCase
                     'timekeeper_label' => '125 TAG SENIOR TERR',
                     'enabled' => false,
                 ],
-        
+
                 '125 SENIOR TDM SUPEROK' => [
                     'name' => '125 Senior Superok (TDM)',
                     'tires' => 'MG_SM',
@@ -41,23 +42,22 @@ class MigrateParticipantsFromTdmToTerritorialTest extends TestCase
             ],
         ]);
 
-        
         $race = Race::factory()
             ->create([
-                'event_start_at' => Carbon::parse("2023-02-28"),
-                'title' => 'Race title'
+                'event_start_at' => Carbon::parse('2023-02-28'),
+                'title' => 'Race title',
             ]);
-        
+
         $actual_participant = Participant::factory()->create([
             'category' => '125 SENIOR TDM SUPEROK',
             'race_id' => $race->getKey(),
             'championship_id' => $race->championship->getKey(),
         ]);
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                '2023_04_21_120712_move_participant_from_tdm_to_territorial',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            '2023_04_21_120712_move_participant_from_tdm_to_territorial',
+        ])
             ->assertSuccessful();
 
         $participant = $actual_participant->fresh();
@@ -83,7 +83,7 @@ class MigrateParticipantsFromTdmToTerritorialTest extends TestCase
                     'timekeeper_label' => '125 TAG SENIOR TERR',
                     'enabled' => false,
                 ],
-        
+
                 '125 SENIOR TDM SUPEROK' => [
                     'name' => '125 Senior Superok (TDM)',
                     'tires' => 'MG_SM',
@@ -100,23 +100,22 @@ class MigrateParticipantsFromTdmToTerritorialTest extends TestCase
             ],
         ]);
 
-        
         $race = Race::factory()
             ->create([
-                'event_start_at' => Carbon::parse("2023-02-28"),
-                'title' => 'Race title'
+                'event_start_at' => Carbon::parse('2023-02-28'),
+                'title' => 'Race title',
             ]);
-        
+
         $actual_participant = Participant::factory()->create([
             'category' => '125 SENIOR TERR',
             'race_id' => $race->getKey(),
             'championship_id' => $race->championship->getKey(),
         ]);
 
-        $this->artisan("operations:process", [
-                '--test' => true,
-                '2023_04_21_120712_move_participant_from_tdm_to_territorial',
-            ])
+        $this->artisan('operations:process', [
+            '--test' => true,
+            '2023_04_21_120712_move_participant_from_tdm_to_territorial',
+        ])
             ->assertSuccessful();
 
         $participant = $actual_participant->fresh();

@@ -1,38 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions;
 
 use App\Models\Category;
-use App\Models\Race;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use App\Models\Sex;
+use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Models\Participant;
-use App\Models\CompetitorLicence;
+use App\Models\Race;
+use App\Models\Sex;
+use App\Models\User;
 use App\Validation\ParticipantValidationRules;
 use Illuminate\Contracts\Cache\LockTimeoutException;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class UpdateParticipantRegistration
 {
-
     use ParticipantValidationRules;
 
     /**
      * Validate and create a new race participant.
-     *
-     * @param  array  $input
-     * @return \App\Models\Participant
      */
     public function __invoke(Race $race, Participant $participant, array $input, ?User $user = null): Participant
     {
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
-            ...$this->getCategoryValidationRules((int)$race->championship_id),
+            ...$this->getCategoryValidationRules((int) $race->championship_id),
             ...$this->getDriverValidationRules(),
             ...$this->getCompetitorValidationRules(),
             ...$this->getMechanicValidationRules(),
@@ -47,7 +44,7 @@ class UpdateParticipantRegistration
 
             $licenceHash = hash('sha512', $validatedInput['driver_licence_number']);
 
-            $updatedParticipant = Cache::lock("participant:{$validatedInput['bib']}", 10)->block(5, function() use ($validatedInput, $participant, $category, $licenceHash){
+            $updatedParticipant = Cache::lock("participant:{$validatedInput['bib']}", 10)->block(5, function () use ($validatedInput, $participant, $category, $licenceHash) {
 
                 $validatedBib = Validator::make($validatedInput, [
                     'bib' => [
@@ -59,20 +56,18 @@ class UpdateParticipantRegistration
                                 ->where('driver_licence', '!=', $licenceHash)),
                     ],
                 ])
-                ->after(function($validator) use ($participant, $validatedInput, $licenceHash) {
-                    $validated = $validator->validated();
+                    ->after(function ($validator) use ($participant, $validatedInput, $licenceHash) {
+                        $validated = $validator->validated();
 
-                    $this->ensureBibNotReservedByOtherDriver($validator, $participant->race->championship_id, [
-                        'driver_first_name' => $validatedInput['driver_first_name'],
-                        'driver_last_name' => $validatedInput['driver_last_name'],
-                        'bib' => $validatedInput['bib'],
-                        'driver_licence_number' => $licenceHash,
-                    ]);
+                        $this->ensureBibNotReservedByOtherDriver($validator, $participant->race->championship_id, [
+                            'driver_first_name' => $validatedInput['driver_first_name'],
+                            'driver_last_name' => $validatedInput['driver_last_name'],
+                            'bib' => $validatedInput['bib'],
+                            'driver_licence_number' => $licenceHash,
+                        ]);
 
-                })
-                ->validate();
-
-                
+                    })
+                    ->validate();
 
                 $participant->update([
                     'bib' => $validatedInput['bib'],
@@ -96,7 +91,7 @@ class UpdateParticipantRegistration
                         'birth_date' => $validatedInput['driver_birth_date'],
                         'birth_place' => $validatedInput['driver_birth_place'],
                         'medical_certificate_expiration_date' => $validatedInput['driver_medical_certificate_expiration_date'] ?? null,
-                        'residence_address' =>  $this->processAddressInput($validatedInput, 'driver_residence'),
+                        'residence_address' => $this->processAddressInput($validatedInput, 'driver_residence'),
                         'sex' => $validatedInput['driver_sex'] ?? Sex::UNSPECIFIED,
                     ],
                     'competitor' => isset($validatedInput['competitor_licence_number']) ? [
@@ -119,21 +114,20 @@ class UpdateParticipantRegistration
                     ] : null,
                     'vehicles' => $this->processVehicle($validatedInput),
                 ]);
-                
+
                 return $participant;
             });
 
-            if($originalDriverEmail !== $updatedParticipant->driver['email']){
+            if ($originalDriverEmail !== $updatedParticipant->driver['email']) {
                 $updatedParticipant->sendConfirmParticipantNotification();
             }
 
             return $updatedParticipant;
-        
+
         } catch (LockTimeoutException $th) {
             throw ValidationException::withMessages([
                 'bib' => __('The race number has already been taken.'),
             ]);
         }
     }
-    
 }

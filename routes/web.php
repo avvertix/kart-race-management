@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\BibReservationController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
@@ -27,10 +29,7 @@ use App\Http\Controllers\RaceParticipantController;
 use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
-use App\Http\Controllers\SaveParticipantSignatureController;
-use App\Http\Controllers\ShowParticipantSignatureFormController;
 use App\Http\Controllers\SwitchLanguageController;
-use App\Models\CommunicationMessage;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,7 +48,7 @@ Route::get('/', ListRacesWithOpenRegistrationController::class)->name('welcome')
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified'
+    'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -59,10 +58,10 @@ Route::middleware([
 // Championships and Races management
 
 Route::middleware([
-        'auth:sanctum',
-        config('jetstream.auth_session'),
-        'verified'
-    ])
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])
     ->prefix('m')
     ->group(function () {
 
@@ -71,45 +70,45 @@ Route::middleware([
         Route::resource('races', RaceController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
-        
+
         Route::post('championships/{championship}/races/import', [RaceImportController::class, 'store'])->name('championships.races.import.store');
 
         Route::get('championships/{championship}/banner', [ChampionshipBannerController::class, 'index'])
             ->middleware('cache.headers:public;max_age=3600')
             ->name('championships.banner.index');
-        
+
         Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
 
         Route::delete('championships/{championship}/banner', [ChampionshipBannerController::class, 'destroy'])->name('championships.banner.destroy');
-        
+
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
-        
+
         Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
-        
+
         Route::resource('championships.bonuses', ChampionshipBonusController::class)->shallow()->except(['destroy']);
 
         Route::resource('championships.categories', ChampionshipCategoryController::class)->shallow()->except(['destroy']);
-        
+
         Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);
-        
+
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
-        
+
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
-        
+
         Route::resource('orbits-backups', OrbitsBackupController::class)->except(['create', 'edit', 'update']);
-        
+
         Route::get('races/{race}/participants/print', PrintRaceParticipantsController::class)->name('races.participants.print');
-        
+
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
-        
+
         Route::resource('participants.tires', ParticipantTiresController::class)->shallow()->only(['index', 'create', 'store', 'edit', 'update']);
-        
+
         Route::get('races/{race}/transponders', RaceTranspondersController::class)->name('races.transponders');
-        
+
         Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->except(['show']);
-        
+
         Route::get('races/{race}/export-participants', ExportRaceParticipantsController::class)->name('races.export.participants');
-        
+
         Route::get('races/{race}/export-transponders', ExportRaceParticipantsForTimingController::class)->name('races.export.transponders');
 
         Route::resource('communications', CommunicationMessageController::class)->except(['create', 'show']);
@@ -136,7 +135,6 @@ Route::get('payment-verification/{payment}', [ParticipantPaymentController::clas
 Route::get('confirm-participation', ConfirmParticipantController::class)
     ->name('participant.sign.create')
     ->middleware('signed');
-
 
 Route::get('tires-verification/{registration}', [ParticipantTireVerificationController::class, 'show'])
     ->name('tires-verification.show');

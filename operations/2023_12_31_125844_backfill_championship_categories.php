@@ -1,7 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
-use App\Models\ChampionshipTire;
 use Illuminate\Support\Facades\Storage;
 use TimoKoerber\LaravelOneTimeOperations\OneTimeOperation;
 
@@ -30,7 +31,7 @@ return new class extends OneTimeOperation
 
         $categories = collect(config('categories.default'))
             ->merge(json_decode(Storage::disk(config('categories.disk'))->get(config('categories.file')) ?? '{}', true))
-            ->map(function($value, $key){
+            ->map(function ($value, $key) {
                 return [
                     'code' => $key,
                     ...$value,
@@ -38,19 +39,19 @@ return new class extends OneTimeOperation
                 ];
             })->filter();
 
-        if($categories->isEmpty()){
+        if ($categories->isEmpty()) {
             return;
         }
 
         Championship::query()
             ->has('tires')
             ->doesntHave('categories')
-            ->each(function($championship) use ($categories){
+            ->each(function ($championship) use ($categories) {
 
-                $categoriesToCreate = $categories->map(function($value) use ($championship){
+                $categoriesToCreate = $categories->map(function ($value) use ($championship) {
                     $tire = $championship->tires()->whereCode($value['tires'])->first();
-                    
-                    if(is_null($tire)){
+
+                    if (is_null($tire)) {
                         return null;
                     }
 
@@ -60,8 +61,9 @@ return new class extends OneTimeOperation
                     ];
                 })->filter();
 
-                if($categoriesToCreate->count() !== $categories->count()){
+                if ($categoriesToCreate->count() !== $categories->count()) {
                     logs()->warning("Categories not imported in championship [{$championship->getKey()}]. Missing tires.");
+
                     return;
                 }
 

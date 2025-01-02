@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exports;
 
 use App\Models\CompetitorLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
-use App\User;
 use Vitorccs\LaravelCsv\Concerns\Exportable;
 use Vitorccs\LaravelCsv\Concerns\FromQuery;
 use Vitorccs\LaravelCsv\Concerns\WithHeadings;
@@ -18,11 +19,8 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
 
     public function __construct(
         private Race $race
-        )
-    {
-        
-    }
-    
+    ) {}
+
     public function query()
     {
         return $this->race
@@ -70,7 +68,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
     }
 
     /**
-     * @param \App\Models\Participant $participant
+     * @param  Participant  $participant
      */
     public function map($participant): array
     {
@@ -114,13 +112,12 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             $participant->mechanic['name'] ?? null,
             $participant->mechanic['licence_number'] ?? null,
 
-            $vehicle['chassis_manufacturer']  ?? null,
-            $vehicle['engine_manufacturer']  ?? null,
-            $vehicle['engine_model']  ?? null,
-            $vehicle['oil_manufacturer']  ?? null,
-            $vehicle['oil_type']  ?? null,
-            $vehicle['oil_percentage']  ?? null,
+            $vehicle['chassis_manufacturer'] ?? null,
+            $vehicle['engine_manufacturer'] ?? null,
+            $vehicle['engine_model'] ?? null,
+            $vehicle['oil_manufacturer'] ?? null,
+            $vehicle['oil_type'] ?? null,
+            $vehicle['oil_percentage'] ?? null,
         ];
     }
 }
-

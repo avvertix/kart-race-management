@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Category;
@@ -8,7 +10,6 @@ use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -87,7 +88,7 @@ class ChampionshipCategoryControllerTest extends TestCase
 
         $response->assertViewHas('tires', $championship->tires);
     }
-    
+
     public function test_category_created_without_tire(): void
     {
         $user = User::factory()->organizer()->create();
@@ -119,7 +120,7 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertTrue($category->enabled);
         $this->assertNull($category->tire);
     }
-    
+
     public function test_category_created(): void
     {
         $user = User::factory()->organizer()->create();
@@ -153,7 +154,7 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertTrue($category->enabled);
         $this->assertTrue($category->tire->is($championship->tires()->first()));
     }
-    
+
     public function test_category_can_use_same_name_within_different_championships(): void
     {
         $user = User::factory()->organizer()->create();
@@ -196,7 +197,7 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertTrue($category->enabled);
         $this->assertTrue($category->tire->is($championship->tires()->first()));
     }
-    
+
     public function test_category_not_created_when_tire_not_in_championship(): void
     {
         $user = User::factory()->organizer()->create();
@@ -224,7 +225,7 @@ class ChampionshipCategoryControllerTest extends TestCase
 
         $this->assertNull($category);
     }
-    
+
     public function test_category_not_created_when_name_above_maximum_length(): void
     {
         $user = User::factory()->organizer()->create();
@@ -236,7 +237,7 @@ class ChampionshipCategoryControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.categories.create', $championship))
             ->post(route('championships.categories.store', $championship), [
-                'name' => 'Category name ' . Str::random(250),
+                'name' => 'Category name '.Str::random(250),
                 'short_name' => 'Alternate name',
                 'enabled' => true,
             ]);
@@ -249,7 +250,6 @@ class ChampionshipCategoryControllerTest extends TestCase
 
         $this->assertNull($category);
     }
-
 
     public function test_category_edit_form_shown(): void
     {
@@ -269,7 +269,7 @@ class ChampionshipCategoryControllerTest extends TestCase
         $response->assertViewHas('category', $category);
 
         $response->assertViewHas('championship', $category->championship);
-        
+
         $response->assertViewHas('tires', $category->championship->tires);
     }
 

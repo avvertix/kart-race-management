@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BibReservation extends Model
 {
@@ -33,7 +34,6 @@ class BibReservation extends Model
         return $this->belongsTo(Championship::class);
     }
 
-
     public function scopeInChamphionship($query, Championship|int $championship)
     {
         return $query->where('championship_id', is_int($championship) ? $championship : $championship->getKey());
@@ -48,20 +48,20 @@ class BibReservation extends Model
     {
         return $query->licenceHash(hash('sha512', $licence));
     }
-    
+
     public function scopeRaceNumber($query, $bib)
     {
         return $query->where('bib', $bib);
     }
-    
+
     public function scopeNotExpired($query)
     {
-        return $query->where(function($subQuery){
+        return $query->where(function ($subQuery) {
             return $subQuery->whereNull('reservation_expires_at')
                 ->orWhere('reservation_expires_at', '>', now());
         });
     }
-    
+
     public function scopeWithoutLicence($query)
     {
         return $query->whereNull('driver_licence_hash');
@@ -69,7 +69,7 @@ class BibReservation extends Model
 
     public function isExpired(): bool
     {
-        if(!$this->reservation_expires_at){
+        if (! $this->reservation_expires_at) {
             return false;
         }
 
@@ -78,31 +78,30 @@ class BibReservation extends Model
 
     public function isEnforcedUsingLicence(): bool
     {
-        return !is_null($this->driver_licence_hash);
+        return ! is_null($this->driver_licence_hash);
     }
 
     public function isReservedToLicenceHash($hash): bool
     {
-        if(!$this->driver_licence_hash){
+        if (! $this->driver_licence_hash) {
             return false;
         }
 
         return $this->driver_licence_hash === $hash;
     }
-    
+
     public function isReservedToDriver(string|array $driver): bool
     {
-        
+
         $reservationDriver = str($this->driver)->split('/[\s,]+/');
 
         $requestedDriver = is_string($driver) ? str($this->driver)->split('/[\s,]+/') : collect($driver);
 
         return $reservationDriver->diff($requestedDriver)->isEmpty();
     }
+
     /**
      * The attributes that should be cast.
-     *
-     * @return array
      */
     protected function casts(): array
     {
@@ -112,5 +111,4 @@ class BibReservation extends Model
             'reservation_expires_at' => 'datetime',
         ];
     }
-
 }

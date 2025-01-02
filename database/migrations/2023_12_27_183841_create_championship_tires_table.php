@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,19 +16,19 @@ return new class extends Migration
     {
         Schema::create('championship_tires', function (Blueprint $table) {
             $table->id();
-            
+
             $table->ulid()->index();
 
             $table->foreignIdFor(Championship::class)->index();
 
             $table->timestamps();
-            
+
             // Name of the tire set
             $table->string('name', 250);
 
             // Cost of a tire set in cents
             $table->unsignedInteger('price');
-            
+
             // Original key as in the previous configuration
             $table->string('code', 250)->nullable()->index();
 

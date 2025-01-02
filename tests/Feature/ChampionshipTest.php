@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Championship;
@@ -7,15 +9,12 @@ use App\Models\Race;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ChampionshipTest extends TestCase
 {
     use RefreshDatabase;
-
 
     public function test_championships_screen_can_be_rendered()
     {
@@ -54,7 +53,7 @@ class ChampionshipTest extends TestCase
         $this->travelBack();
 
         $response->assertRedirectToRoute('championships.index');
-        
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', 'Kartsport 2023 created.');
@@ -67,13 +66,13 @@ class ChampionshipTest extends TestCase
         $this->assertEquals(Carbon::parse('2023-03-12'), $champ->start_at);
         $this->assertEquals(Carbon::parse('2023-12-02'), $champ->end_at);
     }
-    
+
     public function test_new_championship_title_can_be_generated()
     {
         $user = User::factory()->organizer()->create();
-        
+
         $this->travelTo(Carbon::parse('2023-03-05'));
-        
+
         $response = $this
             ->actingAs($user)
             ->from(route('championships.create'))
@@ -83,11 +82,11 @@ class ChampionshipTest extends TestCase
                 'title' => '',
                 'description' => 'a little description',
             ]);
-        
+
         $this->travelBack();
-    
+
         $response->assertRedirectToRoute('championships.index');
-    
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', '2023 Championship created.');
@@ -153,7 +152,7 @@ class ChampionshipTest extends TestCase
         $this->travelBack();
 
         $response->assertRedirectToRoute('championships.show', $existing);
-        
+
         $response->assertSessionHasNoErrors();
 
         $response->assertSessionHas('flash.banner', 'Kartsport changed 2023 updated.');
@@ -186,7 +185,7 @@ class ChampionshipTest extends TestCase
             ]);
 
         $response->assertRedirectToRoute('championships.edit', $existing);
-        
+
         $response->assertSessionHasErrors('races', __('Championship contains races. Update is allowed only when no races are present.'));
 
         $champ = Championship::first();

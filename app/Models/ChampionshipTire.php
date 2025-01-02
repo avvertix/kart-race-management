@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -12,9 +14,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class ChampionshipTire extends Model
 {
     use HasFactory;
-
     use HasUlids;
-
     use LogsActivity;
 
     protected $hidden = [
@@ -56,7 +56,7 @@ class ChampionshipTire extends Model
     {
         return $this->belongsTo(Championship::class);
     }
-    
+
     /**
      * The category that uses the tire
      */
@@ -64,7 +64,7 @@ class ChampionshipTire extends Model
     {
         return $this->hasMany(Category::class);
     }
-    
+
     public function participants()
     {
         return $this->hasManyThrough(Participant::class, Category::class);
@@ -85,6 +85,7 @@ class ChampionshipTire extends Model
     {
         return Number::currency($this->price / 100, in: 'EUR');
     }
+
     protected function casts(): array
     {
         return [

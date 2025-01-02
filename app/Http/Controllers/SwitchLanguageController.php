@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SwitchLanguageController extends Controller
@@ -10,7 +11,6 @@ class SwitchLanguageController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function __invoke(Request $request)
@@ -21,7 +21,7 @@ class SwitchLanguageController extends Controller
         ]);
 
         $lang = $validated['lang'];
-        
+
         session()->put('language', $lang);
 
         return redirect()

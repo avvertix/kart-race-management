@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
@@ -7,7 +9,6 @@ use App\Models\Race;
 use App\Models\RaceType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class RaceInChampionshipController extends Controller
@@ -50,7 +51,6 @@ class RaceInChampionshipController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Championship $championship, Request $request)
@@ -58,7 +58,7 @@ class RaceInChampionshipController extends Controller
         $validated = $this->validate($request, [
             'start' => 'required|date|after:today',
             'end' => 'nullable|date|after_or_equal:start',
-            'title' => 'required|string|max:250|unique:' . Race::class .',title',
+            'title' => 'required|string|max:250|unique:'.Race::class.',title',
             'description' => 'nullable|string|max:1000',
             'track' => 'required|string|max:250',
             'hidden' => 'nullable|in:true,false',
@@ -76,7 +76,7 @@ class RaceInChampionshipController extends Controller
 
         $utc_start_date = $start_date->setTimezone(config('app.timezone'));
         $utc_end_date = $end_date->setTimezone(config('app.timezone'));
-        
+
         $utc_registration_opens_at = ($validated['registration_opens_at'] ?? false) ? Carbon::parse($validated['registration_opens_at'], config('races.timezone'))->setTimezone(config('app.timezone')) : null;
         $utc_registration_closes_at = ($validated['registration_closes_at'] ?? false) ? Carbon::parse($validated['registration_closes_at'], config('races.timezone'))->setTimezone(config('app.timezone')) : null;
 
@@ -95,9 +95,7 @@ class RaceInChampionshipController extends Controller
 
         return to_route('championships.races.index', $championship)
             ->with('flash.banner', __(':race created.', [
-                'race' => $race->title
+                'race' => $race->title,
             ]));
     }
-
-    
 }

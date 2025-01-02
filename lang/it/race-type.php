@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -25,5 +27,5 @@ return [
         'NATIONAL' => 'La gara è anche parte di un campionato nazionale',
         'INTERNATIONAL' => 'La gara è anche parte di un campionato internazionale',
     ],
-    
+
 ];

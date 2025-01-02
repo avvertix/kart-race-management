@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -21,8 +23,6 @@ class Handler extends ExceptionHandler
 
     /**
      * Register the exception handling callbacks for the application.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -37,7 +37,7 @@ class Handler extends ExceptionHandler
         $this->renderable(function (InvalidParticipantSignatureException $e) {
             return response()->view('errors.participant-link-invalid', [], 403);
         });
-        
+
         $this->renderable(function (InvalidParticipantTiresSignatureException $e) {
             return response()->view('errors.participant-tires-link-invalid', [], 401);
         });

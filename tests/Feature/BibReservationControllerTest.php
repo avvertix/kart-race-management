@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\BibReservation;
@@ -9,7 +11,6 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BibReservationControllerTest extends TestCase
@@ -85,10 +86,10 @@ class BibReservationControllerTest extends TestCase
         $response->assertViewHas('championship', $championship);
 
         $response->assertSee(__('Race Number'));
-        
+
         $response->assertSee(__('Licence Number'));
     }
-    
+
     public function test_bib_reservation_created(): void
     {
         $user = User::factory()->organizer()->create();
@@ -100,7 +101,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.bib-reservations.create', $championship))
             ->post(route('championships.bib-reservations.store', $championship), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -118,14 +119,14 @@ class BibReservationControllerTest extends TestCase
 
         $this->assertTrue($reservation->championship->is($championship));
 
-        $this->assertEquals("100", $reservation->bib);
+        $this->assertEquals('100', $reservation->bib);
         $this->assertEquals('Driver name', $reservation->driver);
         $this->assertEquals('driver@local.host', $reservation->contact_email);
         $this->assertEquals('LN1', $reservation->driver_licence);
         $this->assertEquals(hash('sha512', 'LN1'), $reservation->driver_licence_hash);
         $this->assertNull($reservation->reservation_expires_at);
     }
-    
+
     public function test_bib_reservation_created_when_bib_used_in_other_championship(): void
     {
         $user = User::factory()->organizer()->create();
@@ -142,7 +143,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.bib-reservations.create', $championship))
             ->post(route('championships.bib-reservations.store', $championship), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -160,14 +161,14 @@ class BibReservationControllerTest extends TestCase
 
         $this->assertTrue($reservation->championship->is($championship));
 
-        $this->assertEquals("100", $reservation->bib);
+        $this->assertEquals('100', $reservation->bib);
         $this->assertEquals('Driver name', $reservation->driver);
         $this->assertEquals('driver@local.host', $reservation->contact_email);
         $this->assertEquals('LN1', $reservation->driver_licence);
         $this->assertEquals(hash('sha512', 'LN1'), $reservation->driver_licence_hash);
         $this->assertNull($reservation->reservation_expires_at);
     }
-    
+
     public function test_bib_reservation_created_without_driver_licence(): void
     {
         $user = User::factory()->organizer()->create();
@@ -179,7 +180,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.bib-reservations.create', $championship))
             ->post(route('championships.bib-reservations.store', $championship), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
             ]);
@@ -194,14 +195,14 @@ class BibReservationControllerTest extends TestCase
 
         $this->assertTrue($reservation->championship->is($championship));
 
-        $this->assertEquals("100", $reservation->bib);
+        $this->assertEquals('100', $reservation->bib);
         $this->assertEquals('Driver name', $reservation->driver);
         $this->assertEquals('driver@local.host', $reservation->contact_email);
         $this->assertNull($reservation->driver_licence);
         $this->assertNull($reservation->driver_licence_hash);
         $this->assertNull($reservation->reservation_expires_at);
     }
-    
+
     public function test_expiring_bib_reservation_created(): void
     {
         $user = User::factory()->organizer()->create();
@@ -213,7 +214,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.bib-reservations.create', $championship))
             ->post(route('championships.bib-reservations.store', $championship), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -231,7 +232,7 @@ class BibReservationControllerTest extends TestCase
 
         $this->assertTrue($reservation->championship->is($championship));
 
-        $this->assertEquals("100", $reservation->bib);
+        $this->assertEquals('100', $reservation->bib);
         $this->assertEquals('Driver name', $reservation->driver);
         $this->assertEquals('driver@local.host', $reservation->contact_email);
         $this->assertEquals('LN1', $reservation->driver_licence);
@@ -252,7 +253,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.bib-reservations.create', $championship))
             ->post(route('championships.bib-reservations.store', $championship), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -281,7 +282,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('championships.bib-reservations.create', $championship))
             ->post(route('championships.bib-reservations.store', $championship), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -362,7 +363,7 @@ class BibReservationControllerTest extends TestCase
 
         $reservation = BibReservation::factory()
             ->create([
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'driver_licence_hash' => hash('sha512', 'LN1'),
                 'driver_licence' => 'LN1',
@@ -372,7 +373,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('bib-reservations.edit', $reservation))
             ->put(route('bib-reservations.update', $reservation), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -388,21 +389,21 @@ class BibReservationControllerTest extends TestCase
 
         $this->assertInstanceOf(BibReservation::class, $updatedReservation);
 
-        $this->assertEquals("100", $updatedReservation->bib);
+        $this->assertEquals('100', $updatedReservation->bib);
         $this->assertEquals('Driver name', $updatedReservation->driver);
         $this->assertEquals('driver@local.host', $updatedReservation->contact_email);
         $this->assertEquals('LN1', $updatedReservation->driver_licence);
         $this->assertEquals(hash('sha512', 'LN1'), $updatedReservation->driver_licence_hash);
         $this->assertNull($updatedReservation->reservation_expires_at);
     }
-    
+
     public function test_bib_editable_when_not_yet_used(): void
     {
         $user = User::factory()->organizer()->create();
 
         $reservation = BibReservation::factory()
             ->create([
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
             ]);
 
@@ -410,7 +411,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('bib-reservations.edit', $reservation))
             ->put(route('bib-reservations.update', $reservation), [
-                'bib' => "101",
+                'bib' => '101',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -426,14 +427,14 @@ class BibReservationControllerTest extends TestCase
 
         $this->assertInstanceOf(BibReservation::class, $updatedReservation);
 
-        $this->assertEquals("101", $updatedReservation->bib);
+        $this->assertEquals('101', $updatedReservation->bib);
         $this->assertEquals('Driver name', $updatedReservation->driver);
         $this->assertEquals('driver@local.host', $updatedReservation->contact_email);
         $this->assertEquals('LN1', $updatedReservation->driver_licence);
         $this->assertEquals(hash('sha512', 'LN1'), $updatedReservation->driver_licence_hash);
         $this->assertNull($updatedReservation->reservation_expires_at);
     }
-    
+
     public function test_bib_not_changed_when_reservation_already_used_using_licence(): void
     {
         $user = User::factory()->organizer()->create();
@@ -452,18 +453,18 @@ class BibReservationControllerTest extends TestCase
         $reservation = BibReservation::factory()
             ->recycle($championship)
             ->create([
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
             ]);
 
-// l'idea è di prevenire che in validazione possa essere utilizzata una licenza assegnata ad un altro concorrente 
-// che potrebbe avere lo stesso pettorale o che potrebbe causare la modifica del pettorale
+        // l'idea è di prevenire che in validazione possa essere utilizzata una licenza assegnata ad un altro concorrente
+        // che potrebbe avere lo stesso pettorale o che potrebbe causare la modifica del pettorale
 
         $response = $this
             ->actingAs($user)
             ->from(route('bib-reservations.edit', $reservation))
             ->put(route('bib-reservations.update', $reservation), [
-                'bib' => "101",
+                'bib' => '101',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => 'LN1',
@@ -483,7 +484,7 @@ class BibReservationControllerTest extends TestCase
         $reservation = BibReservation::factory()
             ->withLicence()
             ->create([
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
             ]);
 
@@ -491,7 +492,7 @@ class BibReservationControllerTest extends TestCase
             ->actingAs($user)
             ->from(route('bib-reservations.edit', $reservation))
             ->put(route('bib-reservations.update', $reservation), [
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
                 'contact_email' => 'driver@local.host',
                 'driver_licence_number' => null,
@@ -503,7 +504,7 @@ class BibReservationControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['driver_licence_number' => __('Removing licence not allowed.')]);
     }
-    
+
     public function test_reservation_destroyed(): void
     {
         $user = User::factory()->organizer()->create();
@@ -511,7 +512,7 @@ class BibReservationControllerTest extends TestCase
         $reservation = BibReservation::factory()
             ->withLicence()
             ->create([
-                'bib' => "100",
+                'bib' => '100',
                 'driver' => 'Driver name',
             ]);
 
@@ -528,5 +529,4 @@ class BibReservationControllerTest extends TestCase
 
         $this->assertNull($reservation->fresh());
     }
-
 }

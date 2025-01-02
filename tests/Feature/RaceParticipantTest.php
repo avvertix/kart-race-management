@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Championship;
-use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
@@ -12,10 +13,8 @@ use App\Models\Sex;
 use App\Models\User;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Queue;
 use Tests\CreateCompetitor;
 use Tests\CreateDriver;
 use Tests\CreateMechanic;
@@ -24,21 +23,20 @@ use Tests\TestCase;
 
 class RaceParticipantTest extends TestCase
 {
-    use RefreshDatabase;
-    use CreateDriver;
     use CreateCompetitor;
+    use CreateDriver;
     use CreateMechanic;
     use CreateVehicle;
+    use RefreshDatabase;
 
-    
     public function test_registration_form_loads()
     {
         $user = User::factory()->racemanager()->create();
-        
+
         $race = Race::factory()->create();
-        
+
         $category = Category::factory()->recycle($race->championship)->create();
-        
+
         $response = $this
             ->actingAs($user)
             ->get(route('races.participants.create', $race));
@@ -46,17 +44,17 @@ class RaceParticipantTest extends TestCase
         $response->assertOk();
 
         $response->assertViewHas('race', $race);
-        
+
         $response->assertViewHas('categories');
 
     }
-    
+
     public function test_template_participant_included_when_race_within_same_championship()
     {
         $user = User::factory()->racemanager()->create();
-        
+
         $race = Race::factory()->create();
-        
+
         $category = Category::factory()->recycle($race->championship)->create();
 
         $existingParticipant = Participant::factory()->create([
@@ -64,27 +62,27 @@ class RaceParticipantTest extends TestCase
             'championship_id' => $race->championship_id,
             'race_id' => $race->getKey(),
         ]);
-        
+
         $response = $this
             ->actingAs($user)
-            ->get(route('races.participants.create', $race).'?from=' . $existingParticipant->uuid);
+            ->get(route('races.participants.create', $race).'?from='.$existingParticipant->uuid);
 
         $response->assertOk();
 
         $response->assertViewHas('race', $race);
-        
+
         $response->assertViewHas('categories');
 
         $response->assertViewHas('participant', $existingParticipant);
 
     }
-    
+
     public function test_template_participant_ignored_if_from_other_championship()
-    {        
+    {
         $user = User::factory()->racemanager()->create();
-        
+
         $race = Race::factory()->create();
-        
+
         $otherRace = Race::factory()->create();
 
         $category = Category::factory()->recycle($race->championship)->create();
@@ -94,7 +92,7 @@ class RaceParticipantTest extends TestCase
             'championship_id' => $otherRace->championship_id,
             'race_id' => $otherRace->getKey(),
         ]);
-        
+
         $response = $this
             ->actingAs($user)
             ->get(route('races.participants.create', ['race' => $race, 'from' => $existingParticipant->uuid]));
@@ -102,7 +100,7 @@ class RaceParticipantTest extends TestCase
         $response->assertOk();
 
         $response->assertViewHas('race', $race);
-        
+
         $response->assertViewHas('categories');
 
         $response->assertViewHas('participant', null);
@@ -114,9 +112,9 @@ class RaceParticipantTest extends TestCase
         Notification::fake();
 
         $user = User::factory()->racemanager()->create();
-        
+
         $race = Race::factory()->create();
-        
+
         $category = Category::factory()->recycle($race->championship)->create();
 
         $response = $this->actingAs($user)
@@ -141,53 +139,53 @@ class RaceParticipantTest extends TestCase
         $participant = Participant::first();
 
         $this->assertInstanceOf(Participant::class, $participant);
-        
+
         $this->assertEquals(100, $participant->bib);
         $this->assertEquals($category->ulid, $participant->category);
         $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
 
-        $this->assertEquals([ 
-            "first_name" => "John",
-            "last_name" => "Racer",
-            "licence_type" => 10,
-            "licence_number" => "D0001",
-            "licence_renewed_at" => null,
-            "nationality" => "Italy",
-            "email" => "john@racer.local",
-            "phone" => "555555555",
-            "birth_date" => "1999-11-11",
-            "birth_place" => "Milan",
-            "medical_certificate_expiration_date" => today()->addYear()->toDateString(),
-            "residence_address" => [
+        $this->assertEquals([
+            'first_name' => 'John',
+            'last_name' => 'Racer',
+            'licence_type' => 10,
+            'licence_number' => 'D0001',
+            'licence_renewed_at' => null,
+            'nationality' => 'Italy',
+            'email' => 'john@racer.local',
+            'phone' => '555555555',
+            'birth_date' => '1999-11-11',
+            'birth_place' => 'Milan',
+            'medical_certificate_expiration_date' => today()->addYear()->toDateString(),
+            'residence_address' => [
                 'address' => 'via dei Platani, 40',
                 'city' => 'Milan',
                 'province' => 'Milan',
                 'postal_code' => '20146',
             ],
-            "sex" => Sex::MALE->value,
-            "fiscal_code" => "DRV-FC",
+            'sex' => Sex::MALE->value,
+            'fiscal_code' => 'DRV-FC',
         ], $participant->driver);
 
-        $this->assertEquals([ 
-            "first_name" => "Parent",
-            "last_name" => "Racer",
-            "licence_type" => 10,
-            "licence_number" => "C0002",
-            "licence_renewed_at" => null,
-            "nationality" => "Italy",
-            "email" => "parent@racer.local",
-            "phone" => "54444444",
-            "birth_date" => "1979-11-11",
-            "birth_place" => "Milan",
-            "residence_address" => [
+        $this->assertEquals([
+            'first_name' => 'Parent',
+            'last_name' => 'Racer',
+            'licence_type' => 10,
+            'licence_number' => 'C0002',
+            'licence_renewed_at' => null,
+            'nationality' => 'Italy',
+            'email' => 'parent@racer.local',
+            'phone' => '54444444',
+            'birth_date' => '1979-11-11',
+            'birth_place' => 'Milan',
+            'residence_address' => [
                 'address' => 'via dei Platani, 40',
                 'city' => 'Milan',
                 'province' => 'Milan',
                 'postal_code' => '20146',
             ],
-            "fiscal_code" => "CMPT-FC",
+            'fiscal_code' => 'CMPT-FC',
         ], $participant->competitor);
 
         $this->assertEquals('Mechanic Racer', $participant->mechanic['name']);
@@ -204,21 +202,22 @@ class RaceParticipantTest extends TestCase
 
         Notification::assertCount(2);
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'driver';
         });
 
-        Notification::assertSentTo($participant, function(ConfirmParticipantRegistration $notification, $channels){
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
             return $notification->target === 'competitor';
         });
 
     }
+
     public function test_participant_without_competitor_can_be_registered()
     {
         $user = User::factory()->racemanager()->create();
-        
+
         $race = Race::factory()->create();
-        
+
         $category = Category::factory()->recycle($race->championship)->create();
 
         $response = $this->actingAs($user)
@@ -233,18 +232,18 @@ class RaceParticipantTest extends TestCase
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
 
-                "competitor_first_name" => null,
-                "competitor_last_name" => null,
-                "competitor_licence_number" => null,
-                "competitor_nationality" => null,
-                "competitor_email" => null,
-                "competitor_phone" => null,
-                "competitor_birth_date" => null,
-                "competitor_birth_place" => null,
-                "competitor_residence_address" => null,
-                "competitor_residence_postal_code" => null,
-                "competitor_residence_city" => null,
-                "competitor_residence_province" => null,
+                'competitor_first_name' => null,
+                'competitor_last_name' => null,
+                'competitor_licence_number' => null,
+                'competitor_nationality' => null,
+                'competitor_email' => null,
+                'competitor_phone' => null,
+                'competitor_birth_date' => null,
+                'competitor_birth_place' => null,
+                'competitor_residence_address' => null,
+                'competitor_residence_postal_code' => null,
+                'competitor_residence_city' => null,
+                'competitor_residence_province' => null,
 
                 'consent_privacy' => true,
 
@@ -259,33 +258,33 @@ class RaceParticipantTest extends TestCase
         $participant = Participant::first();
 
         $this->assertInstanceOf(Participant::class, $participant);
-        
+
         $this->assertEquals(100, $participant->bib);
         $this->assertEquals($category->ulid, $participant->category);
         $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
 
-        $this->assertEquals([ 
-            "first_name" => "John",
-            "last_name" => "Racer",
-            "licence_type" => 10,
-            "licence_number" => "D0001",
-            "licence_renewed_at" => null,
-            "nationality" => "Italy",
-            "email" => "john@racer.local",
-            "phone" => "555555555",
-            "birth_date" => "1999-11-11",
-            "birth_place" => "Milan",
-            "medical_certificate_expiration_date" => today()->addYear()->toDateString(),
-            "residence_address" => [
+        $this->assertEquals([
+            'first_name' => 'John',
+            'last_name' => 'Racer',
+            'licence_type' => 10,
+            'licence_number' => 'D0001',
+            'licence_renewed_at' => null,
+            'nationality' => 'Italy',
+            'email' => 'john@racer.local',
+            'phone' => '555555555',
+            'birth_date' => '1999-11-11',
+            'birth_place' => 'Milan',
+            'medical_certificate_expiration_date' => today()->addYear()->toDateString(),
+            'residence_address' => [
                 'address' => 'via dei Platani, 40',
                 'city' => 'Milan',
                 'province' => 'Milan',
                 'postal_code' => '20146',
             ],
-            "sex" => Sex::MALE->value,
-            "fiscal_code" => "DRV-FC",
+            'sex' => Sex::MALE->value,
+            'fiscal_code' => 'DRV-FC',
         ], $participant->driver);
 
         $this->assertNull($participant->competitor);
@@ -309,9 +308,9 @@ class RaceParticipantTest extends TestCase
     public function test_participant_cannot_register_using_existing_bib_in_same_race()
     {
         $user = User::factory()->racemanager()->create();
-        
+
         $race = Race::factory()->create();
-        
+
         $existingParticipant = Participant::factory()
             ->recycle($race->championship)
             ->category()
@@ -344,9 +343,9 @@ class RaceParticipantTest extends TestCase
     public function test_participant_cannot_register_using_same_licence_twice_in_race()
     {
         $user = User::factory()->racemanager()->create();
-        
+
         $race = Race::factory()->create();
-        
+
         $existingParticipant = Participant::factory()
             ->recycle($race->championship)
             ->category()
@@ -356,7 +355,7 @@ class RaceParticipantTest extends TestCase
                 'driver_licence' => hash('sha512', 'D0001'),
                 'driver' => [
                     'licence_number' => 'D0001',
-                ]
+                ],
             ]);
 
         $response = $this->actingAs($user)
@@ -371,7 +370,7 @@ class RaceParticipantTest extends TestCase
             ]);
 
         $response->assertRedirectToRoute('races.participants.create', $race);
-        
+
         $response->assertSessionHasErrors('driver_licence_number');
 
         $this->assertEquals(1, Participant::where('bib', 100)->count());
@@ -388,7 +387,7 @@ class RaceParticipantTest extends TestCase
 
         $category = Category::factory()->recycle($championship)->create();
 
-        list($race, $otherRace) = $championship->races;
+        [$race, $otherRace] = $championship->races;
 
         $existingParticipant = Participant::factory()->create([
             'bib' => 100,
@@ -425,7 +424,7 @@ class RaceParticipantTest extends TestCase
 
         $category = Category::factory()->recycle($race->championship)->create();
 
-        $response =Cache::lock('participant:100', 10)->get(function() use ($race, $user, $category){
+        $response = Cache::lock('participant:100', 10)->get(function () use ($race, $user, $category) {
 
             return $this->actingAs($user)
                 ->from(route('races.participants.create', $race))
@@ -441,7 +440,7 @@ class RaceParticipantTest extends TestCase
                 ]);
 
         });
-            
+
         $response->assertRedirectToRoute('races.participants.create', $race);
 
         $response->assertSessionHasErrors('bib');
@@ -460,7 +459,7 @@ class RaceParticipantTest extends TestCase
 
         $category = Category::factory()->recycle($championship)->create();
 
-        list($pastRace, $race) = $championship->races;
+        [$pastRace, $race] = $championship->races;
 
         $existingParticipant = Participant::factory()->category($category)->create([
             'bib' => 100,
@@ -469,7 +468,7 @@ class RaceParticipantTest extends TestCase
             'driver_licence' => hash('sha512', 'D0001'),
             'driver' => [
                 'licence_number' => 'D0001',
-            ]
+            ],
         ]);
 
         $response = $this->actingAs($user)
@@ -493,7 +492,7 @@ class RaceParticipantTest extends TestCase
         $participant = $race->participants()->first();
 
         $this->assertInstanceOf(Participant::class, $participant);
-        
+
         $this->assertEquals(100, $participant->bib);
         $this->assertEquals($category->ulid, $participant->category);
         $this->assertEquals('John', $participant->first_name);
@@ -512,7 +511,7 @@ class RaceParticipantTest extends TestCase
 
         $category = Category::factory()->recycle($championship)->create();
 
-        list($pastRace, $race) = $championship->races;
+        [$pastRace, $race] = $championship->races;
 
         $existingParticipant = Participant::factory()->category($category)->create([
             'bib' => 100,
@@ -521,7 +520,7 @@ class RaceParticipantTest extends TestCase
             'driver_licence' => hash('sha512', 'D0001'),
             'driver' => [
                 'licence_number' => 'D0001',
-            ]
+            ],
         ]);
 
         $response = $this->actingAs($user)
@@ -544,7 +543,7 @@ class RaceParticipantTest extends TestCase
         $participant = $race->participants()->first();
 
         $this->assertInstanceOf(Participant::class, $participant);
-        
+
         $this->assertEquals(100, $participant->bib);
         $this->assertEquals($category->ulid, $participant->category);
         $this->assertTrue($participant->racingCategory->is($category));

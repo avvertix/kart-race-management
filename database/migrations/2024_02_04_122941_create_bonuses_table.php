@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,12 +22,12 @@ return new class extends Migration
             $table->foreignIdFor(Championship::class)->index();
 
             $table->string('driver_licence_hash', 250)->index();
-            
+
             $table->mediumText('driver_licence'); // an encrypted string
-            
+
             $table->string('driver'); // Driver name
 
-            $table->string('contact_email')->nullable(); 
+            $table->string('contact_email')->nullable();
 
             $table->unsignedTinyInteger('bonus_type');
 

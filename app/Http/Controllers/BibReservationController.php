@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\BibReservation;
@@ -57,7 +59,7 @@ class BibReservationController extends Controller
                 Rule::unique((new BibReservation())->getTable(), 'bib')->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
                 }),
-                        
+
                 Rule::unique('participants', 'bib')
                     ->where(fn ($query) => $query
                         ->where('championship_id', $championship->getKey())),
@@ -68,7 +70,7 @@ class BibReservationController extends Controller
                 'max:250',
                 Rule::unique((new BibReservation())->getTable(), 'driver')->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
-                })
+                }),
             ],
 
             'driver_licence_number' => ['nullable', 'string', 'max:250'],
@@ -81,13 +83,13 @@ class BibReservationController extends Controller
         ]);
 
         $licenceHash = ($validated['driver_licence_number'] ?? null) ? hash('sha512', $validated['driver_licence_number']) : null;
-        
+
         // Prevent to use a bib different than what already assigned to the same driver licence
 
-        if(!is_null($licenceHash)){
+        if (! is_null($licenceHash)) {
             $part = Participant::where('driver_licence', $licenceHash)->where('championship_id', $championship->getKey())->first();
 
-            if($part && $part->bib != $validated['bib']){
+            if ($part && $part->bib !== $validated['bib']) {
                 throw ValidationException::withMessages(['bib' => __('Participant with same licence has the race number :bib.', ['bib' => $part->bib])]);
             }
         }
@@ -104,7 +106,7 @@ class BibReservationController extends Controller
 
         return redirect()->route('championships.bib-reservations.index', $championship)
             ->with('flash.banner', __('Race number :bib reserved.', [
-                'bib' => $reservation->bib
+                'bib' => $reservation->bib,
             ]));
     }
 
@@ -128,7 +130,7 @@ class BibReservationController extends Controller
             'championship' => $bibReservation->championship,
             'reservation' => $bibReservation,
         ]);
-        
+
     }
 
     /**
@@ -149,7 +151,7 @@ class BibReservationController extends Controller
                 Rule::unique((new BibReservation())->getTable(), 'bib')->ignore($bibReservation)->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
                 }),
-                        
+
                 Rule::unique('participants', 'bib')
                     ->where(fn ($query) => $query
                         ->where('championship_id', $championship->getKey())),
@@ -160,7 +162,7 @@ class BibReservationController extends Controller
                 'max:250',
                 Rule::unique((new BibReservation())->getTable(), 'driver')->ignore($bibReservation)->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
-                })
+                }),
             ],
 
             'driver_licence_number' => ['nullable', 'string', 'max:250'],
@@ -173,17 +175,17 @@ class BibReservationController extends Controller
         ]);
 
         // Prevent to remove licence number once set
-        if(empty($validated['driver_licence_number'] ?? null) && !is_null($bibReservation->driver_licence_hash)){
+        if (empty($validated['driver_licence_number'] ?? null) && ! is_null($bibReservation->driver_licence_hash)) {
             throw ValidationException::withMessages(['driver_licence_number' => __('Removing licence not allowed.')]);
         }
-                
+
         // Prevent to use a bib different than what already assigned to the same driver licence
         $licenceHash = ($validated['driver_licence_number'] ?? null) ? hash('sha512', $validated['driver_licence_number']) : null;
 
-        if(!is_null($licenceHash)){
+        if (! is_null($licenceHash)) {
             $part = Participant::where('driver_licence', $licenceHash)->where('championship_id', $bibReservation->championship_id)->first();
 
-            if($part && $part->bib != $validated['bib']){
+            if ($part && $part->bib !== $validated['bib']) {
                 throw ValidationException::withMessages(['bib' => __('Participant with same licence has the race number :bib.', ['bib' => $part->bib])]);
             }
         }
@@ -200,7 +202,7 @@ class BibReservationController extends Controller
 
         return redirect()->route('championships.bib-reservations.index', $championship)
             ->with('flash.banner', __('Reservation for :bib updated.', [
-                'bib' => $bibReservation->bib
+                'bib' => $bibReservation->bib,
             ]));
     }
 
@@ -217,7 +219,7 @@ class BibReservationController extends Controller
 
         return redirect()->route('championships.bib-reservations.index', $championship)
             ->with('flash.banner', __('Reservation for :bib removed.', [
-                'bib' => $bib
+                'bib' => $bib,
             ]));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Participant;
@@ -7,7 +9,6 @@ use App\Models\Race;
 use App\Models\Tire;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -30,11 +31,10 @@ class ParticipantTireVerificationControllerTest extends TestCase
 
         $url = $participant->tiresQrCodeUrl();
 
-        $this->assertStringContainsString($participant->uuid, $url);
-        $this->assertStringContainsString('p='.md5($participant->uuid), $url);
+        $this->assertStringContainsString((string) $participant->uuid, $url);
+        $this->assertStringContainsString('p='.md5((string) $participant->uuid), $url);
     }
 
-    
     public function test_tires_listed()
     {
         $user = User::factory()->tireagent()->create();
@@ -56,12 +56,12 @@ class ParticipantTireVerificationControllerTest extends TestCase
         $response->assertSuccessful();
 
         $response->assertViewHas('participant', $participant);
-        
+
         $response->assertViewHas('race', $participant->race);
-        
+
         $response->assertViewHas('tires', $participant->tires);
     }
-    
+
     public function test_participant_signature_verified()
     {
         $race = Race::factory()->create();
@@ -85,5 +85,4 @@ class ParticipantTireVerificationControllerTest extends TestCase
 
         $response->assertViewIs('errors.participant-tires-link-invalid');
     }
-    
 }

@@ -1,22 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Participant;
 use App\Models\Payment;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationException;
-use Laravel\Fortify\Fortify;
 
 class ParticipantPaymentController extends Controller
 {
     /**
      * Send a new email verification notification.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -30,24 +29,23 @@ class ParticipantPaymentController extends Controller
             ],
             'participant' => [
                 'required',
-                'exists:participants,uuid'
+                'exists:participants,uuid',
             ],
             'p' => [
                 'required',
-                'string'
+                'string',
             ],
         ]);
 
         $participant = Participant::whereUuid($validated['participant'])->first();
 
-        if($participant->signatureContent() !== $validated['p']){
+        if ($participant->signatureContent() !== $validated['p']) {
             throw ValidationException::withMessages([
                 'proof' => __('Could not verify the upload.'),
             ]);
         }
 
         $path = $request->proof->store('', 'payments');
-
 
         $participant->payments()->create([
             'path' => $path,
@@ -56,11 +54,10 @@ class ParticipantPaymentController extends Controller
 
         return redirect($participant->qrCodeUrl())->with('status', 'payment-uploaded');
     }
-    
+
     /**
      * Show the uploaded payment verification.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, Payment $payment)

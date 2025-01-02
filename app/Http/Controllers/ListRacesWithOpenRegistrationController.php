@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Race;
@@ -11,7 +13,6 @@ class ListRacesWithOpenRegistrationController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function __invoke(Request $request)
@@ -25,7 +26,7 @@ class ListRacesWithOpenRegistrationController extends Controller
             })
             ->orWhere(function (Builder $query) {
                 $query->where('event_start_at', '<=', now()->subDays(2))
-                      ->where('event_start_at', '>=', now());
+                    ->where('event_start_at', '>=', now());
             })
             ->orderBy('event_start_at')
             ->with('championship')

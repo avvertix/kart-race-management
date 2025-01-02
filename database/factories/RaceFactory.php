@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Championship;
@@ -36,11 +38,10 @@ class RaceFactory extends Factory
         ];
     }
 
-
     /**
      * Indicate that the race allows a maximum number of overall participants.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function withTotalParticipantLimit($limit = 10)
     {

@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\Participant;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -53,7 +54,7 @@ class ChampionshipCategoryController extends Controller
                 Rule::unique((new Category())->getTable(), 'name')
                     ->where(function ($query) use ($championship) {
                         return $query->where('championship_id', $championship->getKey());
-                    })
+                    }),
             ],
             'short_name' => 'nullable|string|max:250',
             'description' => 'nullable|string|max:1000',
@@ -63,7 +64,7 @@ class ChampionshipCategoryController extends Controller
                 'integer',
                 Rule::exists((new ChampionshipTire())->getTable(), 'id')->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
-                })]
+                })],
         ]);
 
         $category = $championship->categories()->create([
@@ -76,7 +77,7 @@ class ChampionshipCategoryController extends Controller
 
         return redirect()->route('championships.categories.index', $championship)
             ->with('flash.banner', __(':category created.', [
-                'category' => $category->name
+                'category' => $category->name,
             ]));
     }
 
@@ -86,7 +87,7 @@ class ChampionshipCategoryController extends Controller
     public function show(Category $category)
     {
         $category->load('tire');
-        
+
         return view('category.show', [
             'category' => $category,
             'championship' => $category->championship,
@@ -122,7 +123,7 @@ class ChampionshipCategoryController extends Controller
                     ->ignore($category)
                     ->where(function ($query) use ($championship) {
                         return $query->where('championship_id', $championship->getKey());
-                    })
+                    }),
             ],
             'short_name' => 'nullable|string|max:250',
             'description' => 'nullable|string|max:1000',
@@ -132,14 +133,13 @@ class ChampionshipCategoryController extends Controller
                 'integer',
                 Rule::exists((new ChampionshipTire())->getTable(), 'id')->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
-                })]
+                })],
         ]);
 
-
-        if(!($request->boolean('enabled') ?? false)){
+        if (! ($request->boolean('enabled') ?? false)) {
             $hasParticipants = Participant::where('championship_id', $championship->getKey())->where('category_id', $category->getKey())->exists();
 
-            if($hasParticipants){
+            if ($hasParticipants) {
                 throw ValidationException::withMessages(['enabled' => __('The category cannot be deactivated because one or more competitors are registered in it.')]);
             }
         }
@@ -154,7 +154,7 @@ class ChampionshipCategoryController extends Controller
 
         return redirect()->route('championships.categories.index', $championship)
             ->with('flash.banner', __(':category updated.', [
-                'category' => $category->name
+                'category' => $category->name,
             ]));
     }
 }

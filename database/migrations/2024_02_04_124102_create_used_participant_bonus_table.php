@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Bonus;
 use App\Models\Participant;
 use Illuminate\Database\Migrations\Migration;
@@ -19,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreignIdFor(Participant::class);
-            
+
             $table->foreignIdFor(Bonus::class);
 
             $table->unsignedTinyInteger('bonus_type')->nullable();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
@@ -48,7 +50,7 @@ class ChampionshipTireController extends Controller
                 Rule::unique((new ChampionshipTire())->getTable(), 'name')
                     ->where(function ($query) use ($championship) {
                         return $query->where('championship_id', $championship->getKey());
-                    })
+                    }),
             ],
             'price' => 'required|integer|min:0',
         ]);
@@ -60,7 +62,7 @@ class ChampionshipTireController extends Controller
 
         return redirect()->route('championships.tire-options.index', $championship)
             ->with('flash.banner', __(':tire created.', [
-                'tire' => $tire->name
+                'tire' => $tire->name,
             ]));
     }
 
@@ -101,8 +103,8 @@ class ChampionshipTireController extends Controller
                     ->ignore($tireOption)
                     ->where(function ($query) use ($tireOption) {
                         return $query->where('championship_id', $tireOption->championship_id);
-                    })
-                ],
+                    }),
+            ],
             'price' => 'required|integer|min:0',
         ]);
 
@@ -113,7 +115,7 @@ class ChampionshipTireController extends Controller
 
         return redirect()->route('championships.tire-options.index', $tireOption->championship)
             ->with('flash.banner', __(':tire updated.', [
-                'tire' => $tireOption->name
+                'tire' => $tireOption->name,
             ]));
     }
 }

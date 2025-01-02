@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Championship;
@@ -23,7 +25,7 @@ class CategoryFactory extends Factory
             'name' => fake()->randomElement([
                 'Minikart',
                 'Mini GR.3',
-                '125 OK Senior'
+                '125 OK Senior',
             ]),
             'enabled' => true,
             'code' => null,
@@ -32,28 +34,27 @@ class CategoryFactory extends Factory
         ];
     }
 
-
     public function disabled()
     {
-        return $this->state(function (array $attributes){
+        return $this->state(function (array $attributes) {
             return [
                 'enabled' => false,
             ];
         });
     }
-    
+
     public function withTire(?ChampionshipTire $tire = null)
     {
-        return $this->state(function (array $attributes){
+        return $this->state(function (array $attributes) {
             return [
                 'championship_tire_id' => $tire ?? ChampionshipTire::factory()->state(['championship_id' => $attributes['championship_id']]),
             ];
         });
     }
-    
+
     public function withTireState(array $state)
     {
-        return $this->state(function (array $attributes) use ($state){
+        return $this->state(function (array $attributes) use ($state) {
             return [
                 'championship_tire_id' => ChampionshipTire::factory()->state([
                     ...$state,

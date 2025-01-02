@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -10,7 +12,6 @@ class Signature extends Model
 {
     use HasFactory;
     use HasUlids;
-
 
     /**
      * The attributes that should be hidden for serialization.
@@ -56,10 +57,9 @@ class Signature extends Model
     {
         return $this->belongsTo(Participant::class);
     }
+
     /**
      * The attributes that should be cast.
-     *
-     * @return array
      */
     protected function casts(): array
     {

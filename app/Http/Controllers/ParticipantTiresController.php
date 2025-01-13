@@ -29,7 +29,7 @@ class ParticipantTiresController extends Controller
      */
     public function index(Participant $participant)
     {
-        $participant->load(['race', 'tires']);
+        $participant->load(['race', 'tires', 'racingCategory.tire']);
 
         return view('tire.index', [
             'participant' => $participant,
@@ -45,7 +45,7 @@ class ParticipantTiresController extends Controller
      */
     public function create(Participant $participant)
     {
-        $participant->loadCount('tires');
+        $participant->loadCount('tires')->load(['race', 'tires', 'racingCategory.tire']);
 
         return view('tire.create', [
             'participant' => $participant,
@@ -94,7 +94,7 @@ class ParticipantTiresController extends Controller
      */
     public function edit(Tire $tire)
     {
-        $tire->load(['participant', 'race']);
+        $tire->load(['participant', 'race', 'participant.racingCategory.tire']);
 
         return view('tire.edit', [
             'participant' => $tire->participant,

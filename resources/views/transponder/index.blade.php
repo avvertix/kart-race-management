@@ -19,9 +19,9 @@
                     {{ $participant->first_name }} {{ $participant->last_name }}
                 </p>
                 
-                <p>{{ $participant->categoryConfiguration()?->name ?? $participant->category }} / {{ $participant->engine }}</p>
-                @if ($participant->categoryConfiguration()?->tire())
-                    <p>{{ $participant->categoryConfiguration()?->tire()->name }}</p>
+                <p>{{ $participant->racingCategory?->name ?? $participant->category }} / {{ $participant->engine }}</p>
+                @if ($participant->racingCategory?->tire)
+                    <p>{{ $participant->racingCategory?->tire->name }}</p>
                 @endif
             </div>
             

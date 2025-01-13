@@ -78,7 +78,7 @@
 
                         <p class="text-xs text-zinc-700">{{ __('registered at') }} <x-time :value="$item->created_at" /></p>
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->categoryConfiguration()?->name ?? $item->category }} / {{ $item->engine }}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->racingCategory?->name ?? __('no category') }} / {{ $item->engine }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->licence_type?->localizedName() }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
                         @include('participant.partials.status')

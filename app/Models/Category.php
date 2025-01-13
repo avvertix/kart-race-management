@@ -121,17 +121,25 @@ class Category extends Model
             ->dontSubmitEmptyLogs();
     }
 
-    public function asCategoryConfiguration(): CategoryConfiguration
+    // public function asCategoryConfiguration(): CategoryConfiguration
+    // {
+    //     return new CategoryConfiguration([
+    //         'name' => $this->name,
+    //         'description' => $this->description,
+    //         'tires' => $this->tire?->code,
+    //         'tire_name' => $this->tire?->name,
+    //         'tire_price' => $this->tire?->price,
+    //         'timekeeper_label' => ,
+    //         'enabled' => $this->enabled,
+    //     ]);
+    // }
+
+    /**
+     * Get the label to use for timekeep export
+     */
+    public function getTimekeepLabel(): string
     {
-        return new CategoryConfiguration([
-            'name' => $this->name,
-            'description' => $this->description,
-            'tires' => $this->tire?->code,
-            'tire_name' => $this->tire?->name,
-            'tire_price' => $this->tire?->price,
-            'timekeeper_label' => $this->short_name ?? $this->name,
-            'enabled' => $this->enabled,
-        ]);
+        return $this->short_name ?? $this->name;
     }
 
     protected function casts(): array

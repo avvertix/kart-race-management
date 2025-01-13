@@ -99,22 +99,6 @@ class TrashedParticipant extends Model
     }
 
     /**
-     * @deprecated
-     */
-    public function categoryConfiguration(): ?Category
-    {
-        return Category::find($this->category);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function tireConfiguration(): ?TireOption
-    {
-        return optional($this->categoryConfiguration())->tire();
-    }
-
-    /**
      * Get the participant's preferred locale.
      *
      * @return string

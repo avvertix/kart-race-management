@@ -174,9 +174,9 @@
                         <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                         <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                     </h3>
-                    <p class="mb-1 text-xl">{{ $participant->categoryConfiguration()->name }} / {{ $participant->engine }}</p>
-                    @if ($participant->tireConfiguration())
-                        <p class="mb-6 text-xl">{{ $participant->tireConfiguration()->name }}</p>
+                    <p class="mb-1 text-xl">{{ $participant->racingCategory?->name }} / {{ $participant->engine }}</p>
+                    @if ($participant->racingCategory?->tire)
+                        <p class="mb-6 text-xl">{{ $participant->racingCategory?->tire->name }}</p>
                     @endif
                     
                     <div class="grid md:grid-cols-2 mb-2">

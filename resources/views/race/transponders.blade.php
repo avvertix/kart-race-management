@@ -41,7 +41,7 @@
                     {{ $item->first_name }} {{ $item->last_name }}
 
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->categoryConfiguration()?->name ?? $item->category }} / {{ $item->engine }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->racingCategory?->name ?? __('no category') }} / {{ $item->engine }}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->transponders->pluck('code')->join(', ') }}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
                     @include('participant.partials.status')

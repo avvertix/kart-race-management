@@ -135,7 +135,7 @@ class RaceParticipantsExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                $participant->categoryConfiguration()->name,
+                $participant->racingCategory->name,
                 '',
                 $participant->first_name,
                 $participant->last_name,
@@ -244,7 +244,7 @@ class RaceParticipantsExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                $participant->categoryConfiguration()->name,
+                $participant->racingCategory->name,
                 'completed',
                 $participant->first_name,
                 $participant->last_name,
@@ -354,7 +354,7 @@ class RaceParticipantsExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                $participant->categoryConfiguration()->name,
+                $participant->racingCategory->name,
                 '',
                 $participant->first_name,
                 $participant->last_name,

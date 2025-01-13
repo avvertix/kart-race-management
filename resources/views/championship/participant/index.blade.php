@@ -35,7 +35,7 @@
                                     <a class="underline" href="{{ route('participants.show', $item) }}" target="_blank">{{ $item->race->title }}</a>
                                 </p>
                                 <p><span class="font-mono">{{ $item->bib }}</span></p>
-                                <p>{{ $item->categoryConfiguration()?->name ?? $item->category }}</p>
+                                <p>{{ $item->racingCategory?->name ?? __('no category') }}</p>
                                 <p>{{ $item->full_name }}</p>
                                 <p><span class="font-mono font-bold">{{ $item->driver['licence_number'] }}</span></p>
                             </div>

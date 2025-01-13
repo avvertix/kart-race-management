@@ -58,7 +58,7 @@ class ParticipantPriceTest extends TestCase
             __('Total') => 10,
         ], $price->toArray());
     }
-    
+
     public function test_category_without_tire()
     {
         $category = Category::factory()

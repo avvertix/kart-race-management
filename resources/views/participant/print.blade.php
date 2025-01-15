@@ -20,8 +20,8 @@
                                 <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                             </h3>
                             <p class="mb-1 text-xl">{{ $participant->racingCategory?->name ?? __('no category') }} / {{ $participant->engine }}</p>
-                            @if ($participant->tireConfiguration())
-                                <p class="mb-6 text-xl">{{ $participant->tireConfiguration()->name }}</p>
+                            @if ($participant->racingCategory?->tire)
+                                <p class="mb-6 text-xl">{{ $participant->racingCategory?->tire->name }}</p>
                             @endif
                             
                             <div class="mb-2">

@@ -12,8 +12,8 @@
             @endif
             <p class="text-xl">{{ $item->racingCategory?->name ?? __('no category') }} / {{ $item->engine }}</p>
         </div>
-        @if ($item->tireConfiguration())
-            <p class="mb-6 text-xl">{{ $item->tireConfiguration()->name }}</p>
+        @if ($item->racingCategory?->tire)
+            <p class="mb-6 text-xl">{{ $item->racingCategory?->tire->name }}</p>
         @endif
     </div>
     <div class="flex gap-3 items-start">

@@ -11,7 +11,7 @@
                     <span>
                         {{ $item->first_name }} {{ $item->last_name }}
                         <span class="text-sm text-zinc-600 block">
-                            {{ $item->categoryConfiguration()?->name ?? $item->category }} / {{ $item->engine }}
+                            {{ $item->racingCategory?->name ?? __('no category') }} / {{ $item->engine }}
                         </span>
                     </span>
                 </a>

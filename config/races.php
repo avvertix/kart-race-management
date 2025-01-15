@@ -48,27 +48,4 @@ return [
     'price_currency' => env('RACE_PRICE_CURRENCY', 'EUR'),
     'bonus_amount' => env('RACE_BONUS_AMOUNT', env('RACE_PRICE', '15000')),
 
-    'tires' => [
-        'VEGA_SL4' => [
-            'name' => 'VEGA SL4',
-            'price' => '16500',
-        ],
-        'VEGA_MINI' => [
-            'name' => 'VEGA MINI',
-            'price' => '14000',
-        ],
-        'VEGA_XH3' => [
-            'name' => 'VEGA XH3',
-            'price' => '21000',
-        ],
-        'MG_SC' => [
-            'name' => 'MG SC',
-            'price' => '15500',
-        ],
-        'MG_SM' => [
-            'name' => 'MG SM',
-            'price' => '20500',
-        ],
-    ],
-
 ];

@@ -16,7 +16,14 @@ class ParticipantPriceTest extends TestCase
 
     public function test_participant_price()
     {
-        $category = $this->setAvailableCategories();
+        $category = Category::factory()
+            ->withTireState([
+                'name' => 'T1',
+                'price' => 10,
+            ])
+            ->create([
+                'name' => 'CAT 1',
+            ]);
 
         $price = Participant::factory()->category($category)->create()->price();
 
@@ -31,7 +38,14 @@ class ParticipantPriceTest extends TestCase
 
     public function test_participant_price_consider_bonus()
     {
-        $category = $this->setAvailableCategories();
+        $category = Category::factory()
+            ->withTireState([
+                'name' => 'T1',
+                'price' => 10,
+            ])
+            ->create([
+                'name' => 'CAT 1',
+            ]);
 
         $price = Participant::factory()->category($category)->usingBonus()->create()->price();
 
@@ -45,15 +59,20 @@ class ParticipantPriceTest extends TestCase
         ], $price->toArray());
     }
 
-    protected function setAvailableCategories(): Category
+    public function test_category_without_tire()
     {
-        return Category::factory()
-            ->withTireState([
-                'name' => 'T1',
-                'price' => 10,
-            ])
+        $category = Category::factory()
             ->create([
                 'name' => 'CAT 1',
             ]);
+
+        $price = Participant::factory()->category($category)->create()->price();
+
+        $this->assertInstanceOf(Collection::class, $price);
+
+        $this->assertEquals([
+            __('Race fee') => 15000,
+            __('Total') => 15000,
+        ], $price->toArray());
     }
 }

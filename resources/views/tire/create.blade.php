@@ -14,8 +14,8 @@
                 {{ $participant->first_name }} {{ $participant->last_name }}
             </p>
             
-            <p>{{ $participant->categoryConfiguration()?->name ?? $participant->category }} / {{ $participant->engine }}</p>
-            <p>{{ $participant->categoryConfiguration()?->tire()->name }}</p>
+            <p>{{ $participant->racingCategory?->name ?? $participant->category }} / {{ $participant->engine }}</p>
+            <p>{{ $participant->racingCategory?->tire->name }}</p>
         </div>
     </x-slot>
 

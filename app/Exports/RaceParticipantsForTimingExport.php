@@ -74,7 +74,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
 
         $engine_mapping = config('engine.normalization');
 
-        $categoryConfiguration = $participant->categoryConfiguration();
+        $category = $participant->racingCategory->getTimekeepLabel();
 
         $swap = [
             'à' => 'a\'',
@@ -89,7 +89,7 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
 
         return [
             $participant->bib,
-            $categoryConfiguration->get('timekeeper_label', $categoryConfiguration->name).($participant->wildcard ? ' W' : ''),
+            $category,
             str($participant->first_name)->lower()->swap($swap)->upper()->toString(),
             str($participant->last_name)->lower()->swap($swap)->upper()->toString(),
             $registration_identifier,

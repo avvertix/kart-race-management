@@ -26,7 +26,7 @@ class ParticipantTireVerificationController extends Controller
 
         throw_if(md5($participant->uuid) !== $request->input('p'), new InvalidParticipantTiresSignatureException());
 
-        $participant->load(['race', 'tires']);
+        $participant->load(['race', 'tires', 'racingCategory.tire']);
 
         return view('tire.index', [
             'participant' => $participant,

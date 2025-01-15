@@ -106,7 +106,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                $participant->categoryConfiguration()->name,
+                $participant->racingCategory->name,
                 'NICA\'E\'U\'LO\'',
                 mb_strtoupper($participant->last_name),
                 'a1234567', // car registration
@@ -278,7 +278,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                $participant->categoryConfiguration()->get('name'),
+                $participant->racingCategory->name,
                 mb_strtoupper($participant->first_name),
                 mb_strtoupper($participant->last_name),
                 'a1234567', // car registration
@@ -363,7 +363,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
             [
                 ''.$participant->bib,
-                $participant->categoryConfiguration()->get('name').' W',
+                $participant->racingCategory->name,
                 mb_strtoupper($participant->first_name),
                 mb_strtoupper($participant->last_name),
                 'a1234567', // car registration

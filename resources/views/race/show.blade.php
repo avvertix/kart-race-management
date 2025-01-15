@@ -37,7 +37,7 @@
                     <table>
                         @foreach ($participantsPerCategory as $item)
                             <tr>
-                                <td>{{ $item->categoryConfiguration()->name }}</td>
+                                <td>{{ $item->racingCategory?->name ?? __('no category') }}</td>
                                 <td class="text-right"><span class="font-bold">{{ $item->total_confirmed }}</span> / {{ $item->total }}</td>
                             </tr>
                         @endforeach

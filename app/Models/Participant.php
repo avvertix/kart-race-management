@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Categories\Category as CategoryConfiguration;
 use App\Notifications\ConfirmParticipantRegistration;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -163,22 +162,6 @@ class Participant extends Model implements HasLocalePreference
     public function bonuses()
     {
         return $this->belongsToMany(Bonus::class, 'participant_bonus');
-    }
-
-    /**
-     * @deprecated
-     */
-    public function categoryConfiguration(): ?CategoryConfiguration
-    {
-        return $this->racingCategory?->asCategoryConfiguration();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function tireConfiguration(): ?TireOption
-    {
-        return optional($this->categoryConfiguration())->tire();
     }
 
     /**
@@ -341,11 +324,11 @@ class Participant extends Model implements HasLocalePreference
      */
     public function price(): Collection
     {
-        $tires = $this->tireConfiguration();
+        $tire = $this->racingCategory->tire;
 
         $order = collect([
             __('Race fee') => (int) config('races.price'),
-            __('Tires (:model)', ['model' => $tires?->name]) => $tires?->price,
+            __('Tires (:model)', ['model' => $tire?->name]) => $tire?->price,
             __('Bonus') => $this->use_bonus ? 0 - config('races.bonus_amount', 0) : 0,
             __('Total') => null,
         ])->filter();

@@ -76,7 +76,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
 
         return [
             $participant->bib,
-            $participant->categoryConfiguration()->name,
+            $participant->racingCategory->name,
             $participant->registration_completed_at ? __('completed') : null,
 
             $participant->first_name,
@@ -93,7 +93,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
                 'postal_code' => $participant->driver['residence_address']['postal_code'] ?? null,
                 'province' => $participant->driver['residence_address']['province'] ?? null,
             ]),
-            Sex::from($participant->driver['sex'])->localizedName(),
+            filled($participant->driver['sex']) ? Sex::from((int) ($participant->driver['sex']))->localizedName() : Sex::UNSPECIFIED->localizedName(),
 
             $participant->competitor['first_name'] ?? null,
             $participant->competitor['last_name'] ?? null,

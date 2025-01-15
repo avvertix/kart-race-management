@@ -93,7 +93,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
                 'postal_code' => $participant->driver['residence_address']['postal_code'] ?? null,
                 'province' => $participant->driver['residence_address']['province'] ?? null,
             ]),
-            Sex::from($participant->driver['sex'])->localizedName(),
+            filled($participant->driver['sex']) ? Sex::from(intval($participant->driver['sex']))->localizedName() : Sex::UNSPECIFIED->localizedName(),
 
             $participant->competitor['first_name'] ?? null,
             $participant->competitor['last_name'] ?? null,

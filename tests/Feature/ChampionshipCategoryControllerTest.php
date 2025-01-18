@@ -154,7 +154,7 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertTrue($category->enabled);
         $this->assertTrue($category->tire->is($championship->tires()->first()));
     }
-    
+
     public function test_category_creation_do_not_require_tire(): void
     {
         $user = User::factory()->organizer()->create();

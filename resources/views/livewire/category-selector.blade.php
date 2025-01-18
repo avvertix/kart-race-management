@@ -13,7 +13,7 @@
                         @if ($category->description)
                             <span id="{{ $name }}-{{ $category->ulid }}-description" class="mt-1 flex items-center text-sm text-zinc-500">{{ $category->description }}</span>
                         @endif
-                        <span class="mt-1 flex items-center text-sm text-zinc-500">{{ optional($category->tire)->name ?? __('Tires not defined') }}</span>
+                        <span class="mt-1 flex items-center text-sm text-zinc-500">{{ optional($category->tire)->name }}</span>
                     </span>
                 </span>
 

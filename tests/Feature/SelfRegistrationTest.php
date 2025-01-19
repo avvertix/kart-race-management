@@ -241,7 +241,7 @@ class SelfRegistrationTest extends TestCase
         $response = $this
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
-                'bib' => 100,
+                'bib' => 140,
                 'category' => $category->ulid,
                 ...$this->generateValidDriver(),
                 ...$this->generateValidCompetitor(),
@@ -255,10 +255,10 @@ class SelfRegistrationTest extends TestCase
 
         $this->travelBack();
 
-        $participant = $race->participants()->where('bib', 100)->first();
+        $participant = $race->participants()->where('bib', 140)->first();
 
         $this->assertInstanceOf(Participant::class, $participant);
-        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals(140, $participant->bib);
         $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);

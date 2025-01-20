@@ -49,11 +49,14 @@ class RaceTiresController extends Controller
 
         $participants = $race->participants()
             ->withCount('tires')
-            ->withCount('signatures')
             ->has('tires')
             ->when($search_term, function ($query, $search_term) {
-                $query->search($search_term)
-                    ->orWhereRelation('tires', 'code', e($search_term));
+
+                $query->where(function ($query) use ($search_term) {
+                    $query->search($search_term)
+                        ->orWhereRelation('tires', 'code', e($search_term));
+                });
+
             })
             ->orderBy('bib', 'asc')
             ->get();

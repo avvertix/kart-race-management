@@ -97,7 +97,7 @@
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
-                                    {{ $participant->licence_type?->value }}
+                                    {{ $participant->licence_type?->localizedName() }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
@@ -185,7 +185,7 @@
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
-                                    {{ $participant->competitor['licence_type'] }}
+                                    {{ $participant->competitor['licence_type'] ? \App\Models\CompetitorLicence::from($participant->competitor['licence_type'])->localizedName() : null }}
                                 </div>
                                 <div class="col-span-6 sm:col-span-4">
                                     <x-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />

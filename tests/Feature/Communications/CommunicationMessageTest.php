@@ -23,9 +23,7 @@ class CommunicationMessageTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider communication_dates_provider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('communication_dates_provider')]
     public function test_communication_status($currentDate, $startsAt, $endsAt, $expectedStatus)
     {
         $this->travelTo(Carbon::parse($currentDate), function () use ($startsAt, $endsAt, $expectedStatus) {

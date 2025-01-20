@@ -273,9 +273,7 @@ class CommunicationMessageControllerTest extends TestCase
         $this->assertNull($actual_communication);
     }
 
-    /**
-     * @dataProvider invalid_communication_requests_provider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalid_communication_requests_provider')]
     private function test_communication_message_not_created($data, $expectedErrors)
     {
         $user = User::factory()->admin()->create();
@@ -294,9 +292,7 @@ class CommunicationMessageControllerTest extends TestCase
         $this->assertNull($communication);
     }
 
-    /**
-     * @dataProvider invalid_communication_requests_provider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalid_communication_requests_provider')]
     private function test_communication_message_not_updated($data, $expectedErrors)
     {
         $user = User::factory()->admin()->create();

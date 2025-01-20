@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Communications;
 
-use App\Models\Communication;
 use App\Models\CommunicationMessage;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,9 +22,7 @@ class CommunicationMessageTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider communication_dates_provider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('communication_dates_provider')]
     public function test_communication_status($currentDate, $startsAt, $endsAt, $expectedStatus)
     {
         $this->travelTo(Carbon::parse($currentDate), function () use ($startsAt, $endsAt, $expectedStatus) {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Communications;
 
-use App\Models\Communication;
 use App\Models\CommunicationMessage;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;

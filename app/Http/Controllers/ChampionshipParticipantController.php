@@ -38,7 +38,7 @@ class ChampionshipParticipantController extends Controller
             ->whereIn('id', $subQuery)
             ->orderBy('bib', 'asc')
             ->withOnly([
-                'participationHistory' => function ($query)  use ($championship) {
+                'participationHistory' => function ($query) use ($championship) {
                     $query->where('championship_id', $championship->getKey());
                 },
                 'participationHistory.race',

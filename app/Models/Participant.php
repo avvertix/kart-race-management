@@ -156,7 +156,9 @@ class Participant extends Model implements HasLocalePreference
 
     public function participationHistory()
     {
-        return $this->hasMany(self::class, 'driver_licence', 'driver_licence')->orderBy('created_at');
+        return $this
+            ->hasMany(self::class, 'driver_licence', 'driver_licence')
+            ->orderBy('created_at');
     }
 
     public function bonuses()

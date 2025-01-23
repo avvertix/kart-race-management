@@ -37,7 +37,12 @@ class ChampionshipParticipantController extends Controller
         $participants = Participant::query()
             ->whereIn('id', $subQuery)
             ->orderBy('bib', 'asc')
-            ->with(['participationHistory', 'participationHistory.race'])
+            ->withOnly([
+                'participationHistory' => function ($query) use ($championship) {
+                    $query->where('championship_id', $championship->getKey());
+                },
+                'participationHistory.race',
+            ])
             ->get();
 
         $uniqueParticipantsCount = $participants->count();

@@ -9,15 +9,9 @@ use Illuminate\View\Component;
 
 class ChampionshipPageLayout extends Component
 {
-
-
-
     public function __construct(
         public Championship $championship,
-    )
-    {
-        
-    }
+    ) {}
 
     /**
      * Get the view / contents that represents the component.
@@ -26,7 +20,7 @@ class ChampionshipPageLayout extends Component
      */
     public function render()
     {
-        
+
         return view('layouts.championship');
     }
 }

@@ -10,7 +10,6 @@ use App\Models\RaceType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class RaceTest extends TestCase

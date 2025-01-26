@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Championship;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -85,18 +84,9 @@ class ChampionshipController extends Controller
     public function show(Championship $championship)
     {
 
-        // $nextRaces = $championship
-        //     ->races()
-        //     ->withRegistrationOpen()
-        //     ->orWhere(function (Builder $query) {
-        //         $query->active();
-        //     })
-        //     ->orderBy('event_start_at')
-        //     ->get();
-
         return view('championship.show', [
             'championship' => $championship,
-            // 'nextRaces' => $nextRaces,
+            'races' => $championship->races,
         ]);
     }
 

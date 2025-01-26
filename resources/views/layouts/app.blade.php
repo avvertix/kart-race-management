@@ -24,7 +24,7 @@
             {{-- Page Heading --}}
             @if (isset($header))
                 <header class="">
-                    <div {{ $header->attributes->class(['max-w-7xl','mx-auto','py-6','px-4','sm:px-6','lg:px-8']) }}>
+                    <div {{ $header->attributes->class(['py-6','px-4','sm:px-6','lg:px-8']) }}>
                         {{ $header }}
                     </div>
                 </header>
@@ -37,7 +37,7 @@
                 {{ $slot }}
             </main>
 
-            <footer class="mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <footer class="mt-10 px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="text-sm text-zinc-600">
                         <p class="font-bold">{{ __('Organizer') }}</p>

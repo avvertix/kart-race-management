@@ -8,7 +8,7 @@
 
 
     <div class="">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="px-4 sm:px-6 lg:px-8">
 
             <form action="{{ route('races.tires', $race) }}" method="get">
                 <x-search-input id="tire_search" type="text" autofocus placeholder="{{ __('Search tires using bib, name, last name or tire code') }}" name="tire_search" class="block w-full sticky top-0" :value="$search_term" />

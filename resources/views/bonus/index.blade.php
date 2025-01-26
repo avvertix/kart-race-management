@@ -1,25 +1,14 @@
-<x-app-layout>
+<x-championship-page-layout :$championship>
     <x-slot name="title">
         {{ __('Bonus') }} - {{ $championship->title }}
     </x-slot>
-    <x-slot name="header">
-
-        @section('actions')
-
-            @can('create', \App\Model\Bonus::class)
-                <x-button-link href="{{ route('championships.bonuses.create', $championship) }}">
-                    {{ __('Add bonus') }}
-                </x-button-link>
-            @endcan
-
-        @endsection
-
-        @include('championship.partials.heading')
+    <x-slot name="actions">
+        @can('create', \App\Model\Bonus::class)
+            <x-button-link href="{{ route('championships.bonuses.create', $championship) }}">
+                {{ __('Add bonus') }}
+            </x-button-link>
+        @endcan
     </x-slot>
-
-
-    <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <x-table>
                 <x-slot name="head">
@@ -72,6 +61,4 @@
             @endforelse
             
             </x-table>
-        </div>
-    </div>
-</x-app-layout>
+</x-championship-page-layout>

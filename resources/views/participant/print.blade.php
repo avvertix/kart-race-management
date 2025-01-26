@@ -8,7 +8,7 @@
 
 
     <div class="py-6 print:py-0">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 print:px-0">
+        <div class="px-4 sm:px-6 lg:px-8 print:px-0">
 
             @foreach ($participants as $participant)
                            

@@ -32,7 +32,7 @@ class RaceImportTest extends TestCase
 
         $this->travelBack();
 
-        $response->assertRedirectToRoute('championships.races.index', $championship);
+        $response->assertRedirectToRoute('championships.show', $championship);
 
         $response->assertSessionHasNoErrors();
 

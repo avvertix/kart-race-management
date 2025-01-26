@@ -24,19 +24,6 @@ class RaceInChampionshipController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Championship $championship)
-    {
-        return view('championship.race.index', [
-            'championship' => $championship,
-            'races' => $championship->races,
-        ]);
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -93,7 +80,7 @@ class RaceInChampionshipController extends Controller
             'type' => $validated['race_type'] ?? RaceType::LOCAL,
         ]);
 
-        return to_route('championships.races.index', $championship)
+        return to_route('championships.show', $championship)
             ->with('flash.banner', __(':race created.', [
                 'race' => $race->title,
             ]));

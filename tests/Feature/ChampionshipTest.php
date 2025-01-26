@@ -10,13 +10,14 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class ChampionshipTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_championships_screen_can_be_rendered()
+    public function test_championships_list_can_be_rendered()
     {
         $user = User::factory()->organizer()->create();
 
@@ -129,6 +130,26 @@ class ChampionshipTest extends TestCase
             ]);
 
         $response->assertForbidden();
+    }
+
+    public function test_championship_rendered()
+    {
+        $user = User::factory()->organizer()->create();
+
+        $race = Race::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('championships.show', ['championship' => $race->championship]));
+
+        $response->assertOk();
+
+        $races = $response->viewData('races');
+
+        $this->assertInstanceOf(Collection::class, $races);
+        $this->assertTrue($races->first()->is($race));
+        $this->assertTrue($response->viewData('championship')->is($race->championship));
+
     }
 
     public function test_championship_can_be_updated()

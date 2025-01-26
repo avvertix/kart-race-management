@@ -7,8 +7,7 @@
     </x-slot>
 
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
 
             <div class="grid grid-flow-col-dense gap-4">
                 <div class="text-lg p-4 bg-white shadow rounded">
@@ -58,5 +57,5 @@
             </div>
 
         </div>
-    </div>
+
 </x-app-layout>

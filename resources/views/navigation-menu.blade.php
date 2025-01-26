@@ -1,12 +1,12 @@
 <nav x-data="{ open: false }" class="">
     {{-- Primary Navigation Menu --}}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 {{-- Logo --}}
                 <div class="shrink-0 flex items-center">
                     <a href="{{ auth()->check() ? route('dashboard') : route('welcome') }}">
-                        <x-application-mark class="block h-9 w-auto" />
+                        <x-application-mark class="block h-8 w-auto" /><span class="sr-only">{{ __('Organizer Dashboard') }}</span>
                     </a>
                 </div>
 
@@ -14,21 +14,15 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex print:hidden">
 
                     @auth
-                        <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                            {{ __('Dashboard') }}
-                        </x-nav-link>
-                        <x-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*')">
+                        <x-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
                             {{ __('Championships') }}
-                        </x-nav-link>
-                        <x-nav-link href="{{ route('races.index') }}" :active="request()->routeIs('races.*') || request()->routeIs('participants.*')">
-                            {{ __('Races') }}
                         </x-nav-link>
                         <x-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
                             {{ __('Communications') }}
                         </x-nav-link>
                         @can('viewAny', \App\Models\OrbitsBackup::class)
                             <x-nav-link href="{{ route('orbits-backups.index') }}" :active="request()->routeIs('orbits-backups.*')">
-                                {{ __('Orbits Backup') }}
+                                {{ __('Backups') }}
                             </x-nav-link>
                         @endcan
                     @endauth
@@ -39,57 +33,6 @@
 
                 {{-- Language selector --}}
                 <x-language-selector />
-
-
-                {{-- Teams Dropdown --}}
-                @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                    <div class="ml-3 relative">
-                        <x-dropdown align="right" width="60">
-                            <x-slot name="trigger">
-                                <span class="inline-flex rounded-md">
-                                    <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-zinc-500 bg-white hover:bg-zinc-50 hover:text-zinc-700 focus:outline-none focus:bg-zinc-50 active:bg-zinc-50 transition">
-                                        {{ Auth::user()->currentTeam->name }}
-
-                                        <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </span>
-                            </x-slot>
-
-                            <x-slot name="content">
-                                <div class="w-60">
-                                    {{-- Team Management --}}
-                                    <div class="block px-4 py-2 text-xs text-zinc-400">
-                                        {{ __('Manage Team') }}
-                                    </div>
-
-                                    {{-- Team Settings --}}
-                                    <x-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
-                                        {{ __('Team Settings') }}
-                                    </x-dropdown-link>
-
-                                    @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                                        <x-dropdown-link href="{{ route('teams.create') }}">
-                                            {{ __('Create New Team') }}
-                                        </x-dropdown-link>
-                                    @endcan
-
-                                    <div class="border-t border-zinc-100"></div>
-
-                                    {{-- Team Switcher --}}
-                                    <div class="block px-4 py-2 text-xs text-zinc-400">
-                                        {{ __('Switch Teams') }}
-                                    </div>
-
-                                    @foreach (Auth::user()->allTeams() as $team)
-                                        <x-switchable-team :team="$team" />
-                                    @endforeach
-                                </div>
-                            </x-slot>
-                        </x-dropdown>
-                    </div>
-                @endif
 
                 {{-- Settings Dropdown --}}
                 @auth
@@ -122,12 +65,6 @@
                                 <x-dropdown-link href="{{ route('profile.show') }}">
                                     {{ __('Profile') }}
                                 </x-dropdown-link>
-
-                                @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                                    <x-dropdown-link href="{{ route('api-tokens.index') }}">
-                                        {{ __('API Tokens') }}
-                                    </x-dropdown-link>
-                                @endif
 
                                 <div class="border-t border-zinc-100"></div>
 
@@ -162,18 +99,17 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white print:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @auth
-                <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*')">
+                <x-responsive-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
                     {{ __('Championships') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link href="{{ route('races.index') }}" :active="request()->routeIs('races.*') || request()->routeIs('participants.*')">
-                    {{ __('Races') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
                     {{ __('Communications') }}
                 </x-responsive-nav-link>
+                @can('viewAny', \App\Models\OrbitsBackup::class)
+                    <x-responsive-nav-link href="{{ route('orbits-backups.index') }}" :active="request()->routeIs('orbits-backups.*')">
+                        {{ __('Backups') }}
+                    </x-responsive-nav-link>
+                @endcan
             @endauth
         </div>
         
@@ -214,37 +150,6 @@
                             {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>
-
-                    {{-- Team Management --}}
-                    @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                        <div class="border-t border-zinc-200"></div>
-
-                        <div class="block px-4 py-2 text-xs text-zinc-400">
-                            {{ __('Manage Team') }}
-                        </div>
-
-                        {{-- Team Settings --}}
-                        <x-responsive-nav-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}" :active="request()->routeIs('teams.show')">
-                            {{ __('Team Settings') }}
-                        </x-responsive-nav-link>
-
-                        @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                            <x-responsive-nav-link href="{{ route('teams.create') }}" :active="request()->routeIs('teams.create')">
-                                {{ __('Create New Team') }}
-                            </x-responsive-nav-link>
-                        @endcan
-
-                        <div class="border-t border-zinc-200"></div>
-
-                        {{-- Team Switcher --}}
-                        <div class="block px-4 py-2 text-xs text-zinc-400">
-                            {{ __('Switch Teams') }}
-                        </div>
-
-                        @foreach (Auth::user()->allTeams() as $team)
-                            <x-switchable-team :team="$team" component="jet-responsive-nav-link" />
-                        @endforeach
-                    @endif
                 </div>
             </div>
         @endauth

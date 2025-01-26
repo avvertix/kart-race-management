@@ -1,25 +1,15 @@
-<x-app-layout>
+<x-championship-page-layout :$championship>
     <x-slot name="title">
         {{ __('Race Number Reservations') }} - {{ $championship->title }}
     </x-slot>
-    <x-slot name="header">
-
-        @section('actions')
-
-            @can('create', \App\Model\ChampionshipTire::class)
-                <x-button-link href="{{ route('championships.bib-reservations.create', $championship) }}">
-                    {{ __('Reserve a race number') }}
-                </x-button-link>
-            @endcan
-
-        @endsection
-
-        @include('championship.partials.heading')
+    <x-slot name="actions">
+        @can('create', \App\Model\ChampionshipTire::class)
+            <x-button-link href="{{ route('championships.bib-reservations.create', $championship) }}">
+                {{ __('Reserve a race number') }}
+            </x-button-link>
+        @endcan
     </x-slot>
 
-
-    <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             @if ($areThereSomeReservationNotEnforced)
                 <x-banner style="danger" message="{{ __('Some reservation are created without a licence. Such reservations might not be verified upon registration.') }}" />
@@ -91,6 +81,4 @@
             @endforelse
             
             </x-table>
-        </div>
-    </div>
-</x-app-layout>
+</x-championship-page-layout>

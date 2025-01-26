@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "andreiio/blade-remix-icon": "^3.6",
+        "blade-ui-kit/blade-icons": "^1.7",
         "laravel/framework": "^11.0",
         "laravel/jetstream": "^5.0",
         "laravel/sanctum": "^4.0",

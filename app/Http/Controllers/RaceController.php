@@ -25,18 +25,6 @@ class RaceController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return view('race.index', [
-            'races' => Race::query()->orderBy('event_start_at', 'ASC')->get(),
-        ]);
-    }
-
-    /**
      * Display the specified resource.
      *
      * @return \Illuminate\Http\Response

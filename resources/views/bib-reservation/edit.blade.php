@@ -13,7 +13,7 @@
 
 
     <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="px-4 sm:px-6 lg:px-8">
 
             <form method="POST" action="{{ route('bib-reservations.update', $reservation) }}">
                 @method('PUT')
@@ -41,7 +41,7 @@
     </div>
     
     <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="px-4 sm:px-6 lg:px-8">
 
             <form method="POST" action="{{ route('bib-reservations.destroy', $reservation) }}">
                 @method('DELETE')

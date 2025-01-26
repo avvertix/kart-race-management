@@ -67,7 +67,7 @@ Route::middleware([
 
         Route::resource('championships', ChampionshipController::class);
 
-        Route::resource('races', RaceController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+        Route::resource('races', RaceController::class)->only(['show', 'edit', 'update', 'destroy']);
 
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
 
@@ -81,7 +81,7 @@ Route::middleware([
 
         Route::delete('championships/{championship}/banner', [ChampionshipBannerController::class, 'destroy'])->name('championships.banner.destroy');
 
-        Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['index', 'create', 'store']);
+        Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['create', 'store']);
 
         Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
 

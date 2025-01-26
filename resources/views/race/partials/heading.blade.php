@@ -1,8 +1,8 @@
 <div class="relative border-b-2 border-zinc-200 pb-5 sm:pb-0">
+                <p class="text-base font-light"><a href="{{ route('championships.show', $championship) }}">{{ $championship->title }}</a></p>
             <div class="md:flex md:items-center md:justify-between">
                 <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
                     {{ $race->title }}
-                    <p class="text-base font-light">{{ $championship->title }}</p>
                 </h2>
                 <div class="mt-3 flex md:absolute md:top-3 md:right-0 md:mt-0 gap-2  print:hidden">
 

@@ -1,25 +1,16 @@
-<x-app-layout>
+<x-championship-page-layout :$championship>
     <x-slot name="title">
         {{ $reservation->bib }} - {{ __('Race Number Reservations') }} - {{ $championship->title }}
     </x-slot>
-    <x-slot name="header">
-
-        @section('actions')
-
-            @can('update', $reservation)
-                <x-button-link href="{{ route('bib-reservations.edit', $reservation) }}">
-                    {{ __('Edit reservation') }}
-                </x-button-link>
-            @endcan
-
-        @endsection
-
-        @include('championship.partials.heading')
+    <x-slot name="actions">
+        @can('update', $reservation)
+            <x-button-link href="{{ route('bib-reservations.edit', $reservation) }}">
+                {{ __('Edit reservation') }}
+            </x-button-link>
+        @endcan
     </x-slot>
 
-
-    <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid md:grid-cols-2 gap-4">
+        <div class="grid md:grid-cols-2 gap-4">
 
             <div class="p-4 bg-white shadow-xl rounded space-y-2">
                 <p class="text-2xl font-bold">
@@ -52,5 +43,5 @@
             </div>
 
         </div>
-    </div>
-</x-app-layout>
+
+</x-championship-page-layout>

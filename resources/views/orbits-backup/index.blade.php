@@ -10,7 +10,7 @@
     </x-slot>
 
     <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="px-4 sm:px-6 lg:px-8">
     
 
         <div class="p-4 bg-white rounded">

@@ -37,7 +37,7 @@
 
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="px-4 sm:px-6 lg:px-8">
             <div class="md:grid md:grid-cols-3 md:gap-6">
                 <x-section-title>
                     <x-slot name="title">{{ __('Race number and category') }}</x-slot>

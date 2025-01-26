@@ -1,25 +1,18 @@
-<x-app-layout>
+<x-championship-page-layout :$championship>
     <x-slot name="title">
         {{ $category->name }} - {{ $championship->title }}
     </x-slot>
-    <x-slot name="header">
-
-        @section('actions')
-
-            @can('update', $category)
-                <x-button-link href="{{ route('categories.edit', $category) }}">
-                    {{ __('Edit category') }}
-                </x-button-link>
-            @endcan
-
-        @endsection
-
-        @include('championship.partials.heading')
+    <x-slot name="actions">
+        @can('update', $category)
+            <x-button-link href="{{ route('categories.edit', $category) }}">
+                {{ __('Edit category') }}
+            </x-button-link>
+        @endcan
     </x-slot>
 
 
     <div class="pb-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid md:grid-cols-2 gap-4">
+        <div class="px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-4">
 
             <div class="p-4 bg-white shadow-xl rounded space-y-2">
                 <p>
@@ -48,4 +41,4 @@
         
         </div>
     </div>
-</x-app-layout>
+</x-championship-page-layout>

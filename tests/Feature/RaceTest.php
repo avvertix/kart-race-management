@@ -17,26 +17,6 @@ class RaceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_races_screen_can_be_rendered()
-    {
-        $user = User::factory()->organizer()->create();
-
-        $race = Race::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->get(route('championships.races.index', ['championship' => $race->championship]));
-
-        $response->assertOk();
-
-        $races = $response->viewData('races');
-
-        $this->assertInstanceOf(Collection::class, $races);
-        $this->assertTrue($races->first()->is($race));
-        $this->assertTrue($response->viewData('championship')->is($race->championship));
-
-    }
-
     public function test_new_race_can_be_created()
     {
         $user = User::factory()->organizer()->create();
@@ -58,7 +38,7 @@ class RaceTest extends TestCase
 
         $this->travelBack();
 
-        $response->assertRedirectToRoute('championships.races.index', ['championship' => $championship]);
+        $response->assertRedirectToRoute('championships.show', ['championship' => $championship]);
 
         $response->assertSessionHasNoErrors();
 
@@ -101,7 +81,7 @@ class RaceTest extends TestCase
 
         $this->travelBack();
 
-        $response->assertRedirectToRoute('championships.races.index', ['championship' => $championship]);
+        $response->assertRedirectToRoute('championships.show', ['championship' => $championship]);
 
         $response->assertSessionHasNoErrors();
 

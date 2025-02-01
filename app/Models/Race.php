@@ -182,10 +182,10 @@ class Race extends Model
     {
         return $this->type === RaceType::ZONE;
     }
-    
+
     public function isCancelled(): bool
     {
-        return !is_null($this->canceled_at);
+        return ! is_null($this->canceled_at);
     }
 
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute

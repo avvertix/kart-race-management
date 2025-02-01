@@ -368,5 +368,13 @@
     "Cancel the race.": "Annulla la gara.",
     ":race canceled.": ":race annullata.",
     "Wildcard": "Wildcard",
-    "Configure when championship entrants are considered wildcards (i.e. the do not score points).": "Configura quando i partecipanti sono considerati wildcard (i.e. non prendono punti)."
+    "Configure when championship entrants are considered wildcards (i.e. the do not score points).": "Configura quando i partecipanti sono considerati wildcard (i.e. non prendono punti).",
+    "Next races": "Prossime gare",
+    ":value/:available participant|:value/:available participants": ":value/:available partecipante|:value/:available partecipanti",
+    ":value participant|:value participants": ":value partecipante|:value partecipanti",
+    "No race in sight.": "Nessuna gara.",
+    "No races scheduled yet.": "Nessuna gara in programma.",
+    ":value race|:value races": ":value gara|:value gare",
+    "No championships.": "Nessun campionato,",
+    "No championships scheduled yet.": "Nessun campionato in programma."
 }

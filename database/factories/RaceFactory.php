@@ -53,7 +53,7 @@ class RaceFactory extends Factory
             ];
         });
     }
-    
+
     /**
      * Make the race cancelled.
      *

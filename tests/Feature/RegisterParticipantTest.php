@@ -587,7 +587,6 @@ class RegisterParticipantTest extends TestCase
         });
     }
 
-
     public function test_participant_cannot_register_to_cancelled_race()
     {
         Notification::fake();
@@ -598,7 +597,7 @@ class RegisterParticipantTest extends TestCase
 
         $registerParticipant = app()->make(RegisterParticipant::class);
 
-        try{
+        try {
 
             $participant = $registerParticipant($race, [
                 'bib' => 100,

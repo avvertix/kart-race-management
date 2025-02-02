@@ -53,4 +53,18 @@ class RaceFactory extends Factory
             ];
         });
     }
+    
+    /**
+     * Make the race cancelled.
+     *
+     * @return Factory
+     */
+    public function cancelled()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'canceled_at' => now()->subHour(),
+            ];
+        });
+    }
 }

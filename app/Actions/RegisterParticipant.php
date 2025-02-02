@@ -30,6 +30,13 @@ class RegisterParticipant
      */
     public function __invoke(Race $race, array $input, ?User $user = null)
     {
+
+        if ($race->isCancelled()) {
+            throw ValidationException::withMessages([
+                'bib' => __('The race has been cancelled and registration is now closed.'),
+            ]);
+        }
+
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
             ...$this->getCategoryValidationRules((int) $race->championship_id),

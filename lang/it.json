@@ -376,5 +376,6 @@
     "No races scheduled yet.": "Nessuna gara in programma.",
     ":value race|:value races": ":value gara|:value gare",
     "No championships.": "Nessun campionato,",
-    "No championships scheduled yet.": "Nessun campionato in programma."
+    "No championships scheduled yet.": "Nessun campionato in programma.",
+    "The race has been cancelled and registration is now closed.": "La gara è stata annullata e le iscrizioni sono chiuse."
 }

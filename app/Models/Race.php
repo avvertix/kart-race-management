@@ -101,6 +101,22 @@ class Race extends Model
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
+    public function scopeNextRaces($query)
+    {
+        $now = now()->startOfDay();
+
+        return $query
+            // ->where('registration_opens_at', '<=', $now)
+            // ->orWhere('registration_closes_at', '>=', $now)
+            ->where('event_start_at', '>=', $now);
+    }
+
+    /**
+     * Filter races that happens today
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeActive($query)
     {
         $now = now();
@@ -167,6 +183,11 @@ class Race extends Model
         return $this->type === RaceType::ZONE;
     }
 
+    public function isCancelled(): bool
+    {
+        return ! is_null($this->canceled_at);
+    }
+
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
@@ -174,7 +195,7 @@ class Race extends Model
                 return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l').' — '.$this->event_end_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
             }
 
-            return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('l');
+            return $this->event_start_at->locale(app()->currentLocale())->setTimezone($this->timezone)->isoFormat('D MMM YYYY');
         });
     }
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
@@ -50,9 +51,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
 });
 
 // Championships and Races management

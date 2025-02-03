@@ -377,5 +377,7 @@
     ":value race|:value races": ":value gara|:value gare",
     "No championships.": "Nessun campionato,",
     "No championships scheduled yet.": "Nessun campionato in programma.",
-    "The race has been cancelled and registration is now closed.": "La gara è stata annullata e le iscrizioni sono chiuse."
+    "The race has been cancelled and registration is now closed.": "La gara è stata annullata e le iscrizioni sono chiuse.",
+    "Supported format:": "Formato supportato:",
+    "Please enter an existing email address as you will receive a messgae to confirm for the participation.": "Inserisci un indirizzo email esistente a cui hai accesso poiché riceverai un messaggio da confermare per procedere all'iscrizione."
 }

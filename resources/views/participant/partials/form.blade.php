@@ -88,6 +88,7 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_email" value="{{ __('E-Mail') }}*" />
+                    <p class="text-sm">{{ __('Please enter an existing email address as you will receive a messgae to confirm for the participation.') }}</p>
                     <x-input id="driver_email" type="email" name="driver_email" class="mt-1 block w-full" :value="old('driver_email', $driver['email'] ?? null)"  />
                     <x-input-error for="driver_email" class="mt-2" />
                 </div>
@@ -100,7 +101,8 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_birth_date" value="{{ __('Birth date') }}*" />
-                    <x-input id="driver_birth_date" type="date" name="driver_birth_date" class="mt-1 block w-full" :value="old('driver_birth_date', $driver['birth_date'] ?? null)" pattern="\d{4}-\d{2}-\d{2}" />
+                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date.placeholder') }}</code></p>
+                    <x-input-date id="driver_birth_date" name="driver_birth_date" class="mt-1 block w-full" :value="old('driver_birth_date', $driver['birth_date'] ?? null)" />
                     <x-input-error for="driver_birth_date" class="mt-2" />
                 </div>
 
@@ -113,7 +115,8 @@
                 @useCompleteRegistrationForm()
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
-                    <x-input id="driver_medical_certificate_expiration_date" type="date" name="driver_medical_certificate_expiration_date" class="mt-1 block w-full" :value="old('driver_medical_certificate_expiration_date', $driver['medical_certificate_expiration_date'] ?? null)"   pattern="\d{4}-\d{2}-\d{2}"/>
+                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date.placeholder') }}</code></p>
+                    <x-input-date id="driver_medical_certificate_expiration_date" name="driver_medical_certificate_expiration_date" class="mt-1 block w-full" :value="old('driver_medical_certificate_expiration_date', $driver['medical_certificate_expiration_date'] ?? null)"/>
                     <x-input-error for="driver_medical_certificate_expiration_date" class="mt-2" />
                 </div>
                 @enduseCompleteRegistrationForm
@@ -205,7 +208,8 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
-                    <x-input id="competitor_birth_date" type="date" name="competitor_birth_date" class="mt-1 block w-full" :value="old('competitor_birth_date', $competitor['birth_date'] ?? null)" pattern="\d{4}-\d{2}-\d{2}" />
+                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date.placeholder') }}</code></p>
+                    <x-input-date id="competitor_birth_date" name="competitor_birth_date" class="mt-1 block w-full" :value="old('competitor_birth_date', $competitor['birth_date'] ?? null)" />
                     <x-input-error for="competitor_birth_date" class="mt-2" />
                 </div>
 

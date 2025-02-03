@@ -1,4 +1,4 @@
-@props(['value' => null, 'disabled' => false, 'mask' => trans('date.mask'), 'placeholder' => trans('date.placeholder'), 'format' => trans('date.format') ])
+@props(['value' => null, 'disabled' => false, 'mask' => trans('date-input.mask'), 'placeholder' => trans('date-input.placeholder'), 'format' => trans('date-input.format') ])
 
 @php
     $value = Date::normalizeToFormat($value, $format);

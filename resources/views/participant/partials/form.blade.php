@@ -101,7 +101,7 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_birth_date" value="{{ __('Birth date') }}*" />
-                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date.placeholder') }}</code></p>
+                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date-input.placeholder') }}</code></p>
                     <x-input-date id="driver_birth_date" name="driver_birth_date" class="mt-1 block w-full" :value="old('driver_birth_date', $driver['birth_date'] ?? null)" />
                     <x-input-error for="driver_birth_date" class="mt-2" />
                 </div>
@@ -115,7 +115,7 @@
                 @useCompleteRegistrationForm()
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
-                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date.placeholder') }}</code></p>
+                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date-input.placeholder') }}</code></p>
                     <x-input-date id="driver_medical_certificate_expiration_date" name="driver_medical_certificate_expiration_date" class="mt-1 block w-full" :value="old('driver_medical_certificate_expiration_date', $driver['medical_certificate_expiration_date'] ?? null)"/>
                     <x-input-error for="driver_medical_certificate_expiration_date" class="mt-2" />
                 </div>
@@ -208,7 +208,7 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_birth_date" value="{{ __('Birth date') }}*" />
-                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date.placeholder') }}</code></p>
+                    <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date-input.placeholder') }}</code></p>
                     <x-input-date id="competitor_birth_date" name="competitor_birth_date" class="mt-1 block w-full" :value="old('competitor_birth_date', $competitor['birth_date'] ?? null)" />
                     <x-input-error for="competitor_birth_date" class="mt-2" />
                 </div>

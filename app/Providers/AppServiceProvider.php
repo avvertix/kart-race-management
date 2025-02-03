@@ -11,8 +11,10 @@ use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -43,6 +45,32 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::if('useCompleteRegistrationForm', function () {
             return config('races.registration.form') === 'complete';
+        });
+
+        Date::macro('normalizeToDateString', function (?string $value): ?string {
+            if(blank($value)){
+                return null;
+            }
+
+            if(Carbon::hasFormat($value, 'd/m/Y')){
+                return Carbon::createFromFormat('d/m/Y', $value)->toDateString(); 
+            }
+            
+            if(Carbon::hasFormat($value, 'd-m-Y')){
+                return Carbon::createFromFormat('d-m-Y', $value)->toDateString(); 
+            }
+
+            return Carbon::parse($value)->toDateString();
+        });
+        
+        Date::macro('normalizeToFormat', function (?string $value, string $format = 'Y-m-d'): ?string {
+            if(blank($value)){
+                return null;
+            }
+
+            $normalizedValue = Date::normalizeToDateString($value);
+
+            return Carbon::parse($normalizedValue)->format($format);
         });
     }
 }

@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Validation\ParticipantValidationRules;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -88,9 +89,9 @@ class UpdateParticipantRegistration
                         'nationality' => $validatedInput['driver_nationality'],
                         'email' => $validatedInput['driver_email'],
                         'phone' => $validatedInput['driver_phone'],
-                        'birth_date' => $validatedInput['driver_birth_date'],
+                        'birth_date' => Date::normalizeToDateString($validatedInput['driver_birth_date']),
                         'birth_place' => $validatedInput['driver_birth_place'],
-                        'medical_certificate_expiration_date' => $validatedInput['driver_medical_certificate_expiration_date'] ?? null,
+                        'medical_certificate_expiration_date' => Date::normalizeToDateString($validatedInput['driver_medical_certificate_expiration_date'] ?? null),
                         'residence_address' => $this->processAddressInput($validatedInput, 'driver_residence'),
                         'sex' => $validatedInput['driver_sex'] ?? Sex::UNSPECIFIED,
                     ],
@@ -104,7 +105,7 @@ class UpdateParticipantRegistration
                         'nationality' => $validatedInput['competitor_nationality'],
                         'email' => $validatedInput['competitor_email'],
                         'phone' => $validatedInput['competitor_phone'],
-                        'birth_date' => $validatedInput['competitor_birth_date'],
+                        'birth_date' => Date::normalizeToDateString($validatedInput['competitor_birth_date'] ?? null),
                         'birth_place' => $validatedInput['competitor_birth_place'],
                         'residence_address' => $this->processAddressInput($validatedInput, 'competitor_residence'),
                     ] : null,

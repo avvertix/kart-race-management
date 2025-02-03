@@ -15,6 +15,7 @@ use App\Validation\ParticipantValidationRules;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -91,13 +92,13 @@ class RegisterParticipant
                             'licence_type' => $validatedInput['driver_licence_type'] ?? DriverLicence::LOCAL_NATIONAL->value,
                             'licence_number' => $validatedInput['driver_licence_number'],
                             'fiscal_code' => $validatedInput['driver_fiscal_code'],
-                            'licence_renewed_at' => $validatedInput['driver_licence_renewed_at'] ?? null,
+                            'licence_renewed_at' => Date::normalizeToDateString($validatedInput['driver_licence_renewed_at'] ?? null),
                             'nationality' => $validatedInput['driver_nationality'],
                             'email' => $validatedInput['driver_email'],
                             'phone' => $validatedInput['driver_phone'],
-                            'birth_date' => $validatedInput['driver_birth_date'],
+                            'birth_date' => Date::normalizeToDateString($validatedInput['driver_birth_date']),
                             'birth_place' => $validatedInput['driver_birth_place'],
-                            'medical_certificate_expiration_date' => $validatedInput['driver_medical_certificate_expiration_date'] ?? null,
+                            'medical_certificate_expiration_date' => Date::normalizeToDateString($validatedInput['driver_medical_certificate_expiration_date'] ?? null),
                             'residence_address' => $this->processAddressInput($validatedInput, 'driver_residence'),
                             'sex' => $validatedInput['driver_sex'] ?? Sex::UNSPECIFIED,
                         ],
@@ -107,11 +108,11 @@ class RegisterParticipant
                             'licence_type' => $validatedInput['competitor_licence_type'] ?? CompetitorLicence::LOCAL->value,
                             'licence_number' => $validatedInput['competitor_licence_number'],
                             'fiscal_code' => $validatedInput['competitor_fiscal_code'],
-                            'licence_renewed_at' => $validatedInput['competitor_licence_renewed_at'] ?? null,
+                            'licence_renewed_at' => Date::normalizeToDateString($validatedInput['competitor_licence_renewed_at'] ?? null),
                             'nationality' => $validatedInput['competitor_nationality'],
                             'email' => $validatedInput['competitor_email'],
                             'phone' => $validatedInput['competitor_phone'],
-                            'birth_date' => $validatedInput['competitor_birth_date'],
+                            'birth_date' => Date::normalizeToDateString($validatedInput['competitor_birth_date']),
                             'birth_place' => $validatedInput['competitor_birth_place'],
                             'residence_address' => $this->processAddressInput($validatedInput, 'competitor_residence'),
                         ] : null,

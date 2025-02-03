@@ -48,23 +48,23 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Date::macro('normalizeToDateString', function (?string $value): ?string {
-            if(blank($value)){
+            if (blank($value)) {
                 return null;
             }
 
-            if(Carbon::hasFormat($value, 'd/m/Y')){
-                return Carbon::createFromFormat('d/m/Y', $value)->toDateString(); 
+            if (Carbon::hasFormat($value, 'd/m/Y')) {
+                return Carbon::createFromFormat('d/m/Y', $value)->toDateString();
             }
-            
-            if(Carbon::hasFormat($value, 'd-m-Y')){
-                return Carbon::createFromFormat('d-m-Y', $value)->toDateString(); 
+
+            if (Carbon::hasFormat($value, 'd-m-Y')) {
+                return Carbon::createFromFormat('d-m-Y', $value)->toDateString();
             }
 
             return Carbon::parse($value)->toDateString();
         });
-        
+
         Date::macro('normalizeToFormat', function (?string $value, string $format = 'Y-m-d'): ?string {
-            if(blank($value)){
+            if (blank($value)) {
                 return null;
             }
 

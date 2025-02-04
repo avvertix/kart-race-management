@@ -147,7 +147,7 @@ class ChampionshipBonusController extends Controller
             'driver_licence' => $validated['driver_licence'] ?? null,
             'driver_licence_hash' => $licenceHash,
             'amount' => $validated['amount'],
-            'bonus_type' => BonusType::from($validated['bonus_type']),
+            'bonus_type' => BonusType::from((int) ($validated['bonus_type'])),
         ]);
 
         return redirect()->route('championships.bonuses.index', $championship)

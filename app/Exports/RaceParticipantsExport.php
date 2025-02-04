@@ -97,7 +97,7 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
 
             $participant->competitor['first_name'] ?? null,
             $participant->competitor['last_name'] ?? null,
-            ($participant->competitor['licence_type'] ?? false) ? CompetitorLicence::from((int)($participant->competitor['licence_type']))->name : null,
+            ($participant->competitor['licence_type'] ?? false) ? CompetitorLicence::from((int) ($participant->competitor['licence_type']))->name : null,
             $participant->competitor['licence_number'] ?? null,
             $participant->competitor['nationality'] ?? null,
             $participant->competitor['birth_date'] ?? null,

@@ -55,7 +55,7 @@ class WildcardSettings extends Component
         auth()->user()->can('update', $this->championship);
 
         $this->championship->wildcard->enabled = $this->wildcardForm['enabled'];
-        $this->championship->wildcard->strategy = WildcardStrategy::from((int)($this->wildcardForm['strategy']));
+        $this->championship->wildcard->strategy = WildcardStrategy::from((int) ($this->wildcardForm['strategy']));
         $this->championship->save();
 
         $this->dispatch('saved');

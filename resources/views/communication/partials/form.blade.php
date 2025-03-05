@@ -18,7 +18,7 @@
 </div>
 
 <div class="">
-    <x-label for="target_user_role" value="{{ __('Users to which the message is presented (all users by default)') }}" />
+    <x-label for="target_user_role" value="{{ __('Users to which the message is presented (participants only by default)') }}" />
     <x-input-error for="target_user_role" />
 
     @php
@@ -26,6 +26,11 @@
     @endphp
 
     <div class="flex items-center gap-4">
+       
+        <label class="flex items-center">
+            <x-checkbox name="target_user_role[]" id="target_user_role-anonim" value="anonim" :checked="$oldTargetUser->contains('anonim') || $oldTargetUser->isEmpty()" />
+            <span class="ml-2 text-sm text-zinc-600">{{ __('Participants') }}</span>
+        </label>
 
         @foreach (\Laravel\Jetstream\Jetstream::$roles as $key => $role)
             <label class="flex items-center">

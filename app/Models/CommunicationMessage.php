@@ -42,7 +42,7 @@ class CommunicationMessage extends Model implements Htmlable
      */
     public function scopeTargetUser($query, $role)
     {
-        return $query->where(function($query) use ($role) {
+        return $query->where(function ($query) use ($role) {
             $query->whereJsonContains('target_user_role', $role)
                 ->orWhereJsonContains('target_user_role', 'all');
         });
@@ -53,7 +53,7 @@ class CommunicationMessage extends Model implements Htmlable
      */
     public function scopeTargetAnonymousUsers($query)
     {
-        return $query->where(function($query) {
+        return $query->where(function ($query) {
 
             $query
                 ->WhereJsonContains('target_user_role', 'all')

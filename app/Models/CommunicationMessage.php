@@ -37,11 +37,29 @@ class CommunicationMessage extends Model implements Htmlable
             });
     }
 
+    /**
+     * Selects the messages that are configured to be displayed to a specific user role or to all users
+     */
     public function scopeTargetUser($query, $role)
     {
-        return $query
-            ->whereJsonContains('target_user_role', $role)
-            ->orWhereNull('target_user_role');
+        return $query->where(function ($query) use ($role) {
+            $query->whereJsonContains('target_user_role', $role)
+                ->orWhereJsonContains('target_user_role', 'all');
+        });
+    }
+
+    /**
+     * Selects the messages that are configured to be displayed to anonymous users or to all users
+     */
+    public function scopeTargetAnonymousUsers($query)
+    {
+        return $query->where(function ($query) {
+
+            $query
+                ->WhereJsonContains('target_user_role', 'all')
+                ->orWhereJsonContains('target_user_role', 'anonim')
+                ->orWhereNull('target_user_role');
+        });
     }
 
     public function toHtml()

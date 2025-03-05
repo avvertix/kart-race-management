@@ -23,7 +23,7 @@ class CommunicationMessageController extends Controller
     public function index()
     {
         return view('communication.index', [
-            'communications' => CommunicationMessage::query()->orderBy('starts_at', 'DESC')->get(),
+            'communications' => CommunicationMessage::query()->orderBy('starts_at', 'DESC')->orderBy('created_at', 'DESC')->get(),
         ]);
     }
 
@@ -38,8 +38,8 @@ class CommunicationMessageController extends Controller
             'message' => ['required', 'string', 'max:300'],
             'theme' => ['required', 'string', 'in:info'],
             'target_path' => ['sometimes', 'nullable', 'string'],
-            'target_user_role' => ['sometimes', 'nullable', 'array', 'max:4'],
-            'target_user_role.*' => ['required', 'string', 'in:'.collect(Jetstream::$roles)->keys()->join(',')],
+            'target_user_role' => ['sometimes', 'nullable', 'array', 'max:6'],
+            'target_user_role.*' => ['required', 'string', 'in:'.collect(['anonim' => 'anonim', ...Jetstream::$roles])->keys()->join(',')],
             'starts_at' => ['required', 'date', 'after_or_equal:today'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ]);
@@ -76,8 +76,8 @@ class CommunicationMessageController extends Controller
             'message' => ['required', 'string', 'max:300'],
             'theme' => ['required', 'string', 'in:info'],
             'target_path' => ['sometimes', 'nullable', 'string'],
-            'target_user_role' => ['sometimes', 'nullable', 'array', 'max:4'],
-            'target_user_role.*' => ['required', 'string', 'in:'.collect(Jetstream::$roles)->keys()->join(',')],
+            'target_user_role' => ['sometimes', 'nullable', 'array', 'max:6'],
+            'target_user_role.*' => ['required', 'string', 'in:'.collect(['anonim' => 'anonim', ...Jetstream::$roles])->keys()->join(',')],
             'starts_at' => ['required', 'date', 'after_or_equal:today'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ]);

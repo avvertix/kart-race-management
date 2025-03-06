@@ -223,7 +223,7 @@ class RegisterParticipantTest extends TestCase
             ...$this->generateValidVehicle(),
             'consent_privacy' => true,
 
-            'driver_birth_date' => '1999-20-12',
+            'driver_birth_date' => '1999-20-12', // using a format Y-d-m that is not suggested
             'driver_medical_certificate_expiration_date' => $certificateExpirationDate->format('Y-d-m'),
         ]);
 

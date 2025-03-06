@@ -198,6 +198,40 @@ class RegisterParticipantTest extends TestCase
         });
     }
 
+    public function test_date_format_respected()
+    {
+        config(['races.registration.form' => 'complete']);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $certificateExpirationDate = today()->addYear()->toImmutable();
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The driver medical certificate expiration date must follow the format Year-Month-Day (YYYY-MM-DD) or Day/Month/Year (DD/MM/YYYY), e.g. 2025-06-03 or 03/06/2025.');
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            ...$this->generateValidMechanic(),
+            ...$this->generateValidVehicle(),
+            'consent_privacy' => true,
+
+            'driver_birth_date' => '1999-06-03', // using a format Y-d-m that is not suggested
+            'driver_medical_certificate_expiration_date' => '2026-16-03',
+        ]);
+
+    }
+
     public function test_participant_registered_using_minimal_form()
     {
         config(['races.registration.form' => 'minimal']);

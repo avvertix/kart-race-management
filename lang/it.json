@@ -379,5 +379,7 @@
     "No championships scheduled yet.": "Nessun campionato in programma.",
     "The race has been cancelled and registration is now closed.": "La gara è stata annullata e le iscrizioni sono chiuse.",
     "Supported format:": "Formato supportato:",
-    "Please enter an existing email address as you will receive a messgae to confirm for the participation.": "Inserisci un indirizzo email esistente a cui hai accesso poiché riceverai un messaggio da confermare per procedere all'iscrizione."
+    "Please enter an existing email address as you will receive a messgae to confirm for the participation.": "Inserisci un indirizzo email esistente a cui hai accesso poiché riceverai un messaggio da confermare per procedere all'iscrizione.",
+    "The :attribute must be a string.": ":attribute deve essere una stringa.",
+    "The :attribute must follow the format Year-Month-Day (YYYY-MM-DD) or Day/Month/Year (DD/MM/YYYY), e.g. 2025-06-03 or 03/06/2025.": ":attribute deve seguire il formato Anno-Mese-Giorno (AAAA-MM-GG) o Giorno/Mese/Anno (GG/MM/AAAA), es. 2025-06-03 o 03/06/2025."
 }

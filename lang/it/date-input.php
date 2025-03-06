@@ -11,7 +11,7 @@ return [
     */
 
     'mask' => '99/99/9999',
-    'placeholder' => 'DD/MM/YYYY',
+    'placeholder' => 'DD/MM/YYYY (Day/Month/Year)',
     'format' => 'd/m/Y', // PHP date formatting string, do not translate
 
 ];

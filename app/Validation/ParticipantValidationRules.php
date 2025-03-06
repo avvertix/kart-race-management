@@ -13,6 +13,7 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
 use App\Models\User;
+use App\Rules\DateFormat;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -82,9 +83,9 @@ trait ParticipantValidationRules
             'driver_nationality' => ['required', 'string', 'max:250'],
             'driver_email' => ['required', 'string', 'email'],
             'driver_phone' => ['required', 'string'],
-            'driver_birth_date' => ['required', 'string'],
+            'driver_birth_date' => ['required', 'string', new DateFormat],
             'driver_birth_place' => ['required', 'string'],
-            'driver_medical_certificate_expiration_date' => ['required', 'string'],
+            'driver_medical_certificate_expiration_date' => ['required', 'string', new DateFormat],
             'driver_residence_address' => ['required', 'string'],
             'driver_sex' => ['required', new Enum(Sex::class)],
             'driver_residence_address' => ['required', 'string', 'max:250'],
@@ -118,7 +119,7 @@ trait ParticipantValidationRules
             'competitor_nationality' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_email' => ['nullable', 'required_with:competitor_licence_number', 'string', 'email'],
             'competitor_phone' => ['nullable', 'required_with:competitor_licence_number', 'string'],
-            'competitor_birth_date' => ['nullable', 'required_with:competitor_licence_number', 'string'],
+            'competitor_birth_date' => ['nullable', 'required_with:competitor_licence_number', 'string', new DateFormat],
             'competitor_birth_place' => ['nullable', 'required_with:competitor_licence_number', 'string'],
             'competitor_residence_address' => ['nullable', 'required_with:competitor_licence_number', 'string'],
             'competitor_residence_address' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],

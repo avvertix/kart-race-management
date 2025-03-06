@@ -198,7 +198,7 @@ class RegisterParticipantTest extends TestCase
         });
     }
 
-    public function test_participant_registered_using_english_localized_dates()
+    public function test_date_format_respected()
     {
         config(['races.registration.form' => 'complete']);
 
@@ -214,6 +214,9 @@ class RegisterParticipantTest extends TestCase
 
         $certificateExpirationDate = today()->addYear()->toImmutable();
 
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The driver medical certificate expiration date must follow the format Year-Month-Day (YYYY-MM-DD) or Day/Month/Year (DD/MM/YYYY), e.g. 2025-06-03 or 03/06/2025.');
+
         $participant = $registerParticipant($race, [
             'bib' => 100,
             'category' => $category->ulid,
@@ -223,68 +226,10 @@ class RegisterParticipantTest extends TestCase
             ...$this->generateValidVehicle(),
             'consent_privacy' => true,
 
-            'driver_birth_date' => '1999-20-12', // using a format Y-d-m that is not suggested
-            'driver_medical_certificate_expiration_date' => $certificateExpirationDate->format('Y-d-m'),
+            'driver_birth_date' => '1999-06-03', // using a format Y-d-m that is not suggested
+            'driver_medical_certificate_expiration_date' => '2026-16-03',
         ]);
 
-        $this->travelBack();
-
-        $this->assertInstanceOf(Participant::class, $participant);
-        $this->assertEquals(100, $participant->bib);
-        $this->assertEquals($category->ulid, $participant->category);
-        $this->assertTrue($participant->racingCategory->is($category));
-        $this->assertEquals('John', $participant->first_name);
-        $this->assertEquals('Racer', $participant->last_name);
-        $this->assertEquals('en', $participant->locale);
-        $this->assertFalse($participant->use_bonus);
-
-        $this->assertEquals('1999-12-20', $participant->driver['birth_date']);
-        $this->assertEquals($certificateExpirationDate->toDateString(), $participant->driver['medical_certificate_expiration_date']);
-
-        $this->assertEquals([
-            'first_name' => 'Parent',
-            'last_name' => 'Racer',
-            'licence_type' => 10,
-            'licence_number' => 'C0002',
-            'fiscal_code' => 'CMPT-FC',
-            'licence_renewed_at' => null,
-            'nationality' => 'Italy',
-            'email' => 'parent@racer.local',
-            'phone' => '54444444',
-            'birth_date' => '1979-11-11',
-            'birth_place' => 'Milan',
-            'residence_address' => [
-                'address' => 'via dei Platani, 40',
-                'city' => 'Milan',
-                'province' => 'Milan',
-                'postal_code' => '20146',
-            ],
-        ], $participant->competitor);
-
-        $this->assertCount(1, $participant->vehicles);
-        $this->assertEquals([
-            'chassis_manufacturer' => 'Chassis',
-            'engine_manufacturer' => 'engine manufacturer',
-            'engine_model' => 'engine model',
-            'oil_manufacturer' => 'Oil Manufacturer',
-            'oil_type' => 'Oil Type',
-            'oil_percentage' => '4',
-        ], $participant->vehicles[0]);
-
-        $this->assertEquals([
-            'name' => 'Mechanic Racer',
-            'licence_number' => 'M0003',
-        ], $participant->mechanic);
-
-        Notification::assertCount(2);
-
-        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
-            return $notification->target === 'driver';
-        });
-
-        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
-            return $notification->target === 'competitor';
-        });
     }
 
     public function test_participant_registered_using_minimal_form()

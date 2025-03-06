@@ -60,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
                 return Carbon::createFromFormat('d-m-Y', $value)->toDateString();
             }
 
+            if (Carbon::hasFormat($value, 'Y-d-m')) {
+                return Carbon::createFromFormat('Y-d-m', $value)->toDateString();
+            }
+
             return Carbon::parse($value)->toDateString();
         });
 

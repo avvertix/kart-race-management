@@ -53,22 +53,22 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if (Carbon::hasFormat($value, 'd/m/Y')) {
-                return Carbon::createFromFormat('d/m/Y', $value)->toDateString();
+                return Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
             }
 
             if (Carbon::hasFormat($value, 'd-m-Y')) {
-                return Carbon::createFromFormat('d-m-Y', $value)->toDateString();
+                return Carbon::createFromFormat('d-m-Y', $value)->format('Y-m-d');
             }
 
             if (Carbon::hasFormat($value, 'Y-m-d')) {
-                return Carbon::createFromFormat('Y-m-d', $value)->toDateString();
+                return Carbon::createFromFormat('Y-m-d', $value)->format('Y-m-d');
             }
 
             if (Carbon::hasFormat($value, 'Y-d-m')) {
-                return Carbon::createFromFormat('Y-d-m', $value)->toDateString();
+                return Carbon::createFromFormat('Y-d-m', $value)->format('Y-m-d');
             }
 
-            return Carbon::parse($value)->toDateString();
+            return Carbon::parse($value)->format('Y-m-d');
         });
 
         Date::macro('normalizeToFormat', function (?string $value, string $format = 'Y-m-d'): ?string {
@@ -78,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
 
             $normalizedValue = Date::normalizeToDateString($value);
 
-            return Carbon::parse($normalizedValue)->format($format);
+            return Carbon::createFromFormat('Y-m-d', $normalizedValue)->format($format);
         });
     }
 }

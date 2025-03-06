@@ -197,7 +197,7 @@ class RegisterParticipantTest extends TestCase
             return $notification->target === 'competitor';
         });
     }
-    
+
     public function test_participant_registered_using_english_localized_dates()
     {
         config(['races.registration.form' => 'complete']);

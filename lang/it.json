@@ -383,5 +383,8 @@
     "The :attribute must be a string.": ":attribute deve essere una stringa.",
     "The :attribute must follow the format Year-Month-Day (YYYY-MM-DD) or Day/Month/Year (DD/MM/YYYY), e.g. 2025-06-03 or 03/06/2025.": ":attribute deve seguire il formato Anno-Mese-Giorno (AAAA-MM-GG) o Giorno/Mese/Anno (GG/MM/AAAA), es. 2025-06-03 o 03/06/2025.",
     "The entered bib is already reserved to another driver. Please check your licence number or contact the support reporting error [pvr-2].": "Il numero di gara inserito è già riservato ad un altro pilota. Verifica di aver inserito correttamente la licenza del pilota oppure contatta il supporto.",
-    "Bib :bib used by another driver (:driver) in championship.": "Il numero di gara :bib è già in uso da un altro pilota (:driver) nel campionato."
+    "Bib :bib used by another driver (:driver) in championship.": "Il numero di gara :bib è già in uso da un altro pilota (:driver) nel campionato.",
+    "Check the race number!": "Controlla il numero di gara!",
+    "The number appears to be reserved, but it has not been possible to confirm that the reservation is for this driver. Please check the driver's licence and name given for the reservation.": "Il numero di gara risulta prenotato, ma non è stato possibile confermare che la prenotazione sia per questo pilota. Verifica che il nome e la licenza del pilota corrispondano.",
+    "Licence not specified": "Licenza non inserita"
 }

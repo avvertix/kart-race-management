@@ -169,7 +169,7 @@ class BibReservationControllerTest extends TestCase
         $this->assertNull($reservation->reservation_expires_at);
     }
 
-    public function test_bib_reservation_created_without_driver_licence(): void
+    public function test_bib_reservation_cannot_be_created_without_driver_licence(): void
     {
         $user = User::factory()->organizer()->create();
 
@@ -185,22 +185,10 @@ class BibReservationControllerTest extends TestCase
                 'contact_email' => 'driver@local.host',
             ]);
 
-        $response->assertRedirectToRoute('championships.bib-reservations.index', $championship);
+        $response->assertRedirectToRoute('championships.bib-reservations.create', $championship);
 
-        $response->assertSessionHas('flash.banner', 'Race number 100 reserved.');
+        $response->assertSessionHasErrors(['driver_licence_number']);
 
-        $reservation = BibReservation::first();
-
-        $this->assertInstanceOf(BibReservation::class, $reservation);
-
-        $this->assertTrue($reservation->championship->is($championship));
-
-        $this->assertEquals('100', $reservation->bib);
-        $this->assertEquals('Driver name', $reservation->driver);
-        $this->assertEquals('driver@local.host', $reservation->contact_email);
-        $this->assertNull($reservation->driver_licence);
-        $this->assertNull($reservation->driver_licence_hash);
-        $this->assertNull($reservation->reservation_expires_at);
     }
 
     public function test_expiring_bib_reservation_created(): void
@@ -397,6 +385,56 @@ class BibReservationControllerTest extends TestCase
         $this->assertNull($updatedReservation->reservation_expires_at);
     }
 
+    public function test_reservation_updated_when_adding_licence_to_not_enforced_reservation(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $race = Race::factory()->create();
+
+        $participant = Participant::factory()
+            ->for($race)
+            ->for($race->championship)
+            ->driver([
+                'first_name' => 'John',
+                'last_name' => 'Racer',
+                'licence_number' => 'D0001',
+                'bib' => 100,
+            ])
+            ->create();
+
+        $reservation = BibReservation::factory()
+            ->recycle($race->championship)
+            ->create([
+                'bib' => '100',
+                'driver' => 'John Racer',
+            ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('bib-reservations.edit', $reservation))
+            ->put(route('bib-reservations.update', $reservation), [
+                'bib' => '100',
+                'driver' => 'John Racer',
+                'driver_licence_number' => 'D0001',
+                'contact_email' => null,
+            ]);
+
+        $response->assertSessionDoesntHaveErrors();
+        $response->assertRedirectToRoute('championships.bib-reservations.index', $reservation->championship);
+
+        $response->assertSessionHas('flash.banner', 'Reservation for 100 updated.');
+
+        $updatedReservation = $reservation->fresh();
+
+        $this->assertInstanceOf(BibReservation::class, $updatedReservation);
+
+        $this->assertEquals('100', $updatedReservation->bib);
+        $this->assertEquals('John Racer', $updatedReservation->driver);
+        $this->assertEquals('D0001', $updatedReservation->driver_licence);
+        $this->assertEquals(hash('sha512', 'D0001'), $updatedReservation->driver_licence_hash);
+        $this->assertNull($updatedReservation->reservation_expires_at);
+    }
+
     public function test_bib_editable_when_not_yet_used(): void
     {
         $user = User::factory()->organizer()->create();
@@ -474,7 +512,7 @@ class BibReservationControllerTest extends TestCase
 
         $response->assertRedirectToRoute('bib-reservations.edit', $reservation);
 
-        $response->assertSessionHasErrors(['bib' => __('Participant with same licence has the race number 100.')]);
+        $response->assertSessionHasErrors(['bib' => 'A driver with the same licence is already partecipating in championship with number 100.']);
     }
 
     public function test_remove_licence_not_possible_when_updating_reservation(): void
@@ -502,7 +540,7 @@ class BibReservationControllerTest extends TestCase
 
         $response->assertRedirectToRoute('bib-reservations.edit', $reservation);
 
-        $response->assertSessionHasErrors(['driver_licence_number' => __('Removing licence not allowed.')]);
+        $response->assertSessionHasErrors(['driver_licence_number' => __('The driver licence number field is required.')]);
     }
 
     public function test_reservation_destroyed(): void

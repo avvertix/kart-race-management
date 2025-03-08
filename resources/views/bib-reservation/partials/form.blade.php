@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="driver_licence_number" value="{{ __('Licence Number') }}" />
+                    <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
                     <x-input id="driver_licence_number" type="text" name="driver_licence_number" class="mt-1 block w-full" :value="old('driver_licence_number', optional($reservation ?? null)->driver_licence)"  />
                     <x-input-error for="driver_licence_number" class="mt-2" />
                 </div>

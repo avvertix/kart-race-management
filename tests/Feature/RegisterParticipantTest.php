@@ -481,18 +481,19 @@ class RegisterParticipantTest extends TestCase
 
             $this->assertEquals([
                 'bib' => [
-                    'The entered bib is already reserved to another driver. Please check your licence number or contact the support.',
+                    'The entered bib is already reserved to another driver. Please check your licence number or contact the support reporting error [pvr-2].',
                 ],
             ], $th->errors());
         }
 
     }
 
-    public function test_participant_cannot_register_with_reserved_number_when_name_ambiguous()
+    public function test_participant_can_register_if_reservation_does_not_have_licence_and_name_ambiguous()
     {
-        // This covers an edge case when the organized doesn't know the licence number
-        // when adding a reservation. The registration is denied if driver name is
-        // not exactly equal to what is inserted in the reservation
+        // It is not sustainable anymore to accept reservation without a licence number
+        // Therefore this ensure that the registration can be performed
+        // The final verification of the bib reservation is up to the user doing
+        // the technical verification on the race day.
         Notification::fake();
 
         $race = Race::factory()->create();
@@ -510,29 +511,23 @@ class RegisterParticipantTest extends TestCase
 
         $registerParticipant = app()->make(RegisterParticipant::class);
 
-        try {
-            $registerParticipant($race, [
-                'bib' => 100,
-                'category' => $category->ulid,
-                ...$this->generateValidDriver(),
-                ...$this->generateValidVehicle(),
-                'consent_privacy' => true,
-            ]);
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidVehicle(),
+            'consent_privacy' => true,
+        ]);
 
-            $this->travelBack();
+        $this->travelBack();
 
-            $this->fail('Expected ValidationException. Nothing thrown.');
-
-        } catch (ValidationException $th) {
-
-            $this->travelBack();
-
-            $this->assertEquals([
-                'bib' => [
-                    'The entered bib might be reserved to another driver. Please contact the organizer.',
-                ],
-            ], $th->errors());
-        }
+        $this->assertInstanceOf(Participant::class, $participant);
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('en', $participant->locale);
 
     }
 
@@ -577,7 +572,7 @@ class RegisterParticipantTest extends TestCase
 
             $this->assertEquals([
                 'bib' => [
-                    'The entered bib does not reflect what has been reserved to the driven with the given licence.',
+                    'The entered bib (101) does not reflect what has been reserved (100) to the driven with the given licence.',
                 ],
             ], $th->errors());
         }

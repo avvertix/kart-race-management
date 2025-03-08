@@ -254,7 +254,7 @@ class UpdateParticipantRegistrationTest extends TestCase
 
             $this->assertEquals([
                 'bib' => [
-                    'The entered bib does not reflect what has been reserved to the driven with the given licence.',
+                    'The entered bib (101) does not reflect what has been reserved (100) to the driven with the given licence.',
                 ],
             ], $th->errors());
         }

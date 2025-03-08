@@ -1,4 +1,4 @@
-<div class="flex justify-between">
+<div class="flex justify-between mb-4">
     <div>
         <button type="button" class="text-3xl font-bold flex items-center gap-2"
             wire:click.prevent="select(null)"
@@ -13,7 +13,7 @@
             <p class="text-xl">{{ $item->racingCategory?->name ?? __('no category') }} / {{ $item->engine }}</p>
         </div>
         @if ($item->racingCategory?->tire)
-            <p class="mb-6 text-xl">{{ $item->racingCategory?->tire->name }}</p>
+            <p class="text-xl">{{ $item->racingCategory?->tire->name }}</p>
         @endif
     </div>
     <div class="flex gap-3 items-start">
@@ -106,6 +106,26 @@
         </div>
     @endif
 @endcan
+
+@if ($item->reservations->isNotEmpty())
+    
+<div class="border border-red-500 p-2 mb-6 shadow-md shadow-red-300">
+    <p class="font-bold text-red-900">{{ __('Check the race number!') }}</p>
+    <p>{{ __('The number appears to be reserved, but it has not been possible to confirm that the reservation is for this driver. Please check the driver\'s licence and name given for the reservation.') }}</p>
+
+    <ul class="mt-2">
+    @foreach ($item->reservations as $reservation)
+        <li class="space-x-2">
+            <span class="font-mono px-1 py-0.5 bg-orange-100 text-orange-700 print:bg-orange-100">{{ $reservation->bib }}</span>
+            {{ $reservation->driver }}
+            <span class="font-mono font-bold">{{ $reservation->driver_licence ?? __('Licence not specified') }}</span>
+        </li>
+    @endforeach
+    </ul>
+</div>
+    
+@endif
+
 
 @if(auth()->user()->hasPermission('payment:view'))
     <div class="grid md:grid-cols-2 mb-2">

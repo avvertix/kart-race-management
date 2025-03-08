@@ -166,6 +166,11 @@ class Participant extends Model implements HasLocalePreference
         return $this->belongsToMany(Bonus::class, 'participant_bonus');
     }
 
+    public function reservations()
+    {
+        return $this->hasMany(BibReservation::class, 'bib', 'bib');
+    }
+
     /**
      * Filter races available for registration
      *

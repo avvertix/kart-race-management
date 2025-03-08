@@ -12,7 +12,7 @@
 
 
             @if ($areThereSomeReservationNotEnforced)
-                <x-banner style="danger" message="{{ __('Some reservation are created without a licence. Such reservations might not be verified upon registration.') }}" />
+                <x-banner style="danger" message="{{ __('Some reservation are created without a licence. Such reservations will not be verified upon registration.') }}" />
                 <div class="h-4"></div>
             @endif
 

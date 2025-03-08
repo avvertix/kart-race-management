@@ -73,7 +73,7 @@ class BibReservationController extends Controller
                 }),
             ],
 
-            'driver_licence_number' => ['nullable', 'string', 'max:250'],
+            'driver_licence_number' => ['required', 'string', 'max:250'],
 
             'driver_licence_type' => ['nullable', new Enum(DriverLicence::class)],
 
@@ -152,9 +152,6 @@ class BibReservationController extends Controller
                     return $query->where('championship_id', $championship->getKey());
                 }),
 
-                Rule::unique('participants', 'bib')
-                    ->where(fn ($query) => $query
-                        ->where('championship_id', $championship->getKey())),
             ],
             'driver' => [
                 'required',
@@ -165,7 +162,7 @@ class BibReservationController extends Controller
                 }),
             ],
 
-            'driver_licence_number' => ['nullable', 'string', 'max:250'],
+            'driver_licence_number' => ['required', 'string', 'max:250'],
 
             'driver_licence_type' => ['nullable', new Enum(DriverLicence::class)],
 
@@ -180,14 +177,25 @@ class BibReservationController extends Controller
         }
 
         // Prevent to use a bib different than what already assigned to the same driver licence
-        $licenceHash = ($validated['driver_licence_number'] ?? null) ? hash('sha512', $validated['driver_licence_number']) : null;
+        $licenceHash = hash('sha512', $validated['driver_licence_number']);
 
-        if (! is_null($licenceHash)) {
-            $part = Participant::where('driver_licence', $licenceHash)->where('championship_id', $bibReservation->championship_id)->first();
+        $part = Participant::where('driver_licence', $licenceHash)->where('championship_id', $bibReservation->championship_id)->first();
 
-            if ($part && $part->bib !== $validated['bib']) {
-                throw ValidationException::withMessages(['bib' => __('Participant with same licence has the race number :bib.', ['bib' => $part->bib])]);
-            }
+        // since licence matches we probably can let it go
+
+        if ($part && (int) ($part->bib) !== (int) ($validated['bib'])) {
+            throw ValidationException::withMessages(['bib' => __('A driver with the same licence is already partecipating in championship with number :bib.', ['bib' => $part->bib])]);
+        }
+
+        // check if already assigned to another driver in this championship
+
+        $partByBib = Participant::where('bib', $validated['bib'])->where('championship_id', $bibReservation->championship_id)->first();
+
+        if ($partByBib && $partByBib->driver_licence !== $licenceHash) {
+            throw ValidationException::withMessages(['bib' => __('Bib :bib used by another driver (:driver) in championship.', [
+                'bib' => $validated['bib'],
+                'driver' => $partByBib->fullName,
+            ])]);
         }
 
         $bibReservation->update([

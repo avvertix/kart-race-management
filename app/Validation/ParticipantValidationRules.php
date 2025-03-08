@@ -19,6 +19,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Throwable;
 
 trait ParticipantValidationRules
 {
@@ -225,37 +226,62 @@ trait ParticipantValidationRules
 
     protected function ensureBibNotReservedByOtherDriver(ValidatorContract $validator, $championship_id, $input)
     {
-        $reservedBibWithSameLicence = BibReservation::query()
-            ->notExpired()
-            ->inChamphionship($championship_id)
-            ->licenceHash($input['driver_licence_number'])
-            ->first()?->bib;
+        try {
 
-        if ($reservedBibWithSameLicence && $reservedBibWithSameLicence !== $input['bib']) {
-            $validator->errors()->add(
-                'bib', 'The entered bib does not reflect what has been reserved to the driven with the given licence.'
-            );
-        }
+            $reservedBibWithSameLicence = BibReservation::query()
+                ->notExpired()
+                ->inChamphionship($championship_id)
+                ->licenceHash($input['driver_licence_number'])
+                ->first()?->bib;
 
-        $reservedBib = BibReservation::query()
-            ->notExpired()
-            ->inChamphionship($championship_id)
-            ->raceNumber($input['bib'])
-            ->first();
+            if ($reservedBibWithSameLicence && (int) $reservedBibWithSameLicence !== (int) ($input['bib'])) {
 
-        if ($reservedBib && $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToLicenceHash($input['driver_licence_number'])) {
-            $validator->errors()->add(
-                'bib', 'The entered bib is already reserved to another driver. Please check your licence number or contact the support.'
-            );
-        }
+                logs()->error('Participant validation: ensure bib not reserved. Failure 1', [
+                    'championship_id' => $championship_id,
+                    'input_licence' => $input['driver_licence_number'],
+                    'input_bib' => $input['bib'],
+                    'reserved_bib' => $reservedBibWithSameLicence,
+                ]);
 
-        // This covers an edge case when the organized doesn't know the licence number
-        // when adding a reservation. The registration is denied if driver name is
-        // not exactly equal to what is inserted in the reservation
-        if ($reservedBib && ! $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToDriver([$input['driver_first_name'], $input['driver_last_name']])) {
-            $validator->errors()->add(
-                'bib', 'The entered bib might be reserved to another driver. Please contact the organizer.'
-            );
+                $validator->errors()->add(
+                    'bib', __('The entered bib (:entered) does not reflect what has been reserved (:reserved) to the driven with the given licence.', [
+                        'entered' => $input['bib'],
+                        'reserved' => $reservedBibWithSameLicence,
+                    ])
+                );
+            }
+
+            $reservedBib = BibReservation::query()
+                ->notExpired()
+                ->inChamphionship($championship_id)
+                ->raceNumber($input['bib'])
+                ->first();
+
+            if ($reservedBib && $reservedBib->isEnforcedUsingLicence() && ! $reservedBib->isReservedToLicenceHash($input['driver_licence_number'])) {
+                logs()->error('Participant validation: ensure bib not reserved. Failure 2', [
+                    'championship_id' => $championship_id,
+                    'input_licence' => $input['driver_licence_number'],
+                    'input_bib' => $input['bib'],
+                    'reserved_bib' => $reservedBib?->bib,
+                    'reserved_licence' => $reservedBib?->driver_licence_hash,
+                ]);
+                $validator->errors()->add(
+                    'bib', __('The entered bib is already reserved to another driver. Please check your licence number or contact the support reporting error [pvr-2].')
+                );
+            }
+
+        } catch (Throwable $th) {
+
+            logs()->error('Participant validation: ensure bib not reserved failure: '.$th->getMessage(), [
+                'championship_id' => $championship_id,
+                'input_licence' => $input['driver_licence_number'],
+                'input_bib' => $input['bib'],
+                'reserved_bib' => $reservedBib?->bib,
+                'reserved_licence' => $reservedBib?->driver_licence_hash,
+            ]);
+
+            report($th);
+
         }
     }
 }

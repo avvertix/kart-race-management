@@ -401,6 +401,60 @@ class SelfRegistrationTest extends TestCase
         ]);
     }
 
+    public function test_bank_details_loaded_from_environment()
+    {
+        config([
+            'races.organizer.bank' => 'Config Bank',
+            'races.organizer.bank_account' => 'C12',
+            'races.organizer.bank_holder' => 'Config Holder',
+        ]);
+
+        $race = Race::factory()->create();
+
+        $participant = Participant::factory()->for($race)->recycle($race->championship)->category()->create();
+
+        $response = $this
+            ->get(URL::signedRoute('registration.show', ['registration' => $participant, 'p' => $participant->signatureContent()]));
+
+        $response->assertOk();
+
+        $response->assertViewHas('championship', $race->championship);
+
+        $response->assertSeeText('Race participation can be paid via bank transfer to');
+
+        $response->assertSeeTextInOrder([
+            'Config Holder',
+            'Config Bank',
+            'C12',
+        ]);
+    }
+
+    public function test_championship_bank_details_present_on_registration_receipt()
+    {
+        $championship = Championship::factory()
+            ->withBankAccount()
+            ->create();
+
+        $race = Race::factory()->recycle($championship)->create();
+
+        $participant = Participant::factory()->for($race)->recycle($championship)->category()->create();
+
+        $response = $this
+            ->get(URL::signedRoute('registration.show', ['registration' => $participant, 'p' => $participant->signatureContent()]));
+
+        $response->assertOk();
+
+        $response->assertViewHas('championship', $championship);
+
+        $response->assertSeeText('Race participation can be paid via bank transfer to');
+
+        $response->assertSeeTextInOrder([
+            'Test Holder',
+            'Test Bank',
+            '123456789',
+        ]);
+    }
+
     public function test_participant_cannot_access_registration_receipt_with_invalid_signature()
     {
 

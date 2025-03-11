@@ -140,9 +140,9 @@
 
                 <div class="prose prose-zinc">
                     <p>{{ __('Race participation can be paid via bank transfer to') }}</p>
-                    <p class="bg-zinc-50 p-2 shadow">{{ config('races.organizer.bank_holder') }}
-                        <br>{{ config('races.organizer.bank') }}
-                        <br><span class="font-mono">{{ config('races.organizer.bank_account') }}</span>
+                    <p class="bg-zinc-50 p-2 shadow">{{ $bank->bank_holder }}
+                        <br>{{ $bank->bank_name }}
+                        <br><span class="font-mono">{{ $bank->bank_account }}</span>
                     </p>
                     
                     @if ($participant->payments->isEmpty())

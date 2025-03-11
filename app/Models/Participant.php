@@ -331,12 +331,13 @@ class Participant extends Model implements HasLocalePreference
      */
     public function price(): Collection
     {
+        $raceFee = $this->championship->registration_price ?? (int) config('races.price');
         $tire = $this->racingCategory->tire;
 
         $order = collect([
-            __('Race fee') => (int) config('races.price'),
+            __('Race fee') => $raceFee,
             __('Tires (:model)', ['model' => $tire?->name]) => $tire?->price,
-            __('Bonus') => $this->use_bonus ? 0 - config('races.bonus_amount', 0) : 0,
+            __('Bonus') => $this->use_bonus ? 0 - $raceFee : 0,
             __('Total') => null,
         ])->filter();
 

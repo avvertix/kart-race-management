@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Data\PaymentSettingsData;
 use App\Data\WildcardSettingsData;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -112,6 +113,8 @@ class Championship extends Model
             'start_at' => 'datetime',
             'end_at' => 'datetime',
             'wildcard' => WildcardSettingsData::class.':default',
+            'registration_price' => 'integer',
+            'payment' => PaymentSettingsData::class.':default',
         ];
     }
 }

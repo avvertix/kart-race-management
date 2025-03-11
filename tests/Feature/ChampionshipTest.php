@@ -66,6 +66,7 @@ class ChampionshipTest extends TestCase
         $this->assertEquals('a little description', $champ->description);
         $this->assertEquals(Carbon::parse('2023-03-12'), $champ->start_at);
         $this->assertEquals(Carbon::parse('2023-12-02'), $champ->end_at);
+        $this->assertNull($champ->registration_price);
     }
 
     public function test_new_championship_title_can_be_generated()

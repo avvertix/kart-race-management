@@ -28,4 +28,32 @@ class ChampionshipFactory extends Factory
             'description' => fake()->paragraph(),
         ];
     }
+
+    /**
+     * Create a championship with a race registration price.
+     */
+    public function priced(int $raceCost = 10000)
+    {
+        return $this->state(function (array $attributes) use ($raceCost) {
+            return [
+                'registration_price' => $raceCost,
+            ];
+        });
+    }
+
+    /**
+     * Create a championship with specific bank account.
+     */
+    public function withBankAccount(?array $paymentSettings = null)
+    {
+        return $this->state(function (array $attributes) use ($paymentSettings) {
+            return [
+                'payment' => $paymentSettings ?? [
+                    'bank_account' => '123456789',
+                    'bank_name' => 'Test Bank',
+                    'bank_holder' => 'Test Holder',
+                ],
+            ];
+        });
+    }
 }

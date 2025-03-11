@@ -31,6 +31,7 @@ use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\SwitchLanguageController;
+use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -75,6 +76,8 @@ Route::middleware([
         Route::get('championships/{championship}/banner', [ChampionshipBannerController::class, 'index'])
             ->middleware('cache.headers:public;max_age=3600')
             ->name('championships.banner.index');
+
+        Route::put('championships/{championship}/payment', UpdateChampionshipPaymentSettingsController::class)->name('championships.payment.update');
 
         Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
 

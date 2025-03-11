@@ -26,7 +26,7 @@ class ApplyBonusToParticipant
         $useBonus = $bonus?->hasRemaining() ?? false; // todo: verify that participant has not already used a bonus for the race
 
         if ($bonus && $useBonus) {
-            $event->participant->update(['use_bonus' => true]);
+            $event->participant->update(['use_bonus' => true, 'bonus_amount' => $event->race->championship->bonus_amount]);
             $event->participant->bonuses()->attach($bonus);
         }
     }

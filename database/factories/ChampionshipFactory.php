@@ -28,4 +28,16 @@ class ChampionshipFactory extends Factory
             'description' => fake()->paragraph(),
         ];
     }
+
+    /**
+     * Create a championship with a race registration price.
+     */
+    public function priced(int $raceCost = 10000)
+    {
+        return $this->state(function (array $attributes) use ($raceCost) {
+            return [
+                'registration_price' => $raceCost,
+            ];
+        });
+    }
 }

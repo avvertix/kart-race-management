@@ -40,4 +40,20 @@ class ChampionshipFactory extends Factory
             ];
         });
     }
+
+    /**
+     * Create a championship with specific bank account.
+     */
+    public function withBankAccount(?array $paymentSettings = null)
+    {
+        return $this->state(function (array $attributes) use ($paymentSettings) {
+            return [
+                'payment' => $paymentSettings ?? [
+                    'bank_account' => '123456789',
+                    'bank_name' => 'Test Bank',
+                    'bank_holder' => 'Test Holder',
+                ],
+            ];
+        });
+    }
 }

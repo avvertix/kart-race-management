@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\RegisterParticipant;
+use App\Data\PaymentSettingsData;
 use App\Exceptions\InvalidParticipantSignatureException;
 use App\Models\Participant;
 use App\Models\Race;
@@ -74,10 +75,17 @@ class RaceRegistrationController extends Controller
         $registration
             ->load(['race', 'championship', 'signatures', 'payments']);
 
+        $bank = new PaymentSettingsData(
+            bank_name: $registration->championship->payment->bank_name ?? config('races.organizer.bank'),
+            bank_account: $registration->championship->payment->bank_account ?? config('races.organizer.bank_account'),
+            bank_holder: $registration->championship->payment->bank_holder ?? config('races.organizer.bank_holder'),
+        );
+
         return view('race-registration.show', [
             'race' => $registration->race,
             'championship' => $registration->championship,
             'participant' => $registration,
+            'bank' => $bank,
         ]);
     }
 }

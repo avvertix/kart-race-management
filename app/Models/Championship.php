@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Data\BonusSettingsData;
 use App\Data\PaymentSettingsData;
 use App\Data\WildcardSettingsData;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -115,6 +116,7 @@ class Championship extends Model
             'wildcard' => WildcardSettingsData::class.':default',
             'registration_price' => 'integer',
             'payment' => PaymentSettingsData::class.':default',
+            'bonuses' => BonusSettingsData::class.':default',
         ];
     }
 }

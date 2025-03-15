@@ -12,5 +12,5 @@ return [
     |
     */
 
-    'REGISTRATION_FEE' => 'Sconto della tassa di iscrizione',
+    'REGISTRATION_FEE' => 'Sconto sul costo di iscrizione',
 ];

@@ -31,6 +31,7 @@ use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\SwitchLanguageController;
+use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +79,8 @@ Route::middleware([
             ->name('championships.banner.index');
 
         Route::put('championships/{championship}/payment', UpdateChampionshipPaymentSettingsController::class)->name('championships.payment.update');
+
+        Route::put('championships/{championship}/bonus-settings', UpdateChampionshipBonusSettingsController::class)->name('championships.bonus-settings.update');
 
         Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
 

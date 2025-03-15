@@ -134,6 +134,36 @@
                 </form>
             </div>
         </div>
+        
+        <x-section-border />
+
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <x-section-title>
+                <x-slot name="title">{{ __('Bonus') }}</x-slot>
+                <x-slot name="description">
+                    {{ __('The organizer might issue bonus or discounts for racers. Here you can configure the behavior of each bonus type.') }}
+                </x-slot>
+            </x-section-title>
+
+            <div class="mt-5 md:mt-0 md:col-span-2">
+                <form method="POST" action="{{ route('championships.bonus-settings.update', $championship) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mt-4">
+                        <x-label for="fixed_bonus_amount" value="{{ __('Bonus discount (in Euro)') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('Insert the amount of discount, in Euro, that each bonus grants to the racer. This amount will be deduced from the registration fee. Use the decimal notation, e.g. for a cost of 80,00 € insert 8000.') }}</p>
+                        <x-input id="fixed_bonus_amount" class="block mt-1 w-full" type="number" name="fixed_bonus_amount" :value="old('fixed_bonus_amount', optional($championship ?? null)->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'))" />
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4" type="submit">
+                            {{ __('Save') }}
+                        </x-button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <x-section-border />
 

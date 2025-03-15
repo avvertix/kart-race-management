@@ -618,12 +618,136 @@ class RegisterParticipantTest extends TestCase
         $this->assertEquals('en', $participant->locale);
         $this->assertTrue($participant->use_bonus);
 
-        $this->assertTrue($participant->bonuses()->first()->is($bonus));
+        $this->assertTrue($participant->bonuses()->sole()->is($bonus));
 
         $updatedBonus = $bonus->fresh();
 
         $this->assertEquals(0, $updatedBonus->remaining());
         $this->assertFalse($updatedBonus->hasRemaining());
+
+        Notification::assertCount(2);
+
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
+            return $notification->target === 'driver';
+        });
+
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
+            return $notification->target === 'competitor';
+        });
+    }
+
+    public function test_participant_use_more_than_one_bonus()
+    {
+        config([
+            'races.price' => 15000,
+            'races.bonus_amount' => 5000,
+        ]);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $bonus = Bonus::factory()->recycle($race->championship)->create([
+            'driver_licence' => 'D0001',
+            'driver_licence_hash' => hash('sha512', 'D0001'),
+            'amount' => 2,
+        ]);
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            ...$this->generateValidMechanic(),
+            ...$this->generateValidVehicle(),
+            'consent_privacy' => true,
+        ]);
+
+        $this->travelBack();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('en', $participant->locale);
+        $this->assertTrue($participant->use_bonus);
+
+        $this->assertEquals(2, $participant->bonuses()->count());
+
+        $updatedBonus = $bonus->fresh();
+
+        $this->assertEquals(0, $updatedBonus->remaining());
+        $this->assertFalse($updatedBonus->hasRemaining());
+
+        Notification::assertCount(2);
+
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
+            return $notification->target === 'driver';
+        });
+
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
+            return $notification->target === 'competitor';
+        });
+    }
+
+    public function test_participant_use_enough_bonus()
+    {
+        config([
+            'races.price' => 15000,
+            'races.bonus_amount' => 5000,
+        ]);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $bonus = Bonus::factory()->recycle($race->championship)->create([
+            'driver_licence' => 'D0001',
+            'driver_licence_hash' => hash('sha512', 'D0001'),
+            'amount' => 4,
+        ]);
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            ...$this->generateValidMechanic(),
+            ...$this->generateValidVehicle(),
+            'consent_privacy' => true,
+        ]);
+
+        $this->travelBack();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('en', $participant->locale);
+        $this->assertTrue($participant->use_bonus);
+
+        $this->assertEquals(3, $participant->bonuses()->count());
+
+        $updatedBonus = $bonus->fresh();
+
+        $this->assertEquals(1, $updatedBonus->remaining());
+        $this->assertTrue($updatedBonus->hasRemaining());
 
         Notification::assertCount(2);
 

@@ -270,8 +270,9 @@ class Participant extends Model implements HasLocalePreference
         $this->notify(new ConfirmParticipantRegistration);
 
         if ($this->competitor['email'] ?? false) {
-
-            $this->notify(new ConfirmParticipantRegistration('competitor'));
+            if ($this->competitor['email'] !== $this->driver['email']) {
+                $this->notify(new ConfirmParticipantRegistration('competitor'));
+            }
         }
     }
 

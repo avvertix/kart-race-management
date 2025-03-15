@@ -8,6 +8,12 @@
                 {{ __('Add bonus') }}
             </x-button-link>
         @endcan
+
+        @can('update', $championship)
+            <x-button-link href="{{ route('championships.edit', $championship) }}">
+                {{ __('Edit championship') }}
+            </x-button-link>
+        @endcan
     </x-slot>
 
             <x-table>
@@ -15,6 +21,7 @@
                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Driver') }} ▼</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Bonus type') }}</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Amount') }}</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Amount in €') }}</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Remaining') }}</th>
                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                         <span class="sr-only">{{ __('Edit') }}</span>
@@ -31,10 +38,13 @@
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                         {{ $item->bonus_type->localizedName() }}
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 tabular-nums font-mono">
                         {{ $item->amount }}
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
+                        <x-price>{{ $item->amount * $fixed_bonus_amount }}</x-price>
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 tabular-nums font-mono">
                         {{ $item->remaining() }}
                     </td>
                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">

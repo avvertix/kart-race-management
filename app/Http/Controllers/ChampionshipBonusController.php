@@ -27,6 +27,7 @@ class ChampionshipBonusController extends Controller
         return view('bonus.index', [
             'championship' => $championship,
             'bonuses' => $championship->bonuses()->orderBy('driver', 'ASC')->orderBy('amount', 'DESC')->get(),
+            'fixed_bonus_amount' => $championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
         ]);
     }
 
@@ -37,6 +38,7 @@ class ChampionshipBonusController extends Controller
     {
         return view('bonus.create', [
             'championship' => $championship,
+            'fixed_bonus_amount' => $championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
         ]);
     }
 
@@ -93,7 +95,7 @@ class ChampionshipBonusController extends Controller
         return view('bonus.show', [
             'bonus' => $bonus,
             'championship' => $bonus->championship,
-            'bonusUsage' => collect(),
+            'bonusUsage' => collect(), // TODO: show when bonus is used
         ]);
     }
 
@@ -107,6 +109,7 @@ class ChampionshipBonusController extends Controller
         return view('bonus.edit', [
             'bonus' => $bonus,
             'championship' => $bonus->championship,
+            'fixed_bonus_amount' => $bonus->championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
         ]);
     }
 

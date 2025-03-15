@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Bonus;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Competitor;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
+use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
 use Carbon\Carbon;
@@ -212,13 +214,17 @@ class ParticipantFactory extends Factory
      *
      * @return Factory|ParticipantFactory
      */
-    public function usingBonus()
+    public function usingBonus(?Bonus $bonus = null, int $amount = 1)
     {
         return $this->state(function (array $attributes) {
 
             return [
                 'use_bonus' => true,
             ];
+        })->afterCreating(function (Participant $participant) use ($bonus, $amount) {
+            $useBonus = filled($bonus) ? $bonus : Bonus::factory()->recycle($participant->championship)->create();
+
+            collect(range(1, $amount))->each(fn () => $participant->bonuses()->attach($useBonus));
         });
     }
 

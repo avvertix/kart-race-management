@@ -17,6 +17,11 @@ class ParticipantPriceTest extends TestCase
 
     public function test_participant_price()
     {
+        config([
+            'races.price' => 15000,
+            'races.bonus_amount' => 0,
+        ]);
+
         $category = Category::factory()
             ->withTireState([
                 'name' => 'T1',
@@ -39,7 +44,15 @@ class ParticipantPriceTest extends TestCase
 
     public function test_participant_price_consider_bonus()
     {
+        config([
+            'races.price' => 15000,
+            'races.bonus_amount' => 15000,
+        ]);
+
+        $championship = Championship::factory()->create();
+
         $category = Category::factory()
+            ->recycle($championship)
             ->withTireState([
                 'name' => 'T1',
                 'price' => 10,
@@ -48,7 +61,12 @@ class ParticipantPriceTest extends TestCase
                 'name' => 'CAT 1',
             ]);
 
-        $price = Participant::factory()->category($category)->usingBonus()->create()->price();
+        $price = Participant::factory()
+            ->recycle($championship)
+            ->category($category)
+            ->usingBonus()
+            ->create()
+            ->price();
 
         $this->assertInstanceOf(Collection::class, $price);
 
@@ -67,7 +85,10 @@ class ParticipantPriceTest extends TestCase
                 'name' => 'CAT 1',
             ]);
 
-        $price = Participant::factory()->category($category)->create()->price();
+        $price = Participant::factory()
+            ->category($category)
+            ->create()
+            ->price();
 
         $this->assertInstanceOf(Collection::class, $price);
 
@@ -97,6 +118,34 @@ class ParticipantPriceTest extends TestCase
         $this->assertEquals([
             __('Race fee') => 12000,
             __('Total') => 12000,
+        ], $price->toArray());
+    }
+
+    public function test_championship_bonus_discount_used()
+    {
+        $championship = Championship::factory()
+            ->priced(12000)
+            ->withBonus(5000)
+            ->create();
+
+        $category = Category::factory()
+            ->create([
+                'name' => 'CAT 1',
+            ]);
+
+        $price = Participant::factory()
+            ->recycle($championship)
+            ->category($category)
+            ->usingBonus(amount: 2)
+            ->create()
+            ->price();
+
+        $this->assertInstanceOf(Collection::class, $price);
+
+        $this->assertEquals([
+            __('Race fee') => 12000,
+            __('Bonus') => -10000,
+            __('Total') => 2000,
         ], $price->toArray());
     }
 }

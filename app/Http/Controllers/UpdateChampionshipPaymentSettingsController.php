@@ -14,6 +14,8 @@ class UpdateChampionshipPaymentSettingsController extends Controller
      */
     public function __invoke(Request $request, Championship $championship)
     {
+        $this->authorize('update', $championship);
+
         $validated = $this->validate($request, [
             'registration_price' => 'required|integer|min:100',
             'bank' => 'required|string|min:1',

@@ -388,5 +388,6 @@
     "The number appears to be reserved, but it has not been possible to confirm that the reservation is for this driver. Please check the driver's licence and name given for the reservation.": "Il numero di gara risulta prenotato, ma non è stato possibile confermare che la prenotazione sia per questo pilota. Verifica che il nome e la licenza del pilota corrispondano.",
     "Licence not specified": "Licenza non inserita",
     "Amount in €": "Valore in €",
-    "The total amount of bonuses usable during the championship.": "Il totale dei bonus utilizzabili durante il campionato."
+    "The total amount of bonuses usable during the championship.": "Il totale dei bonus utilizzabili durante il campionato.",
+    "Edit bonus": "Modifica bonus"
 }

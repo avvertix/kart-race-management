@@ -108,9 +108,9 @@
             
             <div class="space-y-2">
                 <p class="text-xl font-bold flex gap-2 items-center">
-                    3. {{ __('Tires and transponder') }}
+                    3. {{ __('Transponder and/or Tires') }}
                 </p>
-                <p class="prose prose-zinc">{{ __('Go to the race secretary and pick tires and/or transponder.') }}</p>
+                <p class="prose prose-zinc">{{ __('Go to the race secretary and pick transponder and/or tires.') }}</p>
             </div>
 
         </div>

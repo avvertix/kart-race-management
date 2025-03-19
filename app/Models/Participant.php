@@ -341,16 +341,17 @@ class Participant extends Model implements HasLocalePreference
 
         $order = collect([
             __('Race fee') => $raceFee,
-            __('Tires (:model)', ['model' => $tire?->name]) => $tire?->price,
-            __('Bonus') => $this->use_bonus ? 0 - ($bonusValue * $usedBonusCount) : 0,
-            __('Total') => null,
-        ])->filter();
+        ])
+            ->merge(collect([
+                __('Tires (:model)', ['model' => $tire?->name]) => $tire?->price,
+                __('Bonus') => $this->use_bonus ? 0 - ($bonusValue * $usedBonusCount) : 0,
+            ])->filter());
 
         $total = $order->sum();
 
         return $order->merge([
             __('Total') => $total,
-        ])->filter();
+        ]);
     }
 
     public function getActivitylogOptions(): LogOptions

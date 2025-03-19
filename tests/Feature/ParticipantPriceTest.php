@@ -148,4 +148,29 @@ class ParticipantPriceTest extends TestCase
             __('Total') => 2000,
         ], $price->toArray());
     }
+
+    public function test_price_shown_when_zero()
+    {
+        $championship = Championship::factory()
+            ->priced(0)
+            ->create();
+
+        $category = Category::factory()
+            ->create([
+                'name' => 'CAT 1',
+            ]);
+
+        $price = Participant::factory()
+            ->recycle($championship)
+            ->category($category)
+            ->create()
+            ->price();
+
+        $this->assertInstanceOf(Collection::class, $price);
+
+        $this->assertEquals([
+            __('Race fee') => 0,
+            __('Total') => 0,
+        ], $price->toArray());
+    }
 }

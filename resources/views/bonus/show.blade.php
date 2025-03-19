@@ -4,7 +4,7 @@
     </x-slot>
     <x-slot name="actions">
         @can('update', $bonus)
-            <x-button-link href="{{ route('categories.edit', $bonus) }}">
+            <x-button-link href="{{ route('bonuses.edit', $bonus) }}">
                 {{ __('Edit bonus') }}
             </x-button-link>
         @endcan

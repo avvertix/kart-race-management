@@ -56,4 +56,18 @@ class ChampionshipFactory extends Factory
             ];
         });
     }
+
+    /**
+     * Create a championship with specific bank account.
+     */
+    public function withBonus(int $amount = 10000)
+    {
+        return $this->state(function (array $attributes) use ($amount) {
+            return [
+                'bonuses' => [
+                    'fixed_bonus_amount' => $amount,
+                ],
+            ];
+        });
+    }
 }

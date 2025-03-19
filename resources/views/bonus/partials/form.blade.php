@@ -19,12 +19,6 @@
                     <x-input-error for="driver_licence" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="amount" value="{{ __('Amount') }}" />
-                    <p class="text-zinc-600 text-sm">{{ __('The total amount of bonus/discount that can use during the championship.') }}</p>
-                    <x-input id="amount" type="number" required min="1" name="amount" :value="old('amount', optional($bonus ?? null)->amount)" class="mt-1 block w-full" autocomplete="amount" />
-                    <x-input-error for="amount" class="mt-2" />
-                </div>
-                <div class="col-span-6 sm:col-span-4">
                     <x-label for="bonus_type" value="{{ __('Bonus type') }}" />
                     <select name="bonus_type" id="bonus_type">
                         <option value="" disabled>{{ __('Select the type of bonus') }}</option>
@@ -34,6 +28,25 @@
                     </select>
                     <x-input-error for="bonus_type" class="mt-2" />
                 </div>
+
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="amount" value="{{ __('Amount') }}" />
+                    <p class="text-zinc-600 text-sm">{{ __('The total amount of bonuses usable during the championship.') }}</p>
+
+                    <p class="flex items-center gap-4" x-data="{ amount: {{ old('amount', optional($bonus ?? null)->amount ?? 1) }},  fixed_bonus_amount: {{ $fixed_bonus_amount }} }">
+                        <x-input id="amount" type="number" required min="1" x-model="amount" name="amount" :value="old('amount', optional($bonus ?? null)->amount ?? 1)" class="mt-1 block max-w-36" autocomplete="amount" />
+
+                        <span class="shrink-0">&times;</span>
+                        <span class="shrink-0 tabular-nums">{{ $fixed_bonus_amount / 100 }} {{ __('€/bonus') }}</span>
+                        <span class="shrink-0">=</span>
+                        <span class="shrink-0 tabular-nums" x-text="(fixed_bonus_amount*amount)/100 + ' €'">{{ $fixed_bonus_amount }}</span>
+                    </p>
+                    
+                    <x-input-error for="amount" class="mt-2" />
+
+                    
+                </div>
+                
             </div>
         </div>
     </div>

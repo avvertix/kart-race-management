@@ -47,5 +47,6 @@ return [
     'price' => env('RACE_PRICE', '15000'), // Expressed in decimal notation
     'price_currency' => env('RACE_PRICE_CURRENCY', 'EUR'),
     'bonus_amount' => env('RACE_BONUS_AMOUNT', env('RACE_PRICE', '15000')),
+    'bonus_use_one_at_time' => env('RACE_BONUS_USE_ONE_AT_TIME', true),
 
 ];

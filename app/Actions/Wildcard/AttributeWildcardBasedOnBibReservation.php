@@ -6,8 +6,9 @@ namespace App\Actions\Wildcard;
 
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\WildcardStrategy;
 
-class AttributeWildcardBasedOnFirstRace
+class AttributeWildcardBasedOnBibReservation
 {
     /**
      * Identify if a participant should have the wildcard status in a race within a championship
@@ -16,16 +17,16 @@ class AttributeWildcardBasedOnFirstRace
      */
     public function __invoke(Participant $participant, Race $race): bool
     {
-        $firstRace = $race->championship->races()->closed()->first();
+        $championship = $race->championship;
 
-        if (is_null($firstRace)) {
+        if (! $championship->wildcard->enabled || $championship->wildcard->strategy !== WildcardStrategy::BASED_ON_BIB_RESERVATION) {
             return false;
         }
 
-        if ($firstRace->is($race)) {
+        if (! $participant->race()->is($race)) {
             return false;
         }
 
-        return true;
+        return $championship->reservations()->licenceHash($participant->driver_licence)->exists() === false;
     }
 }

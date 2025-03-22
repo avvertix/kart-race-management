@@ -29,11 +29,11 @@ class BibReservationFactory extends Factory
         ];
     }
 
-    public function withLicence(): Factory
+    public function withLicence(?string $licence = null): Factory
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function (array $attributes) use ($licence) {
 
-            $licenceNumber = fake()->numerify();
+            $licenceNumber = $licence ?? fake()->numerify();
 
             return [
                 'driver_licence_hash' => hash('sha512', $licenceNumber),

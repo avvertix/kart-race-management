@@ -12,5 +12,6 @@ class WildcardSettingsData extends Data
     public function __construct(
         public bool $enabled = false,
         public ?WildcardStrategy $strategy = null,
+        public ?int $requiredBonusAmount = null,
     ) {}
 }

@@ -12,6 +12,8 @@ enum WildcardStrategy: int
 {
     /**
      * First non canceled race in championship is used to derive partecipants that can gain points for the championship
+     *
+     * @deprecated
      */
     case BASED_ON_FIRST_RACE = 10;
 

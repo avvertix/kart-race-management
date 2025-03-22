@@ -27,6 +27,12 @@ class AttributeWildcardBasedOnBonus
             return false;
         }
 
-        return $championship->bonuses()->licenceHash($participant->driver_licence)->exists() === false;
+        $bonus = $championship->bonuses()->licenceHash($participant->driver_licence)->first();
+
+        if (blank($bonus)) {
+            return true;
+        }
+
+        return $bonus->amount < ($championship->wildcard->requiredBonusAmount ?? 1);
     }
 }

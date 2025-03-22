@@ -44,6 +44,42 @@ class AttributeWildcardBasedOnBonusTest extends TestCase
         $this->assertTrue($isWildcard);
     }
 
+    public function test_participant_identified_as_wild_card_when_bonus_amount_less_than_required(): void
+    {
+        $championship = Championship::factory()
+            ->has(Race::factory())
+            ->create([
+                'wildcard' => [
+                    'enabled' => true,
+                    'strategy' => WildcardStrategy::BASED_ON_BONUS,
+                    'requiredBonusAmount' => 2,
+                ],
+            ]);
+
+        $bonus = Bonus::factory()
+            ->recycle($championship)
+            ->create([
+                'driver_licence' => 'LN1',
+                'driver_licence_hash' => hash('sha512', 'LN1'),
+                'amount' => 1,
+            ]);
+
+        $race = $championship->races->first();
+
+        $participant = Participant::factory()
+            ->recycle($championship)
+            ->recycle($race)
+            ->driver([
+                'bib' => 100,
+                'licence_number' => 'LN1',
+            ])
+            ->create();
+
+        $isWildcard = (new AttributeWildcardBasedOnBonus)($participant, $race);
+
+        $this->assertTrue($isWildcard);
+    }
+
     public function test_participant_not_a_wild_card(): void
     {
         $championship = Championship::factory()
@@ -52,6 +88,7 @@ class AttributeWildcardBasedOnBonusTest extends TestCase
                 'wildcard' => [
                     'enabled' => true,
                     'strategy' => WildcardStrategy::BASED_ON_BONUS,
+                    'requiredBonusAmount' => 2,
                 ],
             ]);
 

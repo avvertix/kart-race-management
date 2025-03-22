@@ -30,6 +30,11 @@
                 </select>
             </div>
 
+            <div class="col-span-6 sm:col-span-4">
+                <x-label for="bonus_amount" value="{{ __('Required Amount of bonuses (minimum 1)') }}" />
+                <x-input-error for="bonus_amount" class="mb-2" />
+                <x-input id="bonus_amount" type="number" class="mt-1 block w-full" wire:model="wildcardForm.bonus_amount" min="1" />
+            </div>
 
         </x-slot>
 

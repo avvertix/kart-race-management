@@ -132,6 +132,7 @@ class RaceParticipantsExportTest extends TestCase
                 'Oil Manufacturer',
                 'Oil Type',
                 'Oil Percentage',
+                'Payment',
             ],
             [
                 ''.$participant->bib,
@@ -168,7 +169,7 @@ class RaceParticipantsExportTest extends TestCase
                 $vehicle['oil_manufacturer'],
                 $vehicle['oil_type'],
                 ''.$vehicle['oil_percentage'],
-
+                '',
             ],
         ], $csv->toArray());
     }
@@ -241,6 +242,7 @@ class RaceParticipantsExportTest extends TestCase
                 'Oil Manufacturer',
                 'Oil Type',
                 'Oil Percentage',
+                'Payment',
             ],
             [
                 ''.$participant->bib,
@@ -277,7 +279,7 @@ class RaceParticipantsExportTest extends TestCase
                 $vehicle['oil_manufacturer'],
                 $vehicle['oil_type'],
                 ''.$vehicle['oil_percentage'],
-
+                '',
             ],
         ], $csv->toArray());
     }
@@ -351,6 +353,7 @@ class RaceParticipantsExportTest extends TestCase
                 'Oil Manufacturer',
                 'Oil Type',
                 'Oil Percentage',
+                'Payment',
             ],
             [
                 ''.$participant->bib,
@@ -395,7 +398,7 @@ class RaceParticipantsExportTest extends TestCase
                 $vehicle['oil_manufacturer'],
                 $vehicle['oil_type'],
                 ''.$vehicle['oil_percentage'],
-
+                '',
             ],
         ], $csv->toArray());
     }

@@ -64,6 +64,8 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             __('Oil Manufacturer'),
             __('Oil Type'),
             __('Oil Percentage'),
+
+            __('Payment'),
         ];
     }
 
@@ -118,6 +120,8 @@ class RaceParticipantsExport implements FromQuery, WithHeadings, WithMapping
             $vehicle['oil_manufacturer'] ?? null,
             $vehicle['oil_type'] ?? null,
             $vehicle['oil_percentage'] ?? null,
+
+            $participant->payment_channel?->localizedName(),
         ];
     }
 }

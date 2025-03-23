@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Participant;
 use App\Models\Payment;
+use App\Models\PaymentChannelType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
@@ -51,6 +52,8 @@ class ParticipantPaymentController extends Controller
             'path' => $path,
             'hash' => hash_file('sha512', Storage::disk('payments')->path($path)),
         ]);
+
+        $participant->update(['payment_channel' => PaymentChannelType::BANK_TRANSFER]);
 
         return redirect($participant->qrCodeUrl())->with('status', 'payment-uploaded');
     }

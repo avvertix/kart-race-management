@@ -389,5 +389,8 @@
     "Licence not specified": "Licenza non inserita",
     "Amount in €": "Valore in €",
     "The total amount of bonuses usable during the championship.": "Il totale dei bonus utilizzabili durante il campionato.",
-    "Edit bonus": "Modifica bonus"
+    "Edit bonus": "Modifica bonus",
+    "Payment Channel": "Modalità di pagamento",
+    "Select a channel...": "Seleziona modalità di pagamento..."
+    
 }

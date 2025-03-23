@@ -58,6 +58,7 @@ class Participant extends Model implements HasLocalePreference
         'use_bonus',
         'locale',
         'registration_completed_at',
+        'payment_channel',
     ];
 
     /**
@@ -457,6 +458,7 @@ class Participant extends Model implements HasLocalePreference
             'use_bonus' => 'boolean',
             'properties' => AsArrayObject::class,
             'wildcard' => 'boolean',
+            'payment_channel' => PaymentChannelType::class,
         ];
     }
 }

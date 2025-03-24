@@ -391,6 +391,11 @@
     "The total amount of bonuses usable during the championship.": "Il totale dei bonus utilizzabili durante il campionato.",
     "Edit bonus": "Modifica bonus",
     "Payment Channel": "Modalità di pagamento",
-    "Select a channel...": "Seleziona modalità di pagamento..."
+    "Select a channel...": "Seleziona modalità di pagamento...",
+    "Registered from": "Iscritto tra",
+    "Registered to": "e il",
+    "Sort by": "Ordina per",
+    "Print": "Stampa",
+    "Apply filter": "Applica filtro"
     
 }

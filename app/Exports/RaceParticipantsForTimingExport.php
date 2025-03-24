@@ -90,8 +90,8 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
         return [
             $participant->bib,
             $category,
-            str($participant->first_name)->lower()->swap($swap)->upper()->toString(),
-            str($participant->last_name)->lower()->swap($swap)->upper()->toString(),
+            str($participant->first_name)->lower()->swap($swap)->ascii()->upper()->toString(),
+            str($participant->last_name)->lower()->swap($swap)->ascii()->upper()->toString(),
             $registration_identifier,
             $registration_identifier,
             $transponders->first(),

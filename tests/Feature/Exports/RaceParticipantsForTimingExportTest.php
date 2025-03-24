@@ -62,6 +62,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ]), 'transponders')
             ->create([
                 'first_name' => 'Nicàèùlò',
+                'last_name' => 'Däü',
                 'driver_licence' => 'a1234567890',
                 'race_id' => $race->getKey(),
             ]);
@@ -108,7 +109,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
                 ''.$participant->bib,
                 $participant->racingCategory->name,
                 'NICA\'E\'U\'LO\'',
-                mb_strtoupper($participant->last_name),
+                'DAU',
                 'a1234567', // car registration
                 'a1234567', // driver registration
                 '5753071', // transponder

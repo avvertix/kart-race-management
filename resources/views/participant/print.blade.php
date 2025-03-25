@@ -7,24 +7,90 @@
     </x-slot>
 
 
+    <div class="pb-3 print:hidden">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <form action="" id="print_filter" method="get" class=" flex gap-6 items-center lg:justify-between">
+                <div class=" flex gap-6 items-center">
+
+                    <div class="flex items-center gap-2">
+                        <x-label for="sort" class="sr-only md:not-sr-only shrink-0">{{ __('Sort by') }}</x-label>
+                        <select onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <option value="bib" @selected(blank($sort) || $sort === 'bib')>{{ __('Race number') }}</option>
+                            <option value="registration" @selected($sort === 'registration')>{{ __('Registration date') }}</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex gap-2 items-center">
+                        <div class="contents">
+                            <x-label for="from" class="shrink-0">{{ __('Registered from') }}</x-label>
+                            <x-input type="date" name="from" id="from" class="block w-full text-sm" :value="old('from', $from ?? $race->registration_opens_at?->toDateString())" />
+                        </div>
+                        <div class="contents">
+                            <x-label for="to"  class="shrink-0">{{ __('Registered to') }}</x-label>
+                            <x-input type="date" name="to" id="to" class="block w-full text-sm" :value="old('to', $to)" />
+                        </div>
+                        <div class="shrink-0">
+                            <x-secondary-button type="submit" class="">
+                                {{ __('Apply filter') }}
+                            </x-secondary-button>
+                        </div>
+                    
+                    
+                    </div>
+                </div>
+
+                <div class="self-end ">
+                        <x-button type="button" class="gap-2" onclick="window.print()">
+                            <x-ri-printer-line class="size-4" />
+                            {{ __('Print') }}
+                        </x-button>
+                    </div>
+            
+            </form>
+        </div>
+    </div>
+
+
     <div class="py-6 print:py-0">
         <div class="px-4 sm:px-6 lg:px-8 print:px-0">
 
             @foreach ($participants as $participant)
                            
-                    <div class="p-4 shadow-lg bg-white rounded-md mb-6 print:shadow-none flex print:break-inside-avoid">
-        
-                        <div class="">
-                            <h3 class="text-3xl font-bold flex items-center gap-2">
-                                <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
-                                <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
-                            </h3>
-                            <p class="mb-1 text-xl">{{ $participant->racingCategory?->name ?? __('no category') }} / {{ $participant->engine }}</p>
-                            @if ($participant->racingCategory?->tire)
-                                <p class="mb-6 text-xl">{{ $participant->racingCategory?->tire->name }}</p>
+                    <div class="p-4 shadow-lg bg-white rounded-md mb-6 print:shadow-none print:break-inside-avoid">
+                        <div class="grid grid-cols-3 gap-6 justify-between">
+                            <div class="col-span-2 space-y-1 mb-3">
+                                
+                                <h3 class="text-3xl font-bold flex items-center gap-2">
+                                    <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
+                                    <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
+                                </h3>
+                                <p class="text-xl">{{ $participant->racingCategory?->name ?? __('no category') }} / {{ $participant->engine }}</p>
+                                @if ($participant->racingCategory?->tire)
+                                    <p class="text-xl">{{ $participant->racingCategory?->tire->name }}</p>
+                                @endif
+                            </div>
+
+                            <div  class="hidden print:block text-right">
+                                <p class="text-sm font-bold">{{ $race->title }}</p>
+                                <p class="text-sm">
+                                    {{ $race->period }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+
+                            @if(auth()->user()->hasPermission('payment:view'))
+                                <div class="flex gap-2 items-baseline">
+                                    @if ($participant->use_bonus)
+                                        <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{{ __('Bonus')}}</span>
+                                    @endif
+
+                                    {{ $participant->payment_channel?->localizedName() }}
+                                </div>
                             @endif
                             
-                            <div class="mb-2">
+                            <div class="">
                                 <p class="font-bold ">{{ __('Driver') }}</p>
                                 <p>
                                     {{ $participant->first_name }}
@@ -59,7 +125,7 @@
                                     ]) }}
                                 </p>
                             </div>
-                            <div class="mb-2">
+                            <div class="">
                                 <p class="font-bold ">{{ __('Competitor') }}</p>
                                 @if ($participant->competitor)
                                     <p class="">
@@ -95,7 +161,7 @@
                                 @endif
                             </div>
 
-                            <div class="mb-2">
+                            <div class="">
                                 <p class="font-bold">{{ __('Mechanic') }}</p>
                                 @if ($participant->mechanic)
                                     <p>

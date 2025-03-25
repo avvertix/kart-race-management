@@ -1,4 +1,4 @@
-<div class="relative border-b-2 border-zinc-200 pb-5 sm:pb-0">
+<div class="relative border-b-2 border-zinc-200 pb-5 sm:pb-0 print:hidden">
                 <p class="">
                     <a href="{{ route('championships.show', $championship) }}" class="inline-flex gap-1 items-center hover:text-orange-600 focus:text-orange-600"><x-ri-trophy-line class="size-4 shrink-0" /> {{ $championship->title }}</a>
                 </p>

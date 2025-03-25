@@ -17,9 +17,11 @@
                         <x-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
                             {{ __('Championships') }}
                         </x-nav-link>
-                        <x-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
-                            {{ __('Communications') }}
-                        </x-nav-link>
+                        @can('viewAny', \App\Models\CommunicationMessage::class)
+                            <x-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
+                                {{ __('Communications') }}
+                            </x-nav-link>
+                        @endcan
                         @can('viewAny', \App\Models\OrbitsBackup::class)
                             <x-nav-link href="{{ route('orbits-backups.index') }}" :active="request()->routeIs('orbits-backups.*')">
                                 {{ __('Backups') }}
@@ -102,9 +104,11 @@
                 <x-responsive-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
                     {{ __('Championships') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
-                    {{ __('Communications') }}
-                </x-responsive-nav-link>
+                @can('viewAny', \App\Models\CommunicationMessage::class)
+                    <x-responsive-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
+                        {{ __('Communications') }}
+                    </x-responsive-nav-link>
+                @endcan
                 @can('viewAny', \App\Models\OrbitsBackup::class)
                     <x-responsive-nav-link href="{{ route('orbits-backups.index') }}" :active="request()->routeIs('orbits-backups.*')">
                         {{ __('Backups') }}

@@ -101,8 +101,8 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
             ($this->race->isZonal() && isset($participant->properties['out_of_zone']) && $participant->properties['out_of_zone']) ? __('Out of zone') : '',
             $this->race->event_start_at->toDateString(),
             $participant->licence_type->localizedName(),
-            ! empty($vehicle) ? $engine_mapping[mb_strtolower($vehicle['engine_manufacturer'])] ?? mb_strtoupper($vehicle['engine_manufacturer']) : '',
-            ! empty($vehicle) ? mb_strtoupper($vehicle['engine_model']) : '',
+            ! empty($vehicle) ? $engine_mapping[mb_strtolower($vehicle['engine_manufacturer'])] ?? str($vehicle['engine_manufacturer'])->ascii()->upper() : '',
+            ! empty($vehicle) ? str($vehicle['engine_model'])->ascii()->upper() : '',
             $participant->driver['phone'].' - '.($participant->competitor['phone'] ?? ''),
         ];
     }

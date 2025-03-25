@@ -7,18 +7,19 @@
     </x-slot>
 
 
-    <div class="py-6 print:hidden">
+    <div class="pb-3 print:hidden">
         <div class="px-4 sm:px-6 lg:px-8">
             <form action="" id="print_filter" method="get" class=" flex gap-6 items-center lg:justify-between">
-                @csrf
-
                 <div class=" flex gap-6 items-center">
-                    <div class="">
-                        <x-button type="button" class="gap-2" onclick="window.print()">
-                            <x-ri-printer-line class="size-4" />
-                            {{ __('Print') }}
-                        </x-button>
+
+                    <div class="flex items-center gap-2">
+                        <x-label for="sort" class="sr-only md:not-sr-only shrink-0">{{ __('Sort by') }}</x-label>
+                        <select onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <option value="bib" @selected(blank($sort) || $sort === 'bib')>{{ __('Race number') }}</option>
+                            <option value="registration" @selected($sort === 'registration')>{{ __('Registration date') }}</option>
+                        </select>
                     </div>
+                    
                     <div class="flex gap-2 items-center">
                         <div class="contents">
                             <x-label for="from" class="shrink-0">{{ __('Registered from') }}</x-label>
@@ -38,13 +39,12 @@
                     </div>
                 </div>
 
-            <div class="self-end flex items-center gap-2">
-                    <x-label for="sort" class="sr-only md:not-sr-only shrink-0">{{ __('Sort by') }}</x-label>
-                    <select onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="bib" @selected(blank($sort) || $sort === 'bib')>{{ __('Race number') }}</option>
-                        <option value="registration" @selected($sort === 'registration')>{{ __('Registration date') }}</option>
-                    </select>
-                </div>
+                <div class="self-end ">
+                        <x-button type="button" class="gap-2" onclick="window.print()">
+                            <x-ri-printer-line class="size-4" />
+                            {{ __('Print') }}
+                        </x-button>
+                    </div>
             
             </form>
         </div>
@@ -57,16 +57,25 @@
             @foreach ($participants as $participant)
                            
                     <div class="p-4 shadow-lg bg-white rounded-md mb-6 print:shadow-none print:break-inside-avoid">
-                        <div class="space-y-1 mb-3">
-                            <p class="hidden print:block">{{ $race->title }}</p>
-                            <h3 class="text-3xl font-bold flex items-center gap-2">
-                                <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
-                                <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
-                            </h3>
-                            <p class="text-xl">{{ $participant->racingCategory?->name ?? __('no category') }} / {{ $participant->engine }}</p>
-                            @if ($participant->racingCategory?->tire)
-                                <p class="text-xl">{{ $participant->racingCategory?->tire->name }}</p>
-                            @endif
+                        <div class="grid grid-cols-3 gap-6 justify-between">
+                            <div class="col-span-2 space-y-1 mb-3">
+                                
+                                <h3 class="text-3xl font-bold flex items-center gap-2">
+                                    <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
+                                    <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
+                                </h3>
+                                <p class="text-xl">{{ $participant->racingCategory?->name ?? __('no category') }} / {{ $participant->engine }}</p>
+                                @if ($participant->racingCategory?->tire)
+                                    <p class="text-xl">{{ $participant->racingCategory?->tire->name }}</p>
+                                @endif
+                            </div>
+
+                            <div  class="hidden print:block text-right">
+                                <p class="text-sm font-bold">{{ $race->title }}</p>
+                                <p class="text-sm">
+                                    {{ $race->period }}
+                                </p>
+                            </div>
                         </div>
 
                         <div class="space-y-2">

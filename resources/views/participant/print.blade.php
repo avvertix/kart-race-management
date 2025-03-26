@@ -82,6 +82,8 @@
 
                             @if(auth()->user()->hasPermission('payment:view'))
                                 <div class="flex gap-2 items-baseline">
+                                    <x-price class="font-mono">{{ $participant->price()->last() }}</x-price>
+
                                     @if ($participant->use_bonus)
                                         <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{{ __('Bonus')}}</span>
                                     @endif

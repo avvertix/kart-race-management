@@ -87,7 +87,7 @@ class ParticipantListing extends Component
             ->withCount('signatures')
             ->withCount('transponders')
             ->with(['payments', 'reservations' => function ($query) {
-                $query->notExpired()->withoutLicence();
+                $query->notExpired()->withoutLicence()->inChamphionship($this->race->championship_id);
             }])
             ->when($this->search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {

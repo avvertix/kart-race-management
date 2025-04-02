@@ -8,9 +8,9 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Signature;
 use App\Notifications\ConfirmParticipantRegistration;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ParticipantSignatureNotificationControllerTest extends TestCase

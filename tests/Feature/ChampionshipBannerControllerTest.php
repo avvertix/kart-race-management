@@ -6,9 +6,9 @@ namespace Tests\Feature;
 
 use App\Models\Championship;
 use App\Models\User;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ChampionshipBannerControllerTest extends TestCase

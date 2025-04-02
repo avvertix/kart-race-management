@@ -6,8 +6,8 @@ namespace Tests\Feature\Communications;
 
 use App\Models\CommunicationMessage;
 use App\Models\User;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Str;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class CommunicationMessageControllerTest extends TestCase

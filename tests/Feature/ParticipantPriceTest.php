@@ -7,8 +7,8 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Participant;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Collection;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ParticipantPriceTest extends TestCase

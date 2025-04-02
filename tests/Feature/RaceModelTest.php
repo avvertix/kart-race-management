@@ -7,8 +7,8 @@ namespace Tests\Feature;
 use App\Models\Championship;
 use App\Models\Race;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Carbon;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class RaceModelTest extends TestCase

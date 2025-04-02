@@ -8,8 +8,8 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Tire;
 use App\Models\User;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Facades\URL;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ParticipantTireVerificationControllerTest extends TestCase

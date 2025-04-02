@@ -9,8 +9,8 @@ use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\User;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Str;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ChampionshipCategoryControllerTest extends TestCase

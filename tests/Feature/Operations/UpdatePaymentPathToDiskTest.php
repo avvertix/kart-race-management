@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Operations;
 
 use App\Models\Payment;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class UpdatePaymentPathToDiskTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_payment_path_replaced()
     {

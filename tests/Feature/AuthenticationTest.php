@@ -6,12 +6,12 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_login_screen_can_be_rendered()
     {

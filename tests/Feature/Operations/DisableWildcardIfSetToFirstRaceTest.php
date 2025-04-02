@@ -7,12 +7,12 @@ namespace Tests\Feature\Operations;
 use App\Data\WildcardSettingsData;
 use App\Models\Championship;
 use App\Models\WildcardStrategy;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class DisableWildcardIfSetToFirstRaceTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_wildcard_disabled_when_using_first_race_strategy()
     {

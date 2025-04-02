@@ -10,12 +10,12 @@ use App\Models\Category;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\TrashedParticipant;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class DeleteParticipantTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_participant_can_be_trashed()
     {

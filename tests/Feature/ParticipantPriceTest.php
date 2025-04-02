@@ -7,13 +7,13 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Participant;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class ParticipantPriceTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_participant_price()
     {

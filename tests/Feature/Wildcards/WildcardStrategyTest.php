@@ -7,12 +7,12 @@ namespace Tests\Feature\Wildcards;
 use App\Actions\Wildcard\AttributeWildcardBasedOnBibReservation;
 use App\Actions\Wildcard\AttributeWildcardBasedOnBonus;
 use App\Models\WildcardStrategy;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class WildcardStrategyTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_bonus_strategy_implementation_returned(): void
     {

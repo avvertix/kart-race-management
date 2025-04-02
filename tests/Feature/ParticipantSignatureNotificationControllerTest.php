@@ -8,14 +8,14 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Signature;
 use App\Notifications\ConfirmParticipantRegistration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class ParticipantSignatureNotificationControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_participant_can_request_new_verification_link()
     {

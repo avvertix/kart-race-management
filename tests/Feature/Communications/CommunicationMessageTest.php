@@ -6,12 +6,12 @@ namespace Tests\Feature\Communications;
 
 use App\Models\CommunicationMessage;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class CommunicationMessageTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public static function communication_dates_provider()
     {

@@ -6,14 +6,14 @@ namespace Tests\Feature;
 
 use App\Models\Championship;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ChampionshipBannerControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_get_banner_requires_login(): void
     {

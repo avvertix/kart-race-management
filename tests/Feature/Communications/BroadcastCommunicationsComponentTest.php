@@ -7,12 +7,12 @@ namespace Tests\Feature\Communications;
 use App\Models\CommunicationMessage;
 use App\Models\User;
 use App\View\Components\BroadcastCommunications;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class BroadcastCommunicationsComponentTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_render_active_messages()
     {

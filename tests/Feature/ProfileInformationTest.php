@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Laravel\Jetstream\Http\Livewire\UpdateProfileInformationForm;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class ProfileInformationTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_current_profile_information_is_available()
     {

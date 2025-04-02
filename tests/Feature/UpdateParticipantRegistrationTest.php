@@ -10,7 +10,7 @@ use App\Models\Category;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Notifications\ConfirmParticipantRegistration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 use Tests\CreateCompetitor;
@@ -25,7 +25,7 @@ class UpdateParticipantRegistrationTest extends TestCase
     use CreateDriver;
     use CreateMechanic;
     use CreateVehicle;
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_participant_updated_using_complete_form()
     {

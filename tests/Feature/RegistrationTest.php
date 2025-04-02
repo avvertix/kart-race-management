@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Laravel\Fortify\Features;
 use Laravel\Jetstream\Jetstream;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_registration_screen_can_be_rendered()
     {

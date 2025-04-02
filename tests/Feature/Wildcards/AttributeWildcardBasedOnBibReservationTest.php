@@ -10,12 +10,12 @@ use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\WildcardStrategy;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class AttributeWildcardBasedOnBibReservationTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_participant_identified_as_wild_card(): void
     {

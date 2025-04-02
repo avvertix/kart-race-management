@@ -7,13 +7,13 @@ namespace Tests\Feature;
 use App\Models\Championship;
 use App\Models\Race;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class RaceModelTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_open_races_can_be_retrieved()
     {

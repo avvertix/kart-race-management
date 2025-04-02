@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Laravel\Jetstream\Features;
 use Laravel\Jetstream\Http\Livewire\ApiTokenManager;
 use Livewire\Livewire;
@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class CreateApiTokenTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_api_tokens_can_be_created()
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\DeleteParticipant;
 use App\Actions\RegisterParticipant;
 use App\Actions\UpdateParticipantRegistration;
 use App\Models\Participant;
@@ -153,9 +154,18 @@ class RaceParticipantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Participant $participant)
+    public function destroy(Participant $participant, DeleteParticipant $deleteParticipant)
     {
-        //
+        $race = $participant->race;
+
+        $message = "{$participant->bib} {$participant->first_name} {$participant->last_name}";
+
+        $deleteParticipant($participant);
+
+        return to_route('races.participants.index', $race)
+            ->with('flash.banner', __(':participant removed.', [
+                'participant' => $message,
+            ]));
     }
 
     protected function processAddressInput($input, $fieldPrefix)

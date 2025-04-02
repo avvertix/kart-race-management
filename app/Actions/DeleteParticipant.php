@@ -42,7 +42,6 @@ class DeleteParticipant
                     'competitor',
                     'mechanic',
                     'vehicles',
-                    'use_bonus',
                     'locale',
                     'registration_completed_at',
                 ]);

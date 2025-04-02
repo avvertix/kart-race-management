@@ -47,7 +47,7 @@
                 
                 @can('update', $item)
                     <div class="flex gap-1">
-                        <x-secondary-button-link href="{{ route('participants.edit', $item) }}">{{ __('Edit') }}<span class="sr-only">, {{ $item->title }}</span></x-button-link>
+                        <x-secondary-button-link href="{{ route('participants.edit', $item) }}">{{ __('Edit') }}<span class="sr-only">, {{ $item->first_name }} {{ $item->last_name }}</span></x-button-link>
                     </div>
                 @endcan
                 <div class="flex gap-1">
@@ -258,16 +258,53 @@
     @endforeach
 </div>
 
-@can('update', $item)
-    <div class="mt-6 flex gap-2 items-baseline">
-        <p class="font-bold">
-            {{ __('Participant id') }} <span class="font-mono">{{ $item->getKey() }}</span>
-        </p>
+<div class="mt-6 flex justify-between gap-2 items-baseline">
+    @can('update', $item)
+        <div class="flex gap-2 items-baseline">
+            <p class="font-bold">
+                {{ __('Participant id') }} <span class="font-mono">{{ $item->getKey() }}</span>
+            </p>
 
-        <form wire:submit="resendSignatureNotification({{ $item->getKey() }})">
-            <x-button type="submit" class="">
-                {{ __('Resend Verification Email') }}
-            </x-button>
-        </form>    
-    </div>
-@endcan
+            <form wire:submit="resendSignatureNotification({{ $item->getKey() }})">
+                <x-button type="submit" class="">
+                    {{ __('Resend Verification Email') }}
+                </x-button>
+            </form>
+        </div>
+    @endcan
+
+    @can('delete', $item)
+        <div class="flex gap-1 relative" x-data="{confirm: false}">
+
+            <x-danger-button type="button" @click="confirm = !confirm" class="" >
+                {{ __('Remove participant') }}
+            </x-danger-button>
+
+            <div class="absolute px-4 py-2 bottom-0 right-0 min-w-96 border border-red-300 ring-0 ring-red-300 shadow-md rounded bg-white" @click.outside="confirm = !confirm" x-show="confirm" x-transition x-cloak x-trap="confirm">
+            
+                <form class="" action="{{ route('participants.destroy', $item) }}" method="POST">
+                    @method('DELETE')
+                    @csrf
+
+                    <p class="mb-2 font-bold">{{ __('Remove participant') }}</p>
+
+                    <div class="mb-3 text-sm">
+                        <p>{{ __("You're about to remove :driver from the participants. This action cannot be undone.", ['driver' => "{$item->first_name} {$item->last_name}"]) }}</p>
+                        <p>{{ __('Are you sure you want to remove this participant?') }}</p>
+                    </div>
+
+                    <div class="flex gap-2 items-center">
+                        <x-danger-button type="submit" class="">
+                            {{ __('Remove participant') }}
+                        </x-danger-button>
+
+                        <x-secondary-button type="button" class="" @click="confirm = !confirm">
+                            {{ __('Cancel') }}
+                        </x-secondary-button>
+                    </div>
+                </form>
+            
+            </div>
+        </div>
+    @endcan
+</div>

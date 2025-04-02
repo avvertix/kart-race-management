@@ -10,6 +10,7 @@ use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
+use App\Models\TrashedParticipant;
 use App\Models\User;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -549,5 +550,85 @@ class RaceParticipantTest extends TestCase
         $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);
         $this->assertEquals('Racer', $participant->last_name);
+    }
+
+    public function test_participant_can_be_deleted()
+    {
+        config(['races.registration.form' => 'complete']);
+
+        $user = User::factory()->racemanager()->create();
+
+        $championship = Championship::factory()
+            ->has(Race::factory()->count(2))
+            ->create();
+
+        $category = Category::factory()->recycle($championship)->create();
+
+        [$pastRace, $race] = $championship->races;
+
+        $existingParticipant = Participant::factory()->category($category)->create([
+            'bib' => 100,
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ],
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('participants.edit', $existingParticipant))
+            ->delete(route('participants.destroy', $existingParticipant));
+
+        $response->assertRedirectToRoute('races.participants.index', $race);
+
+        $response->assertSessionHasNoErrors();
+
+        $response->assertSessionHas('flash.banner', "100 {$existingParticipant->first_name} {$existingParticipant->last_name} removed.");
+
+        $this->assertEquals(0, $race->participants()->count());
+
+        $trashedParticipant = TrashedParticipant::first();
+
+        $this->assertInstanceOf(TrashedParticipant::class, $trashedParticipant);
+
+        $this->assertEquals(100, $trashedParticipant->bib);
+        $this->assertEquals($category->ulid, $trashedParticipant->category);
+        $this->assertTrue($trashedParticipant->racingCategory->is($category));
+        $this->assertTrue($trashedParticipant->race->is($race));
+        $this->assertTrue($trashedParticipant->championship->is($championship));
+        $this->assertEquals($existingParticipant->first_name, $trashedParticipant->first_name);
+        $this->assertEquals($existingParticipant->last_name, $trashedParticipant->last_name);
+    }
+
+    public function test_participant_not_deleted_if_user_lacks_permissions()
+    {
+        config(['races.registration.form' => 'complete']);
+
+        $user = User::factory()->timekeeper()->create();
+
+        $championship = Championship::factory()
+            ->has(Race::factory()->count(2))
+            ->create();
+
+        $category = Category::factory()->recycle($championship)->create();
+
+        [$pastRace, $race] = $championship->races;
+
+        $existingParticipant = Participant::factory()->category($category)->create([
+            'bib' => 100,
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ],
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('participants.edit', $existingParticipant))
+            ->delete(route('participants.destroy', $existingParticipant));
+
+        $response->assertForbidden();
     }
 }

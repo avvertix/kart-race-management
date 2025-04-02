@@ -396,6 +396,11 @@
     "Registered to": "e il",
     "Sort by": "Ordina per",
     "Print": "Stampa",
-    "Apply filter": "Applica filtro"
+    "Apply filter": "Applica filtro",
+    ":participant removed.": ":participant rimosso.",
+    "Cancel": "Annulla",
+    "You're about to remove :driver from the participants. This action cannot be undone.": "Stai per rimuovere :driver dai partecipanti. Questa azione non può essere annullata.",
+    "Are you sure you want to remove this participant?": "Sei sicuro di voler rimuovere questo partecipante?",
+    "Remove participant" : "Rimuovi partecipante"
     
 }

@@ -8,13 +8,13 @@ use App\Models\Bonus;
 use App\Models\BonusType;
 use App\Models\Championship;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ChampionshipBonusControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_listing_bonuses_requires_login(): void
     {

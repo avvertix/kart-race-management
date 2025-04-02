@@ -13,9 +13,9 @@ use App\Models\Sex;
 use App\Models\TrashedParticipant;
 use App\Models\User;
 use App\Notifications\ConfirmParticipantRegistration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\CreateCompetitor;
 use Tests\CreateDriver;
 use Tests\CreateMechanic;
@@ -28,7 +28,7 @@ class RaceParticipantTest extends TestCase
     use CreateDriver;
     use CreateMechanic;
     use CreateVehicle;
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_registration_form_loads()
     {

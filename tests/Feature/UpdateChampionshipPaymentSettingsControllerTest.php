@@ -7,12 +7,12 @@ namespace Tests\Feature;
 use App\Data\PaymentSettingsData;
 use App\Models\Championship;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class UpdateChampionshipPaymentSettingsControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_payment_details_can_be_saved()
     {

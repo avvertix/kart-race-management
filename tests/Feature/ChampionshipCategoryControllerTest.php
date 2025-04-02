@@ -9,13 +9,13 @@ use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ChampionshipCategoryControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_listing_categories_requires_login(): void
     {

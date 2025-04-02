@@ -8,13 +8,13 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Tire;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ParticipantTireVerificationControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_tires_verification_url_generation()
     {

@@ -7,15 +7,15 @@ namespace Tests\Feature;
 use App\Models\Participant;
 use App\Models\Payment;
 use App\Models\Race;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ParticipantPaymentControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_participant_can_upload_payment_proof()
     {

@@ -11,12 +11,12 @@ use App\Models\RaceType;
 use App\Models\Transponder;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class RaceParticipantsForTimingExportTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_export_requires_authentication()
     {

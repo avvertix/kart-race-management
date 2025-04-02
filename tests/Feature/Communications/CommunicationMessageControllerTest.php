@@ -6,13 +6,13 @@ namespace Tests\Feature\Communications;
 
 use App\Models\CommunicationMessage;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class CommunicationMessageControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public static function invalid_communication_requests_provider()
     {

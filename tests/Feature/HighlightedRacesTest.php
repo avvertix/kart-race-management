@@ -7,13 +7,13 @@ namespace Tests\Feature;
 use App\Models\Race;
 use App\View\Components\HighlightedRaces;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class HighlightedRacesTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_next_race_shown()
     {

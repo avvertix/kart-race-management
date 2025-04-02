@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Console\Commands;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class AddUserCommandTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_new_users_can_register()
     {

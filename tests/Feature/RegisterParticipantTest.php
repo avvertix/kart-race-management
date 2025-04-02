@@ -11,9 +11,9 @@ use App\Models\Category;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Notifications\ConfirmParticipantRegistration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\CreateCompetitor;
 use Tests\CreateDriver;
 use Tests\CreateMechanic;
@@ -26,7 +26,7 @@ class RegisterParticipantTest extends TestCase
     use CreateDriver;
     use CreateMechanic;
     use CreateVehicle;
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_participant_registered_using_complete_form()
     {

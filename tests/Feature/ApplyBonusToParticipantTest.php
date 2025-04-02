@@ -10,12 +10,12 @@ use App\Models\Bonus;
 use App\Models\Category;
 use App\Models\Participant;
 use App\Models\Race;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ApplyBonusToParticipantTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_bonus_not_applied_twice()
     {

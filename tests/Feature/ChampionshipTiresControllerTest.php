@@ -7,12 +7,12 @@ namespace Tests\Feature;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class ChampionshipTiresControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_listing_tires_requires_login(): void
     {

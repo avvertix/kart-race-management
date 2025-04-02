@@ -8,12 +8,12 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Tire;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class RaceTiresControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_authentication_required()
     {

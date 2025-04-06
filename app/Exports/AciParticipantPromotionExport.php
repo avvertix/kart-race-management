@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exports;
 
-use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -12,14 +13,11 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class AciParticipantPromotionExport implements FromView, WithDrawings
 {
-
-    public function __construct(private Race $race)
-    {
-    }
+    public function __construct(private Race $race) {}
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function query(): EloquentCollection
     {
         return $this->race
@@ -39,7 +37,6 @@ class AciParticipantPromotionExport implements FromView, WithDrawings
 
         return $drawing;
     }
-
 
     public function view(): View
     {

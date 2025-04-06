@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Exports\AciParticipantPromotionExport;
 use App\Exports\ParticipantBriefingSignatureExport;
 use App\Models\Race;
-use App\Models\Transponder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 

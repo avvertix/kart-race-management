@@ -119,7 +119,7 @@ Route::middleware([
         Route::get('races/{race}/export-transponders', ExportRaceParticipantsForTimingController::class)->name('races.export.transponders');
 
         Route::get('races/{race}/export-aci', ExportRaceParticipantsForAciPromotionController::class)->name('races.export.aci');
-        
+
         Route::get('races/{race}/export-signature', ExportRaceParticipantsForSigningController::class)->name('races.export.signature');
 
         Route::resource('communications', CommunicationMessageController::class)->except(['create', 'show']);

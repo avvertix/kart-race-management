@@ -3,7 +3,7 @@
 @php
 switch ($align) {
     case 'left':
-        $alignmentClasses = 'origin-top-left left-0';
+        $alignmentClasses = 'md:origin-top-left md:left-0';
         break;
     case 'top':
         $alignmentClasses = 'origin-top';
@@ -14,7 +14,7 @@ switch ($align) {
         break;
     case 'right':
     default:
-        $alignmentClasses = 'origin-top-right right-0';
+        $alignmentClasses = 'origin-top-left left-0 md:origin-top-right md:right-0 md:left-auto';
         break;
 }
 
@@ -22,10 +22,16 @@ switch ($width) {
     case '48':
         $width = 'w-48';
         break;
+    case '60':
+        $width = 'w-full md:w-60';
+        break;
+    case '96':
+        $width = 'w-full md:w-96';
+        break;
 }
 @endphp
 
-<div class="relative" x-data="{ open: false }" @click.away="open = false" @close.stop="open = false">
+<div class="md:relative" x-data="{ open: false }" @click.away="open = false" @close.stop="open = false">
     <div @click="open = ! open">
         {{ $trigger }}
     </div>

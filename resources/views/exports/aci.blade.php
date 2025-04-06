@@ -70,6 +70,14 @@
                 <td height="32px">&nbsp;</td>
             </tr>
         @endforeach
+
+        <tr>
+            <td height="32px">&nbsp;</td>
+        </tr>
+        <tr>
+            <td height="80px" colspan="8"></td>
+            <td height="80px" colspan="3" align="center" valign="top" style="font-family:Arial;font-size:6;border: 1px solid #000000">DIRETTORE DI GARA</td>
+        </tr>
     
     </tbody>
 </table>

@@ -11,8 +11,8 @@ RUN \
     mkdir -p "storage/logs" &&\
     composer install --no-dev --prefer-dist --optimize-autoloader
 RUN \
-    yarn && \
-    yarn build && \
+    npm ci && \
+    npm run build && \
     rm -rf node_modules
 RUN \
     rm -rf "docker" && \
@@ -69,7 +69,7 @@ RUN apt-get update -yqq && \
     && apt-get clean \
     && rm -rf /var/cache/apt/ /var/lib/apt/lists/* /var/log/* /tmp/* /var/tmp/* /usr/share/doc /usr/share/doc-base /usr/share/groff/* /usr/share/info/* /usr/share/linda/* /usr/share/lintian/overrides/* /usr/share/locale/* /usr/share/man/* /usr/share/locale/* /usr/share/gnome/help/*/* /usr/share/doc/kde/HTML/*/* /usr/share/omf/*/*-*.emf
 
-## Forces the locale to UTF-8, suggestion from Marco Zanoni
+## Forces the locale to UTF-8
 RUN locale-gen "en_US.UTF-8" \
     && DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales \
     && locale-gen "C.UTF-8" \

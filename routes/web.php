@@ -13,6 +13,7 @@ use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportRaceParticipantsController;
+use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\OrbitsBackupController;
@@ -115,6 +116,8 @@ Route::middleware([
         Route::get('races/{race}/export-participants', ExportRaceParticipantsController::class)->name('races.export.participants');
 
         Route::get('races/{race}/export-transponders', ExportRaceParticipantsForTimingController::class)->name('races.export.transponders');
+
+        Route::get('races/{race}/export-aci', ExportRaceParticipantsForAciPromotionController::class)->name('races.export.aci');
 
         Route::resource('communications', CommunicationMessageController::class)->except(['create', 'show']);
     });

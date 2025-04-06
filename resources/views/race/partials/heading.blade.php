@@ -14,31 +14,53 @@
                         </x-button-link>
                     @endcan
 
-                    <x-dropdown align="right" width="60">
+                    <x-dropdown align="right" width="96">
                         <x-slot name="trigger">
                             <x-button >
                                 {{ __('Export or print') }}
 
                                 <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </x-button>
                         </x-slot>
 
                         <x-slot name="content">
-                            <div class="p-2 w-60 flex flex-col gap-2">
+                            <div class="flex flex-col">
                                 @can('update', $race)
-                                    <x-button-link href="{{ route('races.export.participants', $race) }}">
-                                        {{ __('Export participants') }}
-                                    </x-button-link>
-                                    <x-button-link href="{{ route('races.participants.print', $race) }}">
-                                        {{ __('Print participants') }}
-                                    </x-button-link>
+                                    <a href="{{ route('races.export.participants', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                        <span class="inline-flex gap-1">
+                                            <x-ri-file-excel-line class="size-5 shrink-0" />
+                                            {{ __('Export participants') }}
+                                        </span>
+                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Export all registered participants') }}</span>
+                                    </a>
+                                    @if ($race->isZonal())
+                                        <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                            <span class="inline-flex gap-1">
+                                                <x-ri-table-2 class="size-5 shrink-0" />
+                                                {{ __('Export for ACI Italian Cup') }}
+                                            </span>
+                                            <span class="block ml-6 text-xs text-zinc-600">{{ __('Export confirmed participants as requested by ACI Karting for promotion') }}</span>
+                                        </a>
+                                    @endif
+                                    <a href="{{ route('races.participants.print', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                        <span class="inline-flex gap-1">
+                                            <x-ri-printer-line class="size-5 shrink-0" />
+                                            {{ __('Print participants') }}
+                                        </span>
+                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Print all participants registrations') }}</span>
+                                    </a>
+                                    <div class="border-t border-zinc-100"></div>
                                 @endcan
                                 @can('create', \App\Model\Transponder::class)
-                                    <x-button-link href="{{ route('races.export.transponders', $race) }}">
-                                        {{ __('Export transponders') }}
-                                    </x-button-link>
+                                    <a href="{{ route('races.export.transponders', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                        <span class="inline-flex gap-1">
+                                            <x-ri-steering-2-line class="size-5 shrink-0" />
+                                            {{ __('Export transponders') }}
+                                        </span>
+                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Export drivers and transponder for MyLaps Orbits') }}</span>
+                                    </a>
                                 @endcan
                             </div>
                         </x-slot>

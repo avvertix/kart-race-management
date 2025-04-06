@@ -35,15 +35,23 @@
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Export all registered participants') }}</span>
                                     </a>
+                                    <a href="{{ route('races.export.signature', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                        <span class="inline-flex gap-1">
+                                            <x-ri-sketching class="size-5 shrink-0" />
+                                            {{ __('Export briefing signature module') }}
+                                        </span>
+                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Export form for signing the attendence of the briefing') }}</span>
+                                    </a>
                                     @if ($race->isZonal())
                                         <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
                                             <span class="inline-flex gap-1">
                                                 <x-ri-table-2 class="size-5 shrink-0" />
                                                 {{ __('Export for ACI Italian Cup') }}
                                             </span>
-                                            <span class="block ml-6 text-xs text-zinc-600">{{ __('Export confirmed participants as requested by ACI Karting for promotion') }}</span>
+                                            <span class="block ml-6 text-xs text-zinc-600">{{ __('Export confirmed participants as requested by ACI Karting') }}</span>
                                         </a>
                                     @endif
+                                    <div class="border-t border-zinc-100"></div>
                                     <a href="{{ route('races.participants.print', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-printer-line class="size-5 shrink-0" />

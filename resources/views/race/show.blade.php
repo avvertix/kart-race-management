@@ -37,10 +37,12 @@
 
                     <table>
                         @foreach ($participantsPerCategory as $item)
-                            <tr>
-                                <td>{{ $item->racingCategory?->name ?? __('no category') }}</td>
-                                <td class="text-right"><span class="font-bold">{{ $item->total_confirmed }}</span> / {{ $item->total }}</td>
-                            </tr>
+                            @if ($item->racingCategory)
+                                <tr>
+                                    <td><a href="{{ route('races.participants.index', ['race' => $race, 'category' => $item->racingCategory->id]) }}">{{ $item->racingCategory->name ?? __('no category') }}</a></td>
+                                    <td class="text-right"><span class="font-bold">{{ $item->total_confirmed }}</span> / {{ $item->total }}</td>
+                                </tr>
+                            @endif
                         @endforeach
                     </table>
                 </div>

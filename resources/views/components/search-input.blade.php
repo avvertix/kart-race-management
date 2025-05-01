@@ -1,6 +1,6 @@
 @props(['disabled' => false])
 
-<div class="relative">
+<div class="relative grow">
     <input {{ $disabled ? 'disabled' : '' }} {!! $attributes->merge(['class' => 'pl-8 border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm']) !!}>
 
     <div class="absolute top-0 left-0 flex items-center h-full p-2 text-zinc-600">

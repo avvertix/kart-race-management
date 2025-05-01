@@ -27,7 +27,7 @@ class ParticipantListing extends Component
     public $search;
 
     public $sort;
-    
+
     public $filter_category;
 
     protected $queryString = [

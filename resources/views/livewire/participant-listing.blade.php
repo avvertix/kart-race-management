@@ -1,6 +1,15 @@
 <div>
 
-    <x-search-input id="participant_search" wire:model.live.debounce.750ms="search" wire:keydown.enter="$set('search', $event.target.value);" type="text" autofocus placeholder="{{ __('Search participant using bib, name, last name or licence number') }}" name="participant_search" class="block w-full sticky top-0"  />
+    <div class="flex items-center justify-between gap-6 sticky top-0 bg-zinc-100 print:bg-white">
+        <x-search-input id="participant_search" wire:model.live.debounce.750ms="search" wire:keydown.enter="$set('search', $event.target.value);" type="text" autofocus placeholder="{{ __('Search participant using bib, name, last name or licence number') }}" name="participant_search" class="grow block w-full"  />
+
+        <select wire:model.live="filter_category" class="hidden md:block  border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+            <option value="">{{ __('Show all categories') }}</option>
+            @foreach ($this->categories as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </select>
+    </div>
 
     <div class="h-4"></div>
     

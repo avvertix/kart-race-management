@@ -7,6 +7,7 @@ namespace App\Livewire;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class ParticipantListing extends Component
@@ -27,10 +28,13 @@ class ParticipantListing extends Component
 
     public $sort;
 
+    public $filter_category;
+
     protected $queryString = [
         'search' => ['except' => '', 'as' => 's'],
         'selectedParticipant' => ['except' => '', 'as' => 'pid'],
         'sort' => ['except' => '', 'as' => 'order'],
+        'filter_category' => ['except' => '', 'as' => 'category'],
     ];
 
     public function mount($race)
@@ -80,6 +84,15 @@ class ParticipantListing extends Component
         $participant->sendConfirmParticipantNotification();
     }
 
+    #[Computed()]
+    public function categories()
+    {
+        return $this->race->championship->categories()
+            ->enabled()
+            ->orderBy('name')
+            ->get();
+    }
+
     public function render()
     {
         $this->participants = $this->race->participants()
@@ -96,6 +109,11 @@ class ParticipantListing extends Component
                         ->orWhere('last_name', 'LIKE', e($search).'%')
                         ->orWhere('driver_licence', hash('sha512', $search))
                         ->orWhere('competitor_licence', hash('sha512', $search));
+                });
+            })
+            ->when($this->filter_category, function ($query, $category_id) {
+                $query->whereHas('racingCategory', function ($query) use ($category_id) {
+                    $query->where('id', $category_id);
                 });
             })
             ->orderBy($this->sort === 'registration-date' ? 'created_at' : 'bib', 'asc')

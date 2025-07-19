@@ -7,7 +7,7 @@
     </x-slot>
 
 
-    <div class="py-6">
+    <div class="">
         <div class="px-4 sm:px-6 lg:px-8">
 
             <div class="grid grid-flow-col-dense gap-4">

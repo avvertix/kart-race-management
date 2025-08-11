@@ -8,10 +8,10 @@
         "php": "^8.3",
         "andreiio/blade-remix-icon": "^3.6",
         "blade-ui-kit/blade-icons": "^1.7",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^12.0",
         "laravel/jetstream": "^5.0",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9",
+        "laravel/tinker": "^2.10.1",
         "league/flysystem-path-prefixing": "^3.23",
         "livewire/livewire": "^3.4",
         "maatwebsite/excel": "^3.1",
@@ -28,7 +28,7 @@
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^11.0.1",
+        "phpunit/phpunit": "^11.5.3",
         "plannr/laravel-fast-refresh-database": "^1.2",
         "spatie/laravel-ignition": "^2.0"
     },
@@ -46,7 +46,8 @@
     },
     "scripts": {
         "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan config:clear",
+            "@php artisan clear-compiled",
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [

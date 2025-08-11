@@ -16,8 +16,10 @@
     <env name="DB_DATABASE" value="testing"/>
     <env name="MAIL_MAILER" value="array"/>
     <env name="QUEUE_CONNECTION" value="sync"/>
+    <env name="PULSE_ENABLED" value="false"/>
     <env name="SESSION_DRIVER" value="array"/>
     <env name="TELESCOPE_ENABLED" value="false"/>
+    <env name="NIGHTWATCH_ENABLED" value="false"/>
   </php>
   <source>
     <include>

@@ -21,7 +21,7 @@ jobs:
         env:
           MARIADB_DATABASE: testing
           MARIADB_USER: forge
-          MARIADB_PASSWORD: ''
+          # MARIADB_PASSWORD: forge
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
           MARIADB_ALLOW_EMPTY_PASSWORD: yes
           MARIADB_INITDB_SKIP_TZINFO: 1
@@ -62,7 +62,7 @@ jobs:
     - name: Run Testsuite
       env:
         DB_HOST: mariadb
-        DB_PASSWORD: forge
+        # DB_PASSWORD: forge
       run: |
         echo "APP_KEY=" > .env
         php artisan key:generate

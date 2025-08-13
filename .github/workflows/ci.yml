@@ -17,14 +17,13 @@ jobs:
 
     services:
       mariadb:
-        image: mariadb:10.8.2
+        image: mariadb:10.11.14
         env:
-          MYSQL_DATABASE: testing
-          MYSQL_USER: forge
-          MYSQL_PASSWORD: forge
+          MARIADB_DATABASE: testing
+          MARIADB_USER: forge
+          MARIADB_PASSWORD: forge
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_INITDB_SKIP_TZINFO: 1
+          MARIADB_INITDB_SKIP_TZINFO: 1
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -42,7 +41,7 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v4
       with:
-        path: ~/.composer/cache/files
+        path: /home/php/.composer/cache
         key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
     - name: Cache JS dependencies

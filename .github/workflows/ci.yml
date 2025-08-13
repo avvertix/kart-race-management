@@ -19,12 +19,12 @@ jobs:
       mariadb:
         image: mariadb:10.11.14
         env:
-          MYSQL_DATABASE: testing
-          MYSQL_USER: forge
-          MYSQL_PASSWORD: forge
+          MARIADB_DATABASE: testing
+          MARIADB_USER: forge
+          MARIADB_PASSWORD: ''
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_INITDB_SKIP_TZINFO: 1
+          MARIADB_ALLOW_EMPTY_PASSWORD: yes
+          MARIADB_INITDB_SKIP_TZINFO: 1
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3

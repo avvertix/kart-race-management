@@ -17,7 +17,7 @@ jobs:
 
     services:
       mariadb:
-        image: mariadb:10.8.2
+        image: mariadb:10.11.14
         env:
           MYSQL_DATABASE: testing
           MYSQL_USER: forge

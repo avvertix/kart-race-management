@@ -41,7 +41,7 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v4
       with:
-        path: ~/.composer/cache/files
+        path: /home/php/.composer/cache
         key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
     - name: Cache JS dependencies

@@ -1,0 +1,48 @@
+## Example Docker Compose file for deployment
+## download both docker-compose.yml and .env.example and customize them to your needs
+
+services:
+    app:
+        image: 'ghcr.io/avvertix/kart-race-management:main'
+        env_file: .env
+        volumes:
+            - storage:/var/www/html/storage
+        depends_on:
+            - mariadb
+        ports:
+            - "8000:80"
+        networks:
+            - app
+        restart: unless-stopped
+
+    mariadb:
+        image: 'mariadb:10.11.14'
+        environment:
+            MARIADB_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MARIADB_ROOT_HOST: '%'
+            MARIADB_DATABASE: '${DB_DATABASE}'
+            MARIADB_USER: '${DB_USERNAME}'
+            MARIADB_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - 'database:/var/lib/mysql'
+        networks:
+            - app
+        healthcheck:
+            test:
+                - CMD
+                - healthcheck.sh
+                - '--connect'
+                - '--innodb_initialized'
+            retries: 3
+            timeout: 5s
+        restart: unless-stopped
+
+networks:
+    app:
+        driver: bridge
+
+volumes:
+    database:
+        driver: local
+    storage:
+        driver: local

@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exports;
 
 use App\Models\Championship;
 use App\Models\Participant;
 use Illuminate\Support\Facades\DB;
-
-use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-
 
 class ChampionshipParticipantsExport implements FromQuery, WithHeadings, WithMapping
 {
@@ -18,10 +18,8 @@ class ChampionshipParticipantsExport implements FromQuery, WithHeadings, WithMap
 
     public function __construct(
         private Championship $championship,
-    ) {
-        
-    }
-    
+    ) {}
+
     public function headings(): array
     {
         return [
@@ -41,10 +39,9 @@ class ChampionshipParticipantsExport implements FromQuery, WithHeadings, WithMap
             ->orderBy('bib', 'asc');
     }
 
-
     /**
-    * @param Participant $invoice
-    */
+     * @param  Participant  $invoice
+     */
     public function map($participant): array
     {
         return [

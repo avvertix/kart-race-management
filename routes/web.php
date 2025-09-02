@@ -12,6 +12,7 @@ use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExportChampionshipParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
@@ -91,6 +92,8 @@ Route::middleware([
         Route::resource('championships.races', RaceInChampionshipController::class)->shallow()->only(['create', 'store']);
 
         Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
+
+        Route::get('championships/{championship}/export-participants', ExportChampionshipParticipantsController::class)->name('championships.export.participants');
 
         Route::resource('championships.bonuses', ChampionshipBonusController::class)->shallow()->except(['destroy']);
 

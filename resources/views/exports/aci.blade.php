@@ -58,7 +58,7 @@
                         <td>{{ $vehicle['chassis_manufacturer'] }}</td>
                         <td>{{ $vehicle['engine_manufacturer'] }}</td>
                     @endforeach
-                    <td>{{ $participant->racingCategory?->tire->name }}</td>
+                    <td>{{ $participant->racingCategory?->tire?->name }}</td>
                     @if ($participant->competitor)
                         <td>{{ str("{$participant->competitor['first_name']} {$participant->competitor['last_name']}")->title() }}</td>
                         <td>{{ $participant->competitor['licence_number'] }}</td>

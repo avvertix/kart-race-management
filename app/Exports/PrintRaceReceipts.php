@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
-use App\Models\CompetitorLicence;
-use App\Models\Participant;
 use App\Models\Race;
-use App\Models\Sex;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PrintRaceReceipts
 {
-    
-
     public function __construct(
         private Race $race
     ) {}
@@ -25,13 +20,12 @@ class PrintRaceReceipts
             ->orderBy('bib');
     }
 
-
     public function stream(string $filename = 'receipts.pdf')
     {
         return Pdf::loadView('prints.receipt', [
-                'race' => $this->race,
-                'participants' => $this->query()->limit(2)->get(),
-            ])
+            'race' => $this->race,
+            'participants' => $this->query()->limit(2)->get(),
+        ])
             ->setPaper('a4')
             ->addInfo([
                 'Title' => $filename,

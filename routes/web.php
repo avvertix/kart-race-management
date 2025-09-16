@@ -109,7 +109,7 @@ Route::middleware([
         Route::resource('orbits-backups', OrbitsBackupController::class)->except(['create', 'edit', 'update']);
 
         Route::get('races/{race}/participants/print', PrintRaceParticipantsController::class)->name('races.participants.print');
-        
+
         Route::get('races/{race}/participant-receipts/print', PrintRaceParticipantReceiptsController::class)->name('races.participant-receipts.print');
 
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');

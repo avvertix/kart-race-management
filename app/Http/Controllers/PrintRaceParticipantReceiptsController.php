@@ -20,7 +20,7 @@ class PrintRaceParticipantReceiptsController extends Controller
     {
         $this->authorize('update', $race);
 
-        $filename = Str::slug("receipt-" . config('races.organizer.name').'-'.$race->event_start_at->toDateString().'-'.$race->title);
+        $filename = Str::slug('receipt-'.config('races.organizer.name').'-'.$race->event_start_at->toDateString().'-'.$race->title);
 
         return (new PrintRaceReceipts($race))->stream("{$filename}.pdf");
     }

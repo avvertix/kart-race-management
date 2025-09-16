@@ -53,7 +53,7 @@
                     <td>{{ str("{$participant->first_name} {$participant->last_name}")->title() }}</td>
                     <td>{{ $participant->driver['licence_number'] }}</td>
                     <td>{{ str($participant->driver['nationality'])->title() }}</td>
-                    <td>&nbsp;</td>
+                    <td>{{ ($race->isZonal() && isset($participant->properties['out_of_zone']) && $participant->properties['out_of_zone']) ? __('Out of zone') : '', }}</td>
                     @foreach ($participant->vehicles as $vehicle)
                         <td>{{ $vehicle['chassis_manufacturer'] }}</td>
                         <td>{{ $vehicle['engine_manufacturer'] }}</td>

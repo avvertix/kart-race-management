@@ -34,6 +34,7 @@ return [
         'email' => env('RACE_ORGANIZER_EMAIL'),
         'url' => env('RACE_ORGANIZER_URL'),
         'address' => env('RACE_ORGANIZER_ADDRESS'),
+        'vat' => env('RACE_ORGANIZER_VAT'),
         'bank_holder' => env('RACE_ORGANIZER_BANK_HOLDER', env('RACE_ORGANIZER_NAME')),
         'bank_account' => env('RACE_ORGANIZER_BANK_ACCOUNT'),
         'bank' => env('RACE_ORGANIZER_BANK'),

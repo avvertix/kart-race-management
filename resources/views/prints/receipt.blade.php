@@ -21,9 +21,12 @@
 
         <h1>{{ __('Receipt') }}</h1>
 
-        <p>{{ ($race->event_end_at ?? $race->event_start_at)->locale(app()->currentLocale())->setTimezone($race->timezone)->isoFormat('D MMMM YYYY') }}</p>
+        <p>{{ __('Receipt date') }} <x-time :value="$participant->confirmed_at" /></p>
 
         <p>{{ $race->title }}</p>
+
+        <p>{{ $race->period }}</p>
+
 
 
         <div>
@@ -49,7 +52,7 @@
                 'place' => $participant->driver['birth_place'],
                 'date' => $participant->driver['birth_date'],
             ]) }}<br/>
-            {{ __(':address :city :province :postal_code', [
+            {{ __('Address :address :city :province :postal_code', [
                 'address' => $participant->driver['residence_address']['address'] ?? null,
                 'city' => $participant->driver['residence_address']['city'] ?? null,
                 'postal_code' => $participant->driver['residence_address']['postal_code'] ?? null,

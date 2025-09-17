@@ -413,5 +413,7 @@
     "Print receipts for all participants": "Stampa le ricevute per tutti i partecipanti",
     "Receipt": "Ricevuta",
     "Bill to": "Ricevuta da",
-    "Sport activity contribution": "Contributo per attività sportiva"
+    "Sport activity contribution": "Contributo per attività sportiva",
+    "Address :address :city :province :postal_code": "Indirizzo/Via :address :city :province :postal_code",
+    "Receipt date": "Data ricevuta"
 }

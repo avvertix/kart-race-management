@@ -17,6 +17,7 @@ class PrintRaceReceipts
     {
         return $this->race
             ->participants()
+            ->confirmed()
             ->orderBy('bib');
     }
 
@@ -24,7 +25,7 @@ class PrintRaceReceipts
     {
         return Pdf::loadView('prints.receipt', [
             'race' => $this->race,
-            'participants' => $this->query()->limit(2)->get(),
+            'participants' => $this->query()->get(),
         ])
             ->setPaper('a4')
             ->addInfo([
@@ -33,6 +34,7 @@ class PrintRaceReceipts
                 'Creator' => config('app.name'),
                 'PDFProducer' => config('app.name'),
             ])
+            // this is actually an inline response
             ->stream($filename);
     }
 }

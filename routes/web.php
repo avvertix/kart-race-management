@@ -24,6 +24,7 @@ use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
 use App\Http\Controllers\ParticipantTireVerificationController;
 use App\Http\Controllers\ParticipantTransponderController;
+use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RaceController;
@@ -108,6 +109,8 @@ Route::middleware([
         Route::resource('orbits-backups', OrbitsBackupController::class)->except(['create', 'edit', 'update']);
 
         Route::get('races/{race}/participants/print', PrintRaceParticipantsController::class)->name('races.participants.print');
+
+        Route::get('races/{race}/participant-receipts/print', PrintRaceParticipantReceiptsController::class)->name('races.participant-receipts.print');
 
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
 

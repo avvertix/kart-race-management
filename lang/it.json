@@ -408,6 +408,12 @@
     "Cancel": "Annulla",
     "You're about to remove :driver from the participants. This action cannot be undone.": "Stai per rimuovere :driver dai partecipanti. Questa azione non può essere annullata.",
     "Are you sure you want to remove this participant?": "Sei sicuro di voler rimuovere questo partecipante?",
-    "Remove participant" : "Rimuovi partecipante"
-    
+    "Remove participant" : "Rimuovi partecipante",
+    "Print receipts": "Stampa ricevute",
+    "Print receipts for all participants": "Stampa le ricevute per tutti i partecipanti",
+    "Receipt": "Ricevuta",
+    "Bill to": "Ricevuta da",
+    "Sport activity contribution": "Contributo per attività sportiva",
+    "Address :address :city :province :postal_code": "Indirizzo/Via :address :city :province :postal_code",
+    "Receipt date": "Data ricevuta"
 }

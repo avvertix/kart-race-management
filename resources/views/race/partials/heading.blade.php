@@ -59,6 +59,13 @@
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Print all participants registrations') }}</span>
                                     </a>
+                                    <a href="{{ route('races.participant-receipts.print', $race) }}" target="_blank" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                        <span class="inline-flex gap-1">
+                                            <x-ri-receipt-line class="size-5 shrink-0" />
+                                            {{ __('Print receipts') }}
+                                        </span>
+                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Print receipts for all participants') }}</span>
+                                    </a>
                                     <div class="border-t border-zinc-100"></div>
                                 @endcan
                                 @can('create', \App\Model\Transponder::class)

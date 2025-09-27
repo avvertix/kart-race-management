@@ -127,25 +127,49 @@
 @endif
 
 
-@if(auth()->user()->hasPermission('payment:view'))
-    <div class="pb-2 mb-2 border-b border-zinc-300">
-        <p class="font-bold md:col-span-2">{{ __('Race participation price') }}</p>
-        <div class="flex gap-2 items-baseline">
-            <x-price class="font-mono">{{ $item->price()->last() }}</x-price>
+<div class="flex gap-6">
 
-            @if ($item->use_bonus)
-                <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{{ __('Bonus')}}</span>
-            @endif
+    @if(auth()->user()->hasPermission('payment:view'))
+        <div class="pb-2 mb-2 border-b border-zinc-300">
+            <p class="font-bold md:col-span-2">{{ __('Race participation price') }}</p>
+            <div class="flex gap-2 items-baseline">
+                <x-price class="font-mono">{{ $item->price()->last() }}</x-price>
 
-            <livewire:change-participant-payment-channel :participant="$item" :key="$item->getKey()" />
+                @if ($item->use_bonus)
+                    <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{{ __('Bonus')}}</span>
+                @endif
 
-            @foreach ($item->payments as $payment)
-                <a class="text-orange-600 hover:text-orange-900" href="{{ $payment->downloadUrl }}" target="_blank">{{ __('Receipt uploaded on') }} <x-time :value="$payment->created_at" /></a>
-            @endforeach
+                <livewire:change-participant-payment-channel :participant="$item" :key="$item->getKey()" />
 
+                @foreach ($item->payments as $payment)
+                    <a class="text-orange-600 hover:text-orange-900" href="{{ $payment->downloadUrl }}" target="_blank">{{ __('Receipt uploaded on') }} <x-time :value="$payment->created_at" /></a>
+                @endforeach
+
+            </div>
         </div>
-    </div>
-@endif
+    @endif
+
+    @if(auth()->user()->isAdmin())
+        <div class="pb-2 mb-2 border-b border-zinc-300">
+            <p class="font-bold md:col-span-2">{{ __('Alias') }}</p>
+            <div class="flex gap-2 items-baseline">
+                <livewire:change-participant-alias :participant="$item" :key="'alias-' . $item->getKey()" />
+            </div>
+        </div>
+    @endif
+
+    @if(auth()->user()->isAdmin())
+        <div class="pb-2 mb-2 border-b border-zinc-300">
+            <p class="font-bold md:col-span-2">{{ __('Notes') }}</p>
+            <div class="flex gap-2 items-baseline">
+                <livewire:change-participant-notes :participant="$item" :key="'notes-' . $item->getKey()" />
+            </div>
+        </div>
+    @endif
+    
+    
+
+</div>
 
 <div class="grid md:grid-cols-2 mb-2">
     <p class="font-bold md:col-span-2">{{ __('Driver') }}</p>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Data\AliasesData;
 use App\Notifications\ConfirmParticipantRegistration;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -59,6 +60,8 @@ class Participant extends Model implements HasLocalePreference
         'locale',
         'registration_completed_at',
         'payment_channel',
+        'notes',
+        'aliases',
     ];
 
     /**
@@ -200,7 +203,7 @@ class Participant extends Model implements HasLocalePreference
     {
         return $query->where('driver_licence', hash('sha512', $licence));
     }
-    
+
     public function scopeConfirmed($query)
     {
         return $query->whereNotNull('confirmed_at');
@@ -464,6 +467,7 @@ class Participant extends Model implements HasLocalePreference
             'properties' => AsArrayObject::class,
             'wildcard' => 'boolean',
             'payment_channel' => PaymentChannelType::class,
+            'aliases' => AliasesData::class,
         ];
     }
 }

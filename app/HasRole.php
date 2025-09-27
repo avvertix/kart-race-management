@@ -31,6 +31,11 @@ trait HasRole
         return optional($this->userRole())->key === $role;
     }
 
+    public function isAdmin()
+    {
+        return optional($this->userRole())->key === 'admin';
+    }
+
     /**
      * Get the user's permissions for the given role.
      *

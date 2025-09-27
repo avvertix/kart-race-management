@@ -383,7 +383,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
         ], $csv->toArray());
     }
-    
+
     public function test_export_participants_with_notes()
     {
         config(['races.organizer.name' => 'Organizer name']);
@@ -468,7 +468,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ],
         ], $csv->toArray());
     }
-    
+
     public function test_export_participants_with_aliases()
     {
         config(['races.organizer.name' => 'Organizer name']);

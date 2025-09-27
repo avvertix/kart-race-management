@@ -203,7 +203,7 @@ class Participant extends Model implements HasLocalePreference
     {
         return $query->where('driver_licence', hash('sha512', $licence));
     }
-    
+
     public function scopeConfirmed($query)
     {
         return $query->whereNotNull('confirmed_at');

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Data\AliasesData;
@@ -9,16 +11,19 @@ use Livewire\Component;
 class ChangeParticipantAlias extends Component
 {
     public Participant $participant;
-    
+
     public ?string $name = null;
+
     public ?string $category = null;
+
     public ?string $bib = null;
+
     public bool $isEditing = false;
 
     public function mount()
     {
         $aliases = $this->participant->aliases;
-        
+
         if ($aliases instanceof AliasesData) {
             $this->name = $aliases->name;
             $this->category = $aliases->category;
@@ -32,7 +37,7 @@ class ChangeParticipantAlias extends Component
     }
 
     public function cancelEditing()
-    {      
+    {
         $this->isEditing = false;
     }
 

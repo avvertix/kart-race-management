@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Models\Participant;
@@ -8,9 +10,11 @@ use Livewire\Component;
 class ChangeParticipantNotes extends Component
 {
     public Participant $participant;
-    
+
     public $notes;
+
     public $isEditing = false;
+
     public $originalNotes;
 
     public function mount()

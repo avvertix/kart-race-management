@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Tests\Feature\Exports;
 
 use App\Exports\PrintRaceReceipts;
-use App\Models\CompetitorLicence;
 use App\Models\Participant;
 use App\Models\Race;
-use App\Models\Sex;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Testing\TestResponseAssert as PHPUnit;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
-use Illuminate\Testing\TestResponseAssert as PHPUnit;
 
 class PrintRaceParticipantReceiptsControllerTest extends TestCase
 {
@@ -97,12 +95,11 @@ class PrintRaceParticipantReceiptsControllerTest extends TestCase
 
         $contentDisposition = explode(';', $response->headers->get('content-disposition', ''));
 
-
         if (isset($contentDisposition[1]) &&
-            trim(explode('=', $contentDisposition[1])[0]) !== 'filename') {
+            mb_trim(explode('=', $contentDisposition[1])[0]) !== 'filename') {
             PHPUnit::withResponse($response)->fail(
                 'Unsupported Content-Disposition header provided.'.PHP_EOL.
-                'Disposition ['.trim(explode('=', $contentDisposition[1])[0]).'] found in header, [filename] expected.'
+                'Disposition ['.mb_trim(explode('=', $contentDisposition[1])[0]).'] found in header, [filename] expected.'
             );
         }
 
@@ -114,7 +111,7 @@ class PrintRaceParticipantReceiptsControllerTest extends TestCase
             PHPUnit::withResponse($response)->assertSame(
                 $expected_filename,
                 isset(explode('=', $contentDisposition[1])[1])
-                    ? trim(explode('=', $contentDisposition[1])[1], " \"'")
+                    ? mb_trim(explode('=', $contentDisposition[1])[1], " \"'")
                     : '',
                 $message
             );
@@ -145,7 +142,7 @@ class PrintRaceParticipantReceiptsControllerTest extends TestCase
         $export = new PrintRaceReceipts($race);
 
         $participantsToPrint = $export->query()->get();
-        
+
         $this->assertCount(1, $participantsToPrint);
         $this->assertTrue($participantsToPrint->first()->is($participant));
 
@@ -173,9 +170,7 @@ class PrintRaceParticipantReceiptsControllerTest extends TestCase
         $export = new PrintRaceReceipts($race);
 
         $participantsToPrint = $export->query()->get();
-        
-        $this->assertCount(0, $participantsToPrint);        
-    }
 
-    
+        $this->assertCount(0, $participantsToPrint);
+    }
 }

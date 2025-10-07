@@ -25,6 +25,7 @@ class ChampionshipParticipantsExport implements FromQuery, WithHeadings, WithMap
         return [
             __('Number'),
             __('Name'),
+            __('Email'),
         ];
     }
 
@@ -47,6 +48,7 @@ class ChampionshipParticipantsExport implements FromQuery, WithHeadings, WithMap
         return [
             $participant->bib,
             $participant->fullName,
+            $participant->email,
         ];
     }
 }

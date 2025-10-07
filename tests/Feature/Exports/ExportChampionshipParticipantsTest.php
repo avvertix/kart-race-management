@@ -90,6 +90,7 @@ class ExportChampionshipParticipantsTest extends TestCase
             return $export->map($participant) === [
                 $participant->bib,
                 $participant->fullName,
+                $participant->email,
             ] && $queryResults->count() === 1 && $queryResults->first()->is($participant) && $queryResults->first()->championship->is($championship);
         });
 

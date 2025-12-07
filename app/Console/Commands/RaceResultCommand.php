@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Data\Results\RacerRaceResultData;
-use App\Data\Results\RacerResultData;
 use App\Data\Results\RunResultData;
-use App\Data\Results\SessionResultData;
 use App\Models\Race;
-use App\Models\RaceSession;
 use App\Models\ResultStatus;
 use App\Models\RunType;
 use Illuminate\Console\Command;
@@ -40,9 +39,7 @@ class RaceResultCommand extends Command
 
         $race = Race::whereUuid($raceUlid)->sole();
 
-
         $disk = Storage::disk('race-results');
-
 
         $resultFilePath = $disk->path("{$raceUlid}/GARA 2 - 125 TAG J   TAG S   SUPERTAG  IAME X30 JUNIOR   IAME X30 SENIOR   - Risultati.xml");
 
@@ -54,16 +51,15 @@ class RaceResultCommand extends Command
 
         $rows = $reader->element('table.row')->collect();
 
-        $categoryResults = $rows->mapToGroups(function($row){
+        $categoryResults = $rows->mapToGroups(function ($row) {
             return [$row->getAttribute('Classe') => $row->getAttribute('Num.')];
-        })->mapWithKeys(function(Collection $group, $key){
+        })->mapWithKeys(function (Collection $group, $key) {
             return [$key => $group->flip()];
         });
 
-        $results = $rows->map(function($row, $index) use ($categoryResults) {
+        $results = $rows->map(function ($row, $index) use ($categoryResults) {
 
             $racerCategory = $row->getAttribute('Classe');
-
 
             return new RacerRaceResultData(
                 bib: $row->getAttribute('Num.'),
@@ -71,8 +67,8 @@ class RaceResultCommand extends Command
                 name: $row->getAttribute('Nome'),
                 category: $racerCategory,
                 position: ResultStatus::matchUnfinishedOrPenalty($row->getAttribute('Pos')) ? $index : $row->getAttribute('Pos'),
-                position_in_category: ResultStatus::matchUnfinishedOrPenalty($row->getAttribute('PIC')) ? $categoryResults[$racerCategory]->get($row->getAttribute('Num.'))+1 : $row->getAttribute('PIC'),
-                laps:  (int)$row->getAttribute('Giri'),
+                position_in_category: ResultStatus::matchUnfinishedOrPenalty($row->getAttribute('PIC')) ? $categoryResults[$racerCategory]->get($row->getAttribute('Num.')) + 1 : $row->getAttribute('PIC'),
+                laps: (int) $row->getAttribute('Giri'),
                 total_race_time: $row->getAttribute('Tempo_Totale'),
                 gap_from_leader: $row->getAttribute('Diff'),
                 gap_from_previous: $row->getAttribute('Differenza'),
@@ -82,11 +78,11 @@ class RaceResultCommand extends Command
             );
         });
 
-        $sessionResult = new RunResultData($runType, "60 MINI GR.3   MINI GR.3 U.10   MINI KART - Risultati", $results);
+        $sessionResult = new RunResultData($runType, '60 MINI GR.3   MINI GR.3 U.10   MINI KART - Risultati', $results);
 
         dump($runType->name);
 
-        $results->each(function($r){
+        $results->each(function ($r) {
             $this->line("{$r->position} [{$r->status->name}]: {$r->bib} - {$r->category} - {$r->position_in_category}");
         });
     }

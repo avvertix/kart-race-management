@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\Models\ResultStatus;
-use App\Models\RunType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -26,7 +27,6 @@ class ResultStatusTest extends TestCase
         ];
     }
 
-
     #[DataProvider('result_statuses')]
     public function test_result_status_parsed_from_string(string $value, ResultStatus $expected): void
     {
@@ -34,8 +34,7 @@ class ResultStatusTest extends TestCase
 
         $this->assertEquals($expected, $status);
     }
-    
-    
+
     public function test_status_finished(): void
     {
         $status = ResultStatus::FINISHED;
@@ -46,7 +45,7 @@ class ResultStatusTest extends TestCase
         $this->assertFalse($status->didNotStart());
         $this->assertFalse($status->unfinishedOrPenalty());
     }
-    
+
     public function test_status_disqualified(): void
     {
         $status = ResultStatus::DISQUALIFIED;
@@ -57,7 +56,7 @@ class ResultStatusTest extends TestCase
         $this->assertFalse($status->didNotStart());
         $this->assertTrue($status->unfinishedOrPenalty());
     }
-    
+
     public function test_status_did_not_finish(): void
     {
         $status = ResultStatus::DID_NOT_FINISH;
@@ -68,7 +67,7 @@ class ResultStatusTest extends TestCase
         $this->assertFalse($status->didNotStart());
         $this->assertTrue($status->unfinishedOrPenalty());
     }
-    
+
     public function test_status_did_not_start(): void
     {
         $status = ResultStatus::DID_NOT_START;
@@ -79,5 +78,4 @@ class ResultStatusTest extends TestCase
         $this->assertTrue($status->didNotStart());
         $this->assertTrue($status->unfinishedOrPenalty());
     }
-
 }

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\Models\RunType;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +22,7 @@ class RunTypeTest extends TestCase
             ['warm-up - 60 MINI GR.3 - Results.xml'],
         ];
     }
-    
+
     public static function qualifying_session_file_names()
     {
         return [
@@ -30,7 +33,7 @@ class RunTypeTest extends TestCase
             ['prove cronometrate - 60 MINI GR.3 - Results.xml'],
         ];
     }
-    
+
     public static function first_race_session_file_names()
     {
         return [
@@ -41,7 +44,7 @@ class RunTypeTest extends TestCase
             ['Prefinale - T4 CLUB SOLO TILLOTSON - Results.xml'],
         ];
     }
-    
+
     public static function second_race_session_file_names()
     {
         return [
@@ -51,7 +54,7 @@ class RunTypeTest extends TestCase
             ['4 - Finale - 60 MINI GR.3 - Results.xml'],
         ];
     }
-    
+
     public static function unknown_session_file_names()
     {
         return [
@@ -61,7 +64,7 @@ class RunTypeTest extends TestCase
             [''],
             ['2023-03-31'],
             ['gara - results.xml'],
-            
+
         ];
     }
 
@@ -82,7 +85,7 @@ class RunTypeTest extends TestCase
         $this->assertEquals(RunType::QUALIFY, $runType);
         $this->assertTrue($runType->isQualify());
     }
-    
+
     #[DataProvider('first_race_session_file_names')]
     public function test_race_one_sessions_recognized(string $file): void
     {
@@ -91,7 +94,7 @@ class RunTypeTest extends TestCase
         $this->assertEquals(RunType::RACE_1, $runType);
         $this->assertTrue($runType->isRace());
     }
-    
+
     #[DataProvider('second_race_session_file_names')]
     public function test_race_two_sessions_recognized(string $file): void
     {
@@ -100,14 +103,14 @@ class RunTypeTest extends TestCase
         $this->assertEquals(RunType::RACE_2, $runType);
         $this->assertTrue($runType->isRace());
     }
-    
+
     #[DataProvider('unknown_session_file_names')]
     public function test_run_not_recognized(?string $file): void
     {
         try {
             $runType = RunType::fromString($file);
             $this->fail("Expected InvalidArgumentException not thrown for file name: {$file}");
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->assertStringContainsString('Cannot identify run from ', $e->getMessage());
         }
     }

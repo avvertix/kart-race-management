@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\Actions\ProcessMyLapsResult;
@@ -14,7 +16,7 @@ class ProcessMyLapsResultTest extends TestCase
 {
     public function test_processes_qualifying_results(): void
     {
-        $filePath = __DIR__ . '/../fixtures/qualifying-results.xml';
+        $filePath = __DIR__.'/../fixtures/qualifying-results.xml';
 
         $result = (new ProcessMyLapsResult())($filePath);
 
@@ -72,7 +74,7 @@ class ProcessMyLapsResultTest extends TestCase
 
     public function test_processes_race_1_results(): void
     {
-        $filePath = __DIR__ . '/../fixtures/race-1-results.xml';
+        $filePath = __DIR__.'/../fixtures/race-1-results.xml';
 
         $result = (new ProcessMyLapsResult())($filePath);
 
@@ -127,7 +129,7 @@ class ProcessMyLapsResultTest extends TestCase
 
     public function test_processes_race_2_results(): void
     {
-        $filePath = __DIR__ . '/../fixtures/race-2-results.xml';
+        $filePath = __DIR__.'/../fixtures/race-2-results.xml';
 
         $result = (new ProcessMyLapsResult())($filePath);
 

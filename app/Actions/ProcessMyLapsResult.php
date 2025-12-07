@@ -18,9 +18,8 @@ class ProcessMyLapsResult
     /**
      * Process a MyLaps Orbits 5 XML result file and convert it to structured data.
      *
-     * @param string $filePath The path to the XML file
-     * @param string|null $fileName Optional filename to help determine session type
-     * @return RunResultData
+     * @param  string  $filePath  The path to the XML file
+     * @param  string|null  $fileName  Optional filename to help determine session type
      */
     public function __invoke(string $filePath, ?string $fileName = null): RunResultData
     {
@@ -155,7 +154,7 @@ class ProcessMyLapsResult
         // Remove common session prefixes (e.g., "3 - GARA 1   RACE 1 - ")
         $title = preg_replace('/^\d+\s*-\s*[^-]+-\s*/', '', $title);
 
-        return trim($title);
+        return mb_trim($title);
     }
 
     /**

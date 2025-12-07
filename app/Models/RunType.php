@@ -19,11 +19,11 @@ enum RunType: int
             throw new InvalidArgumentException("Cannot identify run from an empty text.");
         }
 
-        if(Str::contains($value, ['gara 1', 'race 1', 'gara1', 'race1', 'prefinale', 'pre-finale'], ignoreCase: true)){
+        if(Str::contains($value, ['gara 1', 'race 1', 'gara1', 'gara-1', 'race1', 'race-1', 'prefinale', 'pre-finale'], ignoreCase: true)){
             return static::RACE_1;
         }
 
-        if(Str::contains($value, ['gara 2', 'race 2', 'gara2', 'race2', 'finale', 'final'], ignoreCase: true)){
+        if(Str::contains($value, ['gara 2', 'race 2', 'gara2', 'race2', 'gara-2', 'race-2', 'finale', 'final'], ignoreCase: true)){
             return static::RACE_2;
         }
 

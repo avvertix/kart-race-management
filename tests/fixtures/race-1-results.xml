@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<table>
+<row Pos="1" PIC="1" No.="214" Name="PETERSON MAX" Class="MINI GR3" Laps="9" Total_Tm="8:17.256" Diff="" Gap="" Avg._Speed="81.447" Best_Tm="54.201" Best_Speed="83.024" In_Lap="8" Car_Bike_Reg="9e015a39" Nat_State="" Sponsor="" Points="20"/>
+<row Pos="2" PIC="2" No.="6" Name="ANDERSON LUCAS" Class="MINI GR3" Laps="9" Total_Tm="8:17.778" Diff="0.522" Gap="0.522" Avg._Speed="81.362" Best_Tm="54.267" Best_Speed="82.923" In_Lap="9" Car_Bike_Reg="60550892" Nat_State="" Sponsor="" Points="19"/>
+<row Pos="3" PIC="3" No.="18" Name="MARTINEZ ALEX" Class="MINI GR3" Laps="9" Total_Tm="8:24.247" Diff="6.991" Gap="6.469" Avg._Speed="80.318" Best_Tm="54.931" Best_Speed="81.921" In_Lap="6" Car_Bike_Reg="43655d9d" Nat_State="" Sponsor="" Points="18"/>
+<row Pos="4" PIC="4" No.="131" Name="HENDERSON OLIVER" Class="MINI GR3" Laps="9" Total_Tm="8:24.278" Diff="7.022" Gap="0.031" Avg._Speed="80.313" Best_Tm="54.781" Best_Speed="82.145" In_Lap="8" Car_Bike_Reg="732031f0" Nat_State="" Sponsor="" Points="17"/>
+<row Pos="5" PIC="5" No.="959" Name="FISCHER THEO" Class="MINI GR3" Laps="9" Total_Tm="8:28.838" Diff="11.582" Gap="4.560" Avg._Speed="79.593" Best_Tm="55.270" Best_Speed="81.418" In_Lap="7" Car_Bike_Reg="76a38f6c" Nat_State="" Sponsor="" Points="16"/>
+<row Pos="6" PIC="6" No.="15" Name="MURPHY SOPHIA" Class="MINI GR3" Laps="9" Total_Tm="8:29.203" Diff="11.947" Gap="0.365" Avg._Speed="79.536" Best_Tm="55.347" Best_Speed="81.305" In_Lap="6" Car_Bike_Reg="f14d592c" Nat_State="" Sponsor="" Points="15"/>
+<row Pos="7" PIC="7" No.="61" Name="COLEMAN ETHAN" Class="MINI GR3" Laps="9" Total_Tm="8:29.254" Diff="11.998" Gap="0.051" Avg._Speed="79.528" Best_Tm="55.355" Best_Speed="81.293" In_Lap="7" Car_Bike_Reg="a66b76ec" Nat_State="" Sponsor="" Points="14"/>
+<row Pos="8" PIC="8" No.="93" Name="BENNETT NOAH" Class="MINI GR3" Laps="9" Total_Tm="8:29.441" Diff="12.185" Gap="0.187" Avg._Speed="79.499" Best_Tm="54.971" Best_Speed="81.861" In_Lap="7" Car_Bike_Reg="fab9f5dd" Nat_State="" Sponsor="" Points="13"/>
+<row Pos="9" PIC="9" No.="262" Name="BROOKS EMMA" Class="MINI GR3" Laps="9" Total_Tm="8:30.283" Diff="13.027" Gap="0.842" Avg._Speed="79.368" Best_Tm="55.363" Best_Speed="81.282" In_Lap="5" Car_Bike_Reg="ed479ede" Nat_State="" Sponsor="" Points="12"/>
+<row Pos="DQ" PIC="DQ" No.="13" Name="GRANT LIAM" Class="MINI GR3" Laps="9" Total_Tm="8:18.311" Diff="DQ" Gap="" Avg._Speed="81.275" Best_Tm="54.308" Best_Speed="82.861" In_Lap="7" Car_Bike_Reg="817a5ccf" Nat_State="" Sponsor="" Points="0"/>
+</table>

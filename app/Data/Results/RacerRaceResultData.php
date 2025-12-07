@@ -21,6 +21,9 @@ class RacerRaceResultData extends Data
       public readonly string $best_lap_time,
       public readonly string $best_lap_number,
       public readonly string $racer_hash,
+      public readonly bool $is_dnf = false,
+      public readonly bool $is_dns = false,
+      public readonly bool $is_dq = false,
       public readonly ?float $points = null,
 
     ) {}

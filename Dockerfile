@@ -26,7 +26,7 @@ RUN \
 
 ## second step, assemble the image
 
-FROM php:8.3.23-fpm-bullseye AS php
+FROM php:8.3.24-fpm-bullseye AS php
 
 LABEL maintainer="Alessio <alessio@avsoft.it>" \
   org.label-schema.name="avvertix/kart-race-management" \
@@ -50,7 +50,7 @@ RUN apt-get update -yqq && \
         cron \
     && curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
-        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+        https://github.com/mlocati/docker-php-extension-installer/releases/download/2.9.19/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions && \
     IPE_GD_WITHOUTAVIF=1 install-php-extensions \
         bcmath \
@@ -63,6 +63,7 @@ RUN apt-get update -yqq && \
         opcache \
         redis \
         zip \
+        xsl \
     && docker-php-source delete \
     && apt-get autoremove -yq --purge \
     && apt-get autoclean -yq \

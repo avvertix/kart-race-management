@@ -22,6 +22,7 @@ class ParticipantResult extends Model
     protected $fillable = [
         'run_result_id',
         'participant_id',
+        'category_id',
         'bib',
         'status',
         'name',
@@ -99,5 +100,14 @@ class ParticipantResult extends Model
     public function participant(): BelongsTo
     {
         return $this->belongsTo(Participant::class);
+    }
+
+    /**
+     * Get the category this result belongs to (nullable).
+     * This relationship can be established via category_id or category timekeep_label.
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 }

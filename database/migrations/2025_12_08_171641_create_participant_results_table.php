@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Category;
 use App\Models\Participant;
 use App\Models\RunResult;
 use Illuminate\Database\Migrations\Migration;
@@ -25,6 +26,9 @@ return new class extends Migration
 
             // Optional foreign key to participant (nullable, linked via racer_hash)
             $table->foreignIdFor(Participant::class)->nullable();
+
+            // Optional foreign key to category (nullable, linked via timekeep_label)
+            $table->foreignIdFor(Category::class)->nullable();
 
             // Common fields (both qualifying and race)
             $table->unsignedInteger('bib');

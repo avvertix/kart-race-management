@@ -21,6 +21,7 @@ class ParticipantResult extends Model
      */
     protected $fillable = [
         'run_result_id',
+        'participant_id',
         'bib',
         'status',
         'name',
@@ -89,5 +90,14 @@ class ParticipantResult extends Model
     public function runResult(): BelongsTo
     {
         return $this->belongsTo(RunResult::class);
+    }
+
+    /**
+     * Get the participant this result belongs to (nullable).
+     * This relationship can be established via participant_id or racer_hash.
+     */
+    public function participant(): BelongsTo
+    {
+        return $this->belongsTo(Participant::class);
     }
 }

@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Actions;
+
+use App\Models\Participant;
+use Illuminate\Support\Facades\DB;
+
+class BackfillParticipantRacerHash
+{
+    /**
+     * Backfill racer_hash for all participants.
+     * Racer hash is the first 8 characters of the driver_licence hash.
+     *
+     * @return int Number of participants updated
+     */
+    public function __invoke(): int
+    {
+        $updated = 0;
+
+        Participant::whereNull('racer_hash')
+            ->orWhere('racer_hash', '')
+            ->chunk(100, function ($participants) use (&$updated) {
+                foreach ($participants as $participant) {
+                    $racerHash = mb_substr($participant->driver_licence, 0, 8);
+
+                    $participant->update(['racer_hash' => $racerHash]);
+                    $updated++;
+                }
+            });
+
+        return $updated;
+    }
+}

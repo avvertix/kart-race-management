@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Participant;
 use App\Models\RunResult;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,6 +22,9 @@ return new class extends Migration
 
             // Foreign key to run result
             $table->foreignIdFor(RunResult::class)->constrained()->cascadeOnDelete();
+
+            // Optional foreign key to participant (nullable, linked via racer_hash)
+            $table->foreignIdFor(Participant::class)->nullable();
 
             // Common fields (both qualifying and race)
             $table->unsignedInteger('bib');

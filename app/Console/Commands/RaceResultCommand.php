@@ -37,14 +37,11 @@ class RaceResultCommand extends Command
     public function handle(ProcessMyLapsResult $processMyLapsResult)
     {
 
-
         $raceUlid = '01hnxdp8pkbmaqb02w0ccb5h7n';
 
         // $race = Race::whereUuid($raceUlid)->sole();
 
-
         // $disk = Storage::disk('race-results');
-
 
         // $resultFilePath = $disk->path("{$raceUlid}/GARA 2 - 125 TAG J   TAG S   SUPERTAG  IAME X30 JUNIOR   IAME X30 SENIOR   - Risultati.xml");
 
@@ -67,7 +64,6 @@ class RaceResultCommand extends Command
         // $results = $rows->map(function($row, $index) use ($categoryResults) {
 
         //     $racerCategory = $row->getAttribute('Classe');
-
 
         //     return new RacerRaceResultData(
         //         bib: $row->getAttribute('Num.'),
@@ -94,21 +90,18 @@ class RaceResultCommand extends Command
         //     $this->line("{$r->position} [{$r->status->name}]: {$r->bib} - {$r->category} - {$r->position_in_category}");
         // });
 
-
-
-
         // Get the fixture file to test
         $fileName = $this->argument('file') ?? 'race-2-results.xml';
 
         $filePath = base_path("tests/fixtures/{$fileName}");
 
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             $this->error("File not found: {$filePath}");
-            $this->info("Available fixtures:");
+            $this->info('Available fixtures:');
 
             $fixtures = glob(base_path('tests/fixtures/*.xml'));
             foreach ($fixtures as $fixture) {
-                $this->line('  - ' . basename($fixture));
+                $this->line('  - '.basename($fixture));
             }
 
             return 1;

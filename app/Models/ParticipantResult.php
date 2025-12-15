@@ -56,26 +56,6 @@ class ParticipantResult extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'bib' => 'integer',
-            'status' => ResultStatus::class,
-            'is_dnf' => 'boolean',
-            'is_dns' => 'boolean',
-            'is_dq' => 'boolean',
-            'points' => 'float',
-            'laps' => 'integer',
-            'best_speed' => 'float',
-            'second_best_speed' => 'float',
-        ];
-    }
-
-    /**
      * Get the route key for the model.
      *
      * @return string
@@ -109,5 +89,25 @@ class ParticipantResult extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'bib' => 'integer',
+            'status' => ResultStatus::class,
+            'is_dnf' => 'boolean',
+            'is_dns' => 'boolean',
+            'is_dq' => 'boolean',
+            'points' => 'float',
+            'laps' => 'integer',
+            'best_speed' => 'float',
+            'second_best_speed' => 'float',
+        ];
     }
 }

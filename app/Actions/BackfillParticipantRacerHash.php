@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Models\Participant;
-use Illuminate\Support\Facades\DB;
 
 class BackfillParticipantRacerHash
 {

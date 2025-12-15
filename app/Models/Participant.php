@@ -84,19 +84,6 @@ class Participant extends Model implements HasLocalePreference
     ];
 
     /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        static::saving(function (Participant $participant) {
-            // Auto-populate racer_hash from driver_licence if it's not already set
-            if ($participant->driver_licence && empty($participant->racer_hash)) {
-                $participant->racer_hash = mb_substr($participant->driver_licence, 0, 8);
-            }
-        });
-    }
-
-    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array
@@ -442,6 +429,19 @@ class Participant extends Model implements HasLocalePreference
         }
 
         return $this->properties['out_of_zone'] ? __('Out of zone') : __('Within zone');
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Participant $participant) {
+            // Auto-populate racer_hash from driver_licence if it's not already set
+            if ($participant->driver_licence && empty($participant->racer_hash)) {
+                $participant->racer_hash = mb_substr($participant->driver_licence, 0, 8);
+            }
+        });
     }
 
     protected function engine(): \Illuminate\Database\Eloquent\Casts\Attribute

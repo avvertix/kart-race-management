@@ -21,7 +21,7 @@
         "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-data": "^4.5",
         "timokoerber/laravel-one-time-operations": "^1.4",
-        "vitorccs/laravel-csv": "^1.0"
+        "vitorccs/laravel-csv": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.12",

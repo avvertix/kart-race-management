@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7d8c12f63af01ec6cc17521d3747c9e",
+    "content-hash": "99750d1822be7577ed72cd6b0e3f00bb",
     "packages": [
         {
             "name": "andreiio/blade-remix-icon",
@@ -8758,16 +8758,16 @@
         },
         {
             "name": "vitorccs/laravel-csv",
-            "version": "v1.1.0",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vitorccs/laravel-csv.git",
-                "reference": "31f0cff5c2b6cd2daddbad3ceb57c2c3b56036e0"
+                "reference": "d1a6a4a3bf73a0913b2336889a3c9882ff3c6fdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vitorccs/laravel-csv/zipball/31f0cff5c2b6cd2daddbad3ceb57c2c3b56036e0",
-                "reference": "31f0cff5c2b6cd2daddbad3ceb57c2c3b56036e0",
+                "url": "https://api.github.com/repos/vitorccs/laravel-csv/zipball/d1a6a4a3bf73a0913b2336889a3c9882ff3c6fdb",
+                "reference": "d1a6a4a3bf73a0913b2336889a3c9882ff3c6fdb",
                 "shasum": ""
             },
             "require": {
@@ -8814,9 +8814,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vitorccs/laravel-csv/issues",
-                "source": "https://github.com/vitorccs/laravel-csv/tree/v1.1.0"
+                "source": "https://github.com/vitorccs/laravel-csv/tree/v2.0.0"
             },
-            "time": "2023-04-12T04:29:58+00:00"
+            "time": "2024-07-19T22:45:15+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

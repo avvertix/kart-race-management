@@ -81,6 +81,14 @@ class Race extends Model
     }
 
     /**
+     * Get the run results for the race.
+     */
+    public function results()
+    {
+        return $this->hasMany(RunResult::class);
+    }
+
+    /**
      * Filter races available for registration
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query

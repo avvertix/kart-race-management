@@ -76,6 +76,12 @@ return [
             'prefix' => 'orbits/backups',
         ],
 
+        'race-results' => [
+            'driver' => 'scoped',
+            'disk' => 'local',
+            'prefix' => 'race-results',
+        ],
+
     ],
 
     /*

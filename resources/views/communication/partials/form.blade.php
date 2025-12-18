@@ -1,20 +1,20 @@
 <div class="">
     <x-label for="message" value="{{ __('Message (maximum 300 characters)') }}" />
     <x-input-error for="message" />
-    <x-textarea id="message" name="message" class=" mt-1 block w-full max-w-prose @error('message') is-invalid @enderror" rows="2" cols="50">{{ old('message', optional($communication ?? null)->message) }}</x-textarea>
+    <x-textarea id="message" name="message" class=" mt-1 block w-full max-w-prose {{ $errors->has('message') ? 'is-invalid' : '' }}" rows="2" cols="50">{{ old('message', optional($communication ?? null)->message) }}</x-textarea>
 </div>
 
 
 <div class="">
     <x-label for="starts_at" value="{{ __('Show date') }}" />
     <x-input-error for="starts_at" />
-    <x-input type="date" id="starts_at" name="starts_at" class=" mt-1 block w-full max-w-prose @error('starts_at') is-invalid @enderror" value="{{ old('starts_at', optional($communication ?? null)->starts_at?->toDateString() ?? today()->toDateString()) }}" />
+    <x-input type="date" id="starts_at" name="starts_at" class="mt-1 block w-full max-w-prose {{ $errors->has('starts_at') ? 'is-invalid' : '' }}" value="{{ old('starts_at', optional($communication ?? null)->starts_at?->toDateString() ?? today()->toDateString()) }}" />
 </div>
 
 <div class="">
     <x-label for="ends_at" value="{{ __('Expiration date') }}" />
     <x-input-error for="ends_at" />
-    <x-input type="date" id="ends_at" name="ends_at" class=" mt-1 block w-full max-w-prose @error('ends_at') is-invalid @enderror" value="{{ old('ends_at', optional($communication ?? null)->ends_at?->toDateString()) }}" />
+    <x-input type="date" id="ends_at" name="ends_at" class="mt-1 block w-full max-w-prose {{ $errors->has('ends_at') ? 'is-invalid' : '' }}" value="{{ old('ends_at', optional($communication ?? null)->ends_at?->toDateString()) }}" />
 </div>
 
 <div class="">
@@ -45,7 +45,7 @@
 <div class="">
     <x-label for="theme" value="{{ __('Graphic theme') }}" />
     <x-input-error for="theme" />
-    <select id="theme" name="theme" class=" mt-1 block w-full max-w-prose @error('theme') is-invalid @enderror">
+    <select id="theme" name="theme" class="mt-1 block w-full max-w-prose {{ $errors->has('theme') ? 'is-invalid' : '' }}">
         <option value="info" @selected(old('theme', optional($communication ?? null)->theme) === 'info')>{{ __('Informative') }}</option>
     </select>
 </div>

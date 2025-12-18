@@ -22,7 +22,7 @@ return new class extends Migration
             $table->ulid()->unique();
 
             // Foreign key to run result
-            $table->foreignIdFor(RunResult::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(RunResult::class);
 
             // Optional foreign key to participant (nullable, linked via racer_hash)
             $table->foreignIdFor(Participant::class)->nullable();

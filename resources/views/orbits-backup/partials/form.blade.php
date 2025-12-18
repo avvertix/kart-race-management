@@ -3,7 +3,7 @@
     <x-label for="file" value="{{ __('File') }}" />
     <p class="text-sm text-zinc-700">{{ __('Maximum 50 MB. Accepted formats are oxb, zip and 7z archives.') }}</p>
     <x-input-error for="file" />
-    <x-input type="file" id="file" name="file" class=" mt-1 block w-full max-w-prose @error('file') is-invalid @enderror" />
+    <x-input type="file" id="file" name="file" class=" mt-1 block w-full max-w-prose {{ $errors->has('file') ? 'is-invalid' : '' }}" />
 </div>
 
 <div class="">

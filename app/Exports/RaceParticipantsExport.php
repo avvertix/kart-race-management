@@ -8,8 +8,8 @@ use App\Models\CompetitorLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\Sex;
-use Vitorccs\LaravelCsv\Concerns\Exportable;
-use Vitorccs\LaravelCsv\Concerns\FromQuery;
+use Vitorccs\LaravelCsv\Concerns\Exportables\Exportable;
+use Vitorccs\LaravelCsv\Concerns\Exportables\FromQuery;
 use Vitorccs\LaravelCsv\Concerns\WithHeadings;
 use Vitorccs\LaravelCsv\Concerns\WithMapping;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use TimoKoerber\LaravelOneTimeOperations\OneTimeOperation;
 
 return new class extends OneTimeOperation
@@ -24,7 +26,7 @@ return new class extends OneTimeOperation
      */
     public function process(): void
     {
-        $action = new \App\Actions\BackfillParticipantRacerHash();
+        $action = new App\Actions\BackfillParticipantRacerHash();
         $action();
     }
 };

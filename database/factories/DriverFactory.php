@@ -6,7 +6,6 @@ namespace Database\Factories;
 
 use App\Models\Championship;
 use App\Models\DriverLicence;
-use App\Models\Sex;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -28,7 +27,7 @@ class DriverFactory extends Factory
         return [
             'championship_id' => Championship::factory(),
             'bib' => fake()->numberBetween(1, 100),
-            'code' => substr(fake()->md5(), 0, 8),
+            'code' => mb_substr(fake()->md5(), 0, 8),
             'first_name' => fake()->name(),
             'last_name' => fake()->lastName(),
             'user_id' => User::factory(),
@@ -39,7 +38,7 @@ class DriverFactory extends Factory
 
             'licence_type' => DriverLicence::LOCAL_NATIONAL,
             'licence_number' => $licence,
-            
+
             'email' => fake()->email(),
             'phone' => fake()->phoneNumber(),
 
@@ -49,14 +48,14 @@ class DriverFactory extends Factory
                 'date' => Carbon::parse('1999-11-11'),
                 'place' => fake()->city(),
             ],
-            
+
             'medical_certificate_expiration_date' => new Carbon(fake()->dateTimeBetween('-2 months', 'today')),
-            'address' =>[
+            'address' => [
                 'address' => 'via dei Platani, 40',
                 'city' => 'Milan',
                 'province' => 'Milan',
                 'postal_code' => '20146',
-            ] ,
+            ],
         ];
     }
 }

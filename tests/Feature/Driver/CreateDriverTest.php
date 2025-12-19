@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Driver;
 
 use App\Actions\Driver\CreateDriver as CreateDriverAction;
@@ -11,18 +13,15 @@ use App\Models\Driver;
 use App\Models\DriverLicence;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use Tests\CreateDriver;
 use Tests\TestCase;
 
 class CreateDriverTest extends TestCase
 {
+    use CreateDriver;
     use RefreshDatabase;
 
-    use CreateDriver;
-
-    
     public function test_driver_created(): void
     {
         $championship = Championship::factory()->create();
@@ -38,7 +37,7 @@ class CreateDriverTest extends TestCase
 
         $this->assertInstanceOf(Driver::class, $driver);
 
-        $this->assertEquals(substr($expectedLicenceHash, 0, 8), $driver->code);
+        $this->assertEquals(mb_substr($expectedLicenceHash, 0, 8), $driver->code);
 
         $this->assertEquals('john@racer.local', $driver->email);
         $this->assertEquals('555555555', $driver->phone);
@@ -50,7 +49,7 @@ class CreateDriverTest extends TestCase
         $this->assertEquals('D0001', $driver->licence_number);
         $this->assertEquals($expectedLicenceHash, $driver->licence_hash);
         $this->assertEquals(DriverLicence::LOCAL_NATIONAL, $driver->licence_type);
-        
+
         $this->assertEquals(today()->addYear(), $driver->medical_certificate_expiration_date);
 
         $this->assertNull($driver->user_id);
@@ -90,7 +89,7 @@ class CreateDriverTest extends TestCase
             ->has(Driver::factory()
                 ->state([
                     'licence_number' => 'D0001',
-                    'licence_hash' => hash('sha512', 'D0001')
+                    'licence_hash' => hash('sha512', 'D0001'),
                 ]), 'drivers')
             ->create();
 

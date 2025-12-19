@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
 use App\Models\DriverLicence;
@@ -10,15 +12,14 @@ class LicenceData extends Data
     public function __construct(
         public string $number,
         public ?DriverLicence $type = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the hash of this licence
      */
     public function hash(): string
     {
-        return hash('sha512', trim($this->number));
+        return hash('sha512', mb_trim($this->number));
     }
 
     /**
@@ -26,6 +27,6 @@ class LicenceData extends Data
      */
     public function shortHash(): string
     {
-        return substr($this->hash(), 0, 8);
+        return mb_substr($this->hash(), 0, 8);
     }
 }

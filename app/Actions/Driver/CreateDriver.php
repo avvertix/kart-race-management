@@ -1,39 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Driver;
 
 use App\Data\AddressData;
 use App\Data\BirthData;
 use App\Data\LicenceData;
-use App\Events\ParticipantRegistered;
-use App\Models\Category;
 use App\Models\Championship;
-use App\Models\Race;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Sex;
-use App\Models\DriverLicence;
-use App\Models\CompetitorLicence;
 use App\Models\Driver;
+use App\Models\User;
 use App\Validation\ParticipantValidationRules;
 use Carbon\Carbon;
-use Illuminate\Contracts\Cache\LockTimeoutException;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 class CreateDriver
 {
-
     use ParticipantValidationRules;
 
     /**
      * Creates a new driver.
      *
-     * @param \App\Models\Championship $championship
-     * @param  array  $input The raw data with the driver details
-     * @param \App\Models\User|null $user The user that is performing the operation
-     * @return \App\Models\Driver
+     * @param  array  $input  The raw data with the driver details
+     * @param  User|null  $user  The user that is performing the operation
      */
     public function __invoke(Championship $championship, array $input, ?User $user = null): Driver
     {
@@ -48,15 +38,15 @@ class CreateDriver
             'number' => $validatedInput['driver_licence_number'],
             'type' => $validatedInput['driver_licence_type'] ?? null,
         ]);
-    
+
         $driver = Cache::lock($this->getLockKey($licence->hash()), 10)
-            ->block(5, function() use($championship, $validatedInput, $user, $licence){
+            ->block(5, function () use ($championship, $validatedInput, $user, $licence) {
 
                 $birthData = BirthData::from([
                     'date' => Carbon::parse($validatedInput['driver_birth_date']),
                     'place' => $validatedInput['driver_birth_place'] ?? null,
                 ]);
-                
+
                 $addressData = AddressData::from([
                     'address' => $validatedInput['driver_residence_address'] ?? null,
                     'city' => $validatedInput['driver_residence_city'] ?? null,
@@ -84,7 +74,7 @@ class CreateDriver
 
                 return $driver;
             });
-        
+
         return $driver;
     }
 
@@ -92,5 +82,4 @@ class CreateDriver
     {
         return "driver:{$seed}";
     }
-    
 }

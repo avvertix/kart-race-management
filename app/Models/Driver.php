@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Data\AddressData;
@@ -55,10 +57,22 @@ class Driver extends Model
 
         'birth' => BirthData::class,
         'address' => AddressData::class,
-        
+
         'medical_certificate_expiration_date' => 'date',
     ];
 
+    /**
+     * Get the championship
+     */
+    public function championship()
+    {
+        return $this->belongsTo(Championship::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected function licence(): Attribute
     {
@@ -74,19 +88,5 @@ class Driver extends Model
                 'licence_type' => $value->type,
             ],
         );
-    }
-
-
-    /**
-     * Get the championship
-     */
-    public function championship()
-    {
-        return $this->belongsTo(Championship::class);
-    }
-    
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 }

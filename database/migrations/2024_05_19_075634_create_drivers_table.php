@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Championship;
 use App\Models\Driver;
 use App\Models\User;
@@ -18,23 +20,23 @@ return new class extends Migration
             $table->id();
 
             $table->timestamps();
-            
+
             $table->foreignIdFor(Championship::class);
 
             $table->foreignIdFor(User::class)->nullable();
 
             $table->unsignedInteger('bib')->nullable();
-            
+
             $table->string('code', 10)->index();
 
             $table->string('email', 250);
-            
+
             $table->string('phone', 250);
 
             $table->string('first_name', 250);
 
             $table->string('last_name', 250);
-            
+
             $table->string('fiscal_code', 250)->nullable();
 
             $table->string('licence_number', 250);
@@ -42,9 +44,9 @@ return new class extends Migration
             $table->string('licence_hash', 250)->index();
 
             $table->unsignedTinyInteger('licence_type')->nullable();
-            
+
             $table->string('birth_date_hash', 250)->nullable();
-            
+
             $table->date('medical_certificate_expiration_date')->nullable();
 
             $table->mediumText('birth')->nullable();

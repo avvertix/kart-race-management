@@ -70,7 +70,7 @@ class Championship extends Model
     {
         return $this->hasMany(Driver::class);
     }
-    
+
     /**
      * Get the categories that can participate.
      */

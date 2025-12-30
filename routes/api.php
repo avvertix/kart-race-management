@@ -17,4 +17,3 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/calendar/races.ics', RaceCalendarController::class)->name('calendar.races');
-

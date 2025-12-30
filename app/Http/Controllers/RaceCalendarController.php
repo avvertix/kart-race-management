@@ -58,9 +58,6 @@ class RaceCalendarController extends Controller
 
     /**
      * Build the event description with race details.
-     *
-     * @param  \App\Models\Race  $race
-     * @return string
      */
     private function buildDescription(Race $race): string
     {

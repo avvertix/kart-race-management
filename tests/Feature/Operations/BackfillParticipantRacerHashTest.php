@@ -21,7 +21,7 @@ class BackfillParticipantRacerHashTest extends TestCase
         ]);
 
         $action = new BackfillParticipantRacerHash();
-        
+
         $action();
 
         $updatedParticipant = $participant->fresh();
@@ -37,7 +37,7 @@ class BackfillParticipantRacerHashTest extends TestCase
         ]);
 
         $action = new BackfillParticipantRacerHash();
-        
+
         $action();
 
         $updatedParticipant = $participant->fresh();
@@ -53,7 +53,7 @@ class BackfillParticipantRacerHashTest extends TestCase
         ]);
 
         $action = new BackfillParticipantRacerHash();
-        
+
         $action();
 
         $updatedParticipant = $participant->fresh();
@@ -79,7 +79,7 @@ class BackfillParticipantRacerHashTest extends TestCase
         ]);
 
         $action = new BackfillParticipantRacerHash();
-        
+
         $action();
 
         $this->assertEquals('FIRST123', $p_one->fresh()->racer_hash);

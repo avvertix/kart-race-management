@@ -87,4 +87,44 @@ class ParticipantTransponderControllerTest extends TestCase
 
         $this->assertEquals(1, $participant->fresh()->transponders()->count());
     }
+
+    public function test_transponder_with_letters_is_rejected()
+    {
+        $user = User::factory()->timekeeper()->create();
+
+        $participant = Participant::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('participants.transponders.create', $participant))
+            ->post(route('participants.transponders.store', $participant), [
+                'transponders' => ['ABC123'],
+            ]);
+
+        $response->assertSessionHasErrors('transponders.0');
+
+        $response->assertRedirectToRoute('participants.transponders.create', $participant);
+
+        $this->assertEquals(0, $participant->fresh()->transponders()->count());
+    }
+    
+    public function test_transponder_code_required()
+    {
+        $user = User::factory()->timekeeper()->create();
+
+        $participant = Participant::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('participants.transponders.create', $participant))
+            ->post(route('participants.transponders.store', $participant), [
+                'transponders' => [''],
+            ]);
+
+        $response->assertSessionHasErrors('transponders.0');
+
+        $response->assertRedirectToRoute('participants.transponders.create', $participant);
+
+        $this->assertEquals(0, $participant->fresh()->transponders()->count());
+    }
 }

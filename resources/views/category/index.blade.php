@@ -7,6 +7,9 @@
             <x-button-link href="{{ route('championships.categories.create', $championship) }}">
                 {{ __('Add category') }}
             </x-button-link>
+            <x-button-link href="{{ route('championships.categories.copy', $championship) }}" class="mr-2">
+                {{ __('Copy from championship') }}
+            </x-button-link>
         @endcan
     </x-slot>
 

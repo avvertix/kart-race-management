@@ -200,9 +200,24 @@ class Race extends Model
         return $this->participant_limits?->get('total');
     }
 
-    public function isZonal()
+    public function isLocal()
     {
-        return $this->type === RaceType::ZONE;
+        return $this->type === RaceType::LOCAL;
+    }
+
+    public function isNational()
+    {
+        return $this->type === RaceType::NATIONAL;
+    }
+    
+    public function isNationalOrInternational()
+    {
+        return $this->type > RaceType::LOCAL;
+    }
+    
+    public function isInternational()
+    {
+        return $this->type === RaceType::INTERNATIONAL;
     }
 
     public function isCancelled(): bool

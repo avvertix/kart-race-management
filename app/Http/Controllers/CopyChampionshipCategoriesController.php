@@ -16,7 +16,7 @@ class CopyChampionshipCategoriesController extends Controller
     {
         $this->authorizeResource(Category::class, 'category');
     }
-    
+
     /**
      * Show the form for copying categories from another championship.
      */
@@ -28,6 +28,7 @@ class CopyChampionshipCategoriesController extends Controller
             ->where('id', '!=', $championship->id)
             ->whereHas('categories')
             ->orderBy('title', 'ASC')
+            ->withCount('categories')
             ->get();
 
         return view('category.copy', [
@@ -55,9 +56,11 @@ class CopyChampionshipCategoriesController extends Controller
 
         $copiedCategories = $copyCategories($sourceChampionship, $championship);
 
+        $categoriesCount = $copiedCategories->count();
+
         return redirect()->route('championships.categories.index', $championship)
-            ->with('flash.banner', __(':count categor(y|ies) copied successfully.', [
-                'count' => $copiedCategories->count(),
+            ->with('flash.banner', trans_choice(':value category copied|:value categories copied', $categoriesCount, [
+                'count' => $categoriesCount,
             ]));
     }
 }

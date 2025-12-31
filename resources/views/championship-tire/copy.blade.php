@@ -49,7 +49,7 @@
                                             <option value="">{{ __('Select a championship') }}</option>
                                             @foreach($sourceChampionships as $sourceChampionship)
                                                 <option value="{{ $sourceChampionship->id }}" {{ old('source_championship') == $sourceChampionship->id ? 'selected' : '' }}>
-                                                    {{ $sourceChampionship->title }} ({{ $sourceChampionship->tires->count() }} {{ __('tire(s)') }})
+                                                    {{ $sourceChampionship->title }} ({{ $sourceChampionship->tires_count }} {{ trans_choice('tire|tires', $sourceChampionship->tires_count) }})
                                                 </option>
                                             @endforeach
                                         </select>

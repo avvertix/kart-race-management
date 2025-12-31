@@ -49,7 +49,7 @@
                                             <option value="">{{ __('Select a championship') }}</option>
                                             @foreach($sourceChampionships as $sourceChampionship)
                                                 <option value="{{ $sourceChampionship->id }}" {{ old('source_championship') == $sourceChampionship->id ? 'selected' : '' }}>
-                                                    {{ $sourceChampionship->title }} ({{ $sourceChampionship->categories->count() }} {{ __('categor(y|ies)') }})
+                                                    {{ $sourceChampionship->title }} ({{ $sourceChampionship->categories_count }} {{ trans_choice('category|categories', $sourceChampionship->categories_count) }})
                                                 </option>
                                             @endforeach
                                         </select>

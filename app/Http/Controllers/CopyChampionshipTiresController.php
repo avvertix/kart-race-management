@@ -16,7 +16,7 @@ class CopyChampionshipTiresController extends Controller
     {
         $this->authorizeResource(ChampionshipTire::class, 'tire_option');
     }
-    
+
     /**
      * Show the form for copying tires from another championship.
      */
@@ -28,6 +28,7 @@ class CopyChampionshipTiresController extends Controller
             ->where('id', '!=', $championship->id)
             ->whereHas('tires')
             ->orderBy('title', 'ASC')
+            ->withCount('tires')
             ->get();
 
         return view('championship-tire.copy', [
@@ -55,9 +56,9 @@ class CopyChampionshipTiresController extends Controller
 
         $copiedTires = $copyTires($sourceChampionship, $championship);
 
+        $tireCount = $copiedTires->count();
+
         return redirect()->route('championships.tire-options.index', $championship)
-            ->with('flash.banner', __(':count tire(s) copied successfully.', [
-                'count' => $copiedTires->count(),
-            ]));
+            ->with('flash.banner', trans_choice(':value tire copied|:value tires copied', $tireCount, ['value' => $tireCount]));
     }
 }

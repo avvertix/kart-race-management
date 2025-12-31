@@ -25,9 +25,9 @@ class CopyChampionshipCategories
         $sourceCategories = $sourceChampionship->categories;
 
         // Cache target tires by code for efficient lookups
-        $targetTiresByCode = $targetChampionship->tires->keyBy('code');
+        $targetTiresByName = $targetChampionship->tires->keyBy('name');
 
-        $copiedCategories = $sourceCategories->map(function (Category $category) use ($targetChampionship, $targetTiresByCode) {
+        $copiedCategories = $sourceCategories->map(function (Category $category) use ($targetChampionship, $targetTiresByName) {
             $targetTireId = null;
 
             // If the category has a tire, ensure it exists in the target championship
@@ -35,7 +35,7 @@ class CopyChampionshipCategories
                 $sourceTire = $category->tire;
 
                 // Check if tire already exists in target championship
-                $targetTire = $targetTiresByCode->get($sourceTire->code);
+                $targetTire = $targetTiresByName->get($sourceTire->name);
 
                 // If tire doesn't exist, create it
                 if (! $targetTire) {
@@ -44,7 +44,7 @@ class CopyChampionshipCategories
                     $targetChampionship->tires()->save($targetTire);
 
                     // Add to cache for future categories
-                    $targetTiresByCode->put($targetTire->code, $targetTire);
+                    $targetTiresByName->put($targetTire->name, $targetTire);
                 }
 
                 $targetTireId = $targetTire->id;

@@ -51,7 +51,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'event_start_at' => Carbon::parse('2023-02-28'),
                 'title' => 'Race title',
-                'type' => RaceType::ZONE,
+                'type' => RaceType::NATIONAL,
             ]);
 
         $participant = Participant::factory()
@@ -224,7 +224,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'event_start_at' => Carbon::parse('2023-02-28'),
                 'title' => 'Race title',
-                'type' => RaceType::ZONE->value,
+                'type' => RaceType::NATIONAL->value,
             ]);
 
         $participant = Participant::factory()
@@ -309,7 +309,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'event_start_at' => Carbon::parse('2023-02-28'),
                 'title' => 'Race title',
-                'type' => RaceType::ZONE->value,
+                'type' => RaceType::NATIONAL->value,
             ]);
 
         $participant = Participant::factory()
@@ -394,7 +394,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'event_start_at' => Carbon::parse('2023-02-28'),
                 'title' => 'Race title',
-                'type' => RaceType::ZONE->value,
+                'type' => RaceType::NATIONAL->value,
             ]);
 
         $participant = Participant::factory()
@@ -479,7 +479,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'event_start_at' => Carbon::parse('2023-02-28'),
                 'title' => 'Race title',
-                'type' => RaceType::ZONE->value,
+                'type' => RaceType::NATIONAL->value,
             ]);
 
         $participant = Participant::factory()
@@ -568,7 +568,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
             ->create([
                 'event_start_at' => Carbon::parse('2023-02-28'),
                 'title' => 'Race title',
-                'type' => RaceType::ZONE,
+                'type' => RaceType::NATIONAL,
             ]);
 
         $participant = Participant::factory()

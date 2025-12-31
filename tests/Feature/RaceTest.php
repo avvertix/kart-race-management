@@ -148,7 +148,7 @@ class RaceTest extends TestCase
                 'track' => 'Franciacorta',
                 'title' => 'First Race',
                 'description' => 'a little description',
-                'race_type' => RaceType::ZONE->value,
+                'race_type' => RaceType::NATIONAL->value,
             ]);
 
         $this->travelBack();
@@ -158,7 +158,7 @@ class RaceTest extends TestCase
         $race = Race::first();
 
         $this->assertInstanceOf(Race::class, $race);
-        $this->assertEquals(RaceType::ZONE, $race->type);
+        $this->assertEquals(RaceType::NATIONAL, $race->type);
     }
 
     public function test_race_can_be_updated()

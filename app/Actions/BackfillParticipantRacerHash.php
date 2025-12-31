@@ -11,24 +11,17 @@ class BackfillParticipantRacerHash
     /**
      * Backfill racer_hash for all participants.
      * Racer hash is the first 8 characters of the driver_licence hash.
-     *
-     * @return int Number of participants updated
      */
-    public function __invoke(): int
+    public function __invoke(): void
     {
-        $updated = 0;
-
         Participant::whereNull('racer_hash')
             ->orWhere('racer_hash', '')
-            ->chunk(100, function ($participants) use (&$updated) {
+            ->chunk(100, function ($participants) {
                 foreach ($participants as $participant) {
                     $racerHash = mb_substr($participant->driver_licence, 0, 8);
 
                     $participant->update(['racer_hash' => $racerHash]);
-                    $updated++;
                 }
             });
-
-        return $updated;
     }
 }

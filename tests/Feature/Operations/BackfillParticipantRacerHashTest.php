@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Operations;
 
+use App\Actions\BackfillParticipantRacerHash;
 use App\Models\Participant;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
@@ -19,8 +20,9 @@ class BackfillParticipantRacerHashTest extends TestCase
             'racer_hash' => null,
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
+
+        $action();
 
         $updatedParticipant = $participant->fresh();
 
@@ -34,8 +36,9 @@ class BackfillParticipantRacerHashTest extends TestCase
             'racer_hash' => '',
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
+
+        $action();
 
         $updatedParticipant = $participant->fresh();
 
@@ -49,8 +52,9 @@ class BackfillParticipantRacerHashTest extends TestCase
             'racer_hash' => 'OLDVALUE',
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
+
+        $action();
 
         $updatedParticipant = $participant->fresh();
 
@@ -59,28 +63,27 @@ class BackfillParticipantRacerHashTest extends TestCase
 
     public function test_multiple_participants_are_backfilled()
     {
-        Participant::factory()->create([
+        $p_one = Participant::factory()->create([
             'driver_licence' => 'FIRST123ABCD',
             'racer_hash' => null,
         ]);
 
-        Participant::factory()->create([
+        $p_two = Participant::factory()->create([
             'driver_licence' => 'SECOND12ABCD',
             'racer_hash' => '',
         ]);
 
-        Participant::factory()->create([
+        $p_three = Participant::factory()->create([
             'driver_licence' => 'THIRD123ABCD',
             'racer_hash' => 'EXISTING',
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
 
-        $participants = Participant::all();
+        $action();
 
-        $this->assertEquals('FIRST123', $participants[0]->racer_hash);
-        $this->assertEquals('SECOND12', $participants[1]->racer_hash);
-        $this->assertEquals('EXISTING', $participants[2]->racer_hash);
+        $this->assertEquals('FIRST123', $p_one->fresh()->racer_hash);
+        $this->assertEquals('SECOND12', $p_two->fresh()->racer_hash);
+        $this->assertEquals('EXISTING', $p_three->fresh()->racer_hash);
     }
 }

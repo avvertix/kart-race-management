@@ -42,7 +42,7 @@
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Export form for signing the attendence of the briefing') }}</span>
                                     </a>
-                                    @if ($race->isZonal())
+                                    @if ($race->isNationalOrInternational())
                                         <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
                                             <span class="inline-flex gap-1">
                                                 <x-ri-table-2 class="size-5 shrink-0" />
@@ -100,6 +100,13 @@
                     <x-ri-map-pin-line class="size-5 text-zinc-400 shrink-0" />
                     {{ $race->track }}
                 </p>
+
+                @if ($race->isNationalOrInternational())
+                    <p class="flex items-center gap-2">
+                        <x-ri-target-line class="size-5 text-zinc-400 shrink-0" />
+                        {{ $race->type->localizedName() }}
+                    </p>
+                @endif
             </div>
             <div class="mt-6  print:hidden">
                     

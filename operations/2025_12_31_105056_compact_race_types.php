@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\Race;
+use App\Models\RaceType;
 use TimoKoerber\LaravelOneTimeOperations\OneTimeOperation;
 
 return new class extends OneTimeOperation
@@ -9,7 +11,7 @@ return new class extends OneTimeOperation
     /**
      * Determine if the operation is being processed asynchronously.
      */
-    protected bool $async = true;
+    protected bool $async = false;
 
     /**
      * The queue that the job will be dispatched to.
@@ -26,7 +28,9 @@ return new class extends OneTimeOperation
      */
     public function process(): void
     {
-        $action = new App\Actions\BackfillParticipantRacerHash();
-        $action();
+        // Migrate REGIONAL (20) and ZONE (30) race types to NATIONAL (40)
+        Race::query()
+            ->whereIn('type', [20, 30]) // REGIONAL = 20, ZONE = 30
+            ->update(['type' => RaceType::NATIONAL]);
     }
 };

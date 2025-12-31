@@ -81,7 +81,7 @@
 </div>
 
 @can('update', $item)
-    @if ($race->isZonal())
+    @if ($race->isNationalOrInternational())
         <div class="{{ $item->wasProcessedForOutOfZone() ? 'bg-zinc-100' : 'bg-yellow-200' }} mb-4 p-2 flex gap-2 flex-col md:flex-row justify-between md:items-center">
 
             <div>

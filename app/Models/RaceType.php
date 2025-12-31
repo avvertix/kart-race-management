@@ -19,8 +19,6 @@ enum RaceType: int implements Describable
      */
 
     case LOCAL = 10;
-    case REGIONAL = 20;
-    case ZONE = 30;
     case NATIONAL = 40;
     case INTERNATIONAL = 50;
 

@@ -51,7 +51,7 @@ class RaceCalendarControllerTest extends TestCase
         $this->assertStringContainsString('Test Race', $content);
         $this->assertStringContainsString('race-'.$race->uuid, $content);
     }
-    
+
     public function test_calendar_excludes_invisible_races(): void
     {
         $race = Race::factory()->create([

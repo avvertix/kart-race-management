@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Operations;
 
+use App\Actions\BackfillParticipantRacerHash;
 use App\Models\Participant;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
@@ -19,8 +20,10 @@ class BackfillParticipantRacerHashTest extends TestCase
             'racer_hash' => null,
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
+        $updated = $action();
+
+        $this->assertEquals(1, $updated);
 
         $updatedParticipant = $participant->fresh();
 
@@ -34,8 +37,10 @@ class BackfillParticipantRacerHashTest extends TestCase
             'racer_hash' => '',
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
+        $updated = $action();
+
+        $this->assertEquals(1, $updated);
 
         $updatedParticipant = $participant->fresh();
 
@@ -49,8 +54,10 @@ class BackfillParticipantRacerHashTest extends TestCase
             'racer_hash' => 'OLDVALUE',
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
+        $updated = $action();
+
+        $this->assertEquals(0, $updated);
 
         $updatedParticipant = $participant->fresh();
 
@@ -74,8 +81,10 @@ class BackfillParticipantRacerHashTest extends TestCase
             'racer_hash' => 'EXISTING',
         ]);
 
-        $this->artisan('operations:process 2025_12_18_183113_backfill_participant_racer')
-            ->assertSuccessful();
+        $action = new BackfillParticipantRacerHash();
+        $updated = $action();
+
+        $this->assertEquals(2, $updated);
 
         $participants = Participant::all();
 

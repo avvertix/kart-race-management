@@ -107,7 +107,7 @@ class ParticipantTransponderControllerTest extends TestCase
 
         $this->assertEquals(0, $participant->fresh()->transponders()->count());
     }
-    
+
     public function test_transponder_code_required()
     {
         $user = User::factory()->timekeeper()->create();

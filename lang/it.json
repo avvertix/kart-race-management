@@ -415,5 +415,11 @@
     "Bill to": "Ricevuta da",
     "Sport activity contribution": "Contributo per attività sportiva",
     "Address :address :city :province :postal_code": "Indirizzo/Via :address :city :province :postal_code",
-    "Receipt date": "Data ricevuta"
+    "Receipt date": "Data ricevuta",
+    "Race Calendar": "Calendario Gare",
+    "Upcoming races organized by :organizer": "Prossime gare organizzate da :organizer",
+    "Upcoming races calendar": "Calendario prossime gare",
+    "Championship: :champ": "Campionato: :champ",
+    "Registration: :dates": "Iscrizioni: :dates",
+    "Register at: ": "Iscriviti su: "
 }

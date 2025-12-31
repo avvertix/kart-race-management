@@ -8,47 +8,13 @@ use App\Models\Championship;
 use App\Models\Race;
 use App\Models\RaceType;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
-use Illuminate\Support\Str;
 
 class CompactRaceTypesTest extends TestCase
 {
     use FastRefreshDatabase;
-
-    /**
-     * Create a race with a raw type value to bypass enum validation.
-     */
-    private function createRaceWithRawType(int $typeValue): string
-    {
-        $championship = Championship::factory()->create();
-        $race = Race::factory()->make([
-            'championship_id' => $championship->id,
-        ]);
-
-        // Manually insert to bypass enum casting
-        $uuid = (string) Str::ulid();
-        DB::table('races')->insert([
-            'uuid' => $uuid,
-            'event_start_at' => $race->event_start_at,
-            'event_end_at' => $race->event_end_at,
-            'registration_opens_at' => $race->registration_opens_at,
-            'registration_closes_at' => $race->registration_closes_at,
-            'track' => $race->track,
-            'title' => $race->title,
-            'description' => $race->description,
-            'tags' => json_encode($race->tags ?? []),
-            'properties' => json_encode($race->properties ?? []),
-            'hide' => $race->hide ?? false,
-            'participant_limits' => json_encode($race->participant_limits ?? null),
-            'championship_id' => $championship->id,
-            'type' => $typeValue,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return $uuid;
-    }
 
     public function test_regional_race_type_is_converted_to_national()
     {
@@ -161,5 +127,39 @@ class CompactRaceTypesTest extends TestCase
         $this->assertEquals(RaceType::LOCAL, $races[0]->type);
         $this->assertEquals(RaceType::NATIONAL, $races[1]->type);
         $this->assertEquals(RaceType::INTERNATIONAL, $races[2]->type);
+    }
+
+    /**
+     * Create a race with a raw type value to bypass enum validation.
+     */
+    private function createRaceWithRawType(int $typeValue): string
+    {
+        $championship = Championship::factory()->create();
+        $race = Race::factory()->make([
+            'championship_id' => $championship->id,
+        ]);
+
+        // Manually insert to bypass enum casting
+        $uuid = (string) Str::ulid();
+        DB::table('races')->insert([
+            'uuid' => $uuid,
+            'event_start_at' => $race->event_start_at,
+            'event_end_at' => $race->event_end_at,
+            'registration_opens_at' => $race->registration_opens_at,
+            'registration_closes_at' => $race->registration_closes_at,
+            'track' => $race->track,
+            'title' => $race->title,
+            'description' => $race->description,
+            'tags' => json_encode($race->tags ?? []),
+            'properties' => json_encode($race->properties ?? []),
+            'hide' => $race->hide ?? false,
+            'participant_limits' => json_encode($race->participant_limits ?? null),
+            'championship_id' => $championship->id,
+            'type' => $typeValue,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return $uuid;
     }
 }

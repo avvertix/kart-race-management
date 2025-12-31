@@ -149,6 +149,20 @@ class Race extends Model
             ->whereNull('canceled_at')
             ->where('event_end_at', '<', $now);
     }
+    
+    /**
+     * Filter races that are scheduled or completed. Exclude canceled races.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeNotCanceled($query)
+    {
+        $now = now();
+
+        return $query
+            ->whereNull('canceled_at');
+    }
 
     /**
      * Filter only visible races

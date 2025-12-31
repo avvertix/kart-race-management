@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Championship;
 use App\Models\Race;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
@@ -34,7 +35,7 @@ class RaceCalendarControllerTest extends TestCase
         $response->assertHeader('Expires');
     }
 
-    public function test_calendar_includes_upcoming_visible_races(): void
+    public function test_calendar_includes_visible_races(): void
     {
         $race = Race::factory()->create([
             'title' => 'Test Race',
@@ -50,8 +51,25 @@ class RaceCalendarControllerTest extends TestCase
         $this->assertStringContainsString('Test Race', $content);
         $this->assertStringContainsString('race-'.$race->uuid, $content);
     }
+    
+    public function test_calendar_excludes_invisible_races(): void
+    {
+        $race = Race::factory()->create([
+            'title' => 'Invisible Race',
+            'event_start_at' => now()->addDays(7),
+            'event_end_at' => now()->addDays(7)->addHours(8),
+            'hide' => true,
+            'canceled_at' => null,
+        ]);
 
-    public function test_calendar_excludes_past_races(): void
+        $response = $this->get(route('calendar.races'));
+
+        $content = $response->getContent();
+        $this->assertStringNotContainsString('Invisible Race', $content);
+        $this->assertStringNotContainsString('race-'.$race->uuid, $content);
+    }
+
+    public function test_calendar_includes_past_races(): void
     {
         Race::factory()->create([
             'title' => 'Past Race',
@@ -64,7 +82,7 @@ class RaceCalendarControllerTest extends TestCase
         $response = $this->get(route('calendar.races'));
 
         $content = $response->getContent();
-        $this->assertStringNotContainsString('Past Race', $content);
+        $this->assertStringContainsString('Past Race', $content);
     }
 
     public function test_calendar_excludes_cancelled_races(): void
@@ -131,5 +149,71 @@ class RaceCalendarControllerTest extends TestCase
         $content = $response->getContent();
         $this->assertStringContainsString('Championship Round 1', $content);
         $this->assertStringContainsString('International Karting Circuit', $content);
+    }
+
+    public function test_calendar_excludes_races_from_ended_championships(): void
+    {
+        $endedChampionship = Championship::factory()->create([
+            'start_at' => now()->subMonths(6),
+            'end_at' => now()->subMonth(),
+        ]);
+
+        Race::factory()->create([
+            'title' => 'Ended Championship Race',
+            'event_start_at' => now()->subDays(7),
+            'event_end_at' => now()->subDays(7)->addHours(8),
+            'hide' => false,
+            'canceled_at' => null,
+            'championship_id' => $endedChampionship->id,
+        ]);
+
+        $response = $this->get(route('calendar.races'));
+
+        $content = $response->getContent();
+        $this->assertStringNotContainsString('Ended Championship Race', $content);
+    }
+
+    public function test_calendar_includes_races_from_upcoming_championships(): void
+    {
+        $upcomingChampionship = Championship::factory()->create([
+            'start_at' => now()->addMonth(),
+            'end_at' => now()->addMonths(6),
+        ]);
+
+        Race::factory()->create([
+            'title' => 'Upcoming Championship Race',
+            'event_start_at' => now()->addMonths(2),
+            'event_end_at' => now()->addMonths(2)->addHours(8),
+            'hide' => false,
+            'canceled_at' => null,
+            'championship_id' => $upcomingChampionship->id,
+        ]);
+
+        $response = $this->get(route('calendar.races'));
+
+        $content = $response->getContent();
+        $this->assertStringContainsString('Upcoming Championship Race', $content);
+    }
+
+    public function test_calendar_includes_races_from_championships_without_end_date(): void
+    {
+        $openEndedChampionship = Championship::factory()->create([
+            'start_at' => now()->subMonths(3),
+            'end_at' => null,
+        ]);
+
+        Race::factory()->create([
+            'title' => 'Open-Ended Championship Race',
+            'event_start_at' => now()->addDays(7),
+            'event_end_at' => now()->addDays(7)->addHours(8),
+            'hide' => false,
+            'canceled_at' => null,
+            'championship_id' => $openEndedChampionship->id,
+        ]);
+
+        $response = $this->get(route('calendar.races'));
+
+        $content = $response->getContent();
+        $this->assertStringContainsString('Open-Ended Championship Race', $content);
     }
 }

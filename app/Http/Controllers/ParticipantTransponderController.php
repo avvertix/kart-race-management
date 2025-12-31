@@ -66,7 +66,8 @@ class ParticipantTransponderController extends Controller
             'transponders' => 'required|array|min:1|max:2',
             'transponders.*' => [
                 'required',
-                'string',
+                'numeric',
+                'min:0',
                 Rule::unique('transponders', 'code')
                     ->where(fn ($query) => $query->where('race_id', $participant->race_id)),
             ],
@@ -121,7 +122,7 @@ class ParticipantTransponderController extends Controller
         $validated = $this->validate($request, [
             'transponder' => [
                 'required',
-                'integer',
+                'numeric',
                 'min:0',
                 Rule::unique('transponders', 'code')
                     ->ignore($transponder)

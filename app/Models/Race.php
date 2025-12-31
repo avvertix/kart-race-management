@@ -212,7 +212,7 @@ class Race extends Model
 
     public function isNationalOrInternational()
     {
-        return $this->type > RaceType::LOCAL;
+        return $this->type?->value >= RaceType::LOCAL->value;
     }
 
     public function isInternational()

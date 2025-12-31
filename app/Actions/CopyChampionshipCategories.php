@@ -6,7 +6,6 @@ namespace App\Actions;
 
 use App\Models\Category;
 use App\Models\Championship;
-use App\Models\ChampionshipTire;
 use Illuminate\Support\Collection;
 
 class CopyChampionshipCategories

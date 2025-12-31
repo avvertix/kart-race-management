@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Championship;
-use App\Models\ChampionshipTire;
 use App\Models\User;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;

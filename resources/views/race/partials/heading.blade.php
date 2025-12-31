@@ -100,6 +100,13 @@
                     <x-ri-map-pin-line class="size-5 text-zinc-400 shrink-0" />
                     {{ $race->track }}
                 </p>
+
+                @if ($race->isNationalOrInternational())
+                    <p class="flex items-center gap-2">
+                        <x-ri-target-line class="size-5 text-zinc-400 shrink-0" />
+                        {{ $race->type->localizedName() }}
+                    </p>
+                @endif
             </div>
             <div class="mt-6  print:hidden">
                     

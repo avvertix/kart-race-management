@@ -440,5 +440,13 @@
     "There are no other championships with categories to copy from.": "Non ci sono altri campionati con categorie da copiare.",
     "Select a championship": "Seleziona un campionato",
     "No championships available": "Nessun campionato disponibile",
-    "Copy from championship": "Copia da campionato"
+    "Copy from championship": "Copia da campionato",
+    "Available Race Numbers": "Numeri Gara Disponibili",
+    "First :count free numbers": "Primi :count numeri disponibili",
+    "Check a race number": "Verifica un numero gara",
+    "Number :number is available": "Il numero :number è disponibile",
+    "Number :number is taken by :name": "Il numero :number è già assegnato a :name",
+    "Enter a race number": "Inserisci un numero gara",
+    "No free numbers available in the current range": "Nessun numero disponibile nell'intervallo corrente",
+    "Type a number to check if is available.": "Digita un numero per verificare se è disponibile."
 }

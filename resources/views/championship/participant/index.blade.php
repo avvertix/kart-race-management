@@ -31,12 +31,12 @@
             </x-slot>
         </x-dropdown>
     </x-slot>
+    
+    <livewire:free-race-numbers :championship="$championship" />
 
     <p class="mb-6">{{ $uniqueParticipantsCount }} {{ __('participants') }}</p>
 
-    
 
-    
     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
         <div class="min-w-full divide-y divide-zinc-300 bg-white">
 

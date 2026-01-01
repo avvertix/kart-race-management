@@ -11,6 +11,8 @@ use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
+use App\Http\Controllers\CopyChampionshipCategoriesController;
+use App\Http\Controllers\CopyChampionshipTiresController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsController;
@@ -98,8 +100,12 @@ Route::middleware([
 
         Route::resource('championships.bonuses', ChampionshipBonusController::class)->shallow()->except(['destroy']);
 
+        Route::get('championships/{championship}/categories/copy', [CopyChampionshipCategoriesController::class, 'create'])->name('championships.categories.copy');
+        Route::post('championships/{championship}/categories/copy', [CopyChampionshipCategoriesController::class, 'store'])->name('championships.categories.store-copy');
         Route::resource('championships.categories', ChampionshipCategoryController::class)->shallow()->except(['destroy']);
 
+        Route::get('championships/{championship}/tire-options/copy', [CopyChampionshipTiresController::class, 'create'])->name('championships.tire-options.copy');
+        Route::post('championships/{championship}/tire-options/copy', [CopyChampionshipTiresController::class, 'store'])->name('championships.tire-options.store-copy');
         Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);
 
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();

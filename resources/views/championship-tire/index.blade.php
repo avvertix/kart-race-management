@@ -7,6 +7,9 @@
             <x-button-link href="{{ route('championships.tire-options.create', $championship) }}">
                 {{ __('Add tire') }}
             </x-button-link>
+            <x-button-link href="{{ route('championships.tire-options.copy', $championship) }}" class="mr-2">
+                {{ __('Copy from championship') }}
+            </x-button-link>
         @endcan
     </x-slot>
 

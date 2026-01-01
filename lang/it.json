@@ -423,5 +423,22 @@
     "Upcoming races calendar": "Calendario prossime gare",
     "Championship: :champ": "Campionato: :champ",
     "Registration: :dates": "Iscrizioni: :dates",
-    "Register at: ": "Iscriviti su: "
+    "Register at: ": "Iscriviti su: ",
+    "Add category": "Crea categoria",
+    "Add tire": "Crea gomma",
+    ":value tire copied|:value tires copied": ":value gomma copiata|:value gomme copiate",
+    ":value category copied|:value categories copied": ":value categoria copiata|:value categorie copiate",
+    "Copy tires": "Copia gomme",
+    "tire|tires": "gomma|gomme",
+    "Copy tires from another championship": "Copia gomme da un altro campionato",
+    "Select a championship to copy all tires from. The tires will be copied with their names, codes, and prices.": "Seleziona un campionato da cui copiare tutte le gomme. Le gomme saranno copiate con i loro nomi, codici e prezzi.",
+    "There are no other championships with tires to copy from.": "Non ci sono altri campionati con gomme da copiare.",
+    "Copy categories": "Copia categorie",
+    "category|categories": "categoria|categorie",
+    "Copy categories from another championship": "Copia categorie da un altro campionato",
+    "Select a championship to copy all categories from. Categories will be copied with their settings and tire references. Missing tires will be automatically created.": "Seleziona un campionato da cui copiare tutte le categorie. Le categorie saranno copiate con le loro impostazioni e riferimenti alle gomme. Le gomme mancanti saranno create automaticamente.",
+    "There are no other championships with categories to copy from.": "Non ci sono altri campionati con categorie da copiare.",
+    "Select a championship": "Seleziona un campionato",
+    "No championships available": "Nessun campionato disponibile",
+    "Copy from championship": "Copia da campionato"
 }

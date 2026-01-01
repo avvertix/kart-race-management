@@ -6,11 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Models\BibReservation;
 use App\Models\Championship;
-use App\Models\DriverLicence;
 use App\Models\Participant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
 class BibReservationController extends Controller

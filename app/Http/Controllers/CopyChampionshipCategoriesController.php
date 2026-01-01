@@ -60,7 +60,7 @@ class CopyChampionshipCategoriesController extends Controller
 
         return redirect()->route('championships.categories.index', $championship)
             ->with('flash.banner', trans_choice(':value category copied|:value categories copied', $categoriesCount, [
-                'count' => $categoriesCount,
+                'value' => $categoriesCount,
             ]));
     }
 }

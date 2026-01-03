@@ -146,7 +146,7 @@ class ChampionshipCategoryController extends Controller
                 throw ValidationException::withMessages(['enabled' => __('The category cannot be deactivated because one or more competitors are registered in it.')]);
             }
         }
-        
+
         if ($request->has('registration_price') && $request->integer('registration_price') !== $category->registration_price) {
             $hasParticipants = Participant::where('championship_id', $championship->getKey())->where('category_id', $category->getKey())->exists();
 

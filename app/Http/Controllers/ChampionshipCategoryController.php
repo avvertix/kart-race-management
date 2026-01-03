@@ -65,6 +65,7 @@ class ChampionshipCategoryController extends Controller
                 Rule::exists((new ChampionshipTire())->getTable(), 'id')->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
                 })],
+            'registration_price' => 'nullable|integer|min:0',
         ]);
 
         $category = $championship->categories()->create([
@@ -73,6 +74,7 @@ class ChampionshipCategoryController extends Controller
             'short_name' => $validated['short_name'] ?? null,
             'enabled' => $request->boolean('enabled') ?? false,
             'championship_tire_id' => $validated['tire'] ?? null,
+            'registration_price' => $validated['registration_price'] ?? null,
         ]);
 
         return redirect()->route('championships.categories.index', $championship)
@@ -134,6 +136,7 @@ class ChampionshipCategoryController extends Controller
                 Rule::exists((new ChampionshipTire())->getTable(), 'id')->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
                 })],
+            'registration_price' => 'nullable|integer|min:0',
         ]);
 
         if (! ($request->boolean('enabled') ?? false)) {
@@ -143,6 +146,14 @@ class ChampionshipCategoryController extends Controller
                 throw ValidationException::withMessages(['enabled' => __('The category cannot be deactivated because one or more competitors are registered in it.')]);
             }
         }
+        
+        if ($request->has('registration_price') && $request->integer('registration_price') !== $category->registration_price) {
+            $hasParticipants = Participant::where('championship_id', $championship->getKey())->where('category_id', $category->getKey())->exists();
+
+            if ($hasParticipants) {
+                throw ValidationException::withMessages(['registration_price' => __('The registration price cannot be changed because one or more competitors already registered in it.')]);
+            }
+        }
 
         $category->update([
             'name' => $validated['name'],
@@ -150,6 +161,7 @@ class ChampionshipCategoryController extends Controller
             'description' => $validated['description'] ?? null,
             'enabled' => $request->boolean('enabled') ?? false,
             'championship_tire_id' => $validated['tire'] ?? null,
+            'registration_price' => $validated['registration_price'] ?? null,
         ]);
 
         return redirect()->route('championships.categories.index', $championship)

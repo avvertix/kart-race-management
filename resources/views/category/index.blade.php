@@ -19,6 +19,7 @@
             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Name') }} ▼</th>
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Tire') }}</th>
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Short Name') }}</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Registration Price') }}</th>
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Status') }}</th>
             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                 <span class="sr-only">{{ __('Edit') }}</span>
@@ -43,6 +44,11 @@
                     {{ $item->short_name }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
+                    @if ($item->registration_price)
+                        <x-price>{{ $item->registration_price }}</x-price>
+                    @endif
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                     <span class="inline-block px-2 py-1 text-sm rounded-full {{ $item->enabled ? 'bg-lime-100 text-lime-800' : 'bg-zinc-100 text-zinc-800' }}">
                         {{ $item->enabled ? __('active') : __('inactive') }}
                     </span>
@@ -57,7 +63,7 @@
             
         @empty
             <tr>
-                <td colspan="5" class="px-3 py-4 space-y-2 text-center">
+                <td colspan="6" class="px-3 py-4 space-y-2 text-center">
                     <p>{{ __('No categories at the moment') }}</p>
                     @can('create', \App\Model\Category::class)
                         <p>

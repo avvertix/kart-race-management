@@ -351,7 +351,11 @@ class Participant extends Model implements HasLocalePreference
      */
     public function price(): Collection
     {
-        $raceFee = $this->championship->registration_price ?? (int) config('races.price');
+        // Use category-specific registration price if available, otherwise fall back to championship or config default
+        $raceFee = $this->racingCategory->registration_price 
+            ?? $this->championship->registration_price 
+            ?? (int) config('races.price');
+            
         $bonusValue = $this->championship->bonuses->fixed_bonus_amount ?? (int) config('races.bonus_amount');
 
         $usedBonusCount = $this->bonuses->count();

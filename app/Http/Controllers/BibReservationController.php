@@ -6,11 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Models\BibReservation;
 use App\Models\Championship;
-use App\Models\DriverLicence;
 use App\Models\Participant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
 class BibReservationController extends Controller
@@ -42,7 +40,6 @@ class BibReservationController extends Controller
     {
         return view('bib-reservation.create', [
             'championship' => $championship,
-            'reservations' => $championship->reservations()->get(),
         ]);
     }
 
@@ -75,8 +72,6 @@ class BibReservationController extends Controller
 
             'driver_licence_number' => ['required', 'string', 'max:250'],
 
-            'driver_licence_type' => ['nullable', new Enum(DriverLicence::class)],
-
             'contact_email' => 'nullable|string|email',
 
             'reservation_expiration_date' => 'nullable|date|after:today',
@@ -100,7 +95,6 @@ class BibReservationController extends Controller
             'contact_email' => $validated['contact_email'],
             'driver_licence_hash' => $licenceHash,
             'driver_licence' => $validated['driver_licence_number'] ?? null,
-            'licence_type' => $validated['driver_licence_type'] ?? null,
             'reservation_expires_at' => $request->date('reservation_expiration_date')?->endOfDay(),
         ]);
 
@@ -164,8 +158,6 @@ class BibReservationController extends Controller
 
             'driver_licence_number' => ['required', 'string', 'max:250'],
 
-            'driver_licence_type' => ['nullable', new Enum(DriverLicence::class)],
-
             'contact_email' => 'nullable|string|email',
 
             'reservation_expiration_date' => 'nullable|date|after:today',
@@ -204,7 +196,6 @@ class BibReservationController extends Controller
             'contact_email' => $validated['contact_email'],
             'driver_licence_hash' => $licenceHash,
             'driver_licence' => $validated['driver_licence_number'] ?? null,
-            'licence_type' => $validated['driver_licence_type'] ?? null,
             'reservation_expires_at' => $request->date('reservation_expiration_date')?->endOfDay(),
         ]);
 

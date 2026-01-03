@@ -27,10 +27,14 @@
     </x-section-title>
 
     <div class="mt-5 md:mt-0 md:col-span-2">
-        
+
         <div class="px-4 py-5">
             <div class="grid grid-cols-6 gap-6">
-                
+
+                <div class="col-span-6 sm:col-span-4">
+                    @livewire('driver-search')
+                </div>
+
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
                     <x-input id="driver_licence_number" type="text" name="driver_licence_number" class="mt-1 block w-full" :value="old('driver_licence_number', optional($reservation ?? null)->driver_licence)"  />
@@ -48,11 +52,26 @@
                     <x-input id="contact_email" type="email" name="contact_email" class="mt-1 block w-full" :value="old('contact_email', optional($reservation ?? null)->contact_email)"  />
                     <x-input-error for="contact_email" class="mt-2" />
                 </div>
-                
+
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('driver-selected', (event) => {
+            const data = event[0];
+
+            // Fill the form fields
+            document.getElementById('driver').value = data.driver;
+            document.getElementById('driver_licence_number').value = data.licence;
+            if (data.email) {
+                document.getElementById('contact_email').value = data.email;
+            }
+        });
+    });
+</script>
 
 <div class="md:grid md:grid-cols-3 md:gap-6">
     <x-section-title>

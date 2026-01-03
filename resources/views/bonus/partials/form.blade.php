@@ -9,6 +9,10 @@
         <div class="px-4 py-5">
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-4">
+                    @livewire('driver-search')
+                </div>
+                
+                <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver" value="{{ __('Driver Name') }}*" />
                     <x-input id="driver" type="text" name="driver" :value="old('driver', optional($bonus ?? null)->driver)" class="mt-1 block w-full" required autocomplete="driver" />
                     <x-input-error for="driver" class="mt-2" />
@@ -48,6 +52,18 @@
                 </div>
                 
             </div>
+
+            <script>
+                document.addEventListener('livewire:init', () => {
+                    Livewire.on('driver-selected', (event) => {
+                        const data = event[0];
+
+                        // Fill the form fields
+                        document.getElementById('driver').value = data.driver;
+                        document.getElementById('driver_licence').value = data.licence;
+                    });
+                });
+            </script>
         </div>
     </div>
 </div>

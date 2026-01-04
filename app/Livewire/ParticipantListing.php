@@ -30,11 +30,14 @@ class ParticipantListing extends Component
 
     public $filter_category;
 
+    public $filter_status;
+
     protected $queryString = [
         'search' => ['except' => '', 'as' => 's'],
         'selectedParticipant' => ['except' => '', 'as' => 'pid'],
         'sort' => ['except' => '', 'as' => 'order'],
         'filter_category' => ['except' => '', 'as' => 'category'],
+        'filter_status' => ['except' => '', 'as' => 'status'],
     ];
 
     public function mount($race)
@@ -42,6 +45,7 @@ class ParticipantListing extends Component
         $this->race = $race;
         $this->search = null;
         $this->sort = 'bib';
+        $this->filter_status = '';
     }
 
     public function select($item)
@@ -49,9 +53,11 @@ class ParticipantListing extends Component
         $this->selectedParticipant = $item;
     }
 
-    public function sorting($option)
+    public function clearFilters()
     {
-        $this->sort = $option === 'bib' ? 'bib' : 'registration-date';
+        $this->search = '';
+        $this->filter_category = '';
+        $this->filter_status = '';
     }
 
     public function confirm($item)
@@ -116,7 +122,26 @@ class ParticipantListing extends Component
                     $query->where('id', $category_id);
                 });
             })
-            ->orderBy($this->sort === 'registration-date' ? 'created_at' : 'bib', 'asc')
+            ->when($this->filter_status !== '', function ($query) {
+                match ($this->filter_status) {
+                    'confirmed' => $query->whereNotNull('confirmed_at'),
+                    'unconfirmed' => $query->whereNull('confirmed_at'),
+                    'with-transponder' => $query->has('transponders'),
+                    'without-transponder' => $query->doesntHave('transponders'),
+                    default => null,
+                };
+            });
+
+        // Apply sorting
+        $sortField = match ($this->sort) {
+            'registration-date' => 'created_at',
+            'confirmed-date' => 'confirmed_at',
+            'completed-date' => 'registration_completed_at',
+            default => 'bib',
+        };
+
+        $this->participants = $this->participants
+            ->orderBy($sortField, 'asc')
             ->get();
 
         return view('livewire.participant-listing');

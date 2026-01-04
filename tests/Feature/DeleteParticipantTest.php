@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\DeleteParticipant;
+use App\Data\RegistrationCostData;
 use App\Models\Bonus;
 use App\Models\Category;
 use App\Models\Participant;
@@ -79,6 +80,41 @@ class DeleteParticipantTest extends TestCase
         ]);
 
         $participant->bonuses()->attach($bonus);
+
+        $trashedParticipant = (new DeleteParticipant)($participant);
+
+        $this->assertInstanceOf(TrashedParticipant::class, $trashedParticipant);
+
+        $this->assertEquals((string) $participant->uuid, (string) $trashedParticipant->uuid);
+
+        $this->assertEquals(collect($participant->toArray())->forget(['uuid', 'created_at', 'updated_at', 'racer_hash']), collect($trashedParticipant->toArray())->forget(['uuid', 'created_at', 'updated_at']));
+
+        $this->assertNull($participant->fresh());
+        $this->assertNotNull($trashedParticipant->fresh());
+        $this->assertTrue($trashedParticipant->fresh()->racingCategory->is($category));
+    }
+
+    public function test_participant_with_cost_can_be_trashed()
+    {
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $bonus = Bonus::factory()
+            ->recycle($race->championship)
+            ->create();
+
+        $participant = Participant::factory()->category($category)->create([
+            'bib' => 100,
+            'championship_id' => $race->championship->getKey(),
+            'race_id' => $race->getKey(),
+        ]);
+
+        $participant->bonuses()->attach($bonus);
+
+        $participant->cost = new RegistrationCostData(10000, 21000, 'tire model', 100);
+
+        $participant->save();
 
         $trashedParticipant = (new DeleteParticipant)($participant);
 

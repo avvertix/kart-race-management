@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Data\AliasesData;
+use App\Data\RegistrationCostData;
 use App\Notifications\ConfirmParticipantRegistration;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -351,6 +352,12 @@ class Participant extends Model implements HasLocalePreference
      */
     public function price(): Collection
     {
+        // Use cost field if available, otherwise calculate the cost
+
+        if (filled($this->cost)) {
+            return $this->cost->details();
+        }
+
         // Use category-specific registration price if available, otherwise fall back to championship or config default
         $raceFee = $this->racingCategory->registration_price
             ?? $this->championship->registration_price
@@ -395,6 +402,7 @@ class Participant extends Model implements HasLocalePreference
                 'use_bonus',
                 'driver->email',
                 'competitor->email',
+                'cost',
             ])
             ->dontLogIfAttributesChangedOnly(['updated_at'])
             ->logOnlyDirty()
@@ -495,6 +503,8 @@ class Participant extends Model implements HasLocalePreference
             'wildcard' => 'boolean',
             'payment_channel' => PaymentChannelType::class,
             'aliases' => AliasesData::class,
+            'cost' => RegistrationCostData::class,
+
         ];
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Categories\Category;
+use App\Data\RegistrationCostData;
 use App\Models\Category as ModelsCategory;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -43,6 +44,7 @@ class TrashedParticipant extends Model
         'use_bonus',
         'locale',
         'registration_completed_at',
+        'cost',
     ];
 
     /**
@@ -137,6 +139,7 @@ class TrashedParticipant extends Model
             'registration_completed_at' => 'datetime',
             'consents' => AsArrayObject::class,
             'use_bonus' => 'boolean',
+            'cost' => RegistrationCostData::class,
         ];
     }
 }

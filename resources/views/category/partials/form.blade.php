@@ -36,7 +36,7 @@
                     <x-input-error for="tire" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="registration_price" value="{{ __('Registration Price') }}" />
+                    <x-label for="registration_price" value="{{ __('Participation fee') }}" />
                     <p class="text-zinc-600 text-sm">{{ __('Custom registration price for this category. Leave empty to use the championship default price. Use the decimal notation, e.g. for a cost of 80,00 € insert 8000.') }}</p>
                     <x-input id="registration_price" type="number" name="registration_price" :value="old('registration_price', optional($category ?? null)->registration_price)" class="mt-1 block w-full" min="0" step="1" />
                     <x-input-error for="registration_price" class="mt-2" />

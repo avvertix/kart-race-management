@@ -12,7 +12,7 @@
             <div class="px-4 py-5">
                 <div class="grid grid-cols-6 gap-6">
                     <div class="col-span-6 sm:col-span-4 prose prose-zinc">
-                        <p>{{ __('Race cost is calculated from a fixed fee and an eventual tire set, based on the selected category.') }}</p>
+                        <p>{{ __('Race cost is given from the registration fee and an eventual tire set, based on the selected category.') }}</p>
                         <p>{{ __('Here is the price list. The final price is given after submitting the registration.') }}</p>
                         <table>
                             <tr>

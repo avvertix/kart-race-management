@@ -126,7 +126,7 @@
             <div class="grid lg:gap-4 lg:grid-cols-2">
 
                 <div class="prose prose-zinc">
-                    <p>{{ __('Race cost is calculated from a fixed fee plus one tire set, based on the selected category.') }}</p>
+                    <p>{{ __('Race cost is given from the registration fee and an eventual tire set, based on the selected category.') }}</p>
                     <table>
                         @foreach ($participant->price() as $key => $price)
                             <tr>

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Categories\Category as CategoryConfiguration;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +36,7 @@ class Category extends Model
         'enabled',
         'short_name',
         'championship_tire_id',
+        'registration_price',
     ];
 
     /**
@@ -121,19 +121,6 @@ class Category extends Model
             ->dontSubmitEmptyLogs();
     }
 
-    // public function asCategoryConfiguration(): CategoryConfiguration
-    // {
-    //     return new CategoryConfiguration([
-    //         'name' => $this->name,
-    //         'description' => $this->description,
-    //         'tires' => $this->tire?->code,
-    //         'tire_name' => $this->tire?->name,
-    //         'tire_price' => $this->tire?->price,
-    //         'timekeeper_label' => ,
-    //         'enabled' => $this->enabled,
-    //     ]);
-    // }
-
     /**
      * Get the label to use for timekeep export
      */
@@ -146,6 +133,7 @@ class Category extends Model
     {
         return [
             'enabled' => 'boolean',
+            'registration_price' => 'integer',
         ];
     }
 }

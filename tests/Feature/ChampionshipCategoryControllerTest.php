@@ -121,6 +121,62 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertNull($category->tire);
     }
 
+    public function test_category_created_with_registration_price(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.categories.create', $championship))
+            ->post(route('championships.categories.store', $championship), [
+                'name' => 'Category name',
+                'short_name' => 'Alternate name',
+                'enabled' => true,
+                'registration_price' => 150,
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.index', $championship);
+
+        $response->assertSessionHas('flash.banner', 'Category name created.');
+
+        $category = Category::first();
+
+        $this->assertInstanceOf(Category::class, $category);
+
+        $this->assertEquals('Category name', $category->name);
+        $this->assertEquals('Alternate name', $category->short_name);
+        $this->assertEquals(150, $category->registration_price);
+        $this->assertTrue($category->enabled);
+    }
+
+    public function test_category_created_without_registration_price(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.categories.create', $championship))
+            ->post(route('championships.categories.store', $championship), [
+                'name' => 'Category name',
+                'short_name' => 'Alternate name',
+                'enabled' => true,
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.index', $championship);
+
+        $category = Category::first();
+
+        $this->assertInstanceOf(Category::class, $category);
+
+        $this->assertNull($category->registration_price);
+    }
+
     public function test_category_created(): void
     {
         $user = User::factory()->organizer()->create();
@@ -341,6 +397,68 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertNull($updatedCategory->short_name);
         $this->assertFalse($updatedCategory->enabled);
         $this->assertTrue($updatedCategory->tire->is($category->tire));
+    }
+
+    public function test_category_updated_with_registration_price(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $category = Category::factory()
+            ->recycle($championship)
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('categories.edit', $category))
+            ->put(route('categories.update', $category), [
+                'name' => 'Category name',
+                'enabled' => true,
+                'registration_price' => 200,
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.index', $category->championship);
+
+        $response->assertSessionHas('flash.banner', 'Category name updated.');
+
+        $updatedCategory = $category->fresh();
+
+        $this->assertInstanceOf(Category::class, $updatedCategory);
+
+        $this->assertEquals(200, $updatedCategory->registration_price);
+    }
+
+    public function test_category_updated_registration_price_can_be_removed(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $category = Category::factory()
+            ->recycle($championship)
+            ->create([
+                'registration_price' => 150,
+            ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('categories.edit', $category))
+            ->put(route('categories.update', $category), [
+                'name' => 'Category name',
+                'enabled' => true,
+                'registration_price' => null,
+            ]);
+
+        $response->assertRedirectToRoute('championships.categories.index', $category->championship);
+
+        $updatedCategory = $category->fresh();
+
+        $this->assertInstanceOf(Category::class, $updatedCategory);
+
+        $this->assertNull($updatedCategory->registration_price);
     }
 
     public function test_category_updated_tire_removed(): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Listeners;
 
 use App\Events\ParticipantRegistered;
+use Closure;
 
 class ApplyBonusToParticipant
 {
@@ -19,7 +20,7 @@ class ApplyBonusToParticipant
     /**
      * Handle the event.
      */
-    public function handle(ParticipantRegistered $event, \Closure $next): ParticipantRegistered
+    public function handle(ParticipantRegistered $event, Closure $next): ParticipantRegistered
     {
         // TODO: apply bonus only if is not national race or above
 

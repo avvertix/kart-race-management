@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Events\ParticipantRegistered;
 use App\Events\ParticipantUpdated;
+use Closure;
 use Illuminate\Validation\ValidationException;
 
 class CalculateParticipationCost
@@ -13,7 +14,7 @@ class CalculateParticipationCost
     /**
      * Calculate and save participation cost for the current participant.
      */
-    public function handle(ParticipantRegistered|ParticipantUpdated $event, \Closure $next): ParticipantRegistered|ParticipantUpdated
+    public function handle(ParticipantRegistered|ParticipantUpdated $event, Closure $next): ParticipantRegistered|ParticipantUpdated
     {
         if ($event->race->isCancelled()) {
             throw ValidationException::withMessages([

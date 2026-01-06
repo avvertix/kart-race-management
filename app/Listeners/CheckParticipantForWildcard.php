@@ -6,6 +6,7 @@ namespace App\Listeners;
 
 use App\Events\ParticipantRegistered;
 use App\Events\ParticipantUpdated;
+use Closure;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CheckParticipantForWildcard implements ShouldQueue
@@ -21,7 +22,7 @@ class CheckParticipantForWildcard implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(ParticipantRegistered|ParticipantUpdated $event, \Closure $next): ParticipantRegistered|ParticipantUpdated
+    public function handle(ParticipantRegistered|ParticipantUpdated $event, Closure $next): ParticipantRegistered|ParticipantUpdated
     {
         $championship = $event->race->championship;
 

@@ -48,7 +48,9 @@ class ApplyBonusToParticipantTest extends TestCase
 
         $event = new ParticipantRegistered($participant, $race);
 
-        (new ApplyBonusToParticipant())->handle($event);
+        (new ApplyBonusToParticipant())->handle($event, function ($event) {
+            return $event;
+        });
 
         $this->assertEquals(1, $participant->bonuses()->count());
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Championship;
+use App\Models\RaceType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -64,6 +65,24 @@ class RaceFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'canceled_at' => now()->subHour(),
+            ];
+        });
+    }
+    
+    public function national()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type' => RaceType::NATIONAL,
+            ];
+        });
+    }
+    
+    public function international()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type' => RaceType::INTERNATIONAL,
             ];
         });
     }

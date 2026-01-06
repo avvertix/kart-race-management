@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Listeners;
 
 use App\Events\ParticipantRegistered;
+use App\Events\ParticipantUpdated;
 use Closure;
 
 class ApplyBonusToParticipant
@@ -20,9 +21,13 @@ class ApplyBonusToParticipant
     /**
      * Handle the event.
      */
-    public function handle(ParticipantRegistered $event, Closure $next): ParticipantRegistered
+    public function handle(ParticipantRegistered|ParticipantUpdated $event, Closure $next): ParticipantRegistered|ParticipantUpdated
     {
         // TODO: apply bonus only if is not national race or above
+
+        if($event->race->isNationalOrInternational()) {
+            return $next($event);
+        }
 
         $championship = $event->race->championship;
 
@@ -33,7 +38,7 @@ class ApplyBonusToParticipant
         $bonus = $championship->bonuses()->licenceHash($event->participant->driver_licence)->first();
 
         // Check if bonus already applied to participant
-        if ($event->participant->bonuses()->exists()) {
+        if ($event->participant->bonuses()->exists() || $event->participant->use_bonus) {
             return $next($event);
         }
 

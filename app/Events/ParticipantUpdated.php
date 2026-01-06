@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use App\Models\Participant;
+use App\Models\Race;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -17,8 +19,10 @@ class ParticipantUpdated
     /**
      * Create a new event instance.
      */
-    public function __construct()
-    {
+    public function __construct(
+        public Participant $participant,
+        public Race $race
+    ) {
         //
     }
 

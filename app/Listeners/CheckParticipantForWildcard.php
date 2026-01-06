@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Listeners;
 
 use App\Events\ParticipantRegistered;
+use App\Events\ParticipantUpdated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CheckParticipantForWildcard implements ShouldQueue
@@ -20,17 +21,19 @@ class CheckParticipantForWildcard implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(ParticipantRegistered $event): void
+    public function handle(ParticipantRegistered|ParticipantUpdated $event, \Closure $next): ParticipantRegistered|ParticipantUpdated
     {
         $championship = $event->race->championship;
 
         if (! $championship->wildcard?->enabled) {
-            return;
+            return $next($event);
         }
 
         $evaluate = $championship->wildcard->strategy->resolve();
 
         $event->participant->wildcard = $evaluate($event->participant, $event->race);
         $event->participant->save();
+
+        return $next($event);
     }
 }

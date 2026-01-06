@@ -19,8 +19,10 @@ class ApplyBonusToParticipant
     /**
      * Handle the event.
      */
-    public function handle(ParticipantRegistered $event): void
+    public function handle(ParticipantRegistered $event, \Closure $next): ParticipantRegistered
     {
+        // TODO: apply bonus only if is not national race or above
+
         $championship = $event->race->championship;
 
         $fixedBonusAmount = $championship->bonuses->fixed_bonus_amount ?? (int) config('races.bonus_amount');
@@ -31,15 +33,15 @@ class ApplyBonusToParticipant
 
         // Check if bonus already applied to participant
         if ($event->participant->bonuses()->exists()) {
-            return;
+            return $next($event);
         }
 
         if (blank($bonus)) {
-            return;
+            return $next($event);
         }
 
         if (! $bonus->hasRemaining()) {
-            return;
+            return $next($event);
         }
 
         $remainingBonuses = $bonus->remaining();
@@ -49,7 +51,7 @@ class ApplyBonusToParticipant
         if ((bool) config('races.bonus_use_one_at_time')) {
             $event->participant->bonuses()->attach($bonus);
 
-            return;
+            return $next($event);
         }
 
         // Calculate how many bonuses can be applied based on the registration price
@@ -63,5 +65,6 @@ class ApplyBonusToParticipant
             $event->participant->bonuses()->attach($bonus);
         }
 
+        return $next($event);
     }
 }

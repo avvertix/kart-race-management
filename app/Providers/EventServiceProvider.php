@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Events\ParticipantRegistered;
-use App\Events\ParticipantUpdated;
-use App\Listeners\ApplyBonusToParticipant;
-use App\Listeners\CheckParticipantForWildcard;
 use App\Listeners\LogNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-// use Illuminate\Support\Facades\Event;
 use Illuminate\Notifications\Events\NotificationSent;
 
 class EventServiceProvider extends ServiceProvider
@@ -28,13 +23,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         NotificationSent::class => [
             LogNotification::class,
-        ],
-        ParticipantRegistered::class => [
-            ApplyBonusToParticipant::class,
-            CheckParticipantForWildcard::class,
-        ],
-        ParticipantUpdated::class => [
-            CheckParticipantForWildcard::class,
         ],
     ];
 

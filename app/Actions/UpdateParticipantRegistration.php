@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Events\ParticipantUpdated;
+use App\Listeners\ApplyBonusToParticipant;
 use App\Listeners\CheckParticipantForWildcard;
 use App\Models\Category;
 use App\Models\CompetitorLicence;
@@ -124,8 +125,9 @@ class UpdateParticipantRegistration
 
             Pipeline::send(new ParticipantUpdated($updatedParticipant, $race))
                 ->through([
-                    CheckParticipantForWildcard::class,
+                    ApplyBonusToParticipant::class,
                     CalculateParticipationCost::class,
+                    CheckParticipantForWildcard::class,
                 ])
                 ->thenReturn();
 

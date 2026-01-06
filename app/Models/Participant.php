@@ -348,7 +348,7 @@ class Participant extends Model implements HasLocalePreference
     }
 
     /**
-     * Calculate the cost of the participation
+     * Get the price details for the participant.
      */
     public function price(): Collection
     {
@@ -358,6 +358,11 @@ class Participant extends Model implements HasLocalePreference
             return $this->cost->details();
         }
 
+        return $this->calculateParticipationCost()->details();
+    }
+    
+    public function calculateParticipationCost(): RegistrationCostData
+    {
         // Use category-specific registration price if available, otherwise fall back to championship or config default
         $raceFee = $this->racingCategory->registration_price
             ?? $this->championship->registration_price
@@ -369,19 +374,12 @@ class Participant extends Model implements HasLocalePreference
 
         $tire = $this->racingCategory->tire;
 
-        $order = collect([
-            __('Race fee') => $raceFee,
-        ])
-            ->merge(collect([
-                __('Tires (:model)', ['model' => $tire?->name]) => $tire?->price,
-                __('Bonus') => $this->use_bonus ? 0 - ($bonusValue * $usedBonusCount) : 0,
-            ])->filter());
-
-        $total = $order->sum();
-
-        return $order->merge([
-            __('Total') => $total,
-        ]);
+        return new RegistrationCostData(
+                registration_cost: $raceFee,
+                tire_cost: $tire?->price,
+                tire_model: $tire?->name,
+                discount: $this->use_bonus ? 0 - ($bonusValue * $usedBonusCount) : 0,
+            );
     }
 
     public function getActivitylogOptions(): LogOptions

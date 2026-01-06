@@ -22,7 +22,14 @@ class CalculateParticipationCost
             ]);
         }
 
-        // TODO: Implement actual cost calculation logic here
+        // TODO: what if already calculated? What about updates?
+
+        $participant = $event->participant;
+
+        $cost = $participant->calculateParticipationCost();
+
+        $participant->cost = $cost;
+        $participant->save();
 
         return $next($event);
     }

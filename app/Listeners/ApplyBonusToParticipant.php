@@ -25,7 +25,7 @@ class ApplyBonusToParticipant
     {
         // TODO: apply bonus only if is not national race or above
 
-        if($event->race->isNationalOrInternational()) {
+        if ($event->race->isNationalOrInternational()) {
             return $next($event);
         }
 

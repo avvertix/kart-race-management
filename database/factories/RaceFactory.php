@@ -68,7 +68,7 @@ class RaceFactory extends Factory
             ];
         });
     }
-    
+
     public function national()
     {
         return $this->state(function (array $attributes) {
@@ -77,7 +77,7 @@ class RaceFactory extends Factory
             ];
         });
     }
-    
+
     public function international()
     {
         return $this->state(function (array $attributes) {

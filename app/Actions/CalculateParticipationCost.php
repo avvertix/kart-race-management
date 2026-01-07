@@ -22,7 +22,6 @@ class CalculateParticipationCost
             ]);
         }
 
-
         $participant = $event->participant;
 
         $cost = $participant->calculateParticipationCost();

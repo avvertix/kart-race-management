@@ -25,10 +25,11 @@ class RegistrationCostData extends Data
     {
         return $order = collect([
             __('Race fee') => $this->registration_cost,
+        ])->merge(collect([
             __('Tires (:model)', ['model' => $this->tire_model]) => $this->tire_cost,
             __('Discount') => abs($this->discount ?? 0) * -1,
+        ])->filter())->merge([
             __('Total') => $this->total(),
-        ])
-            ->filter();
+        ]);
     }
 }

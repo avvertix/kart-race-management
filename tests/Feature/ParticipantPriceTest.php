@@ -97,7 +97,7 @@ class ParticipantPriceTest extends TestCase
         $this->assertEquals([
             __('Race fee') => 15000,
             __('Tires (:tire)', ['tire' => 'T1']) => 10,
-            __('Bonus') => -15000,
+            __('Discount') => -15000,
             __('Total') => 10,
         ], $price->toArray());
     }
@@ -168,7 +168,7 @@ class ParticipantPriceTest extends TestCase
 
         $this->assertEquals([
             __('Race fee') => 12000,
-            __('Bonus') => -10000,
+            __('Discount') => -10000,
             __('Total') => 2000,
         ], $price->toArray());
     }

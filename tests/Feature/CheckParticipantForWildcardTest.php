@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Events\ParticipantRegistered;
+use App\Listeners\CheckParticipantForWildcard;
 use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
@@ -59,7 +60,11 @@ class CheckParticipantForWildcardTest extends TestCase
             ->recycle($race)
             ->create();
 
-        event(new ParticipantRegistered($participant, $race));
+        $action = new CheckParticipantForWildcard();
+
+        $action->handle(new ParticipantRegistered($participant, $race), function ($event) {
+            return $event;
+        });
 
         $updatedParticipant = $participant->fresh();
 
@@ -87,7 +92,11 @@ class CheckParticipantForWildcardTest extends TestCase
             ->recycle($race)
             ->create();
 
-        event(new ParticipantRegistered($participant, $race));
+        $action = new CheckParticipantForWildcard();
+
+        $action->handle(new ParticipantRegistered($participant, $race), function ($event) {
+            return $event;
+        });
 
         $updatedParticipant = $participant->fresh();
 
@@ -115,7 +124,11 @@ class CheckParticipantForWildcardTest extends TestCase
             ->recycle($race)
             ->create();
 
-        event(new ParticipantRegistered($participant, $race));
+        $action = new CheckParticipantForWildcard();
+
+        $action->handle(new ParticipantRegistered($participant, $race), function ($event) {
+            return $event;
+        });
 
         $updatedParticipant = $participant->fresh();
 

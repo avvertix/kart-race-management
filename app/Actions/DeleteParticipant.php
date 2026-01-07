@@ -44,6 +44,7 @@ class DeleteParticipant
                     'vehicles',
                     'locale',
                     'registration_completed_at',
+                    'cost',
                 ]);
 
                 $trashedParticipant = (new TrashedParticipant)->forceFill([

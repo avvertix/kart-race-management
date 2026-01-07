@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Data\RegistrationCostData;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Participant;
@@ -42,6 +43,29 @@ class ParticipantPriceTest extends TestCase
         ], $price->toArray());
     }
 
+    public function test_participant_price_returned_from_saved_cost()
+    {
+        $price = Participant::factory()
+            ->create([
+                'cost' => new RegistrationCostData(
+                    registration_cost: 15000,
+                    tire_cost: 10,
+                    tire_model: 'T1',
+                    discount: 5000,
+                ),
+            ])
+            ->price();
+
+        $this->assertInstanceOf(Collection::class, $price);
+
+        $this->assertEquals([
+            __('Race fee') => 15000,
+            __('Tires (:tire)', ['tire' => 'T1']) => 10,
+            __('Discount') => -5000,
+            __('Total') => 10010,
+        ], $price->toArray());
+    }
+
     public function test_participant_price_consider_bonus()
     {
         config([
@@ -73,7 +97,7 @@ class ParticipantPriceTest extends TestCase
         $this->assertEquals([
             __('Race fee') => 15000,
             __('Tires (:tire)', ['tire' => 'T1']) => 10,
-            __('Bonus') => -15000,
+            __('Discount') => -15000,
             __('Total') => 10,
         ], $price->toArray());
     }
@@ -144,7 +168,7 @@ class ParticipantPriceTest extends TestCase
 
         $this->assertEquals([
             __('Race fee') => 12000,
-            __('Bonus') => -10000,
+            __('Discount') => -10000,
             __('Total') => 2000,
         ], $price->toArray());
     }

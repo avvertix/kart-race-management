@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Events\ParticipantUpdated;
+use App\Listeners\ApplyBonusToParticipant;
+use App\Listeners\CheckParticipantForWildcard;
 use App\Models\Category;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
@@ -15,6 +18,7 @@ use App\Validation\ParticipantValidationRules;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -116,8 +120,16 @@ class UpdateParticipantRegistration
                     'vehicles' => $this->processVehicle($validatedInput),
                 ]);
 
-                return $participant;
+                return $participant->fresh();
             });
+
+            Pipeline::send(new ParticipantUpdated($updatedParticipant, $race))
+                ->through([
+                    ApplyBonusToParticipant::class,
+                    CalculateParticipationCost::class,
+                    CheckParticipantForWildcard::class,
+                ])
+                ->thenReturn();
 
             if ($originalDriverEmail !== $updatedParticipant->driver['email']) {
                 $updatedParticipant->sendConfirmParticipantNotification();

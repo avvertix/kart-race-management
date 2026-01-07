@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Events\ParticipantRegistered;
+use App\Listeners\ApplyBonusToParticipant;
+use App\Listeners\CheckParticipantForWildcard;
 use App\Models\Category;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
@@ -16,6 +18,7 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -131,7 +134,13 @@ class RegisterParticipant
                     return $participant;
                 });
 
-            event(new ParticipantRegistered($participant, $race));
+            Pipeline::send(new ParticipantRegistered($participant, $race))
+                ->through([
+                    ApplyBonusToParticipant::class,
+                    CalculateParticipationCost::class,
+                    CheckParticipantForWildcard::class,
+                ])
+                ->thenReturn();
 
             $participant->sendConfirmParticipantNotification();
 

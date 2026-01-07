@@ -260,4 +260,66 @@ class UpdateParticipantRegistrationTest extends TestCase
         }
 
     }
+
+    public function test_cost_updated_when_category_changed_to_different_registration_price()
+    {
+        config([
+            'races.price' => 15000,
+            'races.registration.form' => 'complete',
+        ]);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $categoryA = Category::factory()
+            ->recycle($race->championship)
+            ->create([
+                'name' => 'Category A',
+                'registration_price' => 10000,
+            ]);
+
+        $categoryB = Category::factory()
+            ->recycle($race->championship)
+            ->create([
+                'name' => 'Category B',
+                'registration_price' => 20000,
+            ]);
+
+        $existingParticipant = Participant::factory()->category($categoryA)->create([
+            'bib' => 100,
+            'championship_id' => $race->championship->getKey(),
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ],
+            'locale' => 'en',
+            'use_bonus' => false,
+            'cost' => new \App\Data\RegistrationCostData(
+                registration_cost: 10000,
+                tire_cost: 0,
+                tire_model: null,
+                discount: 0,
+            ),
+        ]);
+
+        $this->assertEquals(10000, $existingParticipant->cost->registration_cost);
+
+        $updateParticipant = app()->make(UpdateParticipantRegistration::class);
+
+        $participant = $updateParticipant($race, $existingParticipant, [
+            'bib' => 100,
+            'category' => $categoryB->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            ...$this->generateValidMechanic(),
+            ...$this->generateValidVehicle(),
+        ]);
+
+        $participant->refresh();
+
+        // Cost should be updated to match the new category's registration price
+        $this->assertEquals(20000, $participant->cost->registration_cost);
+    }
 }

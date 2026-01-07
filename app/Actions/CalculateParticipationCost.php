@@ -22,7 +22,6 @@ class CalculateParticipationCost
             ]);
         }
 
-        // TODO: what if already calculated? What about updates?
 
         $participant = $event->participant;
 

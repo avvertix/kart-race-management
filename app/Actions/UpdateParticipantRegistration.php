@@ -120,7 +120,7 @@ class UpdateParticipantRegistration
                     'vehicles' => $this->processVehicle($validatedInput),
                 ]);
 
-                return $participant;
+                return $participant->fresh();
             });
 
             Pipeline::send(new ParticipantUpdated($updatedParticipant, $race))

@@ -39,6 +39,7 @@ class ChampionshipBonusController extends Controller
         return view('bonus.create', [
             'championship' => $championship,
             'fixed_bonus_amount' => $championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 
@@ -110,6 +111,7 @@ class ChampionshipBonusController extends Controller
             'bonus' => $bonus,
             'championship' => $bonus->championship,
             'fixed_bonus_amount' => $bonus->championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $bonus->championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 

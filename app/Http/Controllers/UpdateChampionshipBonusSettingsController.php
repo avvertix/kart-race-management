@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\BonusMode;
 use App\Models\Championship;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateChampionshipBonusSettingsController extends Controller
 {
@@ -17,10 +19,17 @@ class UpdateChampionshipBonusSettingsController extends Controller
         $this->authorize('update', $championship);
 
         $validated = $this->validate($request, [
-            'fixed_bonus_amount' => 'required|integer|min:100|max:'.($championship->registration_price ?? config('races.price')),
+            'bonus_mode' => ['required', 'integer', new Enum(BonusMode::class)],
+            'fixed_bonus_amount' => 'nullable|integer|min:100|max:'.($championship->registration_price ?? config('races.price')),
         ]);
 
-        $championship->bonuses->fixed_bonus_amount = (int) ($validated['fixed_bonus_amount']);
+        $bonusMode = BonusMode::from((int) $validated['bonus_mode']);
+
+        $championship->bonuses->bonus_mode = $bonusMode;
+
+        if ($bonusMode === BonusMode::CREDIT && isset($validated['fixed_bonus_amount'])) {
+            $championship->bonuses->fixed_bonus_amount = (int) ($validated['fixed_bonus_amount']);
+        }
 
         $championship->save();
 

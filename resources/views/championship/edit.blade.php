@@ -151,10 +151,45 @@
                     @method('PUT')
 
                     <div class="mt-4">
-                        <x-label for="fixed_bonus_amount" value="{{ __('Bonus discount (in Euro)') }}" />
-                        <p class="text-zinc-600 text-sm">{{ __('Insert the amount of discount, in Euro, that each bonus grants to the racer. This amount will be deduced from the registration fee. Use the decimal notation, e.g. for a cost of 80,00 € insert 8000.') }}</p>
-                        <x-input id="fixed_bonus_amount" class="block mt-1 w-full" type="number" name="fixed_bonus_amount" :value="old('fixed_bonus_amount', optional($championship ?? null)->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'))" />
+                        <x-label for="bonus_mode" value="{{ __('Bonus mode') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('Select how bonuses should be managed for this championship.') }}</p>
+                        <select name="bonus_mode" id="bonus_mode" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            @foreach (\App\Models\BonusMode::cases() as $mode)
+                                <option value="{{ $mode->value }}" @selected(old('bonus_mode', optional($championship ?? null)->bonuses->bonus_mode) === $mode)>
+                                    {{ $mode->localizedName() }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="text-zinc-600 text-sm mt-2">
+                            @foreach (\App\Models\BonusMode::cases() as $mode)
+                                <span x-show="$el.closest('form').querySelector('#bonus_mode').value == '{{ $mode->value }}'">
+                                    {{ $mode->description() }}
+                                </span>
+                            @endforeach
+                        </p>
+                        <x-input-error for="bonus_mode" class="mt-2" />
                     </div>
+
+                    <div class="mt-4" x-data="{ mode: '{{ old('bonus_mode', optional($championship ?? null)->bonuses->bonus_mode?->value ?? \App\Models\BonusMode::CREDIT->value) }}' }" x-init="$watch('mode', value => mode = value)">
+                        <div x-show="mode == '{{ \App\Models\BonusMode::CREDIT->value }}'">
+                            <x-label for="fixed_bonus_amount" value="{{ __('Bonus discount (in Euro)') }}" />
+                            <p class="text-zinc-600 text-sm">{{ __('Insert the amount of discount, in Euro, that each bonus grants to the racer. This amount will be deduced from the registration fee. Use the decimal notation, e.g. for a cost of 80,00 € insert 8000.') }}</p>
+                            <x-input id="fixed_bonus_amount" class="block mt-1 w-full" type="number" name="fixed_bonus_amount" :value="old('fixed_bonus_amount', optional($championship ?? null)->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'))" />
+                            <x-input-error for="fixed_bonus_amount" class="mt-2" />
+                        </div>
+                    </div>
+
+                    <script>
+                        document.getElementById('bonus_mode')?.addEventListener('change', function(e) {
+                            const form = e.target.closest('form');
+                            const modeElements = form.querySelectorAll('[x-data]');
+                            modeElements.forEach(el => {
+                                if (el.__x) {
+                                    el.__x.$data.mode = e.target.value;
+                                }
+                            });
+                        });
+                    </script>
 
                     <div class="flex items-center justify-end mt-4">
                         <x-button class="ml-4" type="submit">

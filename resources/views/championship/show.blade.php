@@ -3,12 +3,16 @@
         {{ $championship->title }}
     </x-slot>
     <x-slot name="actions">
+        <x-button-link href="{{ route('calendar.championship.races', ['championship' => $championship->uuid, 'format' => 'ics']) }}">
+            {{ __('Download calendar') }}
+        </x-button-link>
+
         @can('create', \App\Model\Race::class)
             <x-button-link href="{{ route('championships.races.create', $championship) }}">
                 {{ __('Add race') }}
             </x-button-link>
         @endcan
-        
+
         @can('create', \App\Model\Race::class)
             <x-button-link href="{{ route('championships.races.import.create', $championship) }}">
                 {{ __('Import races') }}

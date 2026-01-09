@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ChampionshipRaceCalendarController;
 use App\Http\Controllers\RaceCalendarController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/calendar/races.ics', RaceCalendarController::class)->name('calendar.races');
+Route::get('/championship/{championship}/races.{format}', [ChampionshipRaceCalendarController::class, 'show'])
+    ->where('format', 'ics|json')
+    ->name('calendar.championship.races');

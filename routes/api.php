@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ChampionshipRaceCalendarController;
 use App\Http\Controllers\RaceCalendarController;
+use App\Http\Middleware\Locale;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,5 +17,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::middleware([Locale::class])->group(function () {
 
-Route::get('/calendar/races.ics', RaceCalendarController::class)->name('calendar.races');
+    Route::get('/calendar/races.ics', RaceCalendarController::class)->name('calendar.races');
+    Route::get('/championship/{championship}/races.{format}', [ChampionshipRaceCalendarController::class, 'show'])
+        ->where('format', 'ics|json')
+        ->name('calendar.championship.races');
+
+});

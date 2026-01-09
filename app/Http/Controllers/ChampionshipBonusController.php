@@ -28,6 +28,7 @@ class ChampionshipBonusController extends Controller
             'championship' => $championship,
             'bonuses' => $championship->bonuses()->orderBy('driver', 'ASC')->orderBy('amount', 'DESC')->get(),
             'fixed_bonus_amount' => $championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 

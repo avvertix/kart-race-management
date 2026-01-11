@@ -66,7 +66,7 @@ class ApplyBonusToParticipant
 
                 return $next($event);
             }
-            
+
             // Calculate how many bonuses can be applied based on the registration price
             $bonusCount = intdiv($registrationPrice, $fixedBonusAmount);
 

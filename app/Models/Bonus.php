@@ -50,6 +50,11 @@ class Bonus extends Model
         return $query->where('driver_licence_hash', hash('sha512', $licence));
     }
 
+    public function hasRemaining(): bool
+    {
+        return $this->remaining > 0;
+    }
+
     /**
      * Get the user's first name.
      */
@@ -66,7 +71,7 @@ class Bonus extends Model
                     $usageCount = $this->usages_count ?? $this->usages()->count();
 
                     return max(0, $this->amount - $usageCount);
-                    
+
                 }
 
                 // we subtract the sum of amounts used
@@ -76,11 +81,6 @@ class Bonus extends Model
             },
         );
 
-    }
-
-    public function hasRemaining(): bool
-    {
-        return $this->remaining > 0;
     }
 
     /**

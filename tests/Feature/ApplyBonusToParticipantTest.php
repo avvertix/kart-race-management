@@ -230,8 +230,8 @@ class ApplyBonusToParticipantTest extends TestCase
         $this->assertEquals(5000, $participant_bonuses->first()->pivot->amount);
 
         $freshBonus = $bonus->fresh()->loadSum(['usages as used_amount' => function ($query) {
-                    $query->select(DB::raw('sum(amount)'));
-                }], 'used_amount');
+            $query->select(DB::raw('sum(amount)'));
+        }], 'used_amount');
 
         $this->assertEquals(5000, $freshBonus->remaining);
     }

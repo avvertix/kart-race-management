@@ -19,5 +19,5 @@ return [
     'description' => [
         'CREDIT' => 'Each credit gives a fixed discount on the race registration fee.',
         'BALANCE' => 'Participants have a balance from which registration fee is deducted.',
-    ]
+    ],
 ];

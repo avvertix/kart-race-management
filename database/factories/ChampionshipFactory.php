@@ -73,7 +73,7 @@ class ChampionshipFactory extends Factory
             ];
         });
     }
-    
+
     public function withBalanceBonus()
     {
         return $this->state(function (array $attributes) {

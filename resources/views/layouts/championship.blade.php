@@ -36,7 +36,7 @@
                     
                     <x-tab-link href="{{ route('championships.bib-reservations.index', $championship) }}" :active="request()->routeIs('championships.bib-reservations.index', $championship) || request()->routeIs('bib-reservations.*')">{{ __('Race Number Reservations') }}</x-tab-link>
                     
-                    <x-tab-link href="{{ route('championships.bonuses.index', $championship) }}" :active="request()->routeIs('championships.bonuses.index', $championship) || request()->routeIs('bonuses.*')">{{ __('Bonus') }}</x-tab-link>
+                    <x-tab-link href="{{ route('championships.bonuses.index', $championship) }}" :active="request()->routeIs('championships.bonuses.*', $championship) || request()->routeIs('bonuses.*') || request()->routeIs('championships.bonus-settings.*')">{{ __('Bonus') }}</x-tab-link>
 
                     <x-tab-link href="{{ route('championships.categories.index', $championship) }}" :active="request()->routeIs('championships.categories.index', $championship) || request()->routeIs('categories.*')">{{ __('Categories') }}</x-tab-link>
                     

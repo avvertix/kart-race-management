@@ -1,6 +1,6 @@
 <div class="md:grid md:grid-cols-3 md:gap-6">
     <x-section-title>
-        <x-slot name="title">{{ __('Details') }}</x-slot>
+        <x-slot name="title">{{ __('Participant bonus')}}</x-slot>
         <x-slot name="description">{{ __('Add details about the bonus type and quantity for a specific driver.') }}</x-slot>
     </x-section-title>
 
@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="bonus_type" value="{{ __('Bonus type') }}" />
-                    <select name="bonus_type" id="bonus_type">
+                    <select name="bonus_type" id="bonus_type" class="block mt-1 border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm">
                         <option value="" disabled>{{ __('Select the type of bonus') }}</option>
                         @foreach (\App\Models\BonusType::cases() as $bonusType)
                             <option value="{{ $bonusType->value }}" @selected(old('bonus_type', optional($bonus ?? null)->bonus_type) === $bonusType) >{{ $bonusType->localizedName() }}</option>
@@ -51,7 +51,7 @@
                     @else
                         <x-label for="amount" value="{{ __('Total balance (in Euro)') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Insert the total monetary balance available for this bonus. Use the decimal notation, e.g. for a balance of 80,00 € insert 8000.') }}</p>
-                        <x-input id="amount" type="number" required min="1" name="amount" :value="old('amount', optional($bonus ?? null)->amount ?? 0)" class="mt-1 block w-full" autocomplete="amount" />
+                        <x-input id="amount" type="number" required min="1" name="amount" :value="old('amount', optional($bonus ?? null)->amount)" class="mt-1 block w-full" autocomplete="amount" />
                         <x-input-error for="amount" class="mt-2" />
                     @endif
                 </div>

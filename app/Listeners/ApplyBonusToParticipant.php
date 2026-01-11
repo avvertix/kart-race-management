@@ -23,8 +23,6 @@ class ApplyBonusToParticipant
      */
     public function handle(ParticipantRegistered|ParticipantUpdated $event, Closure $next): ParticipantRegistered|ParticipantUpdated
     {
-        // TODO: apply bonus only if is not national race or above
-
         if ($event->race->isNationalOrInternational()) {
             return $next($event);
         }
@@ -33,7 +31,9 @@ class ApplyBonusToParticipant
 
         $fixedBonusAmount = $championship->bonuses->fixed_bonus_amount ?? (int) config('races.bonus_amount');
 
-        $registrationPrice = $championship->registration_price ?? (int) config('races.price');
+        $registrationPrice = $event->participant->racingCategory->registration_price
+            ?? $championship->registration_price
+            ?? (int) config('races.price');
 
         $bonus = $championship->bonuses()->licenceHash($event->participant->driver_licence)->first();
 
@@ -50,25 +50,41 @@ class ApplyBonusToParticipant
             return $next($event);
         }
 
-        $remainingBonuses = $bonus->remaining();
+        $bonusMode = $championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT;
+
+        $remainingBonuses = $bonus->remaining;
 
         $event->participant->update(['use_bonus' => true]);
 
-        if ((bool) config('races.bonus_use_one_at_time')) {
-            $event->participant->bonuses()->attach($bonus);
+        if ($bonusMode === \App\Models\BonusMode::CREDIT) {
+            // In CREDIT mode, deduct the actual registration cost from the credit balance
+            // The bonus amount represents total credit available
+
+            // BALANCE mode: traditional behavior with discrete bonus units
+            if ((bool) config('races.bonus_use_one_at_time')) {
+                $event->participant->bonuses()->attach($bonus, ['amount' => $fixedBonusAmount]);
+
+                return $next($event);
+            }
+            
+            // Calculate how many bonuses can be applied based on the registration price
+            $bonusCount = intdiv($registrationPrice, $fixedBonusAmount);
+
+            // Ensure we do not exceed the remaining bonuses
+            $bonusCount = min($bonusCount, $remainingBonuses);
+
+            // Attach the bonuses to the participant
+            for ($i = 0; $i < $bonusCount; $i++) {
+                $event->participant->bonuses()->attach($bonus, ['amount' => $fixedBonusAmount]);
+            }
 
             return $next($event);
         }
 
-        // Calculate how many bonuses can be applied based on the registration price
-        $bonusCount = intdiv($registrationPrice, $fixedBonusAmount);
+        $amountToDeduct = min($remainingBonuses, $registrationPrice);
 
-        // Ensure we do not exceed the remaining bonuses
-        $bonusCount = min($bonusCount, $remainingBonuses);
-
-        // Attach the bonuses to the participant
-        for ($i = 0; $i < $bonusCount; $i++) {
-            $event->participant->bonuses()->attach($bonus);
+        if ($amountToDeduct > 0) {
+            $event->participant->bonuses()->attach($bonus, ['amount' => $amountToDeduct]);
         }
 
         return $next($event);

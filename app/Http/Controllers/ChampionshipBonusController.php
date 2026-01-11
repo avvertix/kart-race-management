@@ -8,6 +8,7 @@ use App\Models\Bonus;
 use App\Models\BonusType;
 use App\Models\Championship;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -26,7 +27,13 @@ class ChampionshipBonusController extends Controller
     {
         return view('bonus.index', [
             'championship' => $championship,
-            'bonuses' => $championship->bonuses()->orderBy('driver', 'ASC')->orderBy('amount', 'DESC')->get(),
+            'bonuses' => $championship->bonuses()
+                ->withCount('usages')
+                ->withSum(['usages as used_amount' => function ($query) {
+                    $query->select(DB::raw('sum(amount)'));
+                }], 'used_amount')
+                ->orderBy('driver', 'ASC')
+                ->get(),
             'fixed_bonus_amount' => $championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
             'bonus_mode' => $championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);

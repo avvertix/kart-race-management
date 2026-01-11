@@ -86,7 +86,8 @@ Route::middleware([
 
         Route::put('championships/{championship}/payment', UpdateChampionshipPaymentSettingsController::class)->name('championships.payment.update');
 
-        Route::put('championships/{championship}/bonus-settings', UpdateChampionshipBonusSettingsController::class)->name('championships.bonus-settings.update');
+        Route::get('championships/{championship}/bonus-settings', [UpdateChampionshipBonusSettingsController::class, 'edit'])->name('championships.bonus-settings.edit');
+        Route::put('championships/{championship}/bonus-settings', [UpdateChampionshipBonusSettingsController::class, 'update'])->name('championships.bonus-settings.update');
 
         Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
 

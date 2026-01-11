@@ -10,8 +10,8 @@
         @endcan
 
         @can('update', $championship)
-            <x-button-link href="{{ route('championships.edit', $championship) }}">
-                {{ __('Edit championship') }}
+            <x-button-link href="{{ route('championships.bonus-settings.edit', $championship) }}">
+                {{ __('Bonus settings') }}
             </x-button-link>
         @endcan
     </x-slot>
@@ -22,13 +22,11 @@
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Bonus type') }}</th>
                     @if($bonus_mode === \App\Models\BonusMode::CREDIT)
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Credits') }}</th>
-                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Total value') }}</th>
-                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Remaining') }}</th>
                     @else
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Balance') }}</th>
+                    @endif
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Used') }}</th>
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Remaining') }}</th>
-                    @endif
                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                         <span class="sr-only">{{ __('Edit') }}</span>
                     </th>
@@ -46,23 +44,23 @@
                     </td>
                     @if($bonus_mode === \App\Models\BonusMode::CREDIT)
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 tabular-nums font-mono">
-                            {{ $item->amount }}
+                            <span class="font-bold text-zinc-900">{{ $item->amount }}</span> - <x-price>{{ $item->amount * $fixed_bonus_amount }}</x-price>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                            <x-price>{{ $item->amount * $fixed_bonus_amount }}</x-price>
+                            {{ trans_choice(':value time|:value times', $item->usages_count, ['value' => $item->usages_count]) }}
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 tabular-nums font-mono">
-                            {{ $item->remaining() }}
+                            {{ $item->remaining }}
                         </td>
                     @else
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                             <x-price>{{ $item->amount }}</x-price>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 tabular-nums font-mono">
-                            {{ $item->usages()->count() }}
+                            {{ trans_choice(':value time|:value times', $item->usages_count, ['value' => $item->usages_count]) }}
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                            <x-price>{{ $item->amount }}</x-price>
+                            <x-price>{{ $item->remaining }}</x-price>
                         </td>
                     @endif
                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
@@ -75,7 +73,7 @@
                 
             @empty
                 <tr>
-                    <td colspan="5" class="px-3 py-4 space-y-2 text-center">
+                    <td colspan="6" class="px-3 py-4 space-y-2 text-center">
                         <p>{{ __('No bonus or discounts') }}</p>
                         @can('create', \App\Model\Bonus::class)
                             <p>

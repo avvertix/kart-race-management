@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\BonusMode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -59,6 +60,8 @@ class ChampionshipFactory extends Factory
 
     /**
      * Create a championship with specific bank account.
+
+     TODO: change
      */
     public function withBonus(int $amount = 10000)
     {
@@ -66,6 +69,17 @@ class ChampionshipFactory extends Factory
             return [
                 'bonuses' => [
                     'fixed_bonus_amount' => $amount,
+                ],
+            ];
+        });
+    }
+    
+    public function withBalanceBonus()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'bonuses' => [
+                    'bonus_mode' => BonusMode::BALANCE,
                 ],
             ];
         });

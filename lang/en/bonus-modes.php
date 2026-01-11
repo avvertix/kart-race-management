@@ -17,7 +17,7 @@ return [
     'BALANCE' => 'Bonus Balance',
 
     'description' => [
-        'CREDIT' => 'Each credit gives a fixed discount on a race registration fee.',
-        'BALANCE' => 'You have a balance from which race registration fees are deducted.',
+        'CREDIT' => 'Each credit gives a fixed discount on the race registration fee.',
+        'BALANCE' => 'Participants have a balance from which registration fee is deducted.',
     ]
 ];

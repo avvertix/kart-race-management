@@ -18,6 +18,6 @@ return [
 
     'description' => [
         'CREDIT' => 'Ogni credito fornisce uno sconto fisso sulla quota di iscrizione alla gara.',
-        'BALANCE' => 'Si dispone di un saldo dal quale vengono detratte le quote di iscrizione alle gare.',
+        'BALANCE' => 'I partecipanti hanno un saldo dal quale viene detratta le quota di iscrizione alla gara.',
     ]
 ];

@@ -12,9 +12,21 @@ use Illuminate\Validation\Rules\Enum;
 class UpdateChampionshipBonusSettingsController extends Controller
 {
     /**
+     * Show the bonus settings form.
+     */
+    public function edit(Championship $championship)
+    {
+        $this->authorize('update', $championship);
+
+        return view('bonus.settings', [
+            'championship' => $championship,
+        ]);
+    }
+
+    /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request, Championship $championship)
+    public function update(Request $request, Championship $championship)
     {
         $this->authorize('update', $championship);
 
@@ -33,7 +45,7 @@ class UpdateChampionshipBonusSettingsController extends Controller
 
         $championship->save();
 
-        return to_route('championships.show', $championship)
+        return to_route('championships.bonuses.index', $championship)
             ->with('flash.banner', __(':championship bonus configuration updated.', [
                 'championship' => $championship->title,
             ]));

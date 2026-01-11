@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('participant_bonus', function (Blueprint $table) {
-            //
+            $table->unsignedInteger('amount')->nullable();
         });
     }
 

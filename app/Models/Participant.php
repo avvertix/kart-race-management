@@ -376,10 +376,10 @@ class Participant extends Model implements HasLocalePreference
 
         // Sum the actual deducted amounts from the pivot table
         $totalBonusDiscount = 0;
-        
-        if($this->use_bonus){
 
-            $totalBonusDiscount = $bonusMode == BonusMode::BALANCE ? $this->bonuses->sum('pivot.amount') : ($this->bonuses->count() * $fixedBonusAmount);
+        if ($this->use_bonus) {
+
+            $totalBonusDiscount = $bonusMode === BonusMode::BALANCE ? $this->bonuses->sum('pivot.amount') : ($this->bonuses->count() * $fixedBonusAmount);
         }
 
         $tire = $this->racingCategory->tire;

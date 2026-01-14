@@ -370,10 +370,17 @@ class Participant extends Model implements HasLocalePreference
             ?? $this->championship->registration_price
             ?? (int) config('races.price');
 
+        $bonusMode = $this->championship->bonuses->bonus_mode ?? BonusMode::CREDIT;
+
+        $fixedBonusAmount = $this->championship->bonuses->fixed_bonus_amount ?? (int) config('races.bonus_amount');
+
         // Sum the actual deducted amounts from the pivot table
-        $totalBonusDiscount = $this->use_bonus
-            ? $this->bonuses->sum('pivot.amount')
-            : 0;
+        $totalBonusDiscount = 0;
+        
+        if($this->use_bonus){
+
+            $totalBonusDiscount = $bonusMode == BonusMode::BALANCE ? $this->bonuses->sum('pivot.amount') : ($this->bonuses->count() * $fixedBonusAmount);
+        }
 
         $tire = $this->racingCategory->tire;
 

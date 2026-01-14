@@ -59,21 +59,22 @@ class ChampionshipFactory extends Factory
     }
 
     /**
-     * Create a championship with specific bank account.
-
-     TODO: change
+     * Create a championship with credit based bonus
      */
-    public function withBonus(int $amount = 10000)
+    public function withCredits(int $fixed_bonus_amount = 10000)
     {
-        return $this->state(function (array $attributes) use ($amount) {
+        return $this->state(function (array $attributes) use ($fixed_bonus_amount) {
             return [
                 'bonuses' => [
-                    'fixed_bonus_amount' => $amount,
+                    'fixed_bonus_amount' => $fixed_bonus_amount,
                 ],
             ];
         });
     }
 
+    /**
+     * Create a championship with balance based bonus
+     */
     public function withBalanceBonus()
     {
         return $this->state(function (array $attributes) {

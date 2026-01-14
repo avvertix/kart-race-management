@@ -214,7 +214,7 @@ class ParticipantFactory extends Factory
      *
      * @return Factory|ParticipantFactory
      */
-    public function usingBonus(?Bonus $bonus = null, int $amount = 1)
+    public function usingCredits(?Bonus $bonus = null, int $amount = 1)
     {
         return $this->state(function (array $attributes) {
 
@@ -225,6 +225,20 @@ class ParticipantFactory extends Factory
             $useBonus = filled($bonus) ? $bonus : Bonus::factory()->recycle($participant->championship)->create();
 
             collect(range(1, $amount))->each(fn () => $participant->bonuses()->attach($useBonus));
+        });
+    }
+    
+    public function usingBalance(?Bonus $bonus = null, int $available_amount = 8500, int $used_amount = 1000)
+    {
+        return $this->state(function (array $attributes) {
+
+            return [
+                'use_bonus' => true,
+            ];
+        })->afterCreating(function (Participant $participant) use ($bonus, $available_amount, $used_amount) {
+            $useBonus = filled($bonus) ? $bonus : Bonus::factory()->recycle($participant->championship)->create(['amount' => $available_amount]);
+
+            $participant->bonuses()->attach($useBonus, ['amount' => $used_amount]);
         });
     }
 

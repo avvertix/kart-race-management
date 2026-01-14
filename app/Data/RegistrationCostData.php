@@ -29,7 +29,7 @@ class RegistrationCostData extends Data
             __('Tires (:model)', ['model' => $this->tire_model]) => $this->tire_cost,
             __('Discount') => abs($this->discount ?? 0) * -1,
         ])->filter())->merge([
-            __('Total') => $this->total(),
+            __('Total') => max(0, $this->total()),
         ]);
     }
 }

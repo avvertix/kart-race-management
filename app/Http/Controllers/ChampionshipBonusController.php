@@ -99,12 +99,22 @@ class ChampionshipBonusController extends Controller
      */
     public function show(Bonus $bonus)
     {
-        $bonus->load('championship');
+        $bonus->load([
+            'championship',
+            'usages.race',
+        ]);
+
+        $bonus->loadCount('usages');
+        $bonus->loadSum(['usages as used_amount' => function ($query) {
+            $query->select(DB::raw('sum(amount)'));
+        }], 'used_amount');
 
         return view('bonus.show', [
             'bonus' => $bonus,
             'championship' => $bonus->championship,
-            'bonusUsage' => collect(), // TODO: show when bonus is used
+            'bonusUsage' => $bonus->usages,
+            'fixed_bonus_amount' => $bonus->championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $bonus->championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 

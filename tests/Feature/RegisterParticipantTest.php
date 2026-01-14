@@ -622,7 +622,7 @@ class RegisterParticipantTest extends TestCase
 
         $updatedBonus = $bonus->fresh();
 
-        $this->assertEquals(0, $updatedBonus->remaining());
+        $this->assertEquals(0, $updatedBonus->remaining);
         $this->assertFalse($updatedBonus->hasRemaining());
 
         Notification::assertCount(2);
@@ -685,7 +685,7 @@ class RegisterParticipantTest extends TestCase
 
         $updatedBonus = $bonus->fresh();
 
-        $this->assertEquals(0, $updatedBonus->remaining());
+        $this->assertEquals(0, $updatedBonus->remaining);
         $this->assertFalse($updatedBonus->hasRemaining());
 
         Notification::assertCount(2);
@@ -748,7 +748,7 @@ class RegisterParticipantTest extends TestCase
 
         $updatedBonus = $bonus->fresh();
 
-        $this->assertEquals(1, $updatedBonus->remaining());
+        $this->assertEquals(1, $updatedBonus->remaining);
         $this->assertTrue($updatedBonus->hasRemaining());
 
         Notification::assertCount(2);
@@ -811,7 +811,7 @@ class RegisterParticipantTest extends TestCase
 
         $updatedBonus = $bonus->fresh();
 
-        $this->assertEquals(1, $updatedBonus->remaining());
+        $this->assertEquals(1, $updatedBonus->remaining);
         $this->assertTrue($updatedBonus->hasRemaining());
 
         Notification::assertCount(2);

@@ -88,7 +88,7 @@ class ParticipantPriceTest extends TestCase
         $price = Participant::factory()
             ->recycle($championship)
             ->category($category)
-            ->usingBonus()
+            ->usingCredits()
             ->create()
             ->price();
 
@@ -145,11 +145,11 @@ class ParticipantPriceTest extends TestCase
         ], $price->toArray());
     }
 
-    public function test_championship_bonus_discount_used()
+    public function test_championship_credit_discount_used()
     {
         $championship = Championship::factory()
             ->priced(12000)
-            ->withBonus(5000)
+            ->withCredits(10000)
             ->create();
 
         $category = Category::factory()
@@ -160,7 +160,7 @@ class ParticipantPriceTest extends TestCase
         $price = Participant::factory()
             ->recycle($championship)
             ->category($category)
-            ->usingBonus(amount: 2)
+            ->usingCredits()
             ->create()
             ->price();
 
@@ -170,6 +170,34 @@ class ParticipantPriceTest extends TestCase
             __('Race fee') => 12000,
             __('Discount') => -10000,
             __('Total') => 2000,
+        ], $price->toArray());
+    }
+
+    public function test_championship_wallet_discount_used()
+    {
+        $championship = Championship::factory()
+            ->priced(12000)
+            ->withBalanceBonus()
+            ->create();
+
+        $category = Category::factory()
+            ->create([
+                'name' => 'CAT 1',
+            ]);
+
+        $price = Participant::factory()
+            ->recycle($championship)
+            ->category($category)
+            ->usingBalance(available_amount: 20000, used_amount: 12000)
+            ->create()
+            ->price();
+
+        $this->assertInstanceOf(Collection::class, $price);
+
+        $this->assertEquals([
+            __('Race fee') => 12000,
+            __('Discount') => -12000,
+            __('Total') => 0,
         ], $price->toArray());
     }
 

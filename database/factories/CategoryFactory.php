@@ -63,4 +63,13 @@ class CategoryFactory extends Factory
             ];
         });
     }
+
+    public function withPrice(int $price)
+    {
+        return $this->state(function (array $attributes) use ($price) {
+            return [
+                'registration_price' => $price,
+            ];
+        });
+    }
 }

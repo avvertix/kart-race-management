@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Events\ParticipantUpdated;
 use App\Listeners\ApplyBonusToParticipant;
 use App\Listeners\CheckParticipantForWildcard;
+use App\Listeners\RemoveBonusFromParticipantWhenCostChanges;
 use App\Models\Category;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
@@ -125,6 +126,7 @@ class UpdateParticipantRegistration
 
             Pipeline::send(new ParticipantUpdated($updatedParticipant, $race))
                 ->through([
+                    RemoveBonusFromParticipantWhenCostChanges::class,
                     ApplyBonusToParticipant::class,
                     CalculateParticipationCost::class,
                     CheckParticipantForWildcard::class,

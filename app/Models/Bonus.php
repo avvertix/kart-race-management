@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,7 +35,9 @@ class Bonus extends Model
 
     public function usages()
     {
-        return $this->belongsToMany(Participant::class, 'participant_bonus');
+        return $this->belongsToMany(Participant::class, 'participant_bonus')
+            ->withPivot('amount')
+            ->withTimestamps();
     }
 
     public function scopeLicenceHash($query, $licenceHash)
@@ -47,14 +50,37 @@ class Bonus extends Model
         return $query->where('driver_licence_hash', hash('sha512', $licence));
     }
 
-    public function remaining(): int
-    {
-        return $this->amount - $this->usages()->count();
-    }
-
     public function hasRemaining(): bool
     {
-        return $this->remaining() > 0;
+        return $this->remaining > 0;
+    }
+
+    /**
+     * Get the user's first name.
+     */
+    protected function remaining(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+
+                $bonusMode = $this->championship->bonuses->bonus_mode ?? BonusMode::CREDIT;
+
+                if ($bonusMode === BonusMode::CREDIT) {
+                    // we subtract the count of usages
+
+                    $usageCount = $this->usages_count ?? $this->usages()->count();
+
+                    return max(0, $this->amount - $usageCount);
+
+                }
+
+                // we subtract the sum of amounts used
+                $usedAmount = (int) ($this->used_amount ?? $this->usages->sum('pivot.amount'));
+
+                return max(0, $this->amount - $usedAmount);
+            },
+        );
+
     }
 
     /**

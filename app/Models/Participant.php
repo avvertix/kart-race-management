@@ -169,7 +169,9 @@ class Participant extends Model implements HasLocalePreference
 
     public function bonuses()
     {
-        return $this->belongsToMany(Bonus::class, 'participant_bonus');
+        return $this->belongsToMany(Bonus::class, 'participant_bonus')
+            ->withPivot('amount')
+            ->withTimestamps();
     }
 
     public function reservations()
@@ -368,9 +370,17 @@ class Participant extends Model implements HasLocalePreference
             ?? $this->championship->registration_price
             ?? (int) config('races.price');
 
-        $bonusValue = $this->championship->bonuses->fixed_bonus_amount ?? (int) config('races.bonus_amount');
+        $bonusMode = $this->championship->bonuses->bonus_mode ?? BonusMode::CREDIT;
 
-        $usedBonusCount = $this->bonuses->count();
+        $fixedBonusAmount = $this->championship->bonuses->fixed_bonus_amount ?? (int) config('races.bonus_amount');
+
+        // Sum the actual deducted amounts from the pivot table
+        $totalBonusDiscount = 0;
+
+        if ($this->use_bonus) {
+
+            $totalBonusDiscount = $bonusMode === BonusMode::BALANCE ? $this->bonuses->sum('pivot.amount') : ($this->bonuses->count() * $fixedBonusAmount);
+        }
 
         $tire = $this->racingCategory->tire;
 
@@ -378,7 +388,7 @@ class Participant extends Model implements HasLocalePreference
             registration_cost: $raceFee,
             tire_cost: $tire?->price,
             tire_model: $tire?->name,
-            discount: $this->use_bonus ? 0 - ($bonusValue * $usedBonusCount) : 0,
+            discount: $totalBonusDiscount > 0 ? 0 - $totalBonusDiscount : 0,
         );
     }
 

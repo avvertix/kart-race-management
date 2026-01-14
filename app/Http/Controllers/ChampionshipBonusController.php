@@ -8,6 +8,7 @@ use App\Models\Bonus;
 use App\Models\BonusType;
 use App\Models\Championship;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -26,8 +27,15 @@ class ChampionshipBonusController extends Controller
     {
         return view('bonus.index', [
             'championship' => $championship,
-            'bonuses' => $championship->bonuses()->orderBy('driver', 'ASC')->orderBy('amount', 'DESC')->get(),
+            'bonuses' => $championship->bonuses()
+                ->withCount('usages')
+                ->withSum(['usages as used_amount' => function ($query) {
+                    $query->select(DB::raw('sum(amount)'));
+                }], 'used_amount')
+                ->orderBy('driver', 'ASC')
+                ->get(),
             'fixed_bonus_amount' => $championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 
@@ -39,6 +47,7 @@ class ChampionshipBonusController extends Controller
         return view('bonus.create', [
             'championship' => $championship,
             'fixed_bonus_amount' => $championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 
@@ -90,12 +99,22 @@ class ChampionshipBonusController extends Controller
      */
     public function show(Bonus $bonus)
     {
-        $bonus->load('championship');
+        $bonus->load([
+            'championship',
+            'usages.race',
+        ]);
+
+        $bonus->loadCount('usages');
+        $bonus->loadSum(['usages as used_amount' => function ($query) {
+            $query->select(DB::raw('sum(amount)'));
+        }], 'used_amount');
 
         return view('bonus.show', [
             'bonus' => $bonus,
             'championship' => $bonus->championship,
-            'bonusUsage' => collect(), // TODO: show when bonus is used
+            'bonusUsage' => $bonus->usages,
+            'fixed_bonus_amount' => $bonus->championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $bonus->championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 
@@ -110,6 +129,7 @@ class ChampionshipBonusController extends Controller
             'bonus' => $bonus,
             'championship' => $bonus->championship,
             'fixed_bonus_amount' => $bonus->championship->bonuses->fixed_bonus_amount ?? config('races.bonus_amount'),
+            'bonus_mode' => $bonus->championship->bonuses->bonus_mode ?? \App\Models\BonusMode::CREDIT,
         ]);
     }
 

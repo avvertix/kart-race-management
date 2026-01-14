@@ -24,4 +24,4 @@
         
     </form>        
         
-</x-championship-page-layout
+</x-championship-page-layout>

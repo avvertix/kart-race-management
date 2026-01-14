@@ -29,7 +29,7 @@ class RemoveBonusFromParticipantWhenCostChanges
 
         // If the registration cost has changed, we need to remove the bonus usage before it gets calculated again
 
-        if($event->race->isCancelled()){
+        if ($event->race->isCancelled()) {
             return $next($event);
         }
 
@@ -42,6 +42,7 @@ class RemoveBonusFromParticipantWhenCostChanges
 
         $categoryChanged = $activities->contains(function ($activity) {
             $changes = $activity->changes();
+
             return isset($changes['attributes']['category_id']);
         });
 

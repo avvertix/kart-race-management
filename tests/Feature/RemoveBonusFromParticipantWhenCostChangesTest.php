@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Events\ParticipantUpdated;
@@ -10,14 +12,12 @@ use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RemoveBonusFromParticipantWhenCostChangesTest extends TestCase
 {
     use FastRefreshDatabase;
 
-    
     public function test_bonus_removed_after_category_change(): void
     {
         config([
@@ -30,7 +30,7 @@ class RemoveBonusFromParticipantWhenCostChangesTest extends TestCase
         $race = Race::factory()->recycle($championship)->create();
 
         $category_with_price = Category::factory()->recycle($championship)->withPrice(5000)->create();
-        
+
         $category = Category::factory()->recycle($championship)->create();
 
         $bonus = Bonus::factory()->recycle($race->championship)->create([

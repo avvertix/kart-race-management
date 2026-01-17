@@ -37,6 +37,7 @@ class PrintRaceParticipantsController extends Controller
 
         $participants = $race->participants()
             ->withCount('tires')
+            ->with(['racingCategory'])
             ->when($validated->get('pid'), function ($query, $participantId) {
                 $query->where('id', $participantId);
             })
@@ -51,7 +52,10 @@ class PrintRaceParticipantsController extends Controller
             ->when($validated->filled('to'), function ($query, $registrationDateTo) use ($validated) {
                 $query->where('created_at', '<=', $validated->date('to')->endOfDay());
             })
-            ->get();
+            ->get()
+            ->each(function ($participant) use ($race) {
+                $participant->setRelation('championship', $race->championship);
+            });
 
         return view('participant.print', [
             'race' => $race,

@@ -60,6 +60,10 @@
             
 
             <div class="flex gap-2 items-center justify-end">
+                @can('view', $item)
+                    <x-secondary-button-link target="_blank" href="{{ route('races.participants.print', ['race' => $race, 'pid' => $item->getKey()]) }}">{{ __('Print') }}</x-secondary-button-link>
+                @endcan
+
                 @unless ($item->registration_completed_at)
                 
                     @can('create', \App\Model\Tire::class)
@@ -72,6 +76,7 @@
                     <x-secondary-button-link href="{{ route('participants.tires.index', $item) }}">{{ __('Tires') }}</x-secondary-button-link>
                 @endcan
             
+
                 @can('viewAny', \App\Model\Transponder::class)
                     <x-secondary-button-link href="{{ route('participants.transponders.index', $item) }}">{{ __('Transponder') }}</x-secondary-button-link>
                 @endcan

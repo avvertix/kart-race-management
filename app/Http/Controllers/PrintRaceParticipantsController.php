@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Race;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Fluent;
+use Illuminate\Validation\Rule;
 
 class PrintRaceParticipantsController extends Controller
 {
@@ -17,16 +19,28 @@ class PrintRaceParticipantsController extends Controller
      */
     public function __invoke(Request $request, Race $race)
     {
+        $this->authorize('view', $race);
+
         $race->load(['championship']);
 
         $validated = new Fluent($request->validate([
             'sort' => 'nullable|in:bib,registration',
             'from' => 'nullable|date',
             'to' => 'nullable|date',
+            'pid' => [
+                'nullable',
+                Rule::exists('participants', 'id')->where(function (Builder $query) use ($race) {
+                    $query->where('race_id', $race->getKey());
+                }),
+            ],
         ]));
 
         $participants = $race->participants()
             ->withCount('tires')
+            ->with(['racingCategory'])
+            ->when($validated->get('pid'), function ($query, $participantId) {
+                $query->where('id', $participantId);
+            })
             ->when($validated->get('sort') === 'registration', function ($query) {
                 $query->orderBy('created_at', 'ASC');
             }, function ($query) {
@@ -38,7 +52,10 @@ class PrintRaceParticipantsController extends Controller
             ->when($validated->filled('to'), function ($query, $registrationDateTo) use ($validated) {
                 $query->where('created_at', '<=', $validated->date('to')->endOfDay());
             })
-            ->get();
+            ->get()
+            ->each(function ($participant) use ($race) {
+                $participant->setRelation('championship', $race->championship);
+            });
 
         return view('participant.print', [
             'race' => $race,

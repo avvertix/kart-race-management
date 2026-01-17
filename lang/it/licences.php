@@ -16,6 +16,8 @@ return [
         'LOCAL_NATIONAL' => 'Nazionale',
         'LOCAL_INTERNATIONAL' => 'Internazionale',
         'FOREIGN' => 'Estera',
+        'EASYRACE' => 'Easyrace',
+        'DAILY' => 'Giornaliera',
     ],
 
     'competitor' => [

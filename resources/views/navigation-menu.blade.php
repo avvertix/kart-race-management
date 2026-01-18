@@ -27,6 +27,11 @@
                                 {{ __('Backups') }}
                             </x-nav-link>
                         @endcan
+                        @can('viewAny', \App\Models\User::class)
+                            <x-nav-link href="{{ route('users.index') }}" :active="request()->routeIs('users.*')">
+                                {{ __('Users') }}
+                            </x-nav-link>
+                        @endcan
                     @endauth
                 </div>
             </div>
@@ -112,6 +117,11 @@
                 @can('viewAny', \App\Models\OrbitsBackup::class)
                     <x-responsive-nav-link href="{{ route('orbits-backups.index') }}" :active="request()->routeIs('orbits-backups.*')">
                         {{ __('Backups') }}
+                    </x-responsive-nav-link>
+                @endcan
+                @can('viewAny', \App\Models\User::class)
+                    <x-responsive-nav-link href="{{ route('users.index') }}" :active="request()->routeIs('users.*')">
+                        {{ __('Users') }}
                     </x-responsive-nav-link>
                 @endcan
             @endauth

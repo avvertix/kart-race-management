@@ -39,6 +39,7 @@ use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -136,6 +137,8 @@ Route::middleware([
         Route::get('races/{race}/export-signature', ExportRaceParticipantsForSigningController::class)->name('races.export.signature');
 
         Route::resource('communications', CommunicationMessageController::class)->except(['create', 'show']);
+
+        Route::resource('users', UserController::class)->except(['show']);
     });
 
 // Self registration

@@ -295,21 +295,6 @@ class UserControllerTest extends TestCase
             ->from(route('users.edit', $admin))
             ->delete(route('users.destroy', $admin));
 
-        $response->assertForbidden();
-
-        $this->assertDatabaseHas('users', [
-            'id' => $admin->id,
-        ]);
-    }
-
-    public function test_admin_cannot_isself(): void
-    {
-        $admin = User::factory()->admin()->create();
-
-        $response = $this->actingAs($admin)
-            ->from(route('users.edit', $admin))
-            ->delete(route('users.destroy', $admin));
-
         $response->assertRedirectToRoute('users.edit', $admin);
 
         $response->assertSessionHas('flash.banner', __('You cannot delete your own account.'));

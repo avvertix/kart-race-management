@@ -110,7 +110,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if ($user->id === auth()->id()) {
+        if ($user->getKey() === auth()->id()) {
             return redirect()->route('users.edit', $user)
                 ->with('flash.banner', __('You cannot delete your own account.'))
                 ->with('flash.bannerStyle', 'danger');

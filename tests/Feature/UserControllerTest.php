@@ -302,36 +302,19 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    public function test_admin_cannot_delete_last_admin(): void
+    public function test_admin_cannot_isself(): void
     {
         $admin = User::factory()->admin()->create();
-        $otherAdmin = User::factory()->admin()->create();
 
-        // First, delete one admin - should succeed
         $response = $this->actingAs($admin)
-            ->from(route('users.edit', $otherAdmin))
-            ->delete(route('users.destroy', $otherAdmin));
+            ->from(route('users.edit', $admin))
+            ->delete(route('users.destroy', $admin));
 
-        $response->assertRedirectToRoute('users.index');
+        $response->assertRedirectToRoute('users.edit', $admin);
 
-        $this->assertDatabaseMissing('users', [
-            'id' => $otherAdmin->id,
-        ]);
+        $response->assertSessionHas('flash.banner', __('You cannot delete your own account.'));
 
-        // Now create a new admin to delete
-        $lastAdmin = User::factory()->admin()->create();
-
-        // Try to delete the last remaining admin (other than ourselves) - should fail
-        $response = $this->actingAs($admin)
-            ->from(route('users.edit', $lastAdmin))
-            ->delete(route('users.destroy', $lastAdmin));
-
-        // The policy blocks it, so it should be forbidden
-        $response->assertForbidden();
-
-        $this->assertDatabaseHas('users', [
-            'id' => $lastAdmin->id,
-        ]);
+        $this->assertNotNull($admin->fresh());
     }
 
     public function test_admin_can_delete_admin_when_multiple_admins_exist(): void

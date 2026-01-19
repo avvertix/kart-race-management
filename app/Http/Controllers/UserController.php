@@ -110,6 +110,18 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if ($user->id === auth()->id()) {
+            return redirect()->route('users.edit', $user)
+                ->with('flash.banner', __('You cannot delete your own account.'))
+                ->with('flash.bannerStyle', 'danger');
+        }
+
+        if ($user->isAdmin() && User::where('role', 'admin')->count() <= 1) {
+            return redirect()->route('users.edit', $user)
+                ->with('flash.banner', __('You cannot delete the last administrator.'))
+                ->with('flash.bannerStyle', 'danger');
+        }
+
         $user->delete();
 
         return redirect()->route('users.index')

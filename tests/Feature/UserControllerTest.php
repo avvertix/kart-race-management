@@ -302,6 +302,59 @@ class UserControllerTest extends TestCase
         ]);
     }
 
+    public function test_admin_cannot_delete_last_admin(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $otherAdmin = User::factory()->admin()->create();
+
+        // First, delete one admin - should succeed
+        $response = $this->actingAs($admin)
+            ->from(route('users.edit', $otherAdmin))
+            ->delete(route('users.destroy', $otherAdmin));
+
+        $response->assertRedirectToRoute('users.index');
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $otherAdmin->id,
+        ]);
+
+        // Now create a new admin to delete
+        $lastAdmin = User::factory()->admin()->create();
+
+        // Try to delete the last remaining admin (other than ourselves) - should fail
+        $response = $this->actingAs($admin)
+            ->from(route('users.edit', $lastAdmin))
+            ->delete(route('users.destroy', $lastAdmin));
+
+        // The policy blocks it, so it should be forbidden
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $lastAdmin->id,
+        ]);
+    }
+
+    public function test_admin_can_delete_admin_when_multiple_admins_exist(): void
+    {
+        $admin1 = User::factory()->admin()->create();
+        $admin2 = User::factory()->admin()->create();
+        $admin3 = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin1)
+            ->from(route('users.edit', $admin2))
+            ->delete(route('users.destroy', $admin2));
+
+        $response->assertRedirectToRoute('users.index');
+        $response->assertSessionHas('flash.banner');
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $admin2->id,
+        ]);
+
+        // Two admins remaining (admin1 and admin3)
+        $this->assertEquals(2, User::where('role', 'admin')->count());
+    }
+
     public function test_non_admin_users_receive_forbidden_for_all_routes(): void
     {
         $organizer = User::factory()->organizer()->create();

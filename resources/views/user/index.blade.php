@@ -45,6 +45,7 @@
                     <tr>
                         <td class="px-4 py-3 border-b text-xs font-medium text-zinc-500 uppercase tracking-wider">{{ __('Name') }}</td>
                         <td class="px-4 py-3 border-b text-xs font-medium text-zinc-500 uppercase tracking-wider">{{ __('Email') }}</td>
+                        <td class="px-4 py-3 border-b text-xs font-medium text-zinc-500 uppercase tracking-wider">{{ __('Email verified') }}</td>
                         <td class="px-4 py-3 border-b text-xs font-medium text-zinc-500 uppercase tracking-wider">{{ __('Role') }}</td>
                         <td class="px-4 py-3 border-b text-xs font-medium text-zinc-500 uppercase tracking-wider"></td>
                     </tr>
@@ -59,6 +60,17 @@
                                 {{ $user->email }}
                             </td>
                             <td class="px-4 py-3 border-b">
+                                @if ($user->hasVerifiedEmail())
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ __('Verified') }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        {{ __('Pending') }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 border-b">
                                 {{ $user->userRole()?->name ?? $user->role }}
                             </td>
                             <td class="px-4 py-3 border-b">
@@ -69,7 +81,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 @if ($search)
                                     <p class="text-zinc-600 p-4">{{ __('No users found matching ":search".', ['search' => $search]) }}</p>
                                 @else

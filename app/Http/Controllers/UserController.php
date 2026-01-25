@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Fortify\CreateNewUserWithRole;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Laravel\Jetstream\Jetstream;
+use Laravel\Jetstream\Rules\Role;
 
 class UserController extends Controller
 {
@@ -53,24 +54,12 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, CreateNewUserWithRole $createNewUserWithRole)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'role' => ['required', 'string', Rule::in(array_keys($this->availableRoles()))],
-        ]);
-
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-            'role' => $validated['role'],
-        ]);
+        $user = $createNewUserWithRole->create($request->all());
 
         return redirect()->route('users.index')
-            ->with('flash.banner', __(':name created.', ['name' => $validated['name']]));
+            ->with('flash.banner', __(':name created.', ['name' => $user->name]));
     }
 
     /**
@@ -92,7 +81,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'role' => ['required', 'string', Rule::in(array_keys($this->availableRoles()))],
+            'role' => ['required', 'string', new Role],
         ]);
 
         $user->update([

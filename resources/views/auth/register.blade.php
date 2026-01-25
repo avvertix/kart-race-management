@@ -9,6 +9,12 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
+            {{-- Honeypot field to prevent bot registrations --}}
+            <div class="hidden" aria-hidden="true">
+                <x-label for="website" value="Website" />
+                <x-input id="website" type="text" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
             <div>
                 <x-label for="name" value="{{ __('Name') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />

@@ -17,7 +17,7 @@ class UpdateChampionshipPaymentSettingsController extends Controller
         $this->authorize('update', $championship);
 
         $validated = $this->validate($request, [
-            'registration_price' => 'required|integer|min:100',
+            'registration_price' => 'required|integer|min:0',
             'bank' => 'required|string|min:1',
             'bank_account' => 'required|string|min:1',
             'bank_holder' => 'nullable|string|min:1',

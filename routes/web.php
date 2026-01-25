@@ -74,7 +74,7 @@ Route::middleware([
     'verified',
     DenyAgentMiddleware::class,
 ])->group(function () {
-    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
 });
 
 // Championships and Races management

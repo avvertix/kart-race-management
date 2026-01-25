@@ -18,7 +18,6 @@ use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ConfirmParticipantPaymentController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
 use App\Http\Controllers\CopyChampionshipTiresController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;

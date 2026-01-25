@@ -60,7 +60,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
 });
 
 // Championships and Races management

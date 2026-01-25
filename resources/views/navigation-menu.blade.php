@@ -14,9 +14,11 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex print:hidden">
 
                     @auth
+                        @can('viewAny', \App\Models\Championship::class)
                         <x-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
                             {{ __('Championships') }}
                         </x-nav-link>
+                        @endcan
                         @can('viewAny', \App\Models\CommunicationMessage::class)
                             <x-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
                                 {{ __('Communications') }}
@@ -106,9 +108,11 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white print:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @auth
-                <x-responsive-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
-                    {{ __('Championships') }}
-                </x-responsive-nav-link>
+                @can('viewAny', \App\Models\Championship::class)
+                    <x-responsive-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
+                        {{ __('Championships') }}
+                    </x-responsive-nav-link>
+                @endcan
                 @can('viewAny', \App\Models\CommunicationMessage::class)
                     <x-responsive-nav-link href="{{ route('communications.index') }}" :active="request()->routeIs('communications.*')">
                         {{ __('Communications') }}

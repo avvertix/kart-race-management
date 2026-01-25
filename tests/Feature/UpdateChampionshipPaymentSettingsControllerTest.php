@@ -62,7 +62,7 @@ class UpdateChampionshipPaymentSettingsControllerTest extends TestCase
         $response->assertRedirect(route('championships.show', $championship));
         $response->assertSessionHasErrors(['registration_price', 'bank', 'bank_account']);
     }
-    
+
     public function test_registration_price_must_be_positive()
     {
         $user = User::factory()->organizer()->create();

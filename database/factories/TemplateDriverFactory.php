@@ -55,17 +55,6 @@ class TemplateDriverFactory extends Factory
                 'sex' => Sex::UNSPECIFIED,
                 'fiscal_code' => fake()->ssn(),
             ],
-
-            'vehicles' => [
-                [
-                    'chassis_manufacturer' => 'Birel',
-                    'engine_manufacturer' => 'Iame',
-                    'engine_model' => 'X30',
-                    'oil_manufacturer' => 'Shell',
-                    'oil_type' => 'Oil type',
-                    'oil_percentage' => fake()->numberBetween(1, 10),
-                ],
-            ],
         ];
     }
 

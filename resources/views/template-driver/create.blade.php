@@ -16,7 +16,7 @@
             <form method="POST" action="{{ route('drivers.store') }}">
                 @csrf
 
-                @include('template-participant.partials.form')
+                @include('template-driver.partials.form')
 
                 <div class="flex items-center justify-end mt-6 gap-3">
                     <a href="{{ route('drivers.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">

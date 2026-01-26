@@ -16,13 +16,6 @@ class TemplateDriver extends Model
     use HasUlids;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'template_participants';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var string[]
@@ -33,7 +26,6 @@ class TemplateDriver extends Model
         'driver',
         'competitor',
         'mechanic',
-        'vehicles',
     ];
 
     /**
@@ -78,7 +70,6 @@ class TemplateDriver extends Model
             'driver' => 'encrypted:json',
             'competitor' => 'encrypted:json',
             'mechanic' => 'encrypted:json',
-            'vehicles' => AsCollection::class,
         ];
     }
 }

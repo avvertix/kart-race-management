@@ -21,10 +21,10 @@ class TemplateDriverController extends Controller
     {
         $templates = $request->user()
             ->templateDrivers()
-            ->orderBy('name')
+            ->orderBy('bib')
             ->get();
 
-        return view('template-participant.index', [
+        return view('template-driver.index', [
             'templates' => $templates,
         ]);
     }
@@ -34,7 +34,7 @@ class TemplateDriverController extends Controller
      */
     public function create()
     {
-        return view('template-participant.create');
+        return view('template-driver.create');
     }
 
     /**
@@ -45,12 +45,11 @@ class TemplateDriverController extends Controller
         $validated = $request->validated();
 
         $template = $request->user()->templateDrivers()->create([
-            'name' => $validated['name'],
+            'name' => $validated['name'] ?? null,
             'bib' => $validated['bib'],
             'driver' => $this->buildDriverData($validated),
             'competitor' => $this->buildCompetitorData($validated),
             'mechanic' => $this->buildMechanicData($validated),
-            'vehicles' => $this->buildVehicleData($validated),
         ]);
 
         return redirect()->route('drivers.index')
@@ -64,7 +63,7 @@ class TemplateDriverController extends Controller
     {
         $this->authorize('update', $driver);
 
-        return view('template-participant.edit', [
+        return view('template-driver.edit', [
             'template' => $driver,
         ]);
     }
@@ -79,12 +78,11 @@ class TemplateDriverController extends Controller
         $validated = $request->validated();
 
         $driver->update([
-            'name' => $validated['name'],
+            'name' => $validated['name'] ?? null,
             'bib' => $validated['bib'],
             'driver' => $this->buildDriverData($validated),
             'competitor' => $this->buildCompetitorData($validated),
             'mechanic' => $this->buildMechanicData($validated),
-            'vehicles' => $this->buildVehicleData($validated),
         ]);
 
         return redirect()->route('drivers.index')
@@ -167,25 +165,6 @@ class TemplateDriverController extends Controller
             'name' => $validated['mechanic_name'] ?? null,
             'licence_number' => $validated['mechanic_licence_number'] ?? null,
         ];
-    }
-
-    /**
-     * Build vehicle data array from validated input.
-     */
-    protected function buildVehicleData(array $validated): ?array
-    {
-        if (empty($validated['vehicle_chassis_manufacturer']) && empty($validated['vehicle_engine_manufacturer'])) {
-            return null;
-        }
-
-        return [[
-            'chassis_manufacturer' => $validated['vehicle_chassis_manufacturer'] ?? null,
-            'engine_manufacturer' => mb_strtolower($validated['vehicle_engine_manufacturer'] ?? ''),
-            'engine_model' => mb_strtolower($validated['vehicle_engine_model'] ?? ''),
-            'oil_manufacturer' => $validated['vehicle_oil_manufacturer'] ?? null,
-            'oil_type' => $validated['vehicle_oil_type'] ?? null,
-            'oil_percentage' => $validated['vehicle_oil_percentage'] ?? null,
-        ]];
     }
 
     /**

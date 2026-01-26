@@ -14,6 +14,11 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex print:hidden">
 
                     @auth
+                        @can('viewAny', \App\Models\TemplateDriver::class)
+                            <x-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*')">
+                                {{ __('Your Drivers') }}
+                            </x-nav-link>
+                        @endcan
                         @can('viewAny', \App\Models\Championship::class)
                         <x-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
                             {{ __('Championships') }}
@@ -108,6 +113,11 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white print:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @auth
+                @can('viewAny', \App\Models\TemplateDriver::class)
+                    <x-responsive-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*')">
+                        {{ __('Your Drivers') }}
+                    </x-responsive-nav-link>
+                @endcan
                 @can('viewAny', \App\Models\Championship::class)
                     <x-responsive-nav-link href="{{ route('championships.index') }}" :active="request()->routeIs('championships.*') || request()->routeIs('categories.*') || request()->routeIs('races.*') || request()->routeIs('participants.*')">
                         {{ __('Championships') }}

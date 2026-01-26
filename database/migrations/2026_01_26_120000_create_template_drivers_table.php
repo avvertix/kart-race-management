@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('template_participants', function (Blueprint $table) {
+        Schema::create('template_drivers', function (Blueprint $table) {
             $table->id();
 
             $table->ulid('uuid')->unique();
@@ -23,7 +23,7 @@ return new class extends Migration
 
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
 
-            $table->string('name', 250); // Label for the template
+            $table->string('name', 250)->nullable(); // Label for the template
 
             $table->unsignedInteger('bib'); // or race number
 
@@ -32,8 +32,6 @@ return new class extends Migration
             $table->mediumText('competitor')->nullable(); // an encrypted json
 
             $table->mediumText('mechanic')->nullable(); // an encrypted json
-
-            $table->json('vehicles')->nullable(); // the list of vehicles
 
             $table->index(['user_id', 'name']);
         });
@@ -44,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('template_participants');
+        Schema::dropIfExists('template_drivers');
     }
 };

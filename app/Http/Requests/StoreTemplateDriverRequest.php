@@ -29,7 +29,7 @@ class StoreTemplateDriverRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:250'],
+            'name' => ['nullable', 'string', 'max:250'],
             'bib' => ['required', 'integer', 'min:1'],
 
             // Driver fields
@@ -71,14 +71,6 @@ class StoreTemplateDriverRequest extends FormRequest
             // Mechanic fields
             'mechanic_name' => ['nullable', 'string', 'max:250'],
             'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
-
-            // Vehicle fields
-            'vehicle_chassis_manufacturer' => ['nullable', 'string', 'max:250'],
-            'vehicle_engine_manufacturer' => ['nullable', 'string', 'max:250'],
-            'vehicle_engine_model' => ['nullable', 'string', 'max:250'],
-            'vehicle_oil_manufacturer' => ['nullable', 'string', 'max:250'],
-            'vehicle_oil_type' => ['nullable', 'string', 'max:250'],
-            'vehicle_oil_percentage' => ['nullable', 'string', 'max:250'],
         ];
     }
 }

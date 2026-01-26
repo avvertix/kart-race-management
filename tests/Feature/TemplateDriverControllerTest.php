@@ -29,7 +29,7 @@ class TemplateDriverControllerTest extends TestCase
         $response = $this->actingAs($user)->get(route('drivers.index'));
 
         $response->assertSuccessful();
-        $response->assertViewIs('template-participant.index');
+        $response->assertViewIs('template-driver.index');
         $response->assertViewHas('templates');
     }
 
@@ -62,7 +62,7 @@ class TemplateDriverControllerTest extends TestCase
         $response = $this->actingAs($user)->get(route('drivers.create'));
 
         $response->assertSuccessful();
-        $response->assertViewIs('template-participant.create');
+        $response->assertViewIs('template-driver.create');
     }
 
     public function test_user_can_create_template(): void
@@ -84,7 +84,7 @@ class TemplateDriverControllerTest extends TestCase
         $response->assertRedirectToRoute('drivers.index');
         $response->assertSessionHas('flash.banner');
 
-        $this->assertDatabaseHas('template_participants', [
+        $this->assertDatabaseHas('template_drivers', [
             'user_id' => $user->id,
             'name' => 'Test Template',
             'bib' => 42,
@@ -96,7 +96,7 @@ class TemplateDriverControllerTest extends TestCase
         $this->assertEquals(42, $template->bib);
     }
 
-    public function test_creating_template_requires_name(): void
+    public function test_creating_template_without_name(): void
     {
         $user = User::factory()->create();
 
@@ -108,8 +108,13 @@ class TemplateDriverControllerTest extends TestCase
                 'driver_last_name' => 'Doe',
             ]);
 
-        $response->assertRedirect(route('drivers.create'));
-        $response->assertSessionHasErrors('name');
+        $response->assertRedirectToRoute('drivers.index');
+
+        $this->assertDatabaseHas('template_drivers', [
+            'user_id' => $user->id,
+            'name' => null,
+            'bib' => 1,
+        ]);
     }
 
     public function test_creating_template_requires_driver_names(): void
@@ -177,7 +182,7 @@ class TemplateDriverControllerTest extends TestCase
         $response = $this->actingAs($user)->get(route('drivers.edit', $template));
 
         $response->assertSuccessful();
-        $response->assertViewIs('template-participant.edit');
+        $response->assertViewIs('template-driver.edit');
         $response->assertViewHas('template', $template);
     }
 
@@ -255,7 +260,7 @@ class TemplateDriverControllerTest extends TestCase
         $response->assertRedirectToRoute('drivers.index');
         $response->assertSessionHas('flash.banner');
 
-        $this->assertDatabaseMissing('template_participants', [
+        $this->assertDatabaseMissing('template_drivers', [
             'id' => $template->id,
         ]);
     }
@@ -271,7 +276,7 @@ class TemplateDriverControllerTest extends TestCase
 
         $response->assertForbidden();
 
-        $this->assertDatabaseHas('template_participants', [
+        $this->assertDatabaseHas('template_drivers', [
             'id' => $template->id,
         ]);
     }
@@ -317,29 +322,5 @@ class TemplateDriverControllerTest extends TestCase
         $template = TemplateDriver::where('user_id', $user->id)->first();
         $this->assertEquals('Mike Mechanic', $template->mechanic['name']);
         $this->assertEquals('12345', $template->mechanic['licence_number']);
-    }
-
-    public function test_template_stores_vehicle_data(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)
-            ->post(route('drivers.store'), [
-                'name' => 'Template with Vehicle',
-                'bib' => 1,
-                'driver_first_name' => 'John',
-                'driver_last_name' => 'Doe',
-                'vehicle_chassis_manufacturer' => 'Birel',
-                'vehicle_engine_manufacturer' => 'IAME',
-                'vehicle_engine_model' => 'X30',
-                'vehicle_oil_manufacturer' => 'Shell',
-                'vehicle_oil_percentage' => '5%',
-            ]);
-
-        $response->assertRedirectToRoute('drivers.index');
-
-        $template = TemplateDriver::where('user_id', $user->id)->first();
-        $this->assertEquals('Birel', $template->vehicles[0]['chassis_manufacturer']);
-        $this->assertEquals('iame', $template->vehicles[0]['engine_manufacturer']);
     }
 }

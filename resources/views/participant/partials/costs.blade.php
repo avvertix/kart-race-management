@@ -15,15 +15,6 @@
                         <p>{{ __('Race cost is given from the registration fee and an eventual tire set, based on the selected category.') }}</p>
                         <p>{{ __('Here is the price list. The final price is given after submitting the registration.') }}</p>
                         <table>
-                            <tr>
-                                <td class="font-bold">{{ __('Race fee') }}</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>{{ __('Participation fee') }}</td>
-                                <td><x-price>{{ config('races.price') }}</x-price></td>
-                            </tr>
-
                             @if ($tires->isNotEmpty())
                                 <tr>
                                     <td class="font-bold">{{ __('Tires') }}</td>

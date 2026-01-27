@@ -37,7 +37,7 @@
                 <tr>
                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm  text-zinc-900 sm:pl-6">
                         <p><a href="{{ route('bonuses.show', $item) }}" class="font-medium hover:text-orange-900">{{ $item->driver }}</a></p>
-                        <p>{{ $item->driver_licence }}</p>
+                        <p>{{ $item->driver_licence ?? $item->driver_fiscal_code }}</p>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                         {{ $item->bonus_type->localizedName() }}

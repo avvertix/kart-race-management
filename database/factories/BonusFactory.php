@@ -27,6 +27,8 @@ class BonusFactory extends Factory
             'driver' => fake()->name().' '.fake()->lastName(),
             'driver_licence' => $licenceNumber,
             'driver_licence_hash' => hash('sha512', $licenceNumber),
+            'driver_fiscal_code' => null,
+            'driver_fiscal_code_hash' => null,
             'bonus_type' => BonusType::REGISTRATION_FEE,
             'amount' => 1,
         ];

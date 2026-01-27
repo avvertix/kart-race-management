@@ -37,6 +37,10 @@ class ApplyBonusToParticipant
 
         $bonus = $championship->bonuses()->licenceHash($event->participant->driver_licence)->first();
 
+        if (blank($bonus) && filled($event->participant->driver_fiscal_code)) {
+            $bonus = $championship->bonuses()->fiscalCode($event->participant->driver_fiscal_code)->first();
+        }
+
         // Check if bonus already applied to participant
         if ($event->participant->bonuses()->exists() || $event->participant->use_bonus) {
             return $next($event);

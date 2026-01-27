@@ -224,6 +224,150 @@ class ChampionshipBonusControllerTest extends TestCase
         $this->assertEquals($bonus->bonus_type, $updatedBonus->bonus_type);
     }
 
+    public function test_bonus_created_with_fiscal_code_only(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.bonuses.create', $championship))
+            ->post(route('championships.bonuses.store', $championship), [
+                'driver' => 'Driver name',
+                'driver_fiscal_code' => 'RSSMRA80A01H501U',
+                'bonus_type' => BonusType::REGISTRATION_FEE->value,
+                'amount' => 1,
+            ]);
+
+        $response->assertRedirectToRoute('championships.bonuses.index', $championship);
+
+        $response->assertSessionHas('flash.banner', 'Bonus activated for Driver name.');
+
+        $bonus = $championship->bonuses()->first();
+
+        $this->assertInstanceOf(Bonus::class, $bonus);
+
+        $this->assertEquals('Driver name', $bonus->driver);
+        $this->assertNull($bonus->driver_licence);
+        $this->assertEquals('RSSMRA80A01H501U', $bonus->driver_fiscal_code);
+        $this->assertEquals(hash('sha512', 'RSSMRA80A01H501U'), $bonus->driver_fiscal_code_hash);
+        $this->assertEquals(1, $bonus->amount);
+        $this->assertEquals(BonusType::REGISTRATION_FEE, $bonus->bonus_type);
+    }
+
+    public function test_bonus_created_with_both_licence_and_fiscal_code(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.bonuses.create', $championship))
+            ->post(route('championships.bonuses.store', $championship), [
+                'driver' => 'Driver name',
+                'driver_licence' => 'DRV-LC',
+                'driver_fiscal_code' => 'RSSMRA80A01H501U',
+                'bonus_type' => BonusType::REGISTRATION_FEE->value,
+                'amount' => 1,
+            ]);
+
+        $response->assertRedirectToRoute('championships.bonuses.index', $championship);
+
+        $bonus = $championship->bonuses()->first();
+
+        $this->assertInstanceOf(Bonus::class, $bonus);
+
+        $this->assertEquals('DRV-LC', $bonus->driver_licence);
+        $this->assertEquals('RSSMRA80A01H501U', $bonus->driver_fiscal_code);
+    }
+
+    public function test_bonus_not_created_when_neither_licence_nor_fiscal_code_provided(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.bonuses.create', $championship))
+            ->post(route('championships.bonuses.store', $championship), [
+                'driver' => 'Driver name',
+                'bonus_type' => BonusType::REGISTRATION_FEE->value,
+                'amount' => 1,
+            ]);
+
+        $response->assertRedirectToRoute('championships.bonuses.create', $championship);
+
+        $response->assertSessionHasErrors(['driver_licence', 'driver_fiscal_code']);
+
+        $this->assertNull(Bonus::first());
+    }
+
+    public function test_bonus_not_created_when_already_existing_with_same_fiscal_code(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $bonus = Bonus::factory()
+            ->recycle($championship)
+            ->create([
+                'driver_fiscal_code' => 'RSSMRA80A01H501U',
+                'driver_fiscal_code_hash' => hash('sha512', 'RSSMRA80A01H501U'),
+            ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.bonuses.create', $championship))
+            ->post(route('championships.bonuses.store', $championship), [
+                'driver' => 'Driver name',
+                'driver_fiscal_code' => 'RSSMRA80A01H501U',
+                'bonus_type' => BonusType::REGISTRATION_FEE->value,
+                'amount' => 1,
+            ]);
+
+        $response->assertRedirectToRoute('championships.bonuses.create', $championship);
+
+        $response->assertSessionHasErrors('driver_fiscal_code');
+    }
+
+    public function test_bonus_updated_with_fiscal_code(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()
+            ->create();
+
+        $bonus = Bonus::factory()
+            ->recycle($championship)
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('bonuses.edit', $bonus))
+            ->put(route('bonuses.update', $bonus), [
+                'driver' => $bonus->driver,
+                'driver_licence' => $bonus->driver_licence,
+                'driver_fiscal_code' => 'RSSMRA80A01H501U',
+                'bonus_type' => BonusType::REGISTRATION_FEE->value,
+                'amount' => 3,
+            ]);
+
+        $response->assertRedirectToRoute('championships.bonuses.index', $bonus->championship);
+
+        $updatedBonus = $bonus->fresh();
+
+        $this->assertEquals('RSSMRA80A01H501U', $updatedBonus->driver_fiscal_code);
+        $this->assertEquals(hash('sha512', 'RSSMRA80A01H501U'), $updatedBonus->driver_fiscal_code_hash);
+        $this->assertEquals(3, $updatedBonus->amount);
+    }
+
     public function test_bonus_details_shown(): void
     {
         $user = User::factory()->organizer()->create();

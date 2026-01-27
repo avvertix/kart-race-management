@@ -59,7 +59,14 @@ class ChampionshipBonusController extends Controller
         $validated = $this->validate($request, [
             'driver' => 'required|string|max:250',
             'driver_licence' => [
-                'required',
+                'required_without:driver_fiscal_code',
+                'nullable',
+                'string',
+                'max:250',
+            ],
+            'driver_fiscal_code' => [
+                'required_without:driver_licence',
+                'nullable',
                 'string',
                 'max:250',
             ],
@@ -67,23 +74,42 @@ class ChampionshipBonusController extends Controller
             'amount' => 'required|integer|min:1',
         ]);
 
-        $licenceHash = hash('sha512', $validated['driver_licence']);
+        $licenceHash = isset($validated['driver_licence']) ? hash('sha512', $validated['driver_licence']) : null;
+        $fiscalCodeHash = isset($validated['driver_fiscal_code']) ? hash('sha512', $validated['driver_fiscal_code']) : null;
 
-        Validator::validate([
-            'driver_licence' => $licenceHash,
-        ], [
-            'driver_licence' => [
+        $uniqueRules = [];
+
+        if ($licenceHash) {
+            $uniqueRules['driver_licence'] = [
                 'required',
                 'string',
                 Rule::unique('bonuses', 'driver_licence_hash')
                     ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
-            ],
-        ]);
+            ];
+        }
+
+        if ($fiscalCodeHash) {
+            $uniqueRules['driver_fiscal_code'] = [
+                'required',
+                'string',
+                Rule::unique('bonuses', 'driver_fiscal_code_hash')
+                    ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
+            ];
+        }
+
+        if (! empty($uniqueRules)) {
+            Validator::validate(array_filter([
+                'driver_licence' => $licenceHash,
+                'driver_fiscal_code' => $fiscalCodeHash,
+            ]), $uniqueRules);
+        }
 
         $bonus = $championship->bonuses()->create([
             'driver' => $validated['driver'],
             'driver_licence' => $validated['driver_licence'] ?? null,
             'driver_licence_hash' => $licenceHash,
+            'driver_fiscal_code' => $validated['driver_fiscal_code'] ?? null,
+            'driver_fiscal_code_hash' => $fiscalCodeHash,
             'amount' => $validated['amount'],
             'bonus_type' => BonusType::from((int) ($validated['bonus_type'])),
         ]);
@@ -143,7 +169,14 @@ class ChampionshipBonusController extends Controller
         $validated = $this->validate($request, [
             'driver' => 'required|string|max:250',
             'driver_licence' => [
-                'required',
+                'required_without:driver_fiscal_code',
+                'nullable',
+                'string',
+                'max:250',
+            ],
+            'driver_fiscal_code' => [
+                'required_without:driver_licence',
+                'nullable',
                 'string',
                 'max:250',
             ],
@@ -151,24 +184,44 @@ class ChampionshipBonusController extends Controller
             'amount' => 'required|integer|min:1',
         ]);
 
-        $licenceHash = hash('sha512', $validated['driver_licence']);
+        $licenceHash = isset($validated['driver_licence']) ? hash('sha512', $validated['driver_licence']) : null;
+        $fiscalCodeHash = isset($validated['driver_fiscal_code']) ? hash('sha512', $validated['driver_fiscal_code']) : null;
 
-        Validator::validate([
-            'driver_licence' => $licenceHash,
-        ], [
-            'driver_licence' => [
+        $uniqueRules = [];
+
+        if ($licenceHash) {
+            $uniqueRules['driver_licence'] = [
                 'required',
                 'string',
                 Rule::unique('bonuses', 'driver_licence_hash')
                     ->ignoreModel($bonus)
                     ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
-            ],
-        ]);
+            ];
+        }
+
+        if ($fiscalCodeHash) {
+            $uniqueRules['driver_fiscal_code'] = [
+                'required',
+                'string',
+                Rule::unique('bonuses', 'driver_fiscal_code_hash')
+                    ->ignoreModel($bonus)
+                    ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
+            ];
+        }
+
+        if (! empty($uniqueRules)) {
+            Validator::validate(array_filter([
+                'driver_licence' => $licenceHash,
+                'driver_fiscal_code' => $fiscalCodeHash,
+            ]), $uniqueRules);
+        }
 
         $bonus->update([
             'driver' => $validated['driver'],
             'driver_licence' => $validated['driver_licence'] ?? null,
             'driver_licence_hash' => $licenceHash,
+            'driver_fiscal_code' => $validated['driver_fiscal_code'] ?? null,
+            'driver_fiscal_code_hash' => $fiscalCodeHash,
             'amount' => $validated['amount'],
             'bonus_type' => BonusType::from((int) ($validated['bonus_type'])),
         ]);

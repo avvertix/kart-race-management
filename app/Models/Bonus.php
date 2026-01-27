@@ -56,7 +56,7 @@ class Bonus extends Model
     {
         return $query->where('driver_fiscal_code_hash', $fiscalCodeHash);
     }
-    
+
     public function scopeFiscalCode($query, $fiscalCodeHash)
     {
         return $query->where('driver_fiscal_code_hash', hash('sha512', $fiscalCodeHash));

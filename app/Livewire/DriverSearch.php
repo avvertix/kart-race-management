@@ -34,6 +34,7 @@ class DriverSearch extends Component
             $this->dispatch('driver-selected', [
                 'driver' => $participant->driver['first_name'].' '.$participant->driver['last_name'],
                 'licence' => $participant->driver['licence_number'] ?? '',
+                'fiscal_code' => $participant->driver['fiscal_code'] ?? '',
                 'email' => $participant->driver['email'] ?? '',
             ]);
 

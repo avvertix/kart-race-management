@@ -17,6 +17,8 @@ class Bonus extends Model
         'bonus_type',
         'driver_licence',
         'driver_licence_hash',
+        'driver_fiscal_code',
+        'driver_fiscal_code_hash',
         'contact_email',
         'amount',
     ];
@@ -48,6 +50,16 @@ class Bonus extends Model
     public function scopeLicence($query, $licence)
     {
         return $query->where('driver_licence_hash', hash('sha512', $licence));
+    }
+
+    public function scopeFiscalCodeHash($query, $fiscalCodeHash)
+    {
+        return $query->where('driver_fiscal_code_hash', $fiscalCodeHash);
+    }
+
+    public function scopeFiscalCode($query, $fiscalCodeHash)
+    {
+        return $query->where('driver_fiscal_code_hash', hash('sha512', $fiscalCodeHash));
     }
 
     public function hasRemaining(): bool
@@ -91,6 +103,7 @@ class Bonus extends Model
         return [
             'bonus_type' => BonusType::class,
             'driver_licence' => 'encrypted',
+            'driver_fiscal_code' => 'encrypted',
         ];
     }
 }

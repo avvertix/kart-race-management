@@ -18,9 +18,16 @@
                     <x-input-error for="driver" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="driver_licence" value="{{ __('Driver Licence Number') }}*" />
-                    <x-input id="driver_licence" type="text" name="driver_licence" :value="old('driver_licence', optional($bonus ?? null)->driver_licence)" required class="mt-1 block w-full" autocomplete="driver_licence" />
+                    <x-label for="driver_licence" value="{{ __('Driver Licence Number') }}" />
+                    <p class="text-zinc-600 text-sm">{{ __('Required if fiscal code is not provided.') }}</p>
+                    <x-input id="driver_licence" type="text" name="driver_licence" :value="old('driver_licence', optional($bonus ?? null)->driver_licence)" class="mt-1 block w-full" autocomplete="driver_licence" />
                     <x-input-error for="driver_licence" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="driver_fiscal_code" value="{{ __('Driver Fiscal Code') }}" />
+                    <p class="text-zinc-600 text-sm">{{ __('Required if licence number is not provided.') }}</p>
+                    <x-input id="driver_fiscal_code" type="text" name="driver_fiscal_code" :value="old('driver_fiscal_code', optional($bonus ?? null)->driver_fiscal_code)" class="mt-1 block w-full" autocomplete="driver_fiscal_code" />
+                    <x-input-error for="driver_fiscal_code" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="bonus_type" value="{{ __('Bonus type') }}" />
@@ -66,6 +73,7 @@
                         // Fill the form fields
                         document.getElementById('driver').value = data.driver;
                         document.getElementById('driver_licence').value = data.licence;
+                        document.getElementById('driver_fiscal_code').value = data.fiscal_code || '';
                     });
                 });
             </script>

@@ -192,6 +192,45 @@ class ApplyBonusToParticipantTest extends TestCase
         $this->assertEquals(5000, $freshBonus->remaining);
     }
 
+    public function test_bonus_matched_via_fiscal_code_when_licence_does_not_match()
+    {
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $participant = Participant::factory()
+            ->for($race)
+            ->for($race->championship)
+            ->category($category)
+            ->driver([
+                'first_name' => 'John',
+                'last_name' => 'Racer',
+                'licence_number' => 'D9999',
+                'fiscal_code' => 'RCRJHN80A01H501U',
+                'bib' => 100,
+            ])
+            ->create();
+
+        $bonus = Bonus::factory()->recycle($race->championship)->create([
+            'driver_licence' => 'D0001',
+            'driver_licence_hash' => hash('sha512', 'D0001'),
+            'driver_fiscal_code' => 'RCRJHN80A01H501U',
+            'driver_fiscal_code_hash' => hash('sha512', 'RCRJHN80A01H501U'),
+            'amount' => 1,
+        ]);
+
+        $event = new ParticipantRegistered($participant, $race);
+
+        (new ApplyBonusToParticipant())->handle($event, function ($event) {
+            return $event;
+        });
+
+        $participant_bonuses = $participant->bonuses;
+
+        $this->assertEquals(1, $participant_bonuses->count());
+        $this->assertEquals(config('races.bonus_amount'), $participant_bonuses->first()->pivot->amount);
+    }
+
     public function test_balance_bonus_used_using_sum_load()
     {
         $championship = Championship::factory()->withBalanceBonus()->create();

@@ -15,7 +15,8 @@
             <div class="p-4 bg-white shadow-xl rounded space-y-4">
                 <div>
                     <p class="text-lg font-semibold">{{ $bonus->driver }}</p>
-                    <p class="font-mono text-sm text-zinc-600">{{ $bonus->driver_licence }}</p>
+                    <p class="text-sm text-zinc-600">{{ __('Licence Number') }} <span class="font-mono">{{ $bonus->driver_licence ?? '-' }}</span></p>
+                    <p class="text-sm text-zinc-600">{{ __('Fiscal Code') }}: <span class="font-mono">{{ $bonus->driver_fiscal_code ?? '-' }}</span></p>
                 </div>
 
                 <div class="space-y-1">

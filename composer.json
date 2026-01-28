@@ -25,9 +25,9 @@
         "vitorccs/laravel-csv": "^2.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.12",
+        "barryvdh/laravel-debugbar": "^4.0",
         "fakerphp/faker": "^1.23",
-        "laravel/boost": "^1.8",
+        "laravel/boost": "^2.0",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",

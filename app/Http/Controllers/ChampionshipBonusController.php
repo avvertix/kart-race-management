@@ -10,6 +10,7 @@ use App\Models\Championship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
@@ -75,7 +76,7 @@ class ChampionshipBonusController extends Controller
         ]);
 
         $licenceHash = isset($validated['driver_licence']) ? hash('sha512', $validated['driver_licence']) : null;
-        $fiscalCodeHash = isset($validated['driver_fiscal_code']) ? hash('sha512', $validated['driver_fiscal_code']) : null;
+        $fiscalCodeHash = isset($validated['driver_fiscal_code']) ? hash('sha512', Str::lower($validated['driver_fiscal_code'])) : null;
 
         $uniqueRules = [];
 

@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Bonus extends Model
 {
@@ -59,7 +60,7 @@ class Bonus extends Model
 
     public function scopeFiscalCode($query, $fiscalCodeHash)
     {
-        return $query->where('driver_fiscal_code_hash', hash('sha512', $fiscalCodeHash));
+        return $query->where('driver_fiscal_code_hash', hash('sha512', Str::lower($fiscalCodeHash)));
     }
 
     public function hasRemaining(): bool

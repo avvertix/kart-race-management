@@ -215,7 +215,7 @@ class ApplyBonusToParticipantTest extends TestCase
             'driver_licence' => 'D0001',
             'driver_licence_hash' => hash('sha512', 'D0001'),
             'driver_fiscal_code' => 'RCRJHN80A01H501U',
-            'driver_fiscal_code_hash' => hash('sha512', 'RCRJHN80A01H501U'),
+            'driver_fiscal_code_hash' => hash('sha512', 'rcrjhn80a01h501u'),
             'amount' => 1,
         ]);
 

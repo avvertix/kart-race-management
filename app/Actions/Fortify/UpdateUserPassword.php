@@ -20,6 +20,12 @@ class UpdateUserPassword implements UpdatesUserPasswords
      */
     public function update($user, array $input)
     {
+        if (! $user->hasVerifiedEmail()) {
+            Validator::make([], [])->after(function ($validator) {
+                $validator->errors()->add('password', __('You must verify your email address before changing your password.'));
+            })->validateWithBag('updatePassword');
+        }
+
         Validator::make($input, [
             'current_password' => ['required', 'string', 'current_password:web'],
             'password' => $this->passwordRules(),

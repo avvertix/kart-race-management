@@ -252,7 +252,7 @@ class ChampionshipBonusControllerTest extends TestCase
         $this->assertEquals('Driver name', $bonus->driver);
         $this->assertNull($bonus->driver_licence);
         $this->assertEquals('RSSMRA80A01H501U', $bonus->driver_fiscal_code);
-        $this->assertEquals(hash('sha512', 'RSSMRA80A01H501U'), $bonus->driver_fiscal_code_hash);
+        $this->assertEquals(hash('sha512', 'rssmra80a01h501u'), $bonus->driver_fiscal_code_hash);
         $this->assertEquals(1, $bonus->amount);
         $this->assertEquals(BonusType::REGISTRATION_FEE, $bonus->bonus_type);
     }
@@ -319,7 +319,7 @@ class ChampionshipBonusControllerTest extends TestCase
             ->recycle($championship)
             ->create([
                 'driver_fiscal_code' => 'RSSMRA80A01H501U',
-                'driver_fiscal_code_hash' => hash('sha512', 'RSSMRA80A01H501U'),
+                'driver_fiscal_code_hash' => hash('sha512', 'rssmra80a01h501u'),
             ]);
 
         $response = $this

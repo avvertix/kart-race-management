@@ -92,8 +92,13 @@ class UpdateParticipantRegistrationTest extends TestCase
         $this->assertCount(1, $participant->vehicles);
         $this->assertEquals([
             'chassis_manufacturer' => 'Chassis',
+            'chassis_model' => 'chassis model',
+            'chassis_homologation' => 'cm12345',
+            'chassis_number' => 'cn67890',
             'engine_manufacturer' => 'engine manufacturer',
             'engine_model' => 'engine model',
+            'engine_homologation' => 'om12345',
+            'engine_number' => 'en67890',
             'oil_manufacturer' => 'Oil Manufacturer',
             'oil_type' => 'Oil Type',
             'oil_percentage' => '4',

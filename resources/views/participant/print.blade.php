@@ -182,11 +182,16 @@
                                         <div class="">
                                             <span class="text-sm text-zinc-500 block">{{ __('Chassis') }}</span>
                                             {{ $vehicle['chassis_manufacturer'] }}
+                                            {{ $vehicle['chassis_model'] ?? null }}
+                                            <code>{{ __('Serial Number') }}&nbsp;{{ $vehicle['chassis_number'] ?? '-' }}</code>
+                                            <span>{{ __('Homologation') }}&nbsp;<code>{{ $vehicle['chassis_homologation'] ?? '-' }}</code></span>
                                         </div>
                                         <div class="">
                                             <span class="text-sm text-zinc-500 block">{{ __('Engine') }}</span>
                                             {{ $vehicle['engine_manufacturer'] }}
                                             {{ $vehicle['engine_model'] }}
+                                            <code>{{ __('Serial Number') }}&nbsp;{{ $vehicle['engine_number'] ?? '-' }}</code>
+                                            <span>{{ __('Homologation') }}&nbsp;<code>{{ $vehicle['engine_homologation'] ?? '-' }}</code></span>
                                         </div>
                                         <div class="col-span-2">
                                             <span class="text-sm text-zinc-500 block">{{ __('Oil') }}</span>

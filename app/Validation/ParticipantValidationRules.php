@@ -41,8 +41,13 @@ trait ParticipantValidationRules
 
         return [[
             'chassis_manufacturer' => $input['vehicle_chassis_manufacturer'] ?? null,
+            'chassis_model' => mb_strtolower($input['vehicle_chassis_model'] ?? ''),
+            'chassis_homologation' => mb_strtolower($input['vehicle_chassis_homologation'] ?? ''),
+            'chassis_number' => mb_strtolower($input['vehicle_chassis_number'] ?? ''),
             'engine_manufacturer' => mb_strtolower($input['vehicle_engine_manufacturer'] ?? ''),
             'engine_model' => mb_strtolower($input['vehicle_engine_model'] ?? ''),
+            'engine_homologation' => mb_strtolower($input['vehicle_engine_homologation'] ?? ''),
+            'engine_number' => mb_strtolower($input['vehicle_engine_number'] ?? ''),
             'oil_manufacturer' => $input['vehicle_oil_manufacturer'] ?? null,
             'oil_type' => $input['vehicle_oil_type'] ?? null,
             'oil_percentage' => $input['vehicle_oil_percentage'] ?? null,
@@ -159,8 +164,13 @@ trait ParticipantValidationRules
 
         return [
             'vehicle_chassis_manufacturer' => ['required', 'string', 'max:250'],
+            'vehicle_chassis_model' => ['nullable', 'string', 'max:250'],
+            'vehicle_chassis_homologation' => ['nullable', 'string', 'max:250'],
+            'vehicle_chassis_number' => ['nullable', 'string', 'max:250'],
             'vehicle_engine_manufacturer' => ['required', 'string',  'max:250'],
             'vehicle_engine_model' => ['required', 'string',  'max:250'],
+            'vehicle_engine_homologation' => ['required', 'string', 'max:250'],
+            'vehicle_engine_number' => ['nullable', 'string', 'max:250'],
             'vehicle_oil_manufacturer' => ['required', 'string', 'max:250'],
             'vehicle_oil_type' => ['nullable', 'string',  'max:250'],
             'vehicle_oil_percentage' => ['required', 'string', 'max:250'],

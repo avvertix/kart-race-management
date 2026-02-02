@@ -76,8 +76,13 @@ class ParticipantFactory extends Factory
             'vehicles' => [
                 [
                     'chassis_manufacturer' => 'Birel',
+                    'chassis_model' => 'Chassis Model',
+                    'chassis_homologation' => 'CM12345',
+                    'chassis_number' => 'CN67890',
                     'engine_manufacturer' => 'Iame',
                     'engine_model' => 'X30',
+                    'engine_homologation' => 'OM12345',
+                    'engine_number' => 'EN67890',
                     'oil_manufacturer' => 'Shell',
                     'oil_type' => 'Oil type',
                     'oil_percentage' => fake()->numberBetween(1, 10),

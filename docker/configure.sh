@@ -202,6 +202,11 @@ function activate_supervisor_configuration_files() {
         cp /etc/supervisor/conf.d/stubs/runners.conf /etc/supervisor/conf.d/runners.active.conf
         echo "- Runner services enabled"
     fi
+    
+    if [[ "$STARTUP_SERVICES" == *"nightwatch"* ]]; then
+        cp /etc/supervisor/conf.d/stubs/nightwatch.conf /etc/supervisor/conf.d/nightwatch.active.conf
+        echo "- Nightwatch services enabled"
+    fi
 
 }
 

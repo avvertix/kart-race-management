@@ -12,10 +12,13 @@ use App\Models\Participant;
 use App\Models\Race;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Nightwatch\Facades\Nightwatch;
+use Laravel\Nightwatch\Records\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Nightwatch::user(fn (Authenticatable $user) => []);
+        Nightwatch::redactRequests(function (Request $request) {
+            $request->ip = '***';
+        });
+        
         Relation::enforceMorphMap([
             'participant' => Participant::class,
             'user' => User::class,

@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
         Nightwatch::redactRequests(function (Request $request) {
             $request->ip = '***';
         });
-        
+
         Relation::enforceMorphMap([
             'participant' => Participant::class,
             'user' => User::class,

@@ -303,7 +303,7 @@
                     <x-input-error for="vehicle_engine_model" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="vehicle_engine_homologation" value="{{ __('Engine homologation number') }}*" />
+                    <x-label for="vehicle_engine_homologation" value="{{ __('Engine homologation number') }}" />
                     <x-input id="vehicle_engine_homologation" type="text" name="vehicle_engine_homologation" class="mt-1 block w-full" :value="old('vehicle_engine_homologation', optional($participant ?? null)->vehicles[0]['engine_homologation'] ?? null)"  autocomplete="vehicle_engine_homologation" />
                     <x-input-error for="vehicle_engine_homologation" class="mt-2" />
                 </div>

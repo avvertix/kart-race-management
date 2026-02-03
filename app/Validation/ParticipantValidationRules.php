@@ -169,7 +169,7 @@ trait ParticipantValidationRules
             'vehicle_chassis_number' => ['nullable', 'string', 'max:250'],
             'vehicle_engine_manufacturer' => ['required', 'string',  'max:250'],
             'vehicle_engine_model' => ['required', 'string',  'max:250'],
-            'vehicle_engine_homologation' => ['required', 'string', 'max:250'],
+            'vehicle_engine_homologation' => ['nullable', 'string', 'max:250'],
             'vehicle_engine_number' => ['nullable', 'string', 'max:250'],
             'vehicle_oil_manufacturer' => ['required', 'string', 'max:250'],
             'vehicle_oil_type' => ['nullable', 'string',  'max:250'],

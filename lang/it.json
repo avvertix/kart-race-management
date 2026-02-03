@@ -468,5 +468,12 @@
     "Number :number is taken by :name": "Il numero :number è già assegnato a :name",
     "Enter a race number": "Inserisci un numero gara",
     "No free numbers available in the current range": "Nessun numero disponibile nell'intervallo corrente",
-    "Type a number to check if is available.": "Digita un numero per verificare se è disponibile."
+    "Type a number to check if is available.": "Digita un numero per verificare se è disponibile.",
+    "Engine homologation number": "Numero di omologazione del motore",
+    "Engine serial number": "Numero di serie del motore",
+    "Chassis Model": "Modello del telaio",
+    "Chassis homologation number": "Numero di omologazione del telaio",
+    "Chassis serial number": "Numero di serie del telaio",
+    "Homologation": "Omologazione",
+    "Serial Number": "Numero di serie"
 }

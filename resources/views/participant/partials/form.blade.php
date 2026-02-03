@@ -278,6 +278,21 @@
                     <x-input-error for="vehicle_chassis_manufacturer" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
+                    <x-label for="vehicle_chassis_model" value="{{ __('Chassis Model') }}" />
+                    <x-input id="vehicle_chassis_model" type="text" name="vehicle_chassis_model" class="mt-1 block w-full" :value="old('vehicle_chassis_model', optional($participant ?? null)->vehicles[0]['chassis_model'] ?? null)"  autocomplete="vehicle_chassis_model" />
+                    <x-input-error for="vehicle_chassis_model" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="vehicle_chassis_homologation" value="{{ __('Chassis homologation number') }}" />
+                    <x-input id="vehicle_chassis_homologation" type="text" name="vehicle_chassis_homologation" class="mt-1 block w-full" :value="old('vehicle_chassis_homologation', optional($participant ?? null)->vehicles[0]['chassis_homologation'] ?? null)"  autocomplete="vehicle_chassis_homologation" />
+                    <x-input-error for="vehicle_chassis_homologation" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="vehicle_chassis_number" value="{{ __('Chassis serial number') }}" />
+                    <x-input id="vehicle_chassis_number" type="text" name="vehicle_chassis_number" class="mt-1 block w-full" :value="old('vehicle_chassis_number', optional($participant ?? null)->vehicles[0]['chassis_number'] ?? null)"  autocomplete="vehicle_chassis_number" />
+                    <x-input-error for="vehicle_chassis_number" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
                     <x-label for="vehicle_engine_manufacturer" value="{{ __('Engine Manufacturer') }}*" />
                     <x-input-error for="vehicle_engine_manufacturer" class="mt-2" />
                     <livewire:engine-input  :value="old('vehicle_engine_manufacturer', optional($participant ?? null)->vehicles[0]['engine_manufacturer'] ?? null)"  autocomplete="engine_manufacturer" />
@@ -286,6 +301,16 @@
                     <x-label for="vehicle_engine_model" value="{{ __('Engine Model') }}*" />
                     <x-input id="vehicle_engine_model" type="text" name="vehicle_engine_model" class="mt-1 block w-full" :value="old('vehicle_engine_model', optional($participant ?? null)->vehicles[0]['engine_model'] ?? null)"  autocomplete="engine_model" />
                     <x-input-error for="vehicle_engine_model" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="vehicle_engine_homologation" value="{{ __('Engine homologation number') }}*" />
+                    <x-input id="vehicle_engine_homologation" type="text" name="vehicle_engine_homologation" class="mt-1 block w-full" :value="old('vehicle_engine_homologation', optional($participant ?? null)->vehicles[0]['engine_homologation'] ?? null)"  autocomplete="vehicle_engine_homologation" />
+                    <x-input-error for="vehicle_engine_homologation" class="mt-2" />
+                </div>
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="vehicle_engine_number" value="{{ __('Engine serial number') }}" />
+                    <x-input id="vehicle_engine_number" type="text" name="vehicle_engine_number" class="mt-1 block w-full" :value="old('vehicle_engine_number', optional($participant ?? null)->vehicles[0]['engine_number'] ?? null)"  autocomplete="vehicle_engine_number" />
+                    <x-input-error for="vehicle_engine_number" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="vehicle_oil_manufacturer" value="{{ __('Oil Manufacturer') }}*" />

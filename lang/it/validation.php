@@ -185,7 +185,60 @@ return [
     */
 
     'attributes' => [
+        // Race
         'bib' => 'numero gara',
+        'category' => 'categoria',
+
+        // Driver
+        'driver_first_name' => 'nome pilota',
+        'driver_last_name' => 'cognome pilota',
+        'driver_fiscal_code' => 'codice fiscale pilota',
+        'driver_licence_type' => 'tipo licenza pilota',
+        'driver_licence_number' => 'numero licenza pilota',
+        'driver_nationality' => 'nazionalità pilota',
+        'driver_email' => 'email pilota',
+        'driver_phone' => 'telefono pilota',
+        'driver_birth_date' => 'data di nascita pilota',
+        'driver_birth_place' => 'luogo di nascita pilota',
+        'driver_medical_certificate_expiration_date' => 'data scadenza certificato medico',
+        'driver_residence_address' => 'indirizzo residenza pilota',
+        'driver_residence_city' => 'città residenza pilota',
+        'driver_residence_province' => 'provincia residenza pilota',
+        'driver_residence_postal_code' => 'CAP residenza pilota',
+        'driver_sex' => 'sesso pilota',
+
+        // Competitor
+        'competitor_first_name' => 'nome concorrente',
+        'competitor_last_name' => 'cognome concorrente',
+        'competitor_fiscal_code' => 'codice fiscale concorrente',
+        'competitor_licence_type' => 'tipo licenza concorrente',
+        'competitor_licence_number' => 'numero licenza concorrente',
+        'competitor_nationality' => 'nazionalità concorrente',
+        'competitor_email' => 'email concorrente',
+        'competitor_phone' => 'telefono concorrente',
+        'competitor_birth_date' => 'data di nascita concorrente',
+        'competitor_birth_place' => 'luogo di nascita concorrente',
+        'competitor_residence_address' => 'indirizzo residenza concorrente',
+        'competitor_residence_city' => 'città residenza concorrente',
+        'competitor_residence_province' => 'provincia residenza concorrente',
+        'competitor_residence_postal_code' => 'CAP residenza concorrente',
+
+        // Mechanic
+        'mechanic_licence_number' => 'numero licenza meccanico',
+        'mechanic_name' => 'nome meccanico',
+
+        // Vehicle
+        'vehicle_chassis_manufacturer' => 'produttore telaio',
+        'vehicle_chassis_model' => 'modello telaio',
+        'vehicle_chassis_homologation' => 'numero omologazione telaio',
+        'vehicle_chassis_number' => 'numero di serie telaio',
+        'vehicle_engine_manufacturer' => 'produttore motore',
+        'vehicle_engine_model' => 'modello motore',
+        'vehicle_engine_homologation' => 'numero omologazione motore',
+        'vehicle_engine_number' => 'numero di serie motore',
+        'vehicle_oil_manufacturer' => 'produttore olio',
+        'vehicle_oil_type' => 'tipo olio',
+        'vehicle_oil_percentage' => 'percentuale olio',
     ],
 
 ];

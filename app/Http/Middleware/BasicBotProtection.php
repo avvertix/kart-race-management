@@ -140,7 +140,7 @@ class BasicBotProtection
     /**
      * Verify if the request comes from a bot and abort with not found.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -159,7 +159,7 @@ class BasicBotProtection
     protected function isBlockedBot(string $userAgent): bool
     {
         foreach ($this->blockedBots as $bot) {
-            if (stripos($userAgent, $bot) !== false) {
+            if (mb_stripos($userAgent, $bot) !== false) {
                 return true;
             }
         }

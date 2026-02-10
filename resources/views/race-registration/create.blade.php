@@ -47,7 +47,13 @@
         
         <form method="POST" action="{{ route('races.registration.store', $race) }}">
             @csrf
-        
+
+            {{-- Honeypot field to catch bots --}}
+            <div aria-hidden="true" class="hidden">
+                <label for="driver_alias">{{ __('Driver_alias') }}</label>
+                <input type="text" name="driver_alias" id="driver_alias" value="" autocomplete="off" tabindex="-1">
+            </div>
+
             @include('participant.partials.form')
             
             @include('participant.partials.consents')

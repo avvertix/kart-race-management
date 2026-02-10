@@ -41,6 +41,13 @@ class RegisterParticipant
             ]);
         }
 
+        // Honeypot check - reject with generic error to not reveal the trap
+        if (! blank($input['driver_alias'] ?? null)) {
+            throw ValidationException::withMessages([
+                'bib' => __('Registration failed. Please try again.'),
+            ]);
+        }
+
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
             ...$this->getCategoryValidationRules((int) $race->championship_id),

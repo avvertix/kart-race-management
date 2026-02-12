@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
+use Laravel\Jetstream\Rules\Role;
 
-class CreateNewUser implements CreatesNewUsers
+class CreateNewUserWithRole implements CreatesNewUsers
 {
     use PasswordValidationRules;
 
@@ -26,6 +27,7 @@ class CreateNewUser implements CreatesNewUsers
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+            'role' => ['nullable', 'string', new Role],
             'website' => ['prohibited'], // Honeypot field
         ])->validate();
 
@@ -33,7 +35,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'role' => 'driver',
+            'role' => $input['role'] ?? 'driver',
         ]);
     }
 }

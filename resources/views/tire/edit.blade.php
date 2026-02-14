@@ -15,7 +15,7 @@
             </p>
             
             <p>{{ $participant->racingCategory?->name ?? $participant->category }} / {{ $participant->engine }}</p>
-            <p>{{ $participant->racingCategory?->tire->name }}</p>
+            <p>{{ $participant->racingCategory?->tire?->name }}</p>
         </div>
     </x-slot>
 

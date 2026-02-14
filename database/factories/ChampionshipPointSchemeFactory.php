@@ -29,14 +29,14 @@ class ChampionshipPointSchemeFactory extends Factory
     }
 
     /**
-     * @return array<int, array{positions: list<int>, statuses: array<int, int>}>
+     * @return array<int, array{positions: list<int>, statuses: array<int, array{mode: string, points: int}>}>
      */
     private function defaultPointsConfig(): array
     {
         $defaultStatuses = [
-            ResultStatus::DID_NOT_START->value => 0,
-            ResultStatus::DID_NOT_FINISH->value => 0,
-            ResultStatus::DISQUALIFIED->value => 0,
+            ResultStatus::DID_NOT_START->value => ['mode' => 'fixed', 'points' => 0],
+            ResultStatus::DID_NOT_FINISH->value => ['mode' => 'fixed', 'points' => 0],
+            ResultStatus::DISQUALIFIED->value => ['mode' => 'fixed', 'points' => 0],
         ];
 
         return [

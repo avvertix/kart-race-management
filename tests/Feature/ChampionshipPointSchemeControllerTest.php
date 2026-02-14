@@ -90,11 +90,7 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         $championship = Championship::factory()
             ->create();
 
-        $pointsConfig = [
-            '20' => ['positions' => [3, 2, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-            '30' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-            '40' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-        ];
+        $pointsConfig = $this->samplePointsConfig();
 
         $response = $this
             ->actingAs($user)
@@ -132,9 +128,7 @@ class ChampionshipPointSchemeControllerTest extends TestCase
             ->from(route('championships.point-schemes.create', $championship))
             ->post(route('championships.point-schemes.store', $championship), [
                 'name' => 'Standard Points',
-                'points_config' => [
-                    '20' => ['positions' => [3, 2, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-                ],
+                'points_config' => $this->samplePointsConfig(),
             ]);
 
         $response->assertRedirectToRoute('championships.point-schemes.create', $championship);
@@ -152,18 +146,12 @@ class ChampionshipPointSchemeControllerTest extends TestCase
             'name' => 'Standard Points',
         ]);
 
-        $pointsConfig = [
-            '20' => ['positions' => [3, 2, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-            '30' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-            '40' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-        ];
-
         $response = $this
             ->actingAs($user)
             ->from(route('championships.point-schemes.create', $championship))
             ->post(route('championships.point-schemes.store', $championship), [
                 'name' => 'Standard Points',
-                'points_config' => $pointsConfig,
+                'points_config' => $this->samplePointsConfig(),
             ]);
 
         $response->assertRedirectToRoute('championships.point-schemes.index', $championship);
@@ -204,10 +192,16 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         $pointScheme = ChampionshipPointScheme::factory()
             ->create();
 
+        $defaultStatuses = [
+            '20' => ['mode' => 'fixed', 'points' => 0],
+            '30' => ['mode' => 'fixed', 'points' => 0],
+            '40' => ['mode' => 'fixed', 'points' => 0],
+        ];
+
         $updatedConfig = [
-            '20' => ['positions' => [5, 3, 1], 'statuses' => ['20' => 0, '30' => 0, '40' => 0]],
-            '30' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => ['20' => 1, '30' => 1, '40' => 0]],
-            '40' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => ['20' => 1, '30' => 1, '40' => 0]],
+            '20' => ['positions' => [5, 3, 1], 'statuses' => $defaultStatuses],
+            '30' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
+            '40' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
         ];
 
         $response = $this
@@ -228,5 +222,72 @@ class ChampionshipPointSchemeControllerTest extends TestCase
 
         $this->assertEquals('Updated Points', $updatedPointScheme->name);
         $this->assertEquals($updatedConfig, $updatedPointScheme->points_config->toArray());
+    }
+
+    public function test_point_scheme_created_with_ranked_status(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()->create();
+
+        $pointsConfig = [
+            '20' => [
+                'positions' => [3, 2, 1],
+                'statuses' => [
+                    '20' => ['mode' => 'ranked'],
+                    '30' => ['mode' => 'ranked'],
+                    '40' => ['mode' => 'fixed', 'points' => 0],
+                ],
+            ],
+            '30' => [
+                'positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
+                'statuses' => [
+                    '20' => ['mode' => 'fixed', 'points' => 2],
+                    '30' => ['mode' => 'ranked'],
+                    '40' => ['mode' => 'fixed', 'points' => 0],
+                ],
+            ],
+            '40' => [
+                'positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
+                'statuses' => [
+                    '20' => ['mode' => 'fixed', 'points' => 0],
+                    '30' => ['mode' => 'fixed', 'points' => 0],
+                    '40' => ['mode' => 'fixed', 'points' => 0],
+                ],
+            ],
+        ];
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.point-schemes.create', $championship))
+            ->post(route('championships.point-schemes.store', $championship), [
+                'name' => 'Ranked Scheme',
+                'points_config' => $pointsConfig,
+            ]);
+
+        $response->assertRedirectToRoute('championships.point-schemes.index', $championship);
+
+        $pointScheme = ChampionshipPointScheme::first();
+
+        $this->assertInstanceOf(ChampionshipPointScheme::class, $pointScheme);
+        $this->assertEquals($pointsConfig, $pointScheme->points_config->toArray());
+    }
+
+    /**
+     * @return array<string, array{positions: list<int>, statuses: array<string, array{mode: string, points?: int}>}>
+     */
+    private function samplePointsConfig(): array
+    {
+        $defaultStatuses = [
+            '20' => ['mode' => 'fixed', 'points' => 0],
+            '30' => ['mode' => 'fixed', 'points' => 0],
+            '40' => ['mode' => 'fixed', 'points' => 0],
+        ];
+
+        return [
+            '20' => ['positions' => [3, 2, 1], 'statuses' => $defaultStatuses],
+            '30' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
+            '40' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
+        ];
     }
 }

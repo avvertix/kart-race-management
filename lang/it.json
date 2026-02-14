@@ -496,6 +496,8 @@
     "DNS (Did Not Start)": "DNS (Non Partito)",
     "DNF (Did Not Finish)": "DNF (Non Terminato)",
     "DSQ (Disqualified)": "DSQ (Squalificato)",
+    "Fixed points": "Punti fissi",
+    "Points as ranked": "Punti per posizione",
     ":name created.": ":name creato.",
     ":name updated.": ":name aggiornato.",
     "Modify :name": "Modifica :name"

@@ -39,6 +39,10 @@
 @foreach ($runTypes as $runType)
     <div class="md:grid md:grid-cols-3 md:gap-6" x-data="{
         positions: @js($existingConfig[$runType->value]['positions'] ?? []),
+        statusModes: {
+            '{{ \App\Models\ResultStatus::DID_NOT_START->value }}': @js($existingConfig[$runType->value]['statuses'][\App\Models\ResultStatus::DID_NOT_START->value]['mode'] ?? 'fixed'),
+            '{{ \App\Models\ResultStatus::DID_NOT_FINISH->value }}': @js($existingConfig[$runType->value]['statuses'][\App\Models\ResultStatus::DID_NOT_FINISH->value]['mode'] ?? 'fixed'),
+        },
         addPosition() {
             this.positions.push(0);
         },
@@ -86,19 +90,45 @@
                     <div class="col-span-6">
                         <h4 class="text-sm font-medium text-zinc-700">{{ __('Status Points') }}</h4>
 
-                        <div class="mt-3 space-y-3">
+                        <div class="mt-3 space-y-4">
                             @foreach ($resultStatuses as $status)
-                                <div class="flex items-center gap-3">
-                                    <x-label for="status_{{ $runType->value }}_{{ $status->value }}" class="w-48" value="{{ $statusLabels[$status->value] }}" />
-                                    <x-input
-                                        id="status_{{ $runType->value }}_{{ $status->value }}"
-                                        type="number"
-                                        name="points_config[{{ $runType->value }}][statuses][{{ $status->value }}]"
-                                        :value="$existingConfig[$runType->value]['statuses'][$status->value] ?? 0"
-                                        min="0"
-                                        step="any"
-                                        class="w-24" />
-                                </div>
+                                @if ($status === \App\Models\ResultStatus::DISQUALIFIED)
+                                    <div class="flex items-center gap-3">
+                                        <x-label for="status_{{ $runType->value }}_{{ $status->value }}" class="w-48" value="{{ $statusLabels[$status->value] }}" />
+                                        <input type="hidden" name="points_config[{{ $runType->value }}][statuses][{{ $status->value }}][mode]" value="fixed">
+                                        <x-input
+                                            id="status_{{ $runType->value }}_{{ $status->value }}"
+                                            type="number"
+                                            name="points_config[{{ $runType->value }}][statuses][{{ $status->value }}][points]"
+                                            :value="$existingConfig[$runType->value]['statuses'][$status->value]['points'] ?? 0"
+                                            min="0"
+                                            step="any"
+                                            class="w-24" />
+                                    </div>
+                                @else
+                                    <div>
+                                        <x-label class="mb-1" value="{{ $statusLabels[$status->value] }}" />
+                                        <div class="flex items-center gap-3">
+                                            <select
+                                                name="points_config[{{ $runType->value }}][statuses][{{ $status->value }}][mode]"
+                                                x-model="statusModes['{{ $status->value }}']"
+                                                class="border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm text-sm">
+                                                <option value="fixed">{{ __('Fixed points') }}</option>
+                                                <option value="ranked">{{ __('Points as ranked') }}</option>
+                                            </select>
+                                            <div x-show="statusModes['{{ $status->value }}'] === 'fixed'">
+                                                <x-input
+                                                    id="status_{{ $runType->value }}_{{ $status->value }}"
+                                                    type="number"
+                                                    name="points_config[{{ $runType->value }}][statuses][{{ $status->value }}][points]"
+                                                    :value="$existingConfig[$runType->value]['statuses'][$status->value]['points'] ?? 0"
+                                                    min="0"
+                                                    step="any"
+                                                    class="w-24" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             @endforeach
                         </div>
 

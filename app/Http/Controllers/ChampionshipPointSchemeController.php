@@ -64,7 +64,8 @@ class ChampionshipPointSchemeController extends Controller
             'points_config.*.positions' => 'nullable|array',
             'points_config.*.positions.*' => 'numeric|min:0',
             'points_config.*.statuses' => 'nullable|array',
-            'points_config.*.statuses.*' => 'numeric|min:0',
+            'points_config.*.statuses.*.mode' => 'required|in:fixed,ranked',
+            'points_config.*.statuses.*.points' => 'nullable|numeric|min:0',
         ]);
 
         $pointScheme = $championship->pointSchemes()->create([
@@ -115,7 +116,8 @@ class ChampionshipPointSchemeController extends Controller
             'points_config.*.positions' => 'nullable|array',
             'points_config.*.positions.*' => 'numeric|min:0',
             'points_config.*.statuses' => 'nullable|array',
-            'points_config.*.statuses.*' => 'numeric|min:0',
+            'points_config.*.statuses.*.mode' => 'required|in:fixed,ranked',
+            'points_config.*.statuses.*.points' => 'nullable|numeric|min:0',
         ]);
 
         $pointScheme->update([

@@ -71,8 +71,11 @@ class ChampionshipPointScheme extends Model
 
     /**
      * Get the points awarded for a non-finished status in a run type.
+     *
+     * When mode is "ranked", returns null to indicate that position-based points should be used.
+     * When mode is "fixed", returns the configured point value.
      */
-    public function getPointsForStatus(RunType $runType, ResultStatus $status): float
+    public function getPointsForStatus(RunType $runType, ResultStatus $status, ?int $position = null): float
     {
         $config = $this->points_config[$runType->value] ?? null;
 
@@ -80,9 +83,37 @@ class ChampionshipPointScheme extends Model
             return 0;
         }
 
-        $statuses = $config['statuses'] ?? [];
+        $statusConfig = $config['statuses'][$status->value] ?? null;
 
-        return (float) ($statuses[$status->value] ?? 0);
+        if (! is_array($statusConfig)) {
+            return 0;
+        }
+
+        if (($statusConfig['mode'] ?? 'fixed') === 'ranked' && $position !== null) {
+            return $this->getPointsForPosition($runType, $position);
+        }
+
+        return (float) ($statusConfig['points'] ?? 0);
+    }
+
+    /**
+     * Check if a status is configured to use position-based (ranked) points.
+     */
+    public function isStatusRanked(RunType $runType, ResultStatus $status): bool
+    {
+        $config = $this->points_config[$runType->value] ?? null;
+
+        if (! $config) {
+            return false;
+        }
+
+        $statusConfig = $config['statuses'][$status->value] ?? null;
+
+        if (! is_array($statusConfig)) {
+            return false;
+        }
+
+        return ($statusConfig['mode'] ?? 'fixed') === 'ranked';
     }
 
     protected function casts(): array

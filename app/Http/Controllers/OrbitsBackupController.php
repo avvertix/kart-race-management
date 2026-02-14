@@ -25,9 +25,9 @@ class OrbitsBackupController extends Controller
      */
     public function index()
     {
-        $backups = OrbitsBackup::query()->with('championship')->orderBy('created_at', 'DESC')->get();
+        $backups = OrbitsBackup::query()->with('championship')->orderBy('created_at', 'DESC')->paginate();
 
-        $championships = Championship::query()->orderByDesc('start_at')->get();
+        $championships = Championship::query()->whereNull('end_at')->orWhere('start_at', '>=', today()->startOfYear())->orderByDesc('start_at')->get();
 
         return view('orbits-backup.index', [
             'backups' => $backups,

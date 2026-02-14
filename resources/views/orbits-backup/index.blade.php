@@ -82,6 +82,8 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{ $backups->links() }}
             
         </div>
     </div>

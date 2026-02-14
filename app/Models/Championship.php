@@ -83,6 +83,14 @@ class Championship extends Model
     }
 
     /**
+     * Get the point schemes.
+     */
+    public function pointSchemes(): HasMany
+    {
+        return $this->hasMany(ChampionshipPointScheme::class);
+    }
+
+    /**
      * Get the BIB reservations.
      */
     public function reservations(): HasMany

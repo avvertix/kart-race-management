@@ -42,6 +42,7 @@ use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
+use App\Http\Controllers\UpdateRacePointMultiplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -79,6 +80,8 @@ Route::middleware([
         Route::resource('championships', ChampionshipController::class);
 
         Route::resource('races', RaceController::class)->only(['show', 'edit', 'update', 'destroy']);
+
+        Route::put('races/{race}/point-multiplier', UpdateRacePointMultiplierController::class)->name('races.point-multiplier.update');
 
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
 

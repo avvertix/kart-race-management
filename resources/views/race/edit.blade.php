@@ -38,6 +38,40 @@
 
 <x-section-border />
 
+<form method="POST" action="{{ route('races.point-multiplier.update', $race) }}">
+    @method('PUT')
+    @csrf
+
+<div class="md:grid md:grid-cols-3 md:gap-6">
+    <x-section-title>
+        <x-slot name="title">{{ __('Point multiplier') }}</x-slot>
+        <x-slot name="description">{{ __('Set a multiplier for the championship points awarded in this race. Leave blank for default.') }}</x-slot>
+    </x-section-title>
+
+    <div class="mt-5 md:mt-0 md:col-span-2">
+
+            <div class="px-4 py-5">
+                <div class="grid grid-cols-6 gap-6">
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-label for="point_multiplier" value="{{ __('Point multiplier') }}" />
+                        <x-input id="point_multiplier" type="number" name="point_multiplier" step="0.01" min="0" class="mt-1 block w-full" :value="old('point_multiplier', $race->point_multiplier)" />
+                        <x-input-error for="point_multiplier" class="mt-2" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-4 py-5">
+                <x-button>
+                    {{ __('Save point multiplier') }}
+                </x-button>
+            </div>
+    </div>
+</div>
+
+</form>
+
+<x-section-border />
+
 
 <form method="POST" action="{{ route('races.destroy', $race) }}">
     @method('DELETE')

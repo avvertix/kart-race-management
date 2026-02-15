@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('races', function (Blueprint $table) {
-            //
+            $table->dropColumn('point_multiplier');
         });
     }
 };

@@ -206,6 +206,51 @@ class RaceTest extends TestCase
         $this->assertEquals(RaceType::INTERNATIONAL, $race->type);
     }
 
+    public function test_race_point_multiplier_can_be_updated()
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.point-multiplier.update', $existingRace), [
+                'point_multiplier' => 1.5,
+            ]);
+
+        $response->assertRedirectToRoute('races.edit', $existingRace);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = Race::first();
+
+        $this->assertInstanceOf(Race::class, $race);
+        $this->assertEquals(1.5, $race->point_multiplier);
+    }
+
+    public function test_race_point_multiplier_can_be_cleared()
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create([
+            'point_multiplier' => 2.0,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.point-multiplier.update', $existingRace), [
+                'point_multiplier' => null,
+            ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = Race::first();
+
+        $this->assertNull($race->point_multiplier);
+    }
+
     public function test_race_can_be_updated_with_custom_registration_openings()
     {
         $user = User::factory()->organizer()->create();

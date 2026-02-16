@@ -16,16 +16,17 @@ class PublicRaceResultController extends Controller
     {
         $race->load('championship');
 
-        $runResults = $race->results()
+        $groupedRunResults = $race->results()
             ->whereNotNull('published_at')
             ->withCount('participantResults')
             ->orderBy('run_type')
-            ->get();
+            ->get()
+            ->groupBy(fn ($result) => $result->run_type->localizedName());
 
         return view('public-race-result.index', [
             'race' => $race,
             'championship' => $race->championship,
-            'runResults' => $runResults,
+            'groupedRunResults' => $groupedRunResults,
         ]);
     }
 

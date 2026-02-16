@@ -29,11 +29,11 @@ class PublicRaceResultControllerTest extends TestCase
         $response = $this->get(route('public.races.results.index', $race));
 
         $response->assertSuccessful();
-        $response->assertViewHas('runResults');
+        $response->assertViewHas('groupedRunResults');
 
-        $runResults = $response->viewData('runResults');
-        $this->assertEquals(1, $runResults->count());
-        $this->assertEquals(3, $runResults->first()->participant_results_count);
+        $groupedRunResults = $response->viewData('groupedRunResults');
+        $this->assertEquals(1, $groupedRunResults->count());
+        $this->assertEquals(3, $groupedRunResults->first()->first()->participant_results_count);
     }
 
     public function test_unpublished_results_are_not_listed_on_index(): void
@@ -53,8 +53,8 @@ class PublicRaceResultControllerTest extends TestCase
 
         $response->assertSuccessful();
 
-        $runResults = $response->viewData('runResults');
-        $this->assertEquals(1, $runResults->count());
+        $groupedRunResults = $response->viewData('groupedRunResults');
+        $this->assertEquals(1, $groupedRunResults->flatten()->count());
     }
 
     public function test_can_view_single_published_result(): void
@@ -94,8 +94,8 @@ class PublicRaceResultControllerTest extends TestCase
 
         $response->assertSuccessful();
 
-        $runResults = $response->viewData('runResults');
-        $this->assertEquals(0, $runResults->count());
+        $groupedRunResults = $response->viewData('groupedRunResults');
+        $this->assertEquals(0, $groupedRunResults->count());
         $response->assertSee(__('No published results.'));
     }
 }

@@ -56,30 +56,30 @@ class ProcessMyLapsResult
     protected function parseQualifyingResults(Collection $rows, Collection $categoryResults): Collection
     {
         return $rows->map(function ($row, $index) use ($categoryResults) {
-            $racerCategory = $row->getAttribute('Class');
+            $racerCategory = $row->getAttribute('Class', $row->getAttribute('Classe'));
             $position = $row->getAttribute('Pos');
             $positionInCategory = $row->getAttribute('PIC');
             $status = ResultStatus::fromString($position);
 
             return new RacerQualifyingResultData(
-                bib: (int) $row->getAttribute('No.'),
+                bib: (int) $row->getAttribute('No.', $row->getAttribute('Num.')),
                 status: $status,
-                name: $row->getAttribute('Name'),
+                name: $row->getAttribute('Name', $row->getAttribute('Nome')),
                 category: $racerCategory,
                 position: ResultStatus::matchUnfinishedOrPenalty($position) ? (string) ($index + 1) : $position,
                 position_in_category: ResultStatus::matchUnfinishedOrPenalty($positionInCategory)
-                    ? (string) ($categoryResults[$racerCategory]->get($row->getAttribute('No.')) + 1)
+                    ? (string) ($categoryResults[$racerCategory]->get($row->getAttribute('No.', $row->getAttribute('Num.'))) + 1)
                     : $positionInCategory,
-                best_lap_time: $row->getAttribute('Best_Tm'),
-                best_lap_number: $row->getAttribute('In_Lap'),
+                best_lap_time: $row->getAttribute('Best_Tm', $row->getAttribute('Tempo_Migliore')),
+                best_lap_number: $row->getAttribute('In_Lap', $row->getAttribute('Nel_Giro')),
                 gap_from_leader: $row->getAttribute('Diff') ?? '',
-                gap_from_previous: $row->getAttribute('Gap') ?? '',
-                racer_hash: $row->getAttribute('Car_Bike_Reg'),
+                gap_from_previous: $row->getAttribute('Gap', $row->getAttribute('Differenza')) ?? '',
+                racer_hash: $row->getAttribute('Car_Bike_Reg', $row->getAttribute('Registrazione_del_pilota')),
                 second_best_time: $row->getAttribute('Second_Best'),
                 second_best_lap_number: $row->getAttribute('Second_Lap'),
                 best_speed: $this->parseFloat($row->getAttribute('Best_Speed')),
                 second_best_speed: $this->parseFloat($row->getAttribute('Second_Spd')),
-                points: $this->parseFloat($row->getAttribute('Points')),
+                points: $this->parseFloat($row->getAttribute('Points', $row->getAttribute('Punti'))),
                 is_dnf: $status->didNotFinish(),
                 is_dns: $status->didNotStart(),
                 is_dq: $status->disqualified(),
@@ -93,29 +93,29 @@ class ProcessMyLapsResult
     protected function parseRaceResults(Collection $rows, Collection $categoryResults): Collection
     {
         return $rows->map(function ($row, $index) use ($categoryResults) {
-            $racerCategory = $row->getAttribute('Class');
+            $racerCategory = $row->getAttribute('Class', $row->getAttribute('Classe'));
             $position = $row->getAttribute('Pos');
             $positionInCategory = $row->getAttribute('PIC');
 
             $status = ResultStatus::fromString($position);
 
             return new RacerRaceResultData(
-                bib: (int) $row->getAttribute('No.'),
+                bib: (int) $row->getAttribute('No.', $row->getAttribute('Num.')),
                 status: $status,
-                name: $row->getAttribute('Name'),
+                name: $row->getAttribute('Name', $row->getAttribute('Nome')),
                 category: $racerCategory,
                 position: ResultStatus::matchUnfinishedOrPenalty($position) ? (string) ($index + 1) : $position,
                 position_in_category: ResultStatus::matchUnfinishedOrPenalty($positionInCategory)
-                    ? (string) ($categoryResults[$racerCategory]->get($row->getAttribute('No.')) + 1)
+                    ? (string) ($categoryResults[$racerCategory]->get($row->getAttribute('No.', $row->getAttribute('Num.'))) + 1)
                     : $positionInCategory,
-                laps: (int) $row->getAttribute('Laps'),
-                total_race_time: $row->getAttribute('Total_Tm'),
+                laps: (int) $row->getAttribute('Laps', $row->getAttribute('Giri')),
+                total_race_time: $row->getAttribute('Total_Tm', $row->getAttribute('Tempo_Totale')),
                 gap_from_leader: $row->getAttribute('Diff') ?? '',
-                gap_from_previous: $row->getAttribute('Gap') ?? '',
-                best_lap_time: $row->getAttribute('Best_Tm'),
-                best_lap_number: $row->getAttribute('In_Lap'),
-                racer_hash: $row->getAttribute('Car_Bike_Reg'),
-                points: $this->parseFloat($row->getAttribute('Points')),
+                gap_from_previous: $row->getAttribute('Gap', $row->getAttribute('Differenza')) ?? '',
+                best_lap_time: $row->getAttribute('Best_Tm', $row->getAttribute('Tempo_Migliore')),
+                best_lap_number: $row->getAttribute('In_Lap', $row->getAttribute('Nel_Giro')),
+                racer_hash: $row->getAttribute('Car_Bike_Reg', $row->getAttribute('Registrazione_del_pilota')),
+                points: $this->parseFloat($row->getAttribute('Points', $row->getAttribute('Punti'))),
                 is_dnf: $status->didNotFinish(),
                 is_dns: $status->didNotStart(),
                 is_dq: $status->disqualified(),
@@ -129,7 +129,7 @@ class ProcessMyLapsResult
     protected function groupResultsByCategory(Collection $rows): Collection
     {
         return $rows->mapToGroups(function ($row) {
-            return [$row->getAttribute('Class') => $row->getAttribute('No.')];
+            return [$row->getAttribute('Class', $row->getAttribute('Classe')) => $row->getAttribute('No.', $row->getAttribute('Num.'))];
         })->mapWithKeys(function (Collection $group, $key) {
             return [$key => $group->flip()];
         });

@@ -24,7 +24,7 @@ class RunResultFactory extends Factory
             'race_id' => Race::factory(),
             'run_type' => fake()->randomElement(RunType::cases())->value,
             'title' => fake()->sentence(3),
-            'file_name' => fake()->word() . '.xml',
+            'file_name' => fake()->word().'.xml',
         ];
     }
 

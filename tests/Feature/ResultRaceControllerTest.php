@@ -188,7 +188,7 @@ class ResultRaceControllerTest extends TestCase
         $user = User::factory()->admin()->create();
         $race = Race::factory()->create();
 
-        $filePath = $race->uuid . '/test-results.xml';
+        $filePath = $race->uuid.'/test-results.xml';
         Storage::disk('race-results')->put($filePath, '<table></table>');
 
         $runResult = RunResult::factory()->create([

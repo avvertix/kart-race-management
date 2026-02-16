@@ -104,6 +104,26 @@ class ResultRaceController extends Controller
     }
 
     /**
+     * Toggle the publish status of a run result.
+     */
+    public function togglePublish(RunResult $result)
+    {
+        $result->load('race');
+
+        $this->authorize('update', $result->race);
+
+        $result->update([
+            'published_at' => $result->isPublished() ? null : now(),
+        ]);
+
+        $message = $result->isPublished()
+            ? __('Result published.')
+            : __('Result unpublished.');
+
+        return redirect()->back()->with('flash.banner', $message);
+    }
+
+    /**
      * Remove the specified run result.
      */
     public function destroy(RunResult $result)

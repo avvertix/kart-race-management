@@ -27,4 +27,14 @@ class RunResultFactory extends Factory
             'file_name' => fake()->word() . '.xml',
         ];
     }
+
+    /**
+     * Indicate that the run result is published.
+     */
+    public function published(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'published_at' => now(),
+        ]);
+    }
 }

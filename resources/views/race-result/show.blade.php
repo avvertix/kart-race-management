@@ -9,8 +9,24 @@
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
 
         <div class="mb-4">
-            <h3 class="text-lg font-bold">{{ $runResult->title }}</h3>
+            <div class="flex items-center gap-3">
+                <h3 class="text-lg font-bold">{{ $runResult->title }}</h3>
+                @if ($runResult->isPublished())
+                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">{{ __('Published') }}</span>
+                @else
+                    <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800">{{ __('Draft') }}</span>
+                @endif
+            </div>
             <p class="text-sm text-zinc-500">{{ $runResult->run_type->name }}</p>
+
+            @can('update', $race)
+                <form action="{{ route('results.toggle-publish', $runResult) }}" method="post" class="mt-2">
+                    @csrf
+                    <button type="submit" class="underline cursor-pointer text-sm">
+                        {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
+                    </button>
+                </form>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">

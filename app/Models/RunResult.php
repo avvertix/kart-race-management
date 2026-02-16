@@ -23,6 +23,7 @@ class RunResult extends Model
         'run_type',
         'title',
         'file_name',
+        'published_at',
     ];
 
     /**
@@ -71,6 +72,14 @@ class RunResult extends Model
     }
 
     /**
+     * Determine if the result is published.
+     */
+    public function isPublished(): bool
+    {
+        return $this->published_at !== null;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -79,6 +88,7 @@ class RunResult extends Model
     {
         return [
             'run_type' => RunType::class,
+            'published_at' => 'datetime',
         ];
     }
 }

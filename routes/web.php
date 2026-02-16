@@ -115,6 +115,8 @@ Route::middleware([
 
         Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'destroy']);
 
+        Route::post('results/{result}/toggle-publish', [ResultRaceController::class, 'togglePublish'])->name('results.toggle-publish');
+
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
 
         Route::resource('orbits-backups', OrbitsBackupController::class)->except(['create', 'edit', 'update']);

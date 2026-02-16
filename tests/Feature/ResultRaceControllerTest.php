@@ -239,4 +239,55 @@ class ResultRaceControllerTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_toggle_publish_publishes_result(): void
+    {
+        $user = User::factory()->admin()->create();
+
+        $runResult = RunResult::factory()->create([
+            'published_at' => null,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('results.toggle-publish', $runResult));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('flash.banner');
+
+        $runResult->refresh();
+        $this->assertNotNull($runResult->published_at);
+        $this->assertTrue($runResult->isPublished());
+    }
+
+    public function test_toggle_publish_unpublishes_result(): void
+    {
+        $user = User::factory()->admin()->create();
+
+        $runResult = RunResult::factory()->published()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('results.toggle-publish', $runResult));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('flash.banner');
+
+        $runResult->refresh();
+        $this->assertNull($runResult->published_at);
+        $this->assertFalse($runResult->isPublished());
+    }
+
+    public function test_toggle_publish_requires_authorization(): void
+    {
+        $user = User::factory()->timekeeper()->create();
+
+        $runResult = RunResult::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('results.toggle-publish', $runResult));
+
+        $response->assertForbidden();
+    }
 }

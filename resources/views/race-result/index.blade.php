@@ -22,8 +22,9 @@
                     <td class="w-4/12 text-xs">{{ __('Title') }}</td>
                     <td class="w-2/12 text-xs">{{ __('Session') }}</td>
                     <td class="w-2/12 text-xs">{{ __('Participants') }}</td>
-                    <td class="w-2/12 text-xs">{{ __('Upload date') }}</td>
-                    <td class="w-2/12 text-xs"></td>
+                    <td class="w-2/12 text-xs">{{ __('Published') }}</td>
+                    <td class="w-1/12 text-xs">{{ __('Upload date') }}</td>
+                    <td class="w-1/12 text-xs"></td>
                 </tr>
             </thead>
             <tbody>
@@ -39,15 +40,30 @@
                             {{ $runResult->participant_results_count }}
                         </td>
                         <td class="px-2 py-3 border-b">
+                            @if ($runResult->isPublished())
+                                <span class="text-green-600">{{ __('Published') }}</span>
+                            @else
+                                <span class="text-zinc-400">{{ __('Draft') }}</span>
+                            @endif
+                        </td>
+                        <td class="px-2 py-3 border-b">
                             <x-time :value="$runResult->created_at" />
                         </td>
                         <td class="px-2 py-3 border-b">
                             @can('update', $race)
-                                <form action="{{ route('results.destroy', $runResult) }}" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="underline cursor-pointer">{{ __('Delete') }}</button>
-                                </form>
+                                <div class="flex gap-2">
+                                    <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="underline cursor-pointer">
+                                            {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('results.destroy', $runResult) }}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="underline cursor-pointer">{{ __('Delete') }}</button>
+                                    </form>
+                                </div>
                             @endcan
                         </td>
                     </tr>

@@ -81,6 +81,9 @@ class ChampionshipRaceCalendarController extends Controller
         return $championship->races()
             ->visible()
             ->notCanceled()
+            ->withCount(['results as published_results_count' => function ($query) {
+                $query->whereNotNull('published_at');
+            }])
             ->orderBy('event_start_at')
             ->get();
     }
@@ -103,6 +106,10 @@ class ChampionshipRaceCalendarController extends Controller
             $parts[] = __('Registration: :dates', ['dates' => $race->registration_opens_at->format('Y-m-d').
                 ' - '.
                 $race->registration_closes_at->format('Y-m-d')]);
+        }
+
+        if ($race->published_results_count > 0) {
+            $parts[] = __('Results: ').route('public.races.results.index', $race->uuid);
         }
 
         $parts[] = '';

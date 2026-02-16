@@ -18,32 +18,58 @@
                 <thead>
                     <tr>
                         <td class="text-xs">{{ __('Pos.') }}</td>
-                        <td class="text-xs">{{ __('PIC') }}</td>
                         <td class="text-xs">{{ __('Bib') }}</td>
                         <td class="text-xs">{{ __('Name') }}</td>
                         <td class="text-xs">{{ __('Category') }}</td>
-                        <td class="text-xs">{{ __('Laps') }}</td>
-                        <td class="text-xs">{{ __('Best lap') }}</td>
-                        <td class="text-xs">{{ __('Gap') }}</td>
-                        <td class="text-xs">{{ __('Status') }}</td>
+                        @if ($runResult->run_type->isRace())
+                            <td class="text-xs">{{ __('Total time') }}</td>
+                            <td class="text-xs">{{ __('Laps') }}</td>
+                            <td class="text-xs">{{ __('Gap') }}</td>
+                            <td class="text-xs">{{ __('Interval') }}</td>
+                            <td class="text-xs">{{ __('Best lap') }}</td>
+                        @endif
+                        @if ($runResult->run_type->isQualify())
+                            <td class="text-xs">{{ __('Best lap') }}</td>
+                            <td class="text-xs">{{ __('Gap') }}</td>
+                            <td class="text-xs">{{ __('Interval') }}</td>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($participantResults as $participantResult)
                         <tr>
-                            <td class="px-2 py-2 border-b">{{ $participantResult->position }}</td>
-                            <td class="px-2 py-2 border-b">{{ $participantResult->position_in_category }}</td>
+                            <td class="px-2 py-2 border-b">
+                                @if ($participantResult->is_dnf || $participantResult->is_dns || $participantResult->is_dq)
+                                    {{ $participantResult->status->name }}
+                                @else
+                                    {{ $participantResult->position }}
+                                @endif
+                            </td>
                             <td class="px-2 py-2 border-b font-bold">{{ $participantResult->bib }}</td>
                             <td class="px-2 py-2 border-b">{{ $participantResult->name }}</td>
                             <td class="px-2 py-2 border-b">{{ $participantResult->category }}</td>
-                            <td class="px-2 py-2 border-b">{{ $participantResult->laps }}</td>
-                            <td class="px-2 py-2 border-b">{{ $participantResult->best_lap_time }}</td>
-                            <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_leader }}</td>
-                            <td class="px-2 py-2 border-b">{{ $participantResult->status->name }}</td>
+                            @if ($runResult->run_type->isRace())
+                                <td class="px-2 py-2 border-b">{{ $participantResult->total_race_time }}</td>
+                                <td class="px-2 py-2 border-b">{{ $participantResult->laps }}</td>
+                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_leader }}</td>
+                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_previous }}</td>
+                                <td class="px-2 py-2 border-b">{{ $participantResult->best_lap_time }}</td>
+                            @endif
+                            @if ($runResult->run_type->isQualify())
+                                <td class="px-2 py-2 border-b">{{ $participantResult->best_lap_time }}</td>
+                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_leader }}</td>
+                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_previous }}</td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9">
+                            @if ($runResult->run_type->isRace())
+                                <td colspan="10">
+                            @elseif ($runResult->run_type->isQualify())
+                                <td colspan="7">
+                            @else
+                                <td colspan="4">
+                            @endif
                                 <p class="text-zinc-600 p-4">{{ __('No participant results.') }}</p>
                             </td>
                         </tr>

@@ -56,6 +56,16 @@ class ParticipantResult extends Model
     ];
 
     /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array
+     */
+    public function uniqueIds()
+    {
+        return ['ulid'];
+    }
+
+    /**
      * Get the route key for the model.
      *
      * @return string

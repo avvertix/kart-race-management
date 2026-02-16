@@ -121,7 +121,7 @@
                         
                         <x-tab-link href="{{ route('races.transponders', $race) }}"  :active="request()->routeIs('races.transponders', $race)">{{ __('Transponders') }}</x-tab-link>
                         
-                        <x-tab-link href="#" class="cursor-not-allowed">{{ __('Results') }}</x-tab-link>
+                        <x-tab-link href="{{ route('races.results.index', $race) }}"  :active="request()->routeIs('races.results.*') || request()->routeIs('results.show')">{{ __('Results') }}</x-tab-link>
                         
                     </nav>
                 </div>

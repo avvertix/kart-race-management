@@ -59,4 +59,9 @@ enum ResultStatus: int
     {
         return $this === static::DID_NOT_START;
     }
+
+    public function localizedName(): string
+    {
+        return trans("result-status.types.{$this->name}");
+    }
 }

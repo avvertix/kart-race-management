@@ -23,6 +23,7 @@ class RunResult extends Model
         'run_type',
         'title',
         'file_name',
+        'published_at',
     ];
 
     /**
@@ -34,15 +35,15 @@ class RunResult extends Model
         'id',
     ];
 
-    // /**
-    //  * Get the columns that should receive a unique identifier.
-    //  *
-    //  * @return array
-    //  */
-    // public function uniqueIds()
-    // {
-    //     return ['uuid'];
-    // }
+    /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array
+     */
+    public function uniqueIds()
+    {
+        return ['ulid'];
+    }
 
     /**
      * Get the route key for the model.
@@ -68,5 +69,26 @@ class RunResult extends Model
     public function participantResults()
     {
         return $this->hasMany(ParticipantResult::class);
+    }
+
+    /**
+     * Determine if the result is published.
+     */
+    public function isPublished(): bool
+    {
+        return $this->published_at !== null;
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'run_type' => RunType::class,
+            'published_at' => 'datetime',
+        ];
     }
 }

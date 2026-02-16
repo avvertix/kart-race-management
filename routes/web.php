@@ -36,6 +36,7 @@ use App\Http\Controllers\RaceParticipantController;
 use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
+use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
@@ -111,6 +112,10 @@ Route::middleware([
         Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);
 
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
+
+        Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'destroy']);
+
+        Route::post('results/{result}/toggle-publish', [ResultRaceController::class, 'togglePublish'])->name('results.toggle-publish');
 
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
 

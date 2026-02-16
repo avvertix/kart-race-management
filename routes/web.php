@@ -20,6 +20,7 @@ use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
@@ -145,6 +146,12 @@ Route::middleware([
 
         Route::resource('users', UserController::class)->except(['show']);
     });
+
+// Public race results
+
+Route::get('races/{race}/results', [PublicRaceResultController::class, 'index'])->name('public.races.results.index');
+
+Route::get('results/{result}/show', [PublicRaceResultController::class, 'show'])->name('public.results.show');
 
 // Self registration
 

@@ -31,6 +31,7 @@ use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
+use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\RaceInChampionshipController;
 use App\Http\Controllers\RaceParticipantController;
 use App\Http\Controllers\RaceRegistrationController;
@@ -111,6 +112,8 @@ Route::middleware([
         Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);
 
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
+
+        Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'destroy']);
 
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
 

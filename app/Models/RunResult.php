@@ -34,15 +34,15 @@ class RunResult extends Model
         'id',
     ];
 
-    // /**
-    //  * Get the columns that should receive a unique identifier.
-    //  *
-    //  * @return array
-    //  */
-    // public function uniqueIds()
-    // {
-    //     return ['uuid'];
-    // }
+    /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array
+     */
+    public function uniqueIds()
+    {
+        return ['ulid'];
+    }
 
     /**
      * Get the route key for the model.
@@ -68,5 +68,17 @@ class RunResult extends Model
     public function participantResults()
     {
         return $this->hasMany(ParticipantResult::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'run_type' => RunType::class,
+        ];
     }
 }

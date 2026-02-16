@@ -53,4 +53,9 @@ enum RunType: int
     {
         return in_array($this, [static::RACE_1, static::RACE_2]);
     }
+
+    public function localizedName(): string
+    {
+        return trans("run-type.types.{$this->name}");
+    }
 }

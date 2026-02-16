@@ -17,7 +17,7 @@
                     <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800">{{ __('Draft') }}</span>
                 @endif
             </div>
-            <p class="text-sm text-zinc-500">{{ $runResult->run_type->name }}</p>
+            <p class="text-sm text-zinc-500">{{ $runResult->run_type->localizedName() }}</p>
 
             @can('update', $race)
                 <form action="{{ route('results.toggle-publish', $runResult) }}" method="post" class="mt-2">
@@ -33,21 +33,21 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr>
-                        <td class="text-xs">{{ __('Pos.') }}</td>
-                        <td class="text-xs">{{ __('Bib') }}</td>
-                        <td class="text-xs">{{ __('Name') }}</td>
-                        <td class="text-xs">{{ __('Category') }}</td>
+                        <td class="px-2 text-xs">{{ __('Pos.') }}</td>
+                        <td class="px-2 text-xs">{{ __('Bib') }}</td>
+                        <td class="px-2 text-xs">{{ __('Name') }}</td>
+                        <td class="px-2 text-xs">{{ __('Category') }}</td>
                         @if ($runResult->run_type->isRace())
-                            <td class="text-xs">{{ __('Total time') }}</td>
-                            <td class="text-xs">{{ __('Laps') }}</td>
-                            <td class="text-xs">{{ __('Gap') }}</td>
-                            <td class="text-xs">{{ __('Interval') }}</td>
-                            <td class="text-xs">{{ __('Best lap') }}</td>
+                            <td class="px-2 text-xs">{{ __('Total time') }}</td>
+                            <td class="px-2 text-xs">{{ __('Laps') }}</td>
+                            <td class="px-2 text-xs">{{ __('Gap') }}</td>
+                            <td class="px-2 text-xs">{{ __('Interval') }}</td>
+                            <td class="px-2 text-xs">{{ __('Best lap') }}</td>
                         @endif
                         @if ($runResult->run_type->isQualify())
-                            <td class="text-xs">{{ __('Best lap') }}</td>
-                            <td class="text-xs">{{ __('Gap') }}</td>
-                            <td class="text-xs">{{ __('Interval') }}</td>
+                            <td class="px-2 text-xs">{{ __('Best lap') }}</td>
+                            <td class="px-2 text-xs">{{ __('Gap') }}</td>
+                            <td class="px-2 text-xs">{{ __('Interval') }}</td>
                         @endif
                     </tr>
                 </thead>
@@ -56,7 +56,7 @@
                         <tr>
                             <td class="px-2 py-2 border-b">
                                 @if ($participantResult->is_dnf || $participantResult->is_dns || $participantResult->is_dq)
-                                    {{ $participantResult->status->name }}
+                                    {{ $participantResult->status->localizedName() }}
                                 @else
                                     {{ $participantResult->position }}
                                 @endif

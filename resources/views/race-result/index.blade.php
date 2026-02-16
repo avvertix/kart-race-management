@@ -34,7 +34,7 @@
                             <a class="underline" href="{{ route('results.show', $runResult) }}">{{ $runResult->title }}</a>
                         </td>
                         <td class="px-2 py-3 border-b">
-                            {{ $runResult->run_type->name }}
+                            {{ $runResult->run_type->localizedName() }}
                         </td>
                         <td class="px-2 py-3 border-b">
                             {{ $runResult->participant_results_count }}

@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\Championship;
 use App\Models\Race;
+use App\Models\RunResult;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
@@ -443,6 +444,52 @@ class ChampionshipRaceCalendarControllerTest extends TestCase
 
         $content = $response->getContent();
         $this->assertStringContainsString('My Championship 2026', $content);
+    }
+
+    public function test_calendar_json_includes_results_url_when_published_results_exist(): void
+    {
+        $championship = Championship::factory()->create();
+
+        $race = Race::factory()->create([
+            'championship_id' => $championship->id,
+            'event_start_at' => now()->addDays(7),
+            'event_end_at' => now()->addDays(7)->addHours(8),
+            'hide' => false,
+        ]);
+
+        RunResult::factory()->published()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $response = $this->get(route('calendar.championship.races', [
+            'championship' => $championship->uuid,
+            'format' => 'json',
+        ]));
+
+        $response->assertJsonFragment([
+            'results_url' => route('public.races.results.index', $race->uuid),
+        ]);
+    }
+
+    public function test_calendar_json_returns_null_results_url_when_no_published_results(): void
+    {
+        $championship = Championship::factory()->create();
+
+        Race::factory()->create([
+            'championship_id' => $championship->id,
+            'event_start_at' => now()->addDays(7),
+            'event_end_at' => now()->addDays(7)->addHours(8),
+            'hide' => false,
+        ]);
+
+        $response = $this->get(route('calendar.championship.races', [
+            'championship' => $championship->uuid,
+            'format' => 'json',
+        ]));
+
+        $response->assertJsonFragment([
+            'results_url' => null,
+        ]);
     }
 
     public function test_calendar_ics_filename_uses_slugified_championship_title(): void

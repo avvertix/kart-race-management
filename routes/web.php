@@ -29,6 +29,7 @@ use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
@@ -145,6 +146,12 @@ Route::middleware([
 
         Route::resource('users', UserController::class)->except(['show']);
     });
+
+// Public race results
+
+Route::get('races/{race}/results', [PublicRaceResultController::class, 'index'])->name('public.races.results.index');
+
+Route::get('results/{result}/show', [PublicRaceResultController::class, 'show'])->name('public.results.show');
 
 // Self registration
 

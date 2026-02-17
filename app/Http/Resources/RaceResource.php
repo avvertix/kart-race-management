@@ -31,6 +31,9 @@ class RaceResource extends JsonResource
                 'title' => $this->championship->title,
             ],
             'registration_url' => route('races.registration.create', $this->uuid),
+            'results_url' => $this->published_results_count > 0
+                ? route('public.races.results.index', $this->uuid)
+                : null,
         ];
     }
 }

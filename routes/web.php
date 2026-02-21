@@ -120,7 +120,7 @@ Route::middleware([
 
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
 
-        Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'destroy']);
+        Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 
         Route::post('results/{result}/toggle-publish', [ResultRaceController::class, 'togglePublish'])->name('results.toggle-publish');
 

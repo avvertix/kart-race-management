@@ -72,6 +72,7 @@
                         <td class="px-2 py-3 border-b">
                             @can('update', $race)
                                 <div class="flex gap-2">
+                                    <a href="{{ route('results.edit', $runResult) }}" class="underline">{{ __('Edit') }}</a>
                                     <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
                                         @csrf
                                         <button type="submit" class="underline cursor-pointer">

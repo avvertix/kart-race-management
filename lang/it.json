@@ -518,5 +518,15 @@
     "Points": "Punti",
     "Coefficient": "Coefficiente",
     "Wet race": "Gara bagnata",
-    "Unlinked": "Non collegato"
+    "Unlinked": "Non collegato",
+    "Edit result": "Modifica risultato",
+    "Run result details": "Dettagli sessione",
+    "Edit results": "Modifica risultati",
+    "Link": "Collega",
+    "Unlink": "Scollega",
+    "Link participant": "Collega partecipante",
+    "Search participant within race": "Cerca partecipante nella gara",
+    "Result updated.": "Risultato aggiornato.",
+    "Linked participant": "Partecipante collegato",
+    "Participant results": "Risultati partecipanti"
 }

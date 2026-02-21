@@ -20,12 +20,15 @@
             <p class="text-sm text-zinc-500">{{ $runResult->run_type->localizedName() }}</p>
 
             @can('update', $race)
-                <form action="{{ route('results.toggle-publish', $runResult) }}" method="post" class="mt-2">
-                    @csrf
-                    <button type="submit" class="underline cursor-pointer text-sm">
-                        {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
-                    </button>
-                </form>
+                <div class="flex items-center gap-4 mt-2">
+                    <a href="{{ route('results.edit', $runResult) }}" class="underline text-sm">{{ __('Edit result') }}</a>
+                    <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
+                        @csrf
+                        <button type="submit" class="underline cursor-pointer text-sm">
+                            {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
+                        </button>
+                    </form>
+                </div>
             @endcan
         </div>
 

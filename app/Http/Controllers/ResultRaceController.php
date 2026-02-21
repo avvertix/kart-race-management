@@ -6,10 +6,13 @@ namespace App\Http\Controllers;
 
 use App\Actions\ProcessMyLapsResult;
 use App\Jobs\LinkParticipantResults;
+use App\Models\ParticipantResult;
 use App\Models\Race;
 use App\Models\RunResult;
+use App\Models\RunType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 
 class ResultRaceController extends Controller
@@ -104,6 +107,65 @@ class ResultRaceController extends Controller
             'runResult' => $result,
             'participantResults' => $result->participantResults,
         ]);
+    }
+
+    /**
+     * Show the form for editing the specified run result.
+     */
+    public function edit(RunResult $result)
+    {
+        $result->load(['race.championship', 'participantResults']);
+
+        $this->authorize('update', $result->race);
+
+        return view('race-result.edit', [
+            'race' => $result->race,
+            'championship' => $result->race->championship,
+            'runResult' => $result,
+            'participantResults' => $result->participantResults,
+            'runTypes' => RunType::cases(),
+        ]);
+    }
+
+    /**
+     * Update the specified run result.
+     */
+    public function update(Request $request, RunResult $result)
+    {
+        $result->load('race');
+
+        $this->authorize('update', $result->race);
+
+        $validated = $this->validate($request, [
+            'title' => ['required', 'string', 'max:250'],
+            'run_type' => ['required', Rule::enum(RunType::class)],
+            'participant_results' => ['array'],
+            'participant_results.*.id' => ['required', 'integer'],
+            'participant_results.*.bib' => ['required', 'integer'],
+            'participant_results.*.name' => ['required', 'string', 'max:250'],
+            'participant_results.*.category' => ['required', 'string', 'max:250'],
+            'participant_results.*.participant_id' => ['nullable', 'integer', 'exists:participants,id'],
+        ]);
+
+        $result->update([
+            'title' => $validated['title'],
+            'run_type' => $validated['run_type'],
+        ]);
+
+        foreach ($validated['participant_results'] ?? [] as $participantResultData) {
+            $participantResult = ParticipantResult::where('run_result_id', $result->getKey())
+                ->findOrFail($participantResultData['id']);
+
+            $participantResult->update([
+                'bib' => $participantResultData['bib'],
+                'name' => $participantResultData['name'],
+                'category' => $participantResultData['category'],
+                'participant_id' => $participantResultData['participant_id'],
+            ]);
+        }
+
+        return redirect()->route('results.show', $result)
+            ->with('flash.banner', __('Result updated.'));
     }
 
     /**

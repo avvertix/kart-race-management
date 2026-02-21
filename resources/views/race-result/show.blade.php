@@ -40,17 +40,19 @@
                         <td class="px-2 text-xs">{{ __('Bib') }}</td>
                         <td class="px-2 text-xs">{{ __('Name') }}</td>
                         <td class="px-2 text-xs">{{ __('Category') }}</td>
+                        <td class="px-2 text-xs">{{ __('Category Pos.') }}</td>
+                        <td class="px-2 text-xs">{{ __('Points') }}</td>
                         @if ($runResult->run_type->isRace())
                             <td class="px-2 text-xs">{{ __('Total time') }}</td>
                             <td class="px-2 text-xs">{{ __('Laps') }}</td>
-                            <td class="px-2 text-xs">{{ __('Gap') }}</td>
-                            <td class="px-2 text-xs">{{ __('Interval') }}</td>
-                            <td class="px-2 text-xs">{{ __('Best lap') }}</td>
+                            <td class="px-2 text-xs hidden lg:table-cell">{{ __('Gap') }}</td>
+                            <td class="px-2 text-xs hidden lg:table-cell">{{ __('Interval') }}</td>
+                            <td class="px-2 text-xs hidden lg:table-cell">{{ __('Best lap') }}</td>
                         @endif
                         @if ($runResult->run_type->isQualify())
                             <td class="px-2 text-xs">{{ __('Best lap') }}</td>
-                            <td class="px-2 text-xs">{{ __('Gap') }}</td>
-                            <td class="px-2 text-xs">{{ __('Interval') }}</td>
+                            <td class="px-2 text-xs hidden lg:table-cell">{{ __('Gap') }}</td>
+                            <td class="px-2 text-xs hidden lg:table-cell">{{ __('Interval') }}</td>
                         @endif
                     </tr>
                 </thead>
@@ -72,17 +74,19 @@
                                 @endif
                             </td>
                             <td class="px-2 py-2 border-b">{{ $participantResult->category }}</td>
+                            <td class="px-2 py-2 border-b">{{ $participantResult->position_in_category }}</td>
+                            <td class="px-2 py-2 border-b">{{ $participantResult->points }}</td>
                             @if ($runResult->run_type->isRace())
                                 <td class="px-2 py-2 border-b">{{ $participantResult->total_race_time }}</td>
                                 <td class="px-2 py-2 border-b">{{ $participantResult->laps }}</td>
-                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_leader }}</td>
-                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_previous }}</td>
-                                <td class="px-2 py-2 border-b">{{ $participantResult->best_lap_time }}</td>
+                                <td class="px-2 py-2 border-b hidden lg:table-cell">{{ $participantResult->gap_from_leader }}</td>
+                                <td class="px-2 py-2 border-b hidden lg:table-cell">{{ $participantResult->gap_from_previous }}</td>
+                                <td class="px-2 py-2 border-b hidden lg:table-cell">{{ $participantResult->best_lap_time }}</td>
                             @endif
                             @if ($runResult->run_type->isQualify())
                                 <td class="px-2 py-2 border-b">{{ $participantResult->best_lap_time }}</td>
-                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_leader }}</td>
-                                <td class="px-2 py-2 border-b">{{ $participantResult->gap_from_previous }}</td>
+                                <td class="px-2 py-2 border-b hidden lg:table-cell">{{ $participantResult->gap_from_leader }}</td>
+                                <td class="px-2 py-2 border-b hidden lg:table-cell">{{ $participantResult->gap_from_previous }}</td>
                             @endif
                         </tr>
                     @empty

@@ -58,7 +58,7 @@ class ProcessMyLapsResult
         return $rows->map(function ($row, $index) use ($categoryResults) {
             $racerCategory = $row->getAttribute('Class', $row->getAttribute('Classe'));
             $position = $row->getAttribute('Pos');
-            $positionInCategory = $row->getAttribute('PIC');
+            $positionInCategory = $row->getAttribute('PIC', $row->getAttribute('Pos'));
             $status = ResultStatus::fromString($position);
 
             return new RacerQualifyingResultData(
@@ -95,7 +95,7 @@ class ProcessMyLapsResult
         return $rows->map(function ($row, $index) use ($categoryResults) {
             $racerCategory = $row->getAttribute('Class', $row->getAttribute('Classe'));
             $position = $row->getAttribute('Pos');
-            $positionInCategory = $row->getAttribute('PIC');
+            $positionInCategory = $row->getAttribute('PIC', $row->getAttribute('Pos'));
 
             $status = ResultStatus::fromString($position);
 

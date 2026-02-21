@@ -27,7 +27,12 @@ class ResultRaceController extends Controller
         $race->load('championship');
 
         $runResults = $race->results()
-            ->withCount('participantResults')
+            ->withCount([
+                'participantResults',
+                'participantResults as unlinked_participants_count' => function ($query) {
+                    $query->whereNull('participant_id');
+                },
+                ])
             ->orderBy('created_at', 'desc')
             ->get();
 

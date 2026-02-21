@@ -58,6 +58,9 @@
                         </td>
                         <td class="px-2 py-3 border-b">
                             {{ $runResult->participant_results_count }}
+                            @if ($runResult->unlinked_participants_count > 0)
+                                <span class="text-zinc-500 text-xs">({{ $runResult->unlinked_participants_count }} {{ __('unlinked') }})</span>
+                            @endif
                         </td>
                         <td class="px-2 py-3 border-b">
                             @if ($runResult->isPublished())

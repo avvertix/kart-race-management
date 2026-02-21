@@ -36,16 +36,16 @@ class LinkParticipantResults implements ShouldQueue
             ->keyBy('racer_hash');
 
         $unlinkedResults->each(function ($participantResult) use ($participants) {
-                $participant = $participants->get($participantResult->racer_hash);
+            $participant = $participants->get($participantResult->racer_hash);
 
-                if ($participant === null) {
-                    return;
-                }
+            if ($participant === null) {
+                return;
+            }
 
-                $participantResult->update([
-                    'participant_id' => $participant->id,
-                    'category_id' => $participant->category_id,
-                ]);
-            });
+            $participantResult->update([
+                'participant_id' => $participant->id,
+                'category_id' => $participant->category_id,
+            ]);
+        });
     }
 }

@@ -11,7 +11,8 @@
         \App\Models\ResultStatus::DISQUALIFIED->value => __('DSQ (Disqualified)'),
     ];
 
-    $existingConfig = old('points_config', optional($pointScheme ?? null)->points_config);
+    $pointsConfig = optional($pointScheme ?? null)->points_config;
+    $existingConfig = old('points_config', $pointsConfig instanceof \App\Data\PointsConfigData ? $pointsConfig->toConfig() : null);
 @endphp
 
 <div class="md:grid md:grid-cols-3 md:gap-6">

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Data\PointsConfigData;
+use App\Data\RunTypePointsData;
+use App\Data\StatusPointsData;
+use App\Data\StatusPointsMode;
 use App\Models\Championship;
 use App\Models\ResultStatus;
 use App\Models\RunType;
@@ -28,30 +32,27 @@ class ChampionshipPointSchemeFactory extends Factory
         ];
     }
 
-    /**
-     * @return array<int, array{positions: list<int>, statuses: array<int, array{mode: string, points: int}>}>
-     */
-    private function defaultPointsConfig(): array
+    private function defaultPointsConfig(): PointsConfigData
     {
         $defaultStatuses = [
-            ResultStatus::DID_NOT_START->value => ['mode' => 'fixed', 'points' => 0],
-            ResultStatus::DID_NOT_FINISH->value => ['mode' => 'fixed', 'points' => 0],
-            ResultStatus::DISQUALIFIED->value => ['mode' => 'fixed', 'points' => 0],
+            ResultStatus::DID_NOT_START->value => new StatusPointsData(StatusPointsMode::Fixed, 0),
+            ResultStatus::DID_NOT_FINISH->value => new StatusPointsData(StatusPointsMode::Fixed, 0),
+            ResultStatus::DISQUALIFIED->value => new StatusPointsData(StatusPointsMode::Fixed, 0),
         ];
 
-        return [
-            RunType::QUALIFY->value => [
-                'positions' => [3, 2, 1],
-                'statuses' => $defaultStatuses,
-            ],
-            RunType::RACE_1->value => [
-                'positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
-                'statuses' => $defaultStatuses,
-            ],
-            RunType::RACE_2->value => [
-                'positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
-                'statuses' => $defaultStatuses,
-            ],
-        ];
+        return new PointsConfigData(runTypes: [
+            RunType::QUALIFY->value => new RunTypePointsData(
+                positions: [3, 2, 1],
+                statuses: $defaultStatuses,
+            ),
+            RunType::RACE_1->value => new RunTypePointsData(
+                positions: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
+                statuses: $defaultStatuses,
+            ),
+            RunType::RACE_2->value => new RunTypePointsData(
+                positions: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
+                statuses: $defaultStatuses,
+            ),
+        ]);
     }
 }

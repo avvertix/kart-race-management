@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Data\PointsConfigData;
 use App\Models\Championship;
 use App\Models\ChampionshipPointScheme;
 use App\Models\User;
@@ -107,9 +108,10 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         $pointScheme = ChampionshipPointScheme::first();
 
         $this->assertInstanceOf(ChampionshipPointScheme::class, $pointScheme);
+        $this->assertInstanceOf(PointsConfigData::class, $pointScheme->points_config);
 
         $this->assertEquals('Standard Points', $pointScheme->name);
-        $this->assertEquals($pointsConfig, $pointScheme->points_config->toArray());
+        $this->assertEquals($pointsConfig, $pointScheme->points_config->toConfig());
     }
 
     public function test_point_scheme_name_unique_within_championship(): void
@@ -221,7 +223,7 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         $this->assertInstanceOf(ChampionshipPointScheme::class, $updatedPointScheme);
 
         $this->assertEquals('Updated Points', $updatedPointScheme->name);
-        $this->assertEquals($updatedConfig, $updatedPointScheme->points_config->toArray());
+        $this->assertEquals($updatedConfig, $updatedPointScheme->points_config->toConfig());
     }
 
     public function test_point_scheme_created_with_ranked_status(): void
@@ -270,11 +272,20 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         $pointScheme = ChampionshipPointScheme::first();
 
         $this->assertInstanceOf(ChampionshipPointScheme::class, $pointScheme);
-        $this->assertEquals($pointsConfig, $pointScheme->points_config->toArray());
+        $this->assertInstanceOf(PointsConfigData::class, $pointScheme->points_config);
+
+        $this->assertTrue($pointScheme->isStatusRanked(
+            \App\Models\RunType::QUALIFY,
+            \App\Models\ResultStatus::DID_NOT_START,
+        ));
+        $this->assertFalse($pointScheme->isStatusRanked(
+            \App\Models\RunType::RACE_2,
+            \App\Models\ResultStatus::DID_NOT_START,
+        ));
     }
 
     /**
-     * @return array<string, array{positions: list<int>, statuses: array<string, array{mode: string, points?: int}>}>
+     * @return array<string, array{positions: list<int|float>, statuses: array<string, array{mode: string, points?: int|float}>}>
      */
     private function samplePointsConfig(): array
     {

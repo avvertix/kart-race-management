@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use App\Casts\PointsConfigCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -58,42 +58,18 @@ class ChampionshipPointScheme extends Model
      */
     public function getPointsForPosition(RunType $runType, int $position): float
     {
-        $config = $this->points_config[$runType->value] ?? null;
-
-        if (! $config || $position < 1) {
-            return 0;
-        }
-
-        $positions = $config['positions'] ?? [];
-
-        return (float) ($positions[$position - 1] ?? 0);
+        return $this->points_config->getPointsForPosition($runType, $position);
     }
 
     /**
      * Get the points awarded for a non-finished status in a run type.
      *
-     * When mode is "ranked", returns null to indicate that position-based points should be used.
+     * When mode is "ranked", uses position-based points.
      * When mode is "fixed", returns the configured point value.
      */
     public function getPointsForStatus(RunType $runType, ResultStatus $status, ?int $position = null): float
     {
-        $config = $this->points_config[$runType->value] ?? null;
-
-        if (! $config) {
-            return 0;
-        }
-
-        $statusConfig = $config['statuses'][$status->value] ?? null;
-
-        if (! is_array($statusConfig)) {
-            return 0;
-        }
-
-        if (($statusConfig['mode'] ?? 'fixed') === 'ranked' && $position !== null) {
-            return $this->getPointsForPosition($runType, $position);
-        }
-
-        return (float) ($statusConfig['points'] ?? 0);
+        return $this->points_config->getPointsForStatus($runType, $status, $position);
     }
 
     /**
@@ -101,25 +77,13 @@ class ChampionshipPointScheme extends Model
      */
     public function isStatusRanked(RunType $runType, ResultStatus $status): bool
     {
-        $config = $this->points_config[$runType->value] ?? null;
-
-        if (! $config) {
-            return false;
-        }
-
-        $statusConfig = $config['statuses'][$status->value] ?? null;
-
-        if (! is_array($statusConfig)) {
-            return false;
-        }
-
-        return ($statusConfig['mode'] ?? 'fixed') === 'ranked';
+        return $this->points_config->isStatusRanked($runType, $status);
     }
 
     protected function casts(): array
     {
         return [
-            'points_config' => AsArrayObject::class,
+            'points_config' => PointsConfigCast::class,
         ];
     }
 }

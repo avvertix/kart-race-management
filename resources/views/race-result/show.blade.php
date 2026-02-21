@@ -62,7 +62,12 @@
                                 @endif
                             </td>
                             <td class="px-2 py-2 border-b font-bold">{{ $participantResult->bib }}</td>
-                            <td class="px-2 py-2 border-b">{{ $participantResult->name }}</td>
+                            <td class="px-2 py-2 border-b">
+                                {{ $participantResult->name }}
+                                @if (!$participantResult->participant_id)
+                                    <span class="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">{{ __('Unlinked') }}</span>
+                                @endif
+                            </td>
                             <td class="px-2 py-2 border-b">{{ $participantResult->category }}</td>
                             @if ($runResult->run_type->isRace())
                                 <td class="px-2 py-2 border-b">{{ $participantResult->total_race_time }}</td>

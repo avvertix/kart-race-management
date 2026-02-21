@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\ProcessMyLapsResult;
+use App\Jobs\LinkParticipantResults;
 use App\Models\Race;
 use App\Models\RunResult;
 use Illuminate\Http\Request;
@@ -80,6 +81,8 @@ class ResultRaceController extends Controller
             foreach ($runResultData->results as $result) {
                 $runResult->participantResults()->create($result->toArray());
             }
+
+            LinkParticipantResults::dispatch($runResult);
         }
 
         return redirect()->route('races.results.index', $race)

@@ -62,6 +62,8 @@ class RegisterParticipantTest extends TestCase
         $this->assertEquals('Racer', $participant->last_name);
         $this->assertEquals('en', $participant->locale);
         $this->assertFalse($participant->use_bonus);
+        $this->assertEquals(hash('sha512', 'D0001'), $participant->driver_licence);
+        $this->assertEquals('f1488131', $participant->racer_hash);
 
         $this->assertEquals([
             'first_name' => 'Parent',

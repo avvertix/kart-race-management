@@ -33,6 +33,8 @@ class Race extends Model
         'hide',
         'participant_limits',
         'type',
+        'point_multiplier',
+        'rain',
     ];
 
     /**
@@ -296,6 +298,8 @@ class Race extends Model
             'hide' => 'boolean',
             'participant_limits' => AsCollection::class,
             'type' => RaceType::class,
+            'point_multiplier' => 'float',
+            'rain' => 'boolean',
         ];
     }
 }

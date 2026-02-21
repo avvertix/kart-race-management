@@ -458,7 +458,7 @@ class Participant extends Model implements HasLocalePreference
     {
         static::saving(function (Participant $participant) {
             // Auto-populate racer_hash from driver_licence if it's not already set
-            if ($participant->driver_licence && empty($participant->racer_hash)) {
+            if ($participant->driver_licence && blank($participant->racer_hash)) {
                 $participant->racer_hash = mb_substr($participant->driver_licence, 0, 8);
             }
         });

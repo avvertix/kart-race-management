@@ -206,6 +206,51 @@ class RaceTest extends TestCase
         $this->assertEquals(RaceType::INTERNATIONAL, $race->type);
     }
 
+    public function test_race_point_multiplier_can_be_updated()
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.scoring.update', $existingRace), [
+                'point_multiplier' => 1.5,
+            ]);
+
+        $response->assertRedirectToRoute('races.edit', $existingRace);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = Race::first();
+
+        $this->assertInstanceOf(Race::class, $race);
+        $this->assertEquals(1.5, $race->point_multiplier);
+    }
+
+    public function test_race_point_multiplier_can_be_cleared()
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create([
+            'point_multiplier' => 2.0,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.scoring.update', $existingRace), [
+                'point_multiplier' => null,
+            ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = Race::first();
+
+        $this->assertNull($race->point_multiplier);
+    }
+
     public function test_race_can_be_updated_with_custom_registration_openings()
     {
         $user = User::factory()->organizer()->create();
@@ -251,5 +296,51 @@ class RaceTest extends TestCase
         $this->assertTrue($race->hasTotalParticipantLimit());
         $this->assertEquals(10, $race->getTotalParticipantLimit());
         $this->assertEquals(RaceType::INTERNATIONAL, $race->type);
+    }
+
+    public function test_race_rain_flag_can_be_set(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create();
+
+        $this->assertNull($existingRace->rain);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.scoring.update', $existingRace), [
+                'rain' => '1',
+            ]);
+
+        $response->assertRedirectToRoute('races.edit', $existingRace);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = $existingRace->fresh();
+
+        $this->assertTrue($race->rain);
+    }
+
+    public function test_race_rain_flag_can_be_unset(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create([
+            'rain' => true,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.scoring.update', $existingRace), [
+                'point_multiplier' => null,
+            ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = $existingRace->fresh();
+
+        $this->assertFalse($race->rain);
     }
 }

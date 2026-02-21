@@ -42,6 +42,8 @@
                     
                     <x-tab-link href="{{ route('championships.tire-options.index', $championship) }}" :active="request()->routeIs('championships.tire-options.*') || request()->routeIs('tire-options.*')">{{ __('Tires') }}</x-tab-link>
 
+                    <x-tab-link href="{{ route('championships.point-schemes.index', $championship) }}" :active="request()->routeIs('championships.point-schemes.*') || request()->routeIs('point-schemes.*')">{{ __('Point Schemes') }}</x-tab-link>
+
                 </nav>
             </div>       
         </div>

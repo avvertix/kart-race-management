@@ -8,13 +8,36 @@
 
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
 
-        @can('update', $race)
-            <div class="mb-6">
-                <x-button-link href="{{ route('races.results.create', $race) }}">
-                    {{ __('Upload results') }}
-                </x-button-link>
+        <div class="flex justify-between mb-4 items-center">
+        
+            <div class="flex items-center gap-3">
+                @can('update', $race)
+                    <x-button-link href="{{ route('races.results.create', $race) }}">
+                        {{ __('Upload results') }}
+                    </x-button-link>
+                    @if ($runResults->isNotEmpty())
+                        @livewire('assign-points-button', ['race' => $race], key('assign-all'))
+                    @endif
+                @endcan
             </div>
-        @endcan
+
+            <div class="flex items-center gap-4">
+                 @if ($race->point_multiplier)
+                    <p class="flex items-center gap-2">
+                        <x-ri-trophy-line class="size-4 text-zinc-500 shrink-0" />
+                        {{ __('Coefficient') }} &times;{{ $race->point_multiplier }}
+                    </p>
+                @endif
+
+                @if ($race->rain)
+                    <p class="flex items-center gap-2">
+                        <x-ri-heavy-showers-line class="size-4 text-zinc-500 shrink-0" />
+                        {{ __('Wet race') }}
+                    </p>
+                @endif
+            </div>
+        </div>
+
 
         <table class="w-full text-sm">
             <thead>
@@ -38,6 +61,9 @@
                         </td>
                         <td class="px-2 py-3 border-b">
                             {{ $runResult->participant_results_count }}
+                            @if ($runResult->unlinked_participants_count > 0)
+                                <span class="text-zinc-500 text-xs">({{ $runResult->unlinked_participants_count }} {{ __('unlinked') }})</span>
+                            @endif
                         </td>
                         <td class="px-2 py-3 border-b">
                             @if ($runResult->isPublished())
@@ -52,6 +78,8 @@
                         <td class="px-2 py-3 border-b">
                             @can('update', $race)
                                 <div class="flex gap-2">
+                                    <a href="{{ route('results.edit', $runResult) }}" class="underline">{{ __('Edit') }}</a>
+                                    @livewire('assign-points-button', ['race' => $race, 'runResult' => $runResult], key('assign-'.$runResult->ulid))
                                     <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
                                         @csrf
                                         <button type="submit" class="underline cursor-pointer">

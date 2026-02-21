@@ -41,9 +41,9 @@ class UpdateParticipantRegistrationTest extends TestCase
             'bib' => 100,
             'championship_id' => $race->championship->getKey(),
             'race_id' => $race->getKey(),
-            'driver_licence' => hash('sha512', 'D0001'),
+            'driver_licence' => hash('sha512', 'D0002'),
             'driver' => [
-                'licence_number' => 'D0001',
+                'licence_number' => 'D0002',
             ],
             'locale' => 'en',
             'use_bonus' => false,
@@ -62,6 +62,8 @@ class UpdateParticipantRegistrationTest extends TestCase
 
         $this->assertInstanceOf(Participant::class, $participant);
         $this->assertEquals(100, $participant->bib);
+        $this->assertEquals(hash('sha512', 'D0001'), $participant->driver_licence);
+        $this->assertEquals('f1488131', $participant->racer_hash);
         $this->assertEquals($category->ulid, $participant->category);
         $this->assertTrue($participant->racingCategory->is($category));
         $this->assertEquals('John', $participant->first_name);

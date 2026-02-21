@@ -8,6 +8,7 @@ use App\Http\Controllers\ChampionshipBonusController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
+use App\Http\Controllers\ChampionshipPointSchemeController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
@@ -41,6 +42,7 @@ use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
+use App\Http\Controllers\UpdateRaceScoringController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -79,6 +81,8 @@ Route::middleware([
 
         Route::resource('races', RaceController::class)->only(['show', 'edit', 'update', 'destroy']);
 
+        Route::put('races/{race}/scoring', UpdateRaceScoringController::class)->name('races.scoring.update');
+
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
 
         Route::post('championships/{championship}/races/import', [RaceImportController::class, 'store'])->name('championships.races.import.store');
@@ -112,11 +116,17 @@ Route::middleware([
         Route::post('championships/{championship}/tire-options/copy', [CopyChampionshipTiresController::class, 'store'])->name('championships.tire-options.store-copy');
         Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);
 
+        Route::resource('championships.point-schemes', ChampionshipPointSchemeController::class)->shallow()->except(['destroy', 'show']);
+
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
 
-        Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'destroy']);
+        Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 
         Route::post('results/{result}/toggle-publish', [ResultRaceController::class, 'togglePublish'])->name('results.toggle-publish');
+
+        Route::post('results/{result}/assign-points', [ResultRaceController::class, 'assignPoints'])->name('results.assign-points');
+
+        Route::post('races/{race}/results/assign-points', [ResultRaceController::class, 'assignPointsToAll'])->name('races.results.assign-points');
 
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
 

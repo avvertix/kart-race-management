@@ -75,13 +75,16 @@ class UpdateParticipantRegistration
                     })
                     ->validate();
 
+                $licenceHash = hash('sha512', $validatedInput['driver_licence_number']);
+
                 $participant->update([
                     'bib' => $validatedInput['bib'],
                     'category' => $validatedInput['category'],
                     'category_id' => $category->getKey(),
                     'first_name' => $validatedInput['driver_first_name'],
                     'last_name' => $validatedInput['driver_last_name'],
-                    'driver_licence' => hash('sha512', $validatedInput['driver_licence_number']),
+                    'driver_licence' => $licenceHash,
+                    'racer_hash' => mb_substr($licenceHash, 0, 8),
                     'competitor_licence' => isset($validatedInput['competitor_licence_number']) ? hash('sha512', $validatedInput['competitor_licence_number']) : null,
                     'licence_type' => $validatedInput['driver_licence_type'] ?? DriverLicence::LOCAL_NATIONAL->value,
                     'driver' => [

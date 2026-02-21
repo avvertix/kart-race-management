@@ -506,5 +506,8 @@
     "Rain race": "Gara bagnata",
     "Mark this race as a rain race. This may affect championship point calculations.": "Segna questa gara come gara bagnata. Questo può influenzare il calcolo dei punti campionato.",
     "Save scoring settings": "Salva impostazioni punteggio",
-    ":race scoring settings updated.": "Impostazioni punteggio di :race aggiornate."
+    ":race scoring settings updated.": "Impostazioni punteggio di :race aggiornate.",
+    "Points": "Punti",
+    "Coefficient": "Coefficiente",
+    "Wet race": "Gara bagnata"
 }

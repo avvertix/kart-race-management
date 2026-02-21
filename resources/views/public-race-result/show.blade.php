@@ -6,7 +6,15 @@
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
             {{ $championship->title }} &mdash; {{ $race->title }}
         </h2>
-        <p class="text-sm text-zinc-500">{{ $race->period }} &middot; {{ $race->track }}</p>
+        <p class="text-sm text-zinc-500">
+            {{ $race->period }} &middot; {{ $race->track }}
+            @if ($race->point_multiplier)
+                &middot; {{ __('Coefficient') }} &times;{{ $race->point_multiplier }}
+            @endif
+            @if ($race->rain)
+                &middot; {{ __('Wet race') }}
+            @endif
+        </p>
     </x-slot>
 
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">

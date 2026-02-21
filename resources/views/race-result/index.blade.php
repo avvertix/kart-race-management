@@ -8,13 +8,33 @@
 
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
 
-        @can('update', $race)
-            <div class="mb-6">
-                <x-button-link href="{{ route('races.results.create', $race) }}">
-                    {{ __('Upload results') }}
-                </x-button-link>
+        <div class="flex justify-between mb-4 items-center">
+        
+            <div class="">
+                @can('update', $race)
+                    <x-button-link href="{{ route('races.results.create', $race) }}">
+                        {{ __('Upload results') }}
+                    </x-button-link>
+                @endcan
             </div>
-        @endcan
+
+            <div class="flex items-center gap-4">
+                 @if ($race->point_multiplier)
+                    <p class="flex items-center gap-2">
+                        <x-ri-trophy-line class="size-4 text-zinc-500 shrink-0" />
+                        {{ __('Coefficient') }} &times;{{ $race->point_multiplier }}
+                    </p>
+                @endif
+
+                @if ($race->rain)
+                    <p class="flex items-center gap-2">
+                        <x-ri-heavy-showers-line class="size-4 text-zinc-500 shrink-0" />
+                        {{ __('Wet race') }}
+                    </p>
+                @endif
+            </div>
+        </div>
+
 
         <table class="w-full text-sm">
             <thead>

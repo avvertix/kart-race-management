@@ -215,7 +215,7 @@ class RaceTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->from(route('races.edit', $existingRace))
-            ->put(route('races.point-multiplier.update', $existingRace), [
+            ->put(route('races.scoring.update', $existingRace), [
                 'point_multiplier' => 1.5,
             ]);
 
@@ -240,7 +240,7 @@ class RaceTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->from(route('races.edit', $existingRace))
-            ->put(route('races.point-multiplier.update', $existingRace), [
+            ->put(route('races.scoring.update', $existingRace), [
                 'point_multiplier' => null,
             ]);
 
@@ -296,5 +296,51 @@ class RaceTest extends TestCase
         $this->assertTrue($race->hasTotalParticipantLimit());
         $this->assertEquals(10, $race->getTotalParticipantLimit());
         $this->assertEquals(RaceType::INTERNATIONAL, $race->type);
+    }
+
+    public function test_race_rain_flag_can_be_set(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create();
+
+        $this->assertNull($existingRace->rain);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.scoring.update', $existingRace), [
+                'rain' => '1',
+            ]);
+
+        $response->assertRedirectToRoute('races.edit', $existingRace);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = $existingRace->fresh();
+
+        $this->assertTrue($race->rain);
+    }
+
+    public function test_race_rain_flag_can_be_unset(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $existingRace = Race::factory()->create([
+            'rain' => true,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('races.edit', $existingRace))
+            ->put(route('races.scoring.update', $existingRace), [
+                'point_multiplier' => null,
+            ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $race = $existingRace->fresh();
+
+        $this->assertFalse($race->rain);
     }
 }

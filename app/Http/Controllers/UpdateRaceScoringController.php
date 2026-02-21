@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Race;
 use Illuminate\Http\Request;
 
-class UpdateRacePointMultiplierController extends Controller
+class UpdateRaceScoringController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -18,14 +18,16 @@ class UpdateRacePointMultiplierController extends Controller
 
         $validated = $this->validate($request, [
             'point_multiplier' => ['nullable', 'numeric', 'min:0'],
+            'rain' => ['nullable', 'boolean'],
         ]);
 
         $race->update([
             'point_multiplier' => $validated['point_multiplier'] ?? null,
+            'rain' => $request->boolean('rain'),
         ]);
 
         return to_route('races.edit', $race)
-            ->with('flash.banner', __(':race point multiplier updated.', [
+            ->with('flash.banner', __(':race scoring settings updated.', [
                 'race' => $race->title,
             ]));
     }

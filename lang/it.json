@@ -528,5 +528,11 @@
     "Search participant within race": "Cerca partecipante nella gara",
     "Result updated.": "Risultato aggiornato.",
     "Linked participant": "Partecipante collegato",
-    "Participant results": "Risultati partecipanti"
+    "Participant results": "Risultati partecipanti",
+    "Assign points": "Assegna punti",
+    "Select point scheme": "Seleziona schema punti",
+    "Multiple point schemes are available. Select which one to use for assigning points.": "Sono disponibili più schemi punti. Seleziona quale utilizzare per l'assegnazione dei punti.",
+    "Points assigned.": "Punti assegnati.",
+    "Points assignment queued for all results.": "Assegnazione punti accodata per tutti i risultati.",
+    "No point schemes configured for this championship.": "Nessuno schema punti configurato per questo campionato."
 }

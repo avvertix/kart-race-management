@@ -124,6 +124,10 @@ Route::middleware([
 
         Route::post('results/{result}/toggle-publish', [ResultRaceController::class, 'togglePublish'])->name('results.toggle-publish');
 
+        Route::post('results/{result}/assign-points', [ResultRaceController::class, 'assignPoints'])->name('results.assign-points');
+
+        Route::post('races/{race}/results/assign-points', [ResultRaceController::class, 'assignPointsToAll'])->name('races.results.assign-points');
+
         Route::resource('races.participants', RaceParticipantController::class)->shallow();
 
         Route::resource('orbits-backups', OrbitsBackupController::class)->except(['create', 'edit', 'update']);

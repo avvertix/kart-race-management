@@ -10,11 +10,14 @@
 
         <div class="flex justify-between mb-4 items-center">
         
-            <div class="">
+            <div class="flex items-center gap-3">
                 @can('update', $race)
                     <x-button-link href="{{ route('races.results.create', $race) }}">
                         {{ __('Upload results') }}
                     </x-button-link>
+                    @if ($runResults->isNotEmpty())
+                        @livewire('assign-points-button', ['race' => $race], key('assign-all'))
+                    @endif
                 @endcan
             </div>
 
@@ -76,6 +79,7 @@
                             @can('update', $race)
                                 <div class="flex gap-2">
                                     <a href="{{ route('results.edit', $runResult) }}" class="underline">{{ __('Edit') }}</a>
+                                    @livewire('assign-points-button', ['race' => $race, 'runResult' => $runResult], key('assign-'.$runResult->ulid))
                                     <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
                                         @csrf
                                         <button type="submit" class="underline cursor-pointer">

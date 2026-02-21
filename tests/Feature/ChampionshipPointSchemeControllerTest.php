@@ -201,6 +201,9 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         ];
 
         $updatedConfig = [
+            'rain_percentage' => 75,
+            'small_category_percentage' => -25,
+            'small_category_threshold' => 4,
             '20' => ['positions' => [5, 3, 1], 'statuses' => $defaultStatuses],
             '30' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
             '40' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
@@ -233,6 +236,9 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         $championship = Championship::factory()->create();
 
         $pointsConfig = [
+            'rain_percentage' => 50,
+            'small_category_percentage' => -50,
+            'small_category_threshold' => 3,
             '20' => [
                 'positions' => [3, 2, 1],
                 'statuses' => [
@@ -284,6 +290,34 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         ));
     }
 
+    public function test_point_scheme_created_with_custom_modifiers(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()->create();
+
+        $pointsConfig = $this->samplePointsConfig();
+        $pointsConfig['rain_percentage'] = 75;
+        $pointsConfig['small_category_percentage'] = -30;
+        $pointsConfig['small_category_threshold'] = 5;
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.point-schemes.create', $championship))
+            ->post(route('championships.point-schemes.store', $championship), [
+                'name' => 'Custom Modifiers',
+                'points_config' => $pointsConfig,
+            ]);
+
+        $response->assertRedirectToRoute('championships.point-schemes.index', $championship);
+
+        $pointScheme = ChampionshipPointScheme::first();
+
+        $this->assertEquals(75.0, $pointScheme->points_config->rainPercentage);
+        $this->assertEquals(-30.0, $pointScheme->points_config->smallCategoryPercentage);
+        $this->assertEquals(5, $pointScheme->points_config->smallCategoryThreshold);
+    }
+
     /**
      * @return array<string, array{positions: list<int|float>, statuses: array<string, array{mode: string, points?: int|float}>}>
      */
@@ -296,6 +330,9 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         ];
 
         return [
+            'rain_percentage' => 50,
+            'small_category_percentage' => -50,
+            'small_category_threshold' => 3,
             '20' => ['positions' => [3, 2, 1], 'statuses' => $defaultStatuses],
             '30' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
             '40' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],

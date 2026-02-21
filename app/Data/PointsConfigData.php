@@ -14,6 +14,9 @@ class PointsConfigData extends Data
      * @param  array<int, RunTypePointsData>  $runTypes
      */
     public function __construct(
+        public float $rainPercentage = 50,
+        public float $smallCategoryPercentage = -50,
+        public int $smallCategoryThreshold = 3,
         public array $runTypes = [],
     ) {}
 
@@ -26,7 +29,11 @@ class PointsConfigData extends Data
     {
         $runTypes = [];
 
-        foreach ($data as $runTypeValue => $config) {
+        foreach ($data as $key => $config) {
+            if (! is_array($config)) {
+                continue;
+            }
+
             $statuses = [];
 
             foreach ($config['statuses'] ?? [] as $statusValue => $statusConfig) {
@@ -36,13 +43,18 @@ class PointsConfigData extends Data
                 );
             }
 
-            $runTypes[(int) $runTypeValue] = new RunTypePointsData(
+            $runTypes[(int) $key] = new RunTypePointsData(
                 positions: array_map(fn ($v) => (float) $v, $config['positions'] ?? []),
                 statuses: $statuses,
             );
         }
 
-        return new self(runTypes: $runTypes);
+        return new self(
+            rainPercentage: (float) ($data['rain_percentage'] ?? 50),
+            smallCategoryPercentage: (float) ($data['small_category_percentage'] ?? -50),
+            smallCategoryThreshold: (int) ($data['small_category_threshold'] ?? 3),
+            runTypes: $runTypes,
+        );
     }
 
     public function getRunType(RunType $runType): RunTypePointsData
@@ -79,7 +91,11 @@ class PointsConfigData extends Data
      */
     public function toConfig(): array
     {
-        $config = [];
+        $config = [
+            'rain_percentage' => $this->rainPercentage,
+            'small_category_percentage' => $this->smallCategoryPercentage,
+            'small_category_threshold' => $this->smallCategoryThreshold,
+        ];
 
         foreach ($this->runTypes as $runTypeValue => $runTypeData) {
             $statuses = [];

@@ -37,6 +37,66 @@
 
 <x-section-border />
 
+<div class="md:grid md:grid-cols-3 md:gap-6">
+    <x-section-title>
+        <x-slot name="title">{{ __('Modifiers') }}</x-slot>
+        <x-slot name="description">{{ __('Global point modifiers applied to all run types.') }}</x-slot>
+    </x-section-title>
+
+    <div class="mt-5 md:mt-0 md:col-span-2">
+
+        <div class="px-4 py-5">
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="rain_percentage" value="{{ __('Rain race modifier') }}" />
+                    <p class="text-sm text-zinc-500">{{ __('Percentage applied to points when the race is classified as a rain race.') }}</p>
+                    <div class="mt-1 flex items-center gap-2">
+                        <x-input
+                            id="rain_percentage"
+                            type="number"
+                            name="points_config[rain_percentage]"
+                            :value="old('points_config.rain_percentage', $existingConfig['rain_percentage'] ?? 50)"
+                            step="any"
+                            class="w-24" />
+                        <span class="text-sm text-zinc-600">%</span>
+                    </div>
+                    <x-input-error for="points_config.rain_percentage" class="mt-2" />
+                </div>
+
+                <div class="col-span-6 sm:col-span-4">
+                    <x-label for="small_category_percentage" value="{{ __('Small category modifier') }}" />
+                    <p class="text-sm text-zinc-500">{{ __('Percentage applied to points when a category has fewer participants than the threshold.') }}</p>
+                    <div class="mt-1 flex items-center gap-2">
+                        <span class="text-sm text-zinc-600">{{ __('Less than') }}</span>
+                        <x-input
+                            id="small_category_threshold"
+                            type="number"
+                            name="points_config[small_category_threshold]"
+                            :value="old('points_config.small_category_threshold', $existingConfig['small_category_threshold'] ?? 3)"
+                            min="1"
+                            step="1"
+                            class="w-20" />
+                        <span class="text-sm text-zinc-600">{{ __('participants') }}</span>
+                        <span class="text-sm text-zinc-600 mx-1">&rarr;</span>
+                        <x-input
+                            id="small_category_percentage"
+                            type="number"
+                            name="points_config[small_category_percentage]"
+                            :value="old('points_config.small_category_percentage', $existingConfig['small_category_percentage'] ?? -50)"
+                            step="any"
+                            class="w-24" />
+                        <span class="text-sm text-zinc-600">%</span>
+                    </div>
+                    <x-input-error for="points_config.small_category_percentage" class="mt-2" />
+                    <x-input-error for="points_config.small_category_threshold" class="mt-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<x-section-border />
+
 @foreach ($runTypes as $runType)
     <div class="md:grid md:grid-cols-3 md:gap-6" x-data="{
         positions: @js($existingConfig[$runType->value]['positions'] ?? []),

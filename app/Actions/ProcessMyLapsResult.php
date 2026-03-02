@@ -154,7 +154,7 @@ class ProcessMyLapsResult
         // Remove common session prefixes (e.g., "3 - GARA 1   RACE 1 - ")
         $title = preg_replace('/^\d+\s*-\s*[^-]+-\s*/', '', $title);
 
-        return mb_trim($title);
+        return str($title)->replace(['- risultati', '- results'], '', false)->trim()->toString();
     }
 
     /**

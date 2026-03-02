@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\BibReservationController;
+use App\Http\Controllers\ChampionshipAwardController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
 use App\Http\Controllers\ChampionshipCategoryController;
@@ -117,6 +118,8 @@ Route::middleware([
         Route::resource('championships.tire-options', ChampionshipTireController::class)->shallow()->except(['destroy']);
 
         Route::resource('championships.point-schemes', ChampionshipPointSchemeController::class)->shallow()->except(['destroy', 'show']);
+
+        Route::resource('championships.awards', ChampionshipAwardController::class)->shallow();
 
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
 

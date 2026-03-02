@@ -534,5 +534,19 @@
     "Multiple point schemes are available. Select which one to use for assigning points.": "Sono disponibili più schemi punti. Seleziona quale utilizzare per l'assegnazione dei punti.",
     "Points assigned.": "Punti assegnati.",
     "Points assignment queued for all results.": "Assegnazione punti accodata per tutti i risultati.",
-    "No point schemes configured for this championship.": "Nessuno schema punti configurato per questo campionato."
+    "No point schemes configured for this championship.": "Nessuno schema punti configurato per questo campionato.",
+    "Awards": "Classifiche",
+    "Add category award": "Aggiungi classifica categoria",
+    "Add overall award": "Aggiungi classifica generale",
+    "Award created.": "Classifica creata.",
+    "Award updated.": "Classifica aggiornata.",
+    "Award deleted.": "Classifica eliminata.",
+    "No awards configured.": "Nessuna classifica configurata.",
+    "Ranking mode": "Modalità classifica",
+    "Best N races": "Migliori N gare",
+    "Specific races": "Gare specifiche",
+    "Wildcard filter": "Filtro wildcard",
+    "Select categories": "Seleziona categorie",
+    "Select races": "Seleziona gare",
+    "Races counted": "Gare conteggiate"
 }

@@ -31,6 +31,7 @@ use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
@@ -165,6 +166,12 @@ Route::middleware([
 Route::get('races/{race}/results', [PublicRaceResultController::class, 'index'])->name('public.races.results.index');
 
 Route::get('results/{result}/show', [PublicRaceResultController::class, 'show'])->name('public.results.show');
+
+// Public championship awards
+
+Route::get('championships/{championship}/awards', [PublicChampionshipAwardController::class, 'index'])->name('public.championships.awards.index');
+
+Route::get('awards/{award}', [PublicChampionshipAwardController::class, 'show'])->name('public.awards.show');
 
 // Self registration
 

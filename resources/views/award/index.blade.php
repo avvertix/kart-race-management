@@ -41,7 +41,8 @@
                         —
                     @endif
                 </td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-4">
+                    <a href="{{ route('public.awards.show', $item) }}" class="text-zinc-500 hover:text-zinc-700">{{ __('Public page') }}</a>
                     @can('update', $item)
                         <a href="{{ route('awards.edit', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}</a>
                     @endcan

@@ -153,14 +153,12 @@ class CalculateAwardRankingTest extends TestCase
                 'points' => 25,
             ]);
 
-        $p = ParticipantResult::factory()
+        ParticipantResult::factory()
             ->recycle($runResult2)
             ->forParticipant($participant2)
             ->create([
                 'points' => 18,
             ]);
-
-        dump($p->toArray());
 
         $award = ChampionshipAward::factory()->create([
             'championship_id' => $championship->getKey(),

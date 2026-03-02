@@ -7,7 +7,9 @@ namespace App\Actions;
 use App\Models\AwardRankingMode;
 use App\Models\ChampionshipAward;
 use App\Models\ParticipantResult;
+use App\Models\Race;
 use App\Models\WildcardFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class CalculateAwardRanking
@@ -28,114 +30,138 @@ class CalculateAwardRanking
 
     private function calculateCategoryRanking(ChampionshipAward $award): Collection
     {
-        // Get all races within the championship
+        $raceIds = $this->resolveRaceIds($award);
 
-        // Get all races participant results for the award category, applying wildcard filter and ranking mode
-
-        $query = ParticipantResult::query()
-            ->whereNotNull('participant_id')
-            ->where('category_id', $award->category_id)
-            ->whereHas('runResult', function ($q) use ($award) {
-                $q->whereHas('race', function ($q) use ($award) {
-                    $q->where('championship_id', $award->championship_id);
-                });
-            });
+        $query = $this->buildBaseQuery($raceIds)
+            ->where('participant_results.category_id', $award->category_id);
 
         $this->applyWildcardFilter($query, $award->wildcard_filter);
 
-        if ($award->ranking_mode === AwardRankingMode::SpecificRaces) {
-            $raceIds = $award->races()->pluck('races.id');
-
-            $query->whereHas('runResult', function ($q) use ($raceIds) {
-                $q->whereIn('race_id', $raceIds);
-            });
-        }
-
-        $results = $query
-            ->with(['participant:id,first_name,last_name,bib,racer_hash', 'runResult:id,race_id'])
-            ->get();
+        $perRacePoints = $this->fetchPerRacePoints($query);
 
         if ($award->ranking_mode === AwardRankingMode::BestN) {
-            return $this->rankByBestN($results, $award->best_n);
+            return $this->rankByBestN($perRacePoints, $award->best_n);
         }
 
-        return $this->rankByTotal($results);
+        return $this->rankByTotal($perRacePoints);
     }
 
     private function calculateOverallRanking(ChampionshipAward $award): Collection
     {
         $categoryIds = $award->categories()->pluck('categories.id');
+        $raceIds = Race::where('championship_id', $award->championship_id)->pluck('id');
 
-        $results = ParticipantResult::query()
-            ->whereNotNull('participant_id')
-            ->whereIn('category_id', $categoryIds)
-            ->whereHas('runResult', function ($q) use ($award) {
-                $q->whereHas('race', function ($q) use ($award) {
-                    $q->where('championship_id', $award->championship_id);
-                });
-            })
-            ->with(['participant:id,first_name,last_name,bib,racer_hash', 'runResult:id,race_id'])
-            ->get();
+        $perRacePoints = $this->fetchPerRacePoints(
+            $this->buildBaseQuery($raceIds)->whereIn('participant_results.category_id', $categoryIds)
+        );
 
-        return $this->rankByTotal($results);
+        return $this->rankByTotal($perRacePoints);
     }
 
-    private function applyWildcardFilter($query, WildcardFilter $filter): void
+    /**
+     * Resolve the race IDs in scope for this award.
+     * SpecificRaces mode uses the award's selected races; all other modes use every race in the championship.
+     */
+    private function resolveRaceIds(ChampionshipAward $award): Collection
+    {
+        if ($award->ranking_mode === AwardRankingMode::SpecificRaces) {
+            return $award->races()->pluck('races.id');
+        }
+
+        return Race::where('championship_id', $award->championship_id)->pluck('id');
+    }
+
+    /**
+     * Build a base query with participant_results joined to run_results and participants.
+     * The join on participants implicitly excludes unlinked results (null participant_id).
+     *
+     * @param  Collection<int, mixed>  $raceIds
+     */
+    private function buildBaseQuery(Collection $raceIds): Builder
+    {
+        return ParticipantResult::query()
+            ->join('run_results', 'run_results.id', '=', 'participant_results.run_result_id')
+            ->join('participants', 'participants.id', '=', 'participant_results.participant_id')
+            ->whereIn('run_results.race_id', $raceIds);
+    }
+
+    private function applyWildcardFilter(Builder $query, WildcardFilter $filter): void
     {
         if ($filter === WildcardFilter::OnlyWildcards) {
-            $query->whereHas('participant', fn ($q) => $q->where('wildcard', true));
+            $query->where('participants.wildcard', true);
         } elseif ($filter === WildcardFilter::ExcludeWildcards) {
-            $query->whereHas('participant', fn ($q) => $q->where('wildcard', false));
+            $query->where('participants.wildcard', false);
         }
     }
 
-    private function rankByTotal(Collection $results): Collection
+    /**
+     * Aggregate points in the database to one row per participant per race.
+     * This avoids fetching and grouping individual run-result rows in PHP.
+     */
+    private function fetchPerRacePoints(Builder $query): Collection
     {
-        return $results
-            ->groupBy('participant.racer_hash')
-            ->map(function (Collection $participantResults) {
-                $participant = $participantResults->first()->participant;
+        return $query
+            ->selectRaw('
+                participant_results.participant_id,
+                participants.racer_hash,
+                participants.first_name,
+                participants.last_name,
+                participants.bib,
+                run_results.race_id,
+                SUM(participant_results.points) as race_points
+            ')
+            ->groupBy(
+                'participant_results.participant_id',
+                'participants.racer_hash',
+                'participants.first_name',
+                'participants.last_name',
+                'participants.bib',
+                'run_results.race_id',
+            )
+            ->get();
+    }
 
-                $pointsPerRace = $participantResults
-                    ->groupBy('runResult.race_id')
-                    ->map(fn (Collection $raceResults) => $raceResults->sum('points'))
-                    ->all();
+    private function rankByTotal(Collection $perRacePoints): Collection
+    {
+        return $perRacePoints
+            ->groupBy('racer_hash')
+            ->map(function (Collection $raceRows) {
+                $first = $raceRows->first();
+                $pointsPerRace = $raceRows->mapWithKeys(fn ($row) => [$row->race_id => (float) $row->race_points]);
 
                 return [
-                    'participant_id' => $participant->id,
-                    'racer_hash' => $participant->racer_hash,
-                    'first_name' => str()->title($participant->first_name),
-                    'last_name' => str()->title($participant->last_name),
-                    'bib' => $participant->bib,
-                    'total_points' => $participantResults->sum('points'),
-                    'races_counted' => count($pointsPerRace),
-                    'points_per_race' => $pointsPerRace,
+                    'participant_id' => $first->participant_id,
+                    'racer_hash' => $first->racer_hash,
+                    'first_name' => str()->title($first->first_name),
+                    'last_name' => str()->title($first->last_name),
+                    'bib' => $first->bib,
+                    'total_points' => $pointsPerRace->sum(),
+                    'races_counted' => $raceRows->count(),
+                    'points_per_race' => $pointsPerRace->all(),
                 ];
             })
             ->sortByDesc('total_points')
             ->values();
     }
 
-    private function rankByBestN(Collection $results, int $bestN): Collection
+    private function rankByBestN(Collection $perRacePoints, int $bestN): Collection
     {
-        return $results
-            ->groupBy('participant.racer_hash')
-            ->map(function (Collection $participantResults) use ($bestN) {
-                $participant = $participantResults->first()->participant;
-
-                $allPointsPerRace = $participantResults
-                    ->groupBy('runResult.race_id')
-                    ->map(fn (Collection $raceResults) => $raceResults->sum('points'))
+        return $perRacePoints
+            ->groupBy('racer_hash')
+            ->map(function (Collection $raceRows) use ($bestN) {
+                $first = $raceRows->first();
+                $allPointsPerRace = $raceRows
+                    ->mapWithKeys(fn ($row) => [$row->race_id => (float) $row->race_points])
                     ->sortDesc();
 
                 $bestRaceIds = $allPointsPerRace->keys()->take($bestN);
 
                 return [
-                    'participant_id' => $participant->id,
-                    'racer_hash' => $participant->racer_hash,
-                    'first_name' => str()->title($participant->first_name),
-                    'last_name' => str()->title($participant->last_name),
-                    'bib' => $participant->bib,
+                    'participant_id' => $first->participant_id,
+                    'racer_hash' => $first->racer_hash,
+                    'first_name' => str()->title($first->first_name),
+                    'last_name' => str()->title($first->last_name),
+                    'bib' => $first->bib,
                     'total_points' => $allPointsPerRace->take($bestN)->sum(),
                     'races_counted' => $allPointsPerRace->take($bestN)->count(),
                     'points_per_race' => $allPointsPerRace->all(),

@@ -67,7 +67,7 @@
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Name') }}</th>
                 <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Points') }}</th>
                 @foreach($races as $race)
-                    <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-zinc-900 max-w-12 odd:bg-zinc-100"><span class="block w-full truncate">{{ $race->title }}</span></th>
+                    <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-zinc-900 max-w-12 odd:bg-zinc-100"><a href="{{ route('races.results.index', $race) }}" class="block w-full truncate hover:underline">{{ $race->title }}</a></th>
                 @endforeach
             </x-slot>
 

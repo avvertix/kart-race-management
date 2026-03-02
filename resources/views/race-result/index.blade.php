@@ -35,6 +35,17 @@
                         {{ __('Wet race') }}
                     </p>
                 @endif
+
+                <p class="space-x-4">
+                    <a class="inline-flex items-center gap-2" target="_blank" href="{{ route('championships.awards.index', $race->championship) }}">
+                        <x-ri-external-link-line class="size-4 text-zinc-500 shrink-0" />
+                        {{ __('Championship awards') }}
+                    </a>
+                    <a class="inline-flex items-center gap-2" target="_blank" href="{{ route('public.races.results.index', $race) }}">
+                        <x-ri-external-link-line class="size-4 text-zinc-500 shrink-0" />
+                        {{ __('Public results') }}
+                    </a>
+                </p>
             </div>
         </div>
 
@@ -77,19 +88,19 @@
                         </td>
                         <td class="px-2 py-3 border-b">
                             @can('update', $race)
-                                <div class="flex gap-2">
-                                    <a href="{{ route('results.edit', $runResult) }}" class="underline">{{ __('Edit') }}</a>
-                                    @livewire('assign-points-button', ['race' => $race, 'runResult' => $runResult], key('assign-'.$runResult->ulid))
+                                <div class="flex gap-2 text-sm font-medium">
+                                    <a href="{{ route('results.edit', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}</a>
+
                                     <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
                                         @csrf
-                                        <button type="submit" class="underline cursor-pointer">
+                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">
                                             {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
                                         </button>
                                     </form>
                                     <form action="{{ route('results.destroy', $runResult) }}" method="post">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="underline cursor-pointer">{{ __('Delete') }}</button>
+                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Delete') }}</button>
                                     </form>
                                 </div>
                             @endcan

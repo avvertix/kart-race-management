@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http;
 
-use App\Http\Middleware\BasicBotProtection;
 use App\Http\Middleware\Locale;
 use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\TraceAgentMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;

@@ -44,6 +44,7 @@ use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use App\Http\Controllers\UpdateRaceScoringController;
 use App\Http\Controllers\UserController;
+use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\DenyAgentMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -63,6 +64,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    DenyAgentMiddleware::class,
 ])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 });
@@ -73,6 +75,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    DenyAgentMiddleware::class,
 ])
     ->prefix('m')
     ->group(function () {
@@ -165,7 +168,7 @@ Route::get('results/{result}/show', [PublicRaceResultController::class, 'show'])
 
 // Self registration
 
-Route::resource('races.registration', RaceRegistrationController::class)->only(['show', 'create', 'store'])->shallow();
+Route::middleware(DenyAgentMiddleware::class)->resource('races.registration', RaceRegistrationController::class)->only(['show', 'create', 'store'])->shallow();
 
 Route::post('registration-verification', [ParticipantSignatureNotificationController::class, 'store'])
     ->name('registration-verification.send')

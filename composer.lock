@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b91472ad60acce2365c3ab3cebdf289",
+    "content-hash": "17c837faf81f8a2b75a41a942894e157",
     "packages": [
         {
             "name": "andreiio/blade-remix-icon",
@@ -63,6 +63,78 @@
                 }
             ],
             "time": "2026-01-29T12:19:49+00:00"
+        },
+        {
+            "name": "avvertix/laravel-agent-request",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/avvertix/laravel-agent-request.git",
+                "reference": "07c6e1c2c55619d79bd43e1e160a918b073fff65"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/avvertix/laravel-agent-request/zipball/07c6e1c2c55619d79bd43e1e160a918b073fff65",
+                "reference": "07c6e1c2c55619d79bd43e1e160a918b073fff65",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^11.0||^12.0",
+                "illuminate/http": "^11.0||^12.0",
+                "illuminate/support": "^11.0||^12.0",
+                "php": "^8.3",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.8",
+                "orchestra/testbench": "^10.0.0||^9.0.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-arch": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Avvertix\\AgentRequest\\LaravelAgentRequest\\LaravelAgentRequestServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Avvertix\\AgentRequest\\LaravelAgentRequest\\": "src/",
+                    "Avvertix\\AgentRequest\\LaravelAgentRequest\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alessio Vertemati",
+                    "email": "alessio@avsoft.it",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Attempt to identify if an AI Agent want to browse a page",
+            "homepage": "https://github.com/avvertix/laravel-agent-request",
+            "keywords": [
+                "agents",
+                "artificial-intelligence",
+                "laravel",
+                "request"
+            ],
+            "support": {
+                "issues": "https://github.com/avvertix/laravel-agent-request/issues",
+                "source": "https://github.com/avvertix/laravel-agent-request/tree/v0.0.2"
+            },
+            "time": "2026-03-05T07:00:27+00:00"
         },
         {
             "name": "azjezz/psl",

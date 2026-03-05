@@ -6,6 +6,7 @@ namespace App\Http;
 
 use App\Http\Middleware\BasicBotProtection;
 use App\Http\Middleware\Locale;
+use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\TraceAgentMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -34,13 +35,13 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            BasicBotProtection::class,
             Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            TraceAgentMiddleware::class,
             Locale::class,
         ],
 

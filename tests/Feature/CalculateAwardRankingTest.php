@@ -24,7 +24,7 @@ class CalculateAwardRankingTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
         $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
-        $runResult = RunResult::factory()->create(['race_id' => $race->getKey()]);
+        $runResult = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
 
         $participant1 = Participant::factory()->create([
             'championship_id' => $championship->getKey(),
@@ -80,8 +80,8 @@ class CalculateAwardRankingTest extends TestCase
 
         $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
         $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
-        $runResult1 = RunResult::factory()->create(['race_id' => $race1->getKey()]);
-        $runResult2 = RunResult::factory()->create(['race_id' => $race2->getKey()]);
+        $runResult1 = RunResult::factory()->published()->create(['race_id' => $race1->getKey()]);
+        $runResult2 = RunResult::factory()->published()->create(['race_id' => $race2->getKey()]);
 
         $participant = Participant::factory()->create([
             'championship_id' => $championship->getKey(),
@@ -124,8 +124,8 @@ class CalculateAwardRankingTest extends TestCase
 
         $race1 = Race::factory()->recycle($championship)->create();
         $race2 = Race::factory()->recycle($championship)->create();
-        $runResult1 = RunResult::factory()->recycle($race1)->create();
-        $runResult2 = RunResult::factory()->recycle($race2)->create();
+        $runResult1 = RunResult::factory()->published()->recycle($race1)->create();
+        $runResult2 = RunResult::factory()->published()->recycle($race2)->create();
 
         $racerHash = 'ABCD1234';
 
@@ -183,7 +183,7 @@ class CalculateAwardRankingTest extends TestCase
         $runResults = [];
         for ($i = 0; $i < 3; $i++) {
             $races[$i] = Race::factory()->create(['championship_id' => $championship->getKey()]);
-            $runResults[$i] = RunResult::factory()->create(['race_id' => $races[$i]->getKey()]);
+            $runResults[$i] = RunResult::factory()->published()->create(['race_id' => $races[$i]->getKey()]);
         }
 
         $participant = Participant::factory()->create([
@@ -241,9 +241,9 @@ class CalculateAwardRankingTest extends TestCase
         $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
         $race3 = Race::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $runResult1 = RunResult::factory()->create(['race_id' => $race1->getKey()]);
-        $runResult2 = RunResult::factory()->create(['race_id' => $race2->getKey()]);
-        $runResult3 = RunResult::factory()->create(['race_id' => $race3->getKey()]);
+        $runResult1 = RunResult::factory()->published()->create(['race_id' => $race1->getKey()]);
+        $runResult2 = RunResult::factory()->published()->create(['race_id' => $race2->getKey()]);
+        $runResult3 = RunResult::factory()->published()->create(['race_id' => $race3->getKey()]);
 
         $participant = Participant::factory()->create([
             'championship_id' => $championship->getKey(),
@@ -290,7 +290,7 @@ class CalculateAwardRankingTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
         $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
-        $runResult = RunResult::factory()->create(['race_id' => $race->getKey()]);
+        $runResult = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
 
         $regular = Participant::factory()->create([
             'championship_id' => $championship->getKey(),
@@ -336,7 +336,7 @@ class CalculateAwardRankingTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
         $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
-        $runResult = RunResult::factory()->create(['race_id' => $race->getKey()]);
+        $runResult = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
 
         $regular = Participant::factory()->create([
             'championship_id' => $championship->getKey(),
@@ -383,7 +383,7 @@ class CalculateAwardRankingTest extends TestCase
         $cat1 = Category::factory()->create(['championship_id' => $championship->getKey()]);
         $cat2 = Category::factory()->create(['championship_id' => $championship->getKey()]);
         $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
-        $runResult = RunResult::factory()->create(['race_id' => $race->getKey()]);
+        $runResult = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
 
         $participant = Participant::factory()->create([
             'championship_id' => $championship->getKey(),
@@ -417,12 +417,44 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertEquals(35.0, $ranking[0]['total_points']);
     }
 
+    public function test_unpublished_run_results_are_excluded(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'published_at' => null,
+        ]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+        ]);
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'participant_id' => $participant->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 25,
+        ]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertCount(0, $ranking);
+    }
+
     public function test_results_without_participant_are_excluded(): void
     {
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
         $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
-        $runResult = RunResult::factory()->create(['race_id' => $race->getKey()]);
+        $runResult = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
 
         ParticipantResult::factory()->create([
             'run_result_id' => $runResult->getKey(),
@@ -448,7 +480,7 @@ class CalculateAwardRankingTest extends TestCase
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
         $otherRace = Race::factory()->create(['championship_id' => $otherChampionship->getKey()]);
-        $otherRunResult = RunResult::factory()->create(['race_id' => $otherRace->getKey()]);
+        $otherRunResult = RunResult::factory()->published()->create(['race_id' => $otherRace->getKey()]);
 
         $participant = Participant::factory()->create([
             'championship_id' => $otherChampionship->getKey(),

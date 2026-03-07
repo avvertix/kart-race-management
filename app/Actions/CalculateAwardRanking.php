@@ -82,7 +82,8 @@ class CalculateAwardRanking
         return ParticipantResult::query()
             ->join('run_results', 'run_results.id', '=', 'participant_results.run_result_id')
             ->join('participants', 'participants.id', '=', 'participant_results.participant_id')
-            ->whereIn('run_results.race_id', $raceIds);
+            ->whereIn('run_results.race_id', $raceIds)
+            ->whereNotNull('run_results.published_at');
     }
 
     private function applyWildcardFilter(Builder $query, WildcardFilter $filter): void

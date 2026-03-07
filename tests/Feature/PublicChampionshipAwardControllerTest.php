@@ -7,7 +7,6 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipAward;
-use App\Models\Race;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
@@ -45,7 +44,6 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $response->assertSuccessful();
         $response->assertViewIs('public-championship-award.index');
         $response->assertViewHas('groupedAwards');
-        $response->assertViewHas('rankingsPerAward');
         $response->assertSee('Category Trophy');
         $response->assertSee('Overall Trophy');
 
@@ -125,21 +123,22 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $response->assertSee(route('public.awards.show', $award));
     }
 
-    public function test_index_shows_race_columns_from_championship(): void
+    public function test_index_shows_category_name_next_to_award(): void
     {
         $championship = Championship::factory()->create();
-        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
-        $race = Race::factory()->create([
+        $category = Category::factory()->create([
             'championship_id' => $championship->getKey(),
-            'title' => 'Race One',
+            'name' => 'Junior',
         ]);
 
         ChampionshipAward::factory()->categoryAward($category)->create([
             'championship_id' => $championship->getKey(),
+            'name' => 'Junior Trophy',
         ]);
 
         $response = $this->get(route('public.championships.awards.index', $championship));
 
-        $response->assertSee('Race One');
+        $response->assertSee('Junior Trophy');
+        $response->assertSee('Junior');
     }
 }

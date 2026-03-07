@@ -13,10 +13,10 @@ return [
     */
 
     'types' => [
-        'WARM_UP' => 'Free Practice',
-        'QUALIFY' => 'Qualifying',
-        'RACE_1' => 'Pre-final (Race 1)',
-        'RACE_2' => 'Final (Race 2)',
+        'WARM_UP' => 'Prove Libere',
+        'QUALIFY' => 'Qualifiche',
+        'RACE_1' => 'Pre-finale (Gara 1)',
+        'RACE_2' => 'Finale (Gara 2)',
     ],
 
 ];

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ChampionshipAwardApiController;
 use App\Http\Controllers\ChampionshipRaceCalendarController;
 use App\Http\Controllers\RaceCalendarController;
 use App\Http\Middleware\Locale;
@@ -23,5 +24,6 @@ Route::middleware([Locale::class])->group(function () {
     Route::get('/championship/{championship}/races.{format}', [ChampionshipRaceCalendarController::class, 'show'])
         ->where('format', 'ics|json')
         ->name('calendar.championship.races');
+    Route::get('/championship/{championship}/awards', ChampionshipAwardApiController::class)->name('api.championship.awards');
 
 });

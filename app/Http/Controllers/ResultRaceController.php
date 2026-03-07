@@ -9,6 +9,7 @@ use App\Actions\ProcessMyLapsResult;
 use App\Jobs\AssignPointsToRaceResults;
 use App\Jobs\LinkParticipantResults;
 use App\Models\ChampionshipPointScheme;
+use App\Models\Participant;
 use App\Models\ParticipantResult;
 use App\Models\Race;
 use App\Models\RunResult;
@@ -148,7 +149,11 @@ class ResultRaceController extends Controller
             'title' => ['required', 'string', 'max:250'],
             'run_type' => ['required', Rule::enum(RunType::class)],
             'participant_results' => ['array'],
-            'participant_results.*.id' => ['required', 'integer'],
+            'participant_results.*.id' => [
+                'required',
+                'integer',
+                Rule::exists('participant_results', 'id')->where('run_result_id', $result->getKey()),
+            ],
             'participant_results.*.bib' => ['required', 'integer'],
             'participant_results.*.name' => ['required', 'string', 'max:250'],
             'participant_results.*.category' => ['required', 'string', 'max:250'],
@@ -160,15 +165,30 @@ class ResultRaceController extends Controller
             'run_type' => $validated['run_type'],
         ]);
 
+        $participantIds = collect($validated['participant_results'] ?? [])
+            ->pluck('participant_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $participants = Participant::whereIn('id', $participantIds)
+            ->get()
+            ->keyBy('id');
+
         foreach ($validated['participant_results'] ?? [] as $participantResultData) {
             $participantResult = ParticipantResult::where('run_result_id', $result->getKey())
                 ->findOrFail($participantResultData['id']);
+
+            $categoryId = $participantResultData['participant_id'] !== null
+                ? $participants->get($participantResultData['participant_id'])?->category_id
+                : null;
 
             $participantResult->update([
                 'bib' => $participantResultData['bib'],
                 'name' => $participantResultData['name'],
                 'category' => $participantResultData['category'],
                 'participant_id' => $participantResultData['participant_id'],
+                'category_id' => $categoryId,
             ]);
         }
 

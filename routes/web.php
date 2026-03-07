@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\BibReservationController;
+use App\Http\Controllers\ChampionshipAwardController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
 use App\Http\Controllers\ChampionshipCategoryController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
@@ -121,6 +123,8 @@ Route::middleware([
 
         Route::resource('championships.point-schemes', ChampionshipPointSchemeController::class)->shallow()->except(['destroy', 'show']);
 
+        Route::resource('championships.awards', ChampionshipAwardController::class)->shallow();
+
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
 
         Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
@@ -165,6 +169,12 @@ Route::middleware([
 Route::get('races/{race}/results', [PublicRaceResultController::class, 'index'])->name('public.races.results.index');
 
 Route::get('results/{result}/show', [PublicRaceResultController::class, 'show'])->name('public.results.show');
+
+// Public championship awards
+
+Route::get('championships/{championship}/awards', [PublicChampionshipAwardController::class, 'index'])->name('public.championships.awards.index');
+
+Route::get('awards/{award}', [PublicChampionshipAwardController::class, 'show'])->name('public.awards.show');
 
 // Self registration
 

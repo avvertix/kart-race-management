@@ -91,6 +91,14 @@ class Championship extends Model
     }
 
     /**
+     * Get the awards.
+     */
+    public function awards(): HasMany
+    {
+        return $this->hasMany(ChampionshipAward::class);
+    }
+
+    /**
      * Get the BIB reservations.
      */
     public function reservations(): HasMany

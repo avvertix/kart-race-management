@@ -79,7 +79,7 @@ class ChampionshipAwardController extends Controller
      */
     public function show(ChampionshipAward $award)
     {
-        $ranking = app(CalculateAwardRanking::class)($award);
+        $ranking = app(CalculateAwardRanking::class)($award, publishedOnly: false);
         $championship = $award->championship;
 
         return view('award.show', [

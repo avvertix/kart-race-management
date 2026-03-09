@@ -417,6 +417,39 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertEquals(35.0, $ranking[0]['total_points']);
     }
 
+    public function test_unpublished_run_results_included_when_published_only_false(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'published_at' => null,
+        ]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+        ]);
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'participant_id' => $participant->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 25,
+        ]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $ranking = app(CalculateAwardRanking::class)($award, publishedOnly: false);
+
+        $this->assertCount(1, $ranking);
+        $this->assertEquals(25.0, $ranking[0]['total_points']);
+    }
+
     public function test_unpublished_run_results_are_excluded(): void
     {
         $championship = Championship::factory()->create();

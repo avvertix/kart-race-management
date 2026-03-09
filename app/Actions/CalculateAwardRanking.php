@@ -19,20 +19,20 @@ class CalculateAwardRanking
      *
      * @return Collection<int, array{participant_id: int, first_name: string, last_name: string, bib: int, total_points: float, races_counted: int, points_per_race: array<int, float>}>
      */
-    public function __invoke(ChampionshipAward $award): Collection
+    public function __invoke(ChampionshipAward $award, bool $publishedOnly = true): Collection
     {
         if ($award->isCategoryAward()) {
-            return $this->calculateCategoryRanking($award);
+            return $this->calculateCategoryRanking($award, $publishedOnly);
         }
 
-        return $this->calculateOverallRanking($award);
+        return $this->calculateOverallRanking($award, $publishedOnly);
     }
 
-    private function calculateCategoryRanking(ChampionshipAward $award): Collection
+    private function calculateCategoryRanking(ChampionshipAward $award, bool $publishedOnly): Collection
     {
         $raceIds = $this->resolveRaceIds($award);
 
-        $query = $this->buildBaseQuery($raceIds)
+        $query = $this->buildBaseQuery($raceIds, $publishedOnly)
             ->where('participant_results.category_id', $award->category_id);
 
         $this->applyWildcardFilter($query, $award->wildcard_filter);
@@ -46,13 +46,13 @@ class CalculateAwardRanking
         return $this->rankByTotal($perRacePoints);
     }
 
-    private function calculateOverallRanking(ChampionshipAward $award): Collection
+    private function calculateOverallRanking(ChampionshipAward $award, bool $publishedOnly): Collection
     {
         $categoryIds = $award->categories()->pluck('categories.id');
         $raceIds = Race::where('championship_id', $award->championship_id)->pluck('id');
 
         $perRacePoints = $this->fetchPerRacePoints(
-            $this->buildBaseQuery($raceIds)->whereIn('participant_results.category_id', $categoryIds)
+            $this->buildBaseQuery($raceIds, $publishedOnly)->whereIn('participant_results.category_id', $categoryIds)
         );
 
         return $this->rankByTotal($perRacePoints);
@@ -77,13 +77,18 @@ class CalculateAwardRanking
      *
      * @param  Collection<int, mixed>  $raceIds
      */
-    private function buildBaseQuery(Collection $raceIds): Builder
+    private function buildBaseQuery(Collection $raceIds, bool $publishedOnly): Builder
     {
-        return ParticipantResult::query()
+        $query = ParticipantResult::query()
             ->join('run_results', 'run_results.id', '=', 'participant_results.run_result_id')
             ->join('participants', 'participants.id', '=', 'participant_results.participant_id')
-            ->whereIn('run_results.race_id', $raceIds)
-            ->whereNotNull('run_results.published_at');
+            ->whereIn('run_results.race_id', $raceIds);
+
+        if ($publishedOnly) {
+            $query->whereNotNull('run_results.published_at');
+        }
+
+        return $query;
     }
 
     private function applyWildcardFilter(Builder $query, WildcardFilter $filter): void

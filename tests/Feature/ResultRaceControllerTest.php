@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Jobs\LinkParticipantResults;
 use App\Models\Participant;
 use App\Models\ParticipantResult;
 use App\Models\Race;
@@ -11,6 +12,7 @@ use App\Models\RunResult;
 use App\Models\RunType;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
@@ -293,6 +295,73 @@ class ResultRaceControllerTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_link_participants_dispatches_job(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->admin()->create();
+        $runResult = RunResult::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('results.link-participants', $runResult));
+
+        $response->assertRedirect();
+        Queue::assertPushed(LinkParticipantResults::class, function ($job) use ($runResult) {
+            return $job->runResult->is($runResult);
+        });
+    }
+
+    public function test_link_all_participants_dispatches_job_for_each_result(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->admin()->create();
+        $race = Race::factory()->create();
+        $results = RunResult::factory()->count(3)->create(['race_id' => $race->getKey()]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('races.results.link-participants', $race));
+
+        $response->assertRedirect();
+        Queue::assertPushed(LinkParticipantResults::class, 3);
+        $results->each(fn ($result) => Queue::assertPushed(
+            LinkParticipantResults::class,
+            fn ($job) => $job->runResult->is($result)
+        ));
+    }
+
+    public function test_link_all_participants_requires_authorization(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->timekeeper()->create();
+        $race = Race::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('races.results.link-participants', $race));
+
+        $response->assertForbidden();
+        Queue::assertNothingPushed();
+    }
+
+    public function test_link_participants_requires_authorization(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->timekeeper()->create();
+        $runResult = RunResult::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('results.link-participants', $runResult));
+
+        $response->assertForbidden();
+        Queue::assertNothingPushed();
+    }
+
     public function test_edit_form_shows_run_result(): void
     {
         $user = User::factory()->admin()->create();
@@ -476,6 +545,120 @@ class ResultRaceControllerTest extends TestCase
 
         $participantResult->refresh();
         $this->assertNull($participantResult->participant_id);
+    }
+
+    public function test_update_rejects_participant_result_id_from_different_run_result(): void
+    {
+        $user = User::factory()->admin()->create();
+        $race = Race::factory()->create();
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $otherRunResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $otherParticipantResult = ParticipantResult::factory()->create([
+            'run_result_id' => $otherRunResult->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->put(route('results.update', $runResult), [
+                'title' => $runResult->title,
+                'run_type' => $runResult->run_type->value,
+                'participant_results' => [
+                    [
+                        'id' => $otherParticipantResult->getKey(),
+                        'bib' => 1,
+                        'name' => 'Test',
+                        'category' => 'Cat',
+                        'participant_id' => null,
+                    ],
+                ],
+            ]);
+
+        $response->assertSessionHasErrors('participant_results.0.id');
+    }
+
+    public function test_linking_participant_syncs_category_id(): void
+    {
+        $user = User::factory()->admin()->create();
+        $race = Race::factory()->create();
+
+        $participant = Participant::factory()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $participantResult = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'participant_id' => null,
+            'category_id' => null,
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->put(route('results.update', $runResult), [
+                'title' => $runResult->title,
+                'run_type' => $runResult->run_type->value,
+                'participant_results' => [
+                    [
+                        'id' => $participantResult->getKey(),
+                        'bib' => $participantResult->bib,
+                        'name' => $participantResult->name,
+                        'category' => $participantResult->category,
+                        'participant_id' => $participant->getKey(),
+                    ],
+                ],
+            ]);
+
+        $participantResult->refresh();
+        $this->assertEquals($participant->category_id, $participantResult->category_id);
+    }
+
+    public function test_unlinking_participant_clears_category_id(): void
+    {
+        $user = User::factory()->admin()->create();
+        $race = Race::factory()->create();
+
+        $participant = Participant::factory()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $participantResult = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'participant_id' => $participant->getKey(),
+            'category_id' => $participant->category_id,
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->put(route('results.update', $runResult), [
+                'title' => $runResult->title,
+                'run_type' => $runResult->run_type->value,
+                'participant_results' => [
+                    [
+                        'id' => $participantResult->getKey(),
+                        'bib' => $participantResult->bib,
+                        'name' => $participantResult->name,
+                        'category' => $participantResult->category,
+                        'participant_id' => null,
+                    ],
+                ],
+            ]);
+
+        $participantResult->refresh();
+        $this->assertNull($participantResult->category_id);
     }
 
     public function test_update_requires_authorization(): void

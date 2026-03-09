@@ -21,13 +21,17 @@
 
             @can('update', $race)
                 <div class="flex items-center gap-4 mt-2">
-                    <a href="{{ route('results.edit', $runResult) }}" class="underline text-sm">{{ __('Edit result') }}</a>
+                    <x-secondary-button-link href="{{ route('results.edit', $runResult) }}">{{ __('Edit result') }}</x-secondary-button-link>
                     @livewire('assign-points-button', ['race' => $race, 'runResult' => $runResult])
                     <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
                         @csrf
-                        <button type="submit" class="underline cursor-pointer text-sm">
+                        <x-secondary-button type="submit" >
                             {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
-                        </button>
+                        </x-secondary-button>
+                    </form>
+                    <form action="{{ route('results.link-participants', $runResult) }}" method="post">
+                        @csrf
+                        <x-secondary-button type="submit" >{{ __('Link participants') }}</x-secondary-button>
                     </form>
                 </div>
             @endcan

@@ -1,7 +1,7 @@
 <div>
-    <button type="button" wire:click="openAssignPoints" class="underline cursor-pointer text-sm">
+    <x-secondary-button type="button" wire:click="openAssignPoints" >
         {{ __('Assign points') }}
-    </button>
+    </x-secondary-button>
 
     <x-dialog-modal wire:model.live="showModal">
         <x-slot name="title">

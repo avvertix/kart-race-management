@@ -17,6 +17,12 @@
                     </x-button-link>
                     @if ($runResults->isNotEmpty())
                         @livewire('assign-points-button', ['race' => $race], key('assign-all'))
+                        <form action="{{ route('races.results.link-participants', $race) }}" method="post">
+                            @csrf
+                            <x-secondary-button type="submit" class="inline-flex items-center px-4 py-2 bg-white border border-zinc-300 rounded-md font-semibold text-xs text-zinc-700 uppercase tracking-widest shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                {{ __('Link all participants') }}
+                            </x-secondary-button>
+                        </form>
                     @endif
                 @endcan
             </div>
@@ -91,6 +97,10 @@
                                 <div class="flex gap-2 text-sm font-medium">
                                     <a href="{{ route('results.edit', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}</a>
 
+                                    <form action="{{ route('results.link-participants', $runResult) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Link') }}</button>
+                                    </form>
                                     <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
                                         @csrf
                                         <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">

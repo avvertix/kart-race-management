@@ -235,6 +235,32 @@ class ResultRaceController extends Controller
     }
 
     /**
+     * Dispatch the LinkParticipantResults job for all run results in a race.
+     */
+    public function linkAllParticipants(Race $race)
+    {
+        $this->authorize('update', $race);
+
+        $race->results()->each(fn (RunResult $result) => LinkParticipantResults::dispatch($result));
+
+        return redirect()->back()->with('flash.banner', __('Participant linking queued for all results.'));
+    }
+
+    /**
+     * Dispatch the LinkParticipantResults job for a run result.
+     */
+    public function linkParticipants(RunResult $result)
+    {
+        $result->load('race');
+
+        $this->authorize('update', $result->race);
+
+        LinkParticipantResults::dispatch($result);
+
+        return redirect()->back()->with('flash.banner', __('Participant linking queued.'));
+    }
+
+    /**
      * Toggle the publish status of a run result.
      */
     public function togglePublish(RunResult $result)

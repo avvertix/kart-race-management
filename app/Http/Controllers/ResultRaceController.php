@@ -37,8 +37,10 @@ class ResultRaceController extends Controller
                     $query->whereNull('participant_id');
                 },
             ])
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('run_type')
+            ->orderBy('title')
+            ->get()
+            ->groupBy('run_type');
 
         return view('race-result.index', [
             'race' => $race,
@@ -232,6 +234,18 @@ class ResultRaceController extends Controller
         AssignPointsToRaceResults::dispatch($race, $pointScheme);
 
         return redirect()->back()->with('flash.banner', __('Points assignment queued for all results.'));
+    }
+
+    /**
+     * Publish all run results for a race.
+     */
+    public function publishAll(Race $race)
+    {
+        $this->authorize('update', $race);
+
+        $race->results()->whereNull('published_at')->update(['published_at' => now()]);
+
+        return redirect()->back()->with('flash.banner', __('All results published.'));
     }
 
     /**

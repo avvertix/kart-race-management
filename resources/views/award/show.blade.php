@@ -3,6 +3,10 @@
         {{ $award->name }} - {{ $championship->title }}
     </x-slot>
     <x-slot name="actions">
+        <a class="inline-flex items-center gap-2" target="_blank" href="{{ route('public.awards.show', $award) }}">
+            <x-ri-external-link-line class="size-4 text-zinc-500 shrink-0" />
+            {{ __('Public page') }}
+        </a>
         @can('update', $award)
             <x-button-link href="{{ route('awards.edit', $award) }}">
                 {{ __('Edit') }}
@@ -20,7 +24,7 @@
     </x-slot>
 
     <div class="mb-6">
-        <dl class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-3">
+        <dl class="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-4">
             <div>
                 <dt class="text-sm font-medium text-zinc-500">{{ __('Type') }}</dt>
                 <dd class="mt-1 text-sm text-zinc-900">{{ $award->type->localizedName() }}</dd>

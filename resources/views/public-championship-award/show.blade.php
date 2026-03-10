@@ -11,9 +11,9 @@
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
 
         <div class="mb-4">
+            <a class="text-sm underline" href="{{ route('public.championships.awards.index', $championship) }}">{{ __('Back to awards') }}</a>
             <h3 class="text-lg font-bold">{{ $award->name }}</h3>
             <p class="text-sm text-zinc-500">{{ $award->type->localizedName() }}</p>
-            <a class="text-sm underline" href="{{ route('public.championships.awards.index', $championship) }}">{{ __('Back to awards') }}</a>
         </div>
 
         <div class="overflow-x-auto">

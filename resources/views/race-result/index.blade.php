@@ -16,11 +16,17 @@
                         {{ __('Upload results') }}
                     </x-button-link>
                     @if ($runResults->isNotEmpty())
-                        @livewire('assign-points-button', ['race' => $race], key('assign-all'))
                         <form action="{{ route('races.results.link-participants', $race) }}" method="post">
                             @csrf
                             <x-secondary-button type="submit" class="inline-flex items-center px-4 py-2 bg-white border border-zinc-300 rounded-md font-semibold text-xs text-zinc-700 uppercase tracking-widest shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 {{ __('Link all participants') }}
+                            </x-secondary-button>
+                        </form>
+                        @livewire('assign-points-button', ['race' => $race], key('assign-all'))
+                        <form action="{{ route('races.results.publish-all', $race) }}" method="post">
+                            @csrf
+                            <x-secondary-button type="submit">
+                                {{ __('Publish all') }}
                             </x-secondary-button>
                         </form>
                     @endif
@@ -56,74 +62,70 @@
         </div>
 
 
-        <table class="w-full text-sm">
-            <thead>
-                <tr>
-                    <td class="w-4/12 text-xs">{{ __('Title') }}</td>
-                    <td class="w-2/12 text-xs">{{ __('Session') }}</td>
-                    <td class="w-2/12 text-xs">{{ __('Participants') }}</td>
-                    <td class="w-2/12 text-xs">{{ __('Published') }}</td>
-                    <td class="w-1/12 text-xs">{{ __('Upload date') }}</td>
-                    <td class="w-1/12 text-xs"></td>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($runResults as $runResult)
+        @forelse ($runResults as $runType => $group)
+            <h4 class="font-semibold text-lg text-zinc-700 mt-6 mb-2 flex items-center gap-2">
+                {{ $group->first()->run_type->localizedName() }}
+                <span class="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-xs font-medium text-zinc-600">{{ $group->count() }}</span>
+            </h4>
+
+            <x-table>
+                <x-slot name="head">
+                    <th scope="col" class="w-2/5 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Title') }}</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Participants') }}</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Published') }}</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Upload date') }}</th>
+                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                        <span class="sr-only">{{ __('Actions') }}</span>
+                    </th>
+                </x-slot>
+
+                @foreach ($group as $runResult)
                     <tr>
-                        <td class="px-2 py-3 border-b">
-                            <a class="underline" href="{{ route('results.show', $runResult) }}">{{ $runResult->title }}</a>
+                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-zinc-900 sm:pl-6">
+                            <a href="{{ route('results.show', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ $runResult->title }}</a>
                         </td>
-                        <td class="px-2 py-3 border-b">
-                            {{ $runResult->run_type->localizedName() }}
-                        </td>
-                        <td class="px-2 py-3 border-b">
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                             {{ $runResult->participant_results_count }}
                             @if ($runResult->unlinked_participants_count > 0)
-                                <span class="text-zinc-500 text-xs">({{ $runResult->unlinked_participants_count }} {{ __('unlinked') }})</span>
+                                <span class="text-xs">({{ $runResult->unlinked_participants_count }} {{ __('unlinked') }})</span>
                             @endif
                         </td>
-                        <td class="px-2 py-3 border-b">
+                        <td class="whitespace-nowrap px-3 py-4 text-sm">
                             @if ($runResult->isPublished())
                                 <span class="text-green-600">{{ __('Published') }}</span>
                             @else
                                 <span class="text-zinc-400">{{ __('Draft') }}</span>
                             @endif
                         </td>
-                        <td class="px-2 py-3 border-b">
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                             <x-time :value="$runResult->created_at" />
                         </td>
-                        <td class="px-2 py-3 border-b">
+                        <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-4">
                             @can('update', $race)
-                                <div class="flex gap-2 text-sm font-medium">
-                                    <a href="{{ route('results.edit', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}</a>
+                                <a href="{{ route('results.edit', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}</a>
 
-                                    <form action="{{ route('results.link-participants', $runResult) }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Link') }}</button>
-                                    </form>
-                                    <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">
-                                            {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('results.destroy', $runResult) }}" method="post">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Delete') }}</button>
-                                    </form>
-                                </div>
+                                <form class="inline" action="{{ route('results.link-participants', $runResult) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Link') }}</button>
+                                </form>
+                                <form class="inline" action="{{ route('results.toggle-publish', $runResult) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">
+                                        {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
+                                    </button>
+                                </form>
+                                <form class="inline" action="{{ route('results.destroy', $runResult) }}" method="post">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Delete') }}</button>
+                                </form>
                             @endcan
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5">
-                            <p class="text-zinc-600 p-4">{{ __('No results uploaded.') }}</p>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                @endforeach
+            </x-table>
+        @empty
+            <p class="text-zinc-600 p-4">{{ __('No results uploaded.') }}</p>
+        @endforelse
     </div>
 </x-app-layout>

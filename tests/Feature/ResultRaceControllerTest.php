@@ -52,8 +52,8 @@ class ResultRaceControllerTest extends TestCase
         $response->assertViewHas('runResults');
 
         $runResults = $response->viewData('runResults');
-        $this->assertEquals(1, $runResults->count());
-        $this->assertEquals(3, $runResults->first()->participant_results_count);
+        $this->assertEquals(1, $runResults->count()); // one run_type group
+        $this->assertEquals(3, $runResults->first()->first()->participant_results_count);
     }
 
     public function test_create_page_loads(): void
@@ -310,6 +310,29 @@ class ResultRaceControllerTest extends TestCase
         Queue::assertPushed(LinkParticipantResults::class, function ($job) use ($runResult) {
             return $job->runResult->is($runResult);
         });
+    }
+
+    public function test_publish_all_publishes_unpublished_results(): void
+    {
+        $user = User::factory()->admin()->create();
+        $race = Race::factory()->create();
+        $unpublished1 = RunResult::factory()->create(['race_id' => $race->getKey(), 'published_at' => null]);
+        $unpublished2 = RunResult::factory()->create(['race_id' => $race->getKey(), 'published_at' => null]);
+        $alreadyPublished = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
+
+        $this->actingAs($user)->post(route('races.results.publish-all', $race))->assertRedirect();
+
+        $this->assertNotNull($unpublished1->fresh()->published_at);
+        $this->assertNotNull($unpublished2->fresh()->published_at);
+        $this->assertEquals($alreadyPublished->published_at, $alreadyPublished->fresh()->published_at);
+    }
+
+    public function test_publish_all_requires_authorization(): void
+    {
+        $user = User::factory()->timekeeper()->create();
+        $race = Race::factory()->create();
+
+        $this->actingAs($user)->post(route('races.results.publish-all', $race))->assertForbidden();
     }
 
     public function test_link_all_participants_dispatches_job_for_each_result(): void

@@ -135,6 +135,8 @@ Route::middleware([
 
         Route::post('races/{race}/results/link-participants', [ResultRaceController::class, 'linkAllParticipants'])->name('races.results.link-participants');
 
+        Route::post('races/{race}/results/publish-all', [ResultRaceController::class, 'publishAll'])->name('races.results.publish-all');
+
         Route::post('results/{result}/assign-points', [ResultRaceController::class, 'assignPoints'])->name('results.assign-points');
 
         Route::post('races/{race}/results/assign-points', [ResultRaceController::class, 'assignPointsToAll'])->name('races.results.assign-points');

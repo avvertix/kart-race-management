@@ -190,7 +190,7 @@
 
                         @if ($participant->payments->isEmpty())
                             <p>{{ __('Once paid upload the bank transfer confirmation slip') }}</p>
-                            <p class="not-prose text-sm rounded-md border border-red-300 bg-red-50 text-red-700 px-3 py-2">{{ __('The confirmation slip must clearly show the sender\'s name, the transfer amount, and the reason above. Transfers that cannot be matched to a participant will not be reimbursed.') }}</p>
+                            <p class="not-prose text-sm rounded-md border border-red-300 bg-red-50 text-red-700 px-3 py-2">{{ __('The confirmation slip must clearly show the sender\'s name, the transfer amount, the reason above, the date of the transfer and the bank account number. Transfers that cannot be matched to a participant will not be reimbursed.') }}</p>
 
                             @include('race-registration.partials.payment-upload-form')
 

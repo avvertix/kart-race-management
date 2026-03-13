@@ -293,7 +293,7 @@
     "Use the following text as the bank transfer reason:": "Utilizza il seguente testo come causale del bonifico:",
     "Copy": "Copia",
     "Copied!": "Copiato!",
-    "The confirmation slip must clearly show the sender's name, the transfer amount, and the reason above. Transfers that cannot be matched to a participant will not be reimbursed.": "La copia contabile deve riportare chiaramente il nome del mittente, l'importo del bonifico e la causale indicata sopra. I bonifici che non possono essere abbinati ad un partecipante non verranno rimborsati.",
+    "The confirmation slip must clearly show the sender's name, the transfer amount, the reason above, the date of the transfer and the bank account number. Transfers that cannot be matched to a participant will not be reimbursed.": "La copia contabile deve riportare chiaramente il nome del mittente, l'importo del bonifico, la causale indicata sopra, la data del bonifico e il numero di conto bancario. I bonifici che non possono essere abbinati ad un partecipante non verranno rimborsati.",
     "Transponder and/or Tires": "Transponder e/o Gomme",
     "Go to the race secretary and pick transponder and/or tires.": "Presentati in segreteria gara e ritira transponder e/o gomme",
     "Confirmation slip uploaded on": "Copia contabile caricata il",

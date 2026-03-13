@@ -76,33 +76,43 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                             <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
                         </svg>
-                        
+
                         {{ __('Payment proof uploaded.')}}
                     </p>
                 @endunless
 
-                <p class="prose prose-zinc">{{ __('Pay the participation cost using a bank transfer (details below) and upload the picture/pdf with the transfer receipt.') }}</p>
-
-                @if (session('status') == 'payment-uploaded')
-                    <div class="mb-4 font-medium text-sm text-green-700 border border-green-400">
-                        {{ __('Thanks for uploading the payment receipt.') }}
-                    </div>
-                @endif
-                
-                @if ($participant->payments->isEmpty())
-                    
-                    @include('race-registration.partials.payment-upload-form')
-
+                @if (! $bankTransferAvailable)
+                    <p class="flex gap-2 rounded-md text-sm text-amber-700 border border-amber-400 bg-amber-50 px-2 py-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Payment is only accepted by credit card or cash at the race track.') }}
+                    </p>
                 @else
+                    <p class="prose prose-zinc">{{ __('Pay the participation cost using a bank transfer (details below) and upload the picture/pdf with the transfer receipt.') }}</p>
+                    <p class="prose prose-zinc">{{ __('Bank transfer must be completed by :date.', ['date' => $lastAcceptedDateForBankTransfer->locale(app()->currentLocale())->isoFormat('D MMM YYYY')]) }}</p>
 
-                    <div class="prose prose-zinc">
-                        <ul>
-                            @foreach ($participant->payments as $item)
-                                <li><a href="{{ $item->downloadUrl }}" target="_blank">{{ __('Receipt uploaded on') }} <x-time :value="$item->created_at" /></a></li>
-                            @endforeach
-                        </ul>
-                    </div>
-                            
+                    @if (session('status') == 'payment-uploaded')
+                        <div class="mb-4 font-medium text-sm text-green-700 border border-green-400">
+                            {{ __('Thanks for uploading the payment receipt.') }}
+                        </div>
+                    @endif
+
+                    @if ($participant->payments->isEmpty())
+
+                        @include('race-registration.partials.payment-upload-form')
+
+                    @else
+
+                        <div class="prose prose-zinc">
+                            <ul>
+                                @foreach ($participant->payments as $item)
+                                    <li><a href="{{ $item->downloadUrl }}" target="_blank">{{ __('Receipt uploaded on') }} <x-time :value="$item->created_at" /></a></li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                    @endif
                 @endif
             </div>
             
@@ -139,17 +149,27 @@
                 </div>
 
                 <div class="prose prose-zinc">
-                    <p>{{ __('Race participation can be paid via bank transfer to') }}</p>
-                    <p class="bg-zinc-50 p-2 shadow">{{ $bank->bank_holder }}
-                        <br>{{ $bank->bank_name }}
-                        <br><span class="font-mono">{{ $bank->bank_account }}</span>
-                    </p>
-                    
-                    @if ($participant->payments->isEmpty())
-                        <p>{{ __('Once paid upload the bank transfer receipt') }}</p>
-                    
-                        @include('race-registration.partials.payment-upload-form')
-                    
+                    @if (! $bankTransferAvailable)
+                        <p class="not-prose flex gap-2 rounded-md text-sm text-amber-700 border border-amber-400 bg-amber-50 px-2 py-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('Payment is only accepted by credit card or cash at the race track.') }}
+                        </p>
+                    @else
+                        <p>{{ __('Race participation can be paid via bank transfer to') }}</p>
+                        <p>{{ __('Bank transfer must be completed by :date.', ['date' => $lastAcceptedDateForBankTransfer->isoFormat('D MMM YYYY')]) }}</p>
+                        <p class="bg-zinc-50 p-2 shadow">{{ $bank->bank_holder }}
+                            <br>{{ $bank->bank_name }}
+                            <br><span class="font-mono">{{ $bank->bank_account }}</span>
+                        </p>
+
+                        @if ($participant->payments->isEmpty())
+                            <p>{{ __('Once paid upload the bank transfer receipt') }}</p>
+
+                            @include('race-registration.partials.payment-upload-form')
+
+                        @endif
                     @endif
                 </div>
             </div>

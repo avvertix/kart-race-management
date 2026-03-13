@@ -14,6 +14,11 @@
                     <div class="col-span-6 sm:col-span-4 prose prose-zinc">
                         <p>{{ __('Race cost is given from the registration fee and an eventual tire set, based on the selected category.') }}</p>
                         <p>{{ __('Here is the price list. The final price is given after submitting the registration.') }}</p>
+                        @if ($bankTransferAvailable)
+                            <p>{{ __('Payment can be made by credit card or cash at the race track, or via bank transfer by :date.', ['date' => $lastAcceptedDateForBankTransfer->locale(app()->currentLocale())->isoFormat('D MMM YYYY')]) }}</p>
+                        @else
+                            <p class="font-bold">{{ __('Payment is accepted by credit card or cash at the race track only.') }}</p>
+                        @endif
                         <table>
                             @if ($tires->isNotEmpty())
                                 <tr>

@@ -89,12 +89,12 @@
                         {{ __('Payment is only accepted by credit card or cash at the race track.') }}
                     </p>
                 @else
-                    <p class="prose prose-zinc">{{ __('Pay the participation cost using a bank transfer (details below) and upload the picture/pdf with the transfer receipt.') }}</p>
+                    <p class="prose prose-zinc">{{ __('Pay the participation cost using a bank transfer (details below) and upload the bank transfer confirmation slip.') }}</p>
                     <p class="prose prose-zinc">{{ __('Bank transfer must be completed by :date.', ['date' => $lastAcceptedDateForBankTransfer->locale(app()->currentLocale())->isoFormat('D MMM YYYY')]) }}</p>
 
                     @if (session('status') == 'payment-uploaded')
                         <div class="mb-4 font-medium text-sm text-green-700 border border-green-400">
-                            {{ __('Thanks for uploading the payment receipt.') }}
+                            {{ __('Thanks for uploading the bank transfer confirmation slip.') }}
                         </div>
                     @endif
 
@@ -107,7 +107,7 @@
                         <div class="prose prose-zinc">
                             <ul>
                                 @foreach ($participant->payments as $item)
-                                    <li><a href="{{ $item->downloadUrl }}" target="_blank">{{ __('Receipt uploaded on') }} <x-time :value="$item->created_at" /></a></li>
+                                    <li><a href="{{ $item->downloadUrl }}" target="_blank">{{ __('Confirmation slip uploaded on') }} <x-time :value="$item->created_at" /></a></li>
                                 @endforeach
                             </ul>
                         </div>
@@ -189,7 +189,8 @@
                         </div>
 
                         @if ($participant->payments->isEmpty())
-                            <p>{{ __('Once paid upload the bank transfer receipt') }}</p>
+                            <p>{{ __('Once paid upload the bank transfer confirmation slip') }}</p>
+                            <p class="not-prose text-sm rounded-md border border-red-300 bg-red-50 text-red-700 px-3 py-2">{{ __('The confirmation slip must clearly show the sender\'s name, the transfer amount, and the reason above. Transfers that cannot be matched to a participant will not be reimbursed.') }}</p>
 
                             @include('race-registration.partials.payment-upload-form')
 

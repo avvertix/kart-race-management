@@ -164,6 +164,30 @@
                             <br><span class="font-mono">{{ $bank->bank_account }}</span>
                         </p>
 
+                        <p>{{ __('Use the following text as the bank transfer reason:') }}</p>
+                        @php $transferReason = $participant->id . ' ' . $participant->full_name . ' iscrizione gara' @endphp
+                        <div x-data="{ copied: false }" class="not-prose flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded px-3 py-2 font-mono text-sm">
+                            <span class="flex-1 select-all">{{ $transferReason }}</span>
+                            <button
+                                type="button"
+                                x-on:click="navigator.clipboard.writeText('{{ $transferReason }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                class="shrink-0 text-zinc-500 hover:text-zinc-800 transition-colors"
+                                :title="copied ? '{{ __('Copied!') }}' : '{{ __('Copy') }}'"
+                            >
+                                <template x-if="!copied">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                        <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+                                        <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+                                    </svg>
+                                </template>
+                                <template x-if="copied">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-green-600">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                    </svg>
+                                </template>
+                            </button>
+                        </div>
+
                         @if ($participant->payments->isEmpty())
                             <p>{{ __('Once paid upload the bank transfer receipt') }}</p>
 

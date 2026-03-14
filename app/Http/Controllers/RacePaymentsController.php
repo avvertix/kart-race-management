@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Models\PaymentChannelType;
 use App\Models\Race;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class RacePaymentsController extends Controller
 {
@@ -26,10 +25,6 @@ class RacePaymentsController extends Controller
         $filterChannel = $request->string('channel')->toString() ?: null;
         $filterConfirmed = $request->string('confirmed')->toString() ?: null;
 
-
-
-        
-
         // Load all participants (unfiltered) for the summary counters
         $allParticipants = $race->participants()->with('payments')->get();
 
@@ -45,9 +40,6 @@ class RacePaymentsController extends Controller
             'completed_amount' => $completedParticipants->sum(fn ($p) => $p->price()->last()),
             'confirmed_amount' => $confirmedParticipants->sum(fn ($p) => $p->price()->last()),
         ];
-
-
-        
 
         $summary = collect(PaymentChannelType::cases())->map(function (PaymentChannelType $channel) use ($allParticipants) {
             $group = $allParticipants->filter(fn ($p) => $p->payment_channel === $channel);

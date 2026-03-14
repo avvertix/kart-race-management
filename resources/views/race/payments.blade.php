@@ -14,7 +14,7 @@
                     <p class="text-3xl font-black">
                         {{ $item['count'] }}
                         @if ($item['channel'] !== null)
-                            <span class="text-base font-normal text-zinc-500">/ {{ $participants->count() }}</span>
+                            <span class="text-base font-normal text-zinc-500">/ {{ $summary->sum('count') }}</span>
                         @endif
                     </p>
                     <p class="font-medium">{{ $item['channel']?->localizedName() ?? __('Not set') }}</p>
@@ -25,23 +25,58 @@
             @endforeach
         </div>
 
+        <form method="GET" action="{{ route('races.payments', $race) }}" class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 mb-4">
+            <x-search-input
+                id="payment_search"
+                type="text"
+                placeholder="{{ __('Search participant using bib, name or last name') }}"
+                name="s"
+                class="w-full md:grow"
+                :value="$search"
+            />
+
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                <select name="channel" class="border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                    <option value="">{{ __('All payment channels') }}</option>
+                    @foreach(\App\Models\PaymentChannelType::cases() as $channel)
+                        <option value="{{ $channel->value }}" @selected($filterChannel === (string) $channel->value)>{{ $channel->localizedName() }}</option>
+                    @endforeach
+                    <option value="none" @selected($filterChannel === 'none')>{{ __('Not set') }}</option>
+                </select>
+
+                <select name="confirmed" class="border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                    <option value="">{{ __('All participants') }}</option>
+                    <option value="confirmed" @selected($filterConfirmed === 'confirmed')>{{ __('Payment confirmed') }}</option>
+                    <option value="unconfirmed" @selected($filterConfirmed === 'unconfirmed')>{{ __('Payment not confirmed') }}</option>
+                </select>
+
+                <x-button type="submit">{{ __('Apply filter') }}</x-button>
+
+                @if ($search || $filterChannel || $filterConfirmed)
+                    <x-secondary-button-link href="{{ route('races.payments', $race) }}" class="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-800">{{ __('Clear all filters') }}</x-secondary-button-link>
+                @endif
+            </div>
+        </form>
+
         <x-table>
             <x-slot name="head">
                 <th scope="col" class="w-4/12 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 sm:pl-6">{{ __('Bib') }} ▼ / {{ __('Driver') }}</th>
-                <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Amount') }}</th>
-                <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Payment Channel') }}</th>
-                <th scope="col" class="w-3/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Bank transfer reason') }}</th>
-                <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Registration date') }}</th>
-                <th scope="col" class="w-3/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Payment proof') }}</th>
-                <th scope="col" class="w-2/12 px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Confirmed') }}</th>
+                <th scope="col" class=" px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Amount') }}</th>
+                <th scope="col" class=" px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Payment Channel') }}</th>
+                <th scope="col" class=" px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Bank transfer reason') }}</th>
+                <th scope="col" class=" px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Registration date') }}</th>
+                <th scope="col" class=" px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Payment proof') }}</th>
+                <th scope="col" class=" px-3 py-3.5 text-left text-sm font-semibold text-zinc-600">{{ __('Confirmed') }}</th>
             </x-slot>
 
             @forelse ($participants as $item)
                 @php $transferReason = $item->id . ' ' . $item->full_name . ' iscrizione gara' @endphp
                 <tr class="relative {{ $item->payment_confirmed_at ? 'bg-green-50' : '' }}">
                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-zinc-900 sm:pl-6 font-medium">
+                        <a href="{{ route('races.participants.index', ['race' => $race, 'pid' => $item->id]) }}">
                         <span class="font-mono text-lg inline-block bg-gray-100 px-2 py-1 rounded mr-2">{{ $item->bib }}</span>
                         {{ $item->first_name }} {{ $item->last_name }}
+                        </a>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
                         <x-price class="font-mono">{{ $item->price()->last() }}</x-price>
@@ -79,9 +114,11 @@
                                     <x-time :value="$item->payment_confirmed_at" />
                                 </button>
                             @else
-                                <button type="submit" class="text-zinc-400 hover:text-zinc-700">
-                                    {{ __('Confirm payment') }}
-                                </button>
+                                @if ($item->payment_channel)
+                                    <button type="submit" class="text-orange-600 hover:text-orange-900 font-medium ">
+                                        {{ __('Confirm payment') }}
+                                    </button>
+                                @endif
                             @endif
                         </form>
                     </td>
@@ -89,7 +126,11 @@
             @empty
                 <tr>
                     <td colspan="7" class="px-3 py-4 text-center text-zinc-500">
-                        {{ __('No participants at the moment') }}
+                        @if ($search || $filterChannel || $filterConfirmed)
+                            {{ __('No participants match the current filters.') }}
+                        @else
+                            {{ __('No participants at the moment') }}
+                        @endif
                     </td>
                 </tr>
             @endforelse

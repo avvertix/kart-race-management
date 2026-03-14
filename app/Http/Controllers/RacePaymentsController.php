@@ -21,15 +21,17 @@ class RacePaymentsController extends Controller
 
         $race->load(['championship']);
 
-        $participants = $race->participants()
-            ->with('payments')
-            ->orderBy('bib', 'asc')
-            ->get();
+        $search = $request->string('s')->toString() ?: null;
+        $filterChannel = $request->string('channel')->toString() ?: null;
+        $filterConfirmed = $request->string('confirmed')->toString() ?: null;
 
-        $totalExpected = $participants->sum(fn ($p) => $p->price()->last());
+        // Load all participants (unfiltered) for the summary counters
+        $allParticipants = $race->participants()->with('payments')->get();
 
-        $summary = collect(PaymentChannelType::cases())->map(function (PaymentChannelType $channel) use ($participants, $totalExpected) {
-            $group = $participants->filter(fn ($p) => $p->payment_channel === $channel);
+        $totalExpected = $allParticipants->sum(fn ($p) => $p->price()->last());
+
+        $summary = collect(PaymentChannelType::cases())->map(function (PaymentChannelType $channel) use ($allParticipants, $totalExpected) {
+            $group = $allParticipants->filter(fn ($p) => $p->payment_channel === $channel);
 
             return [
                 'channel' => $channel,
@@ -39,10 +41,37 @@ class RacePaymentsController extends Controller
             ];
         })->push([
             'channel' => null,
-            'count' => $participants->filter(fn ($p) => $p->payment_channel === null)->count(),
+            'count' => $allParticipants->filter(fn ($p) => $p->payment_channel === null)->count(),
             'total' => 0,
             'expected' => $totalExpected,
         ]);
+
+        // Build filtered query for the table
+        $participants = $race->participants()
+            ->with('payments')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('bib', e($search))
+                        ->orWhere('first_name', 'LIKE', e($search).'%')
+                        ->orWhere('last_name', 'LIKE', e($search).'%');
+                });
+            })
+            ->when($filterChannel !== null, function ($query) use ($filterChannel) {
+                if ($filterChannel === 'none') {
+                    $query->whereNull('payment_channel');
+                } else {
+                    $query->where('payment_channel', (int) $filterChannel);
+                }
+            })
+            ->when($filterConfirmed !== null, function ($query) use ($filterConfirmed) {
+                match ($filterConfirmed) {
+                    'confirmed' => $query->whereNotNull('payment_confirmed_at'),
+                    'unconfirmed' => $query->whereNull('payment_confirmed_at'),
+                    default => null,
+                };
+            })
+            ->orderBy('bib', 'asc')
+            ->get();
 
         return view('race.payments', [
             'race' => $race,
@@ -50,6 +79,9 @@ class RacePaymentsController extends Controller
             'participants' => $participants,
             'summary' => $summary,
             'totalExpected' => $totalExpected,
+            'search' => $search,
+            'filterChannel' => $filterChannel,
+            'filterConfirmed' => $filterConfirmed,
         ]);
     }
 }

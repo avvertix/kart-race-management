@@ -571,5 +571,9 @@
     "Bank transfer reason": "Causale bonifico",
     "Payment proof": "Ricevuta",
     "Not set": "Non impostato",
-    "Confirm payment": "Conferma pagamento"
+    "Confirm payment": "Conferma pagamento",
+    "All payment channels": "Tutti i metodi di pagamento",
+    "Payment confirmed": "Pagamento confermato",
+    "Payment not confirmed": "Pagamento non confermato",
+    "Search participant using bib, name or last name": "Cerca partecipante per numero gara, nome o cognome"
 }

@@ -8,6 +8,23 @@
 
     <div class="px-4 sm:px-6 lg:px-8">
 
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            @foreach ($summary as $item)
+                <div class="p-4 bg-white shadow rounded">
+                    <p class="text-3xl font-black">
+                        {{ $item['count'] }}
+                        @if ($item['channel'] !== null)
+                            <span class="text-base font-normal text-zinc-500">/ {{ $participants->count() }}</span>
+                        @endif
+                    </p>
+                    <p class="font-medium">{{ $item['channel']?->localizedName() ?? __('Not set') }}</p>
+                    @if ($item['channel'] !== null)
+                        <p class="text-zinc-600 text-sm"><x-price>{{ $item['total'] }}</x-price> / <x-price>{{ $item['expected'] }}</x-price></p>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
         <x-table>
             <x-slot name="head">
                 <th scope="col" class="w-4/12 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-600 sm:pl-6">{{ __('Bib') }} ▼ / {{ __('Driver') }}</th>

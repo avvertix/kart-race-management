@@ -569,5 +569,6 @@
     "Once paid upload the bank transfer confirmation slip. Ensure that the sender's name, the transfer amount, the given reason, the date of the transfer and the bank account number are clearly visible. Transfers that cannot be matched to a participant will not be reimbursed.": "Una volta effettuato il pagamento, carica la copia contabile del bonifico. Assicurati che il nome del mittente, l'importo del bonifico, la causale indicata, la data del bonifico e il numero di conto siano chiaramente visibili. I bonifici che non possono essere abbinati ad un partecipante non verranno rimborsati.",
     "Payments": "Pagamenti",
     "Bank transfer reason": "Causale bonifico",
-    "Payment proof": "Ricevuta"
+    "Payment proof": "Ricevuta",
+    "Not set": "Non impostato"
 }

@@ -38,6 +38,7 @@ return [
         'bank_holder' => env('RACE_ORGANIZER_BANK_HOLDER', env('RACE_ORGANIZER_NAME')),
         'bank_account' => env('RACE_ORGANIZER_BANK_ACCOUNT'),
         'bank' => env('RACE_ORGANIZER_BANK'),
+        'bank_transfer_available_until_days' => env('RACE_BANK_TRANSFER_AVAILABLE_UNTIL_DAYS', 3),
     ],
 
     'licence' => [

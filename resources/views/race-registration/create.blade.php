@@ -33,9 +33,17 @@
     @endif
     
     @if ($race->isCancelled())
-        
+
         <div class="mb-3 p-2 bg-red-100 text-red-800 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {{ __('The race has been cancelled and registration is now closed.') }}
+        </div>
+
+    @endif
+
+    @if (! $bankTransferAvailable)
+
+        <div class="mb-3 p-2 bg-amber-50 border border-amber-400 text-amber-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{ __('Payment is only accepted by credit card or cash at the race track.') }}
         </div>
 
     @endif
@@ -58,9 +66,10 @@
             
             @include('participant.partials.consents')
 
+            @include('participant.partials.costs')
+
             @include('participant.partials.rules')
             
-            @include('participant.partials.costs')
             
             <div class="md:grid md:grid-cols-3 md:gap-6">
                 

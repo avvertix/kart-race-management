@@ -10,6 +10,7 @@ use App\Exceptions\InvalidParticipantSignatureException;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class RaceRegistrationController extends Controller
 {
@@ -27,11 +28,17 @@ class RaceRegistrationController extends Controller
             ])
             ->loadCount('participants');
 
+        $lastAcceptedDateForBankTransfer = $race->event_start_at->copy()->subDays(config('races.organizer.bank_transfer_available_until_days', 3));
+
+        $bankTransferAvailable = now()->lessThan($lastAcceptedDateForBankTransfer);
+
         return view('race-registration.create', [
             'race' => $race,
             'categories' => $race->championship->categories()->enabled()->get(),
             'registration_open' => $race->isRegistrationOpen,
             'tires' => $race->championship->tires,
+            'bankTransferAvailable' => $bankTransferAvailable,
+            'lastAcceptedDateForBankTransfer' => $lastAcceptedDateForBankTransfer,
         ]);
     }
 
@@ -46,6 +53,7 @@ class RaceRegistrationController extends Controller
         if (! $race->isRegistrationOpen) {
             return redirect()
                 ->route('races.registration.create', $race)
+                ->withInput()
                 ->with('flash', [
                     'banner' => __('Online registration closed. Registration might still be possible at the race track.'),
                     'bannerStyle' => 'danger',
@@ -55,6 +63,8 @@ class RaceRegistrationController extends Controller
         $participant = $registerParticipant($race, $request->all());
 
         return redirect()
+            ->setIntendedUrl(URL::signedRoute('registration.show',
+                ['registration' => $participant, 'p' => $participant->signatureContent()]))
             ->signedRoute(
                 'registration.show',
                 ['registration' => $participant, 'p' => $participant->signatureContent()]
@@ -81,11 +91,17 @@ class RaceRegistrationController extends Controller
             bank_holder: $registration->championship->payment->bank_holder ?? config('races.organizer.bank_holder'),
         );
 
+        $lastAcceptedDateForBankTransfer = $registration->race->event_start_at->copy()->subDays(config('races.organizer.bank_transfer_available_until_days', 3));
+
+        $bankTransferAvailable = now()->lessThan($lastAcceptedDateForBankTransfer);
+
         return view('race-registration.show', [
             'race' => $registration->race,
             'championship' => $registration->championship,
             'participant' => $registration,
             'bank' => $bank,
+            'bankTransferAvailable' => $bankTransferAvailable,
+            'lastAcceptedDateForBankTransfer' => $lastAcceptedDateForBankTransfer,
         ]);
     }
 }

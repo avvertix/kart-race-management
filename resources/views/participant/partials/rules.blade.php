@@ -22,7 +22,7 @@
                             <li>{{ __('to make use of the assistance of an :provider licenced mechanic', ['provider' => config('races.licence.provider')]) }}</li>
                             <li>{{ __('to have read and accepted the :provider Karting regulations', ['provider' => config('races.licence.provider')]) }}</li>
                             @enduseCompleteRegistrationForm
-                            <li>{{ __('to reimburse 200,00 Euro to the time keeping service in case of loss of the assigned transponder') }}</li>
+                            <li>{{ __('to reimburse 250,00 Euro to the time keeping service in case of loss of the assigned transponder') }}</li>
                         </ul>
 
                     

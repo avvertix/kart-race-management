@@ -28,7 +28,6 @@ class RaceRegistrationController extends Controller
             ])
             ->loadCount('participants');
 
-
         $lastAcceptedDateForBankTransfer = $race->event_start_at->copy()->subDays(config('races.organizer.bank_transfer_available_until_days', 3));
 
         $bankTransferAvailable = now()->lessThan($lastAcceptedDateForBankTransfer);

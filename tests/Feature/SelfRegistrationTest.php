@@ -447,8 +447,8 @@ class SelfRegistrationTest extends TestCase
         $response->assertViewHas('championship', $championship);
 
         $response->assertSeeText('Bank transfer (until');
-        
-        $response->assertSeeText($participant->id . ' ' . $participant->full_name . ' iscrizione gara');
+
+        $response->assertSeeText($participant->id.' '.$participant->full_name.' iscrizione gara');
 
         $response->assertSeeTextInOrder([
             'Test Holder',

@@ -570,5 +570,6 @@
     "Payments": "Pagamenti",
     "Bank transfer reason": "Causale bonifico",
     "Payment proof": "Ricevuta",
-    "Not set": "Non impostato"
+    "Not set": "Non impostato",
+    "Confirm payment": "Conferma pagamento"
 }

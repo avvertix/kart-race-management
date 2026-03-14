@@ -117,7 +117,9 @@
                         
                         <x-tab-link href="{{ route('races.participants.index', $race) }}"  :active="request()->routeIs('races.participants.index', $race)">{{ __('Participants') }}</x-tab-link>
                         
-                        <x-tab-link href="{{ route('races.payments', $race) }}"  :active="request()->routeIs('races.payments', $race)">{{ __('Payments') }}</x-tab-link>
+                        @can('update', $race)
+                            <x-tab-link href="{{ route('races.payments', $race) }}"  :active="request()->routeIs('races.payments', $race)">{{ __('Payments') }}</x-tab-link>
+                        @endcan
 
                         <x-tab-link href="{{ route('races.tires', $race) }}"  :active="request()->routeIs('races.tires', $race)">{{ __('Tires') }}</x-tab-link>
                         

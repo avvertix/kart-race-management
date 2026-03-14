@@ -13,6 +13,7 @@ use App\Http\Controllers\ChampionshipPointSchemeController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfirmParticipantController;
+use App\Http\Controllers\ConfirmParticipantPaymentController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
 use App\Http\Controllers\CopyChampionshipTiresController;
 use App\Http\Controllers\DashboardController;
@@ -151,6 +152,8 @@ Route::middleware([
         Route::get('races/{race}/participant-receipts/print', PrintRaceParticipantReceiptsController::class)->name('races.participant-receipts.print');
 
         Route::get('races/{race}/payments', RacePaymentsController::class)->name('races.payments');
+
+        Route::post('participants/{participant}/confirm-payment', ConfirmParticipantPaymentController::class)->name('participants.confirm-payment');
 
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
 

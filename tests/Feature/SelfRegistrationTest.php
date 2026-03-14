@@ -409,7 +409,7 @@ class SelfRegistrationTest extends TestCase
             'races.organizer.bank_holder' => 'Config Holder',
         ]);
 
-        $race = Race::factory()->create();
+        $race = Race::factory()->create(['event_start_at' => now()->addDays(10)]);
 
         $participant = Participant::factory()->for($race)->recycle($race->championship)->category()->create();
 
@@ -428,6 +428,30 @@ class SelfRegistrationTest extends TestCase
             'C12',
         ]);
     }
+    
+    public function test_bank_transfer_not_possible_before_three_days()
+    {
+        config([
+            'races.organizer.bank' => 'Config Bank',
+            'races.organizer.bank_account' => 'C12',
+            'races.organizer.bank_holder' => 'Config Holder',
+        ]);
+
+        $race = Race::factory()->create(['event_start_at' => now()->addDays(2)]);
+
+        $participant = Participant::factory()->for($race)->recycle($race->championship)->category()->create();
+
+        $response = $this
+            ->get(URL::signedRoute('registration.show', ['registration' => $participant, 'p' => $participant->signatureContent()]));
+
+        $response->assertOk();
+
+        $response->assertViewHas('championship', $race->championship);
+
+        $response->assertSeeText('Payment is only accepted by credit card or cash at the race track');
+
+        $response->assertDontSeeText('Config Holder');
+    }
 
     public function test_championship_bank_details_present_on_registration_receipt()
     {
@@ -435,7 +459,7 @@ class SelfRegistrationTest extends TestCase
             ->withBankAccount()
             ->create();
 
-        $race = Race::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create(['event_start_at' => now()->addDays(10)]);
 
         $participant = Participant::factory()->for($race)->recycle($championship)->category()->create();
 

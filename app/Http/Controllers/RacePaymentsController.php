@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\PaymentChannelType;
 use App\Models\Race;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RacePaymentsController extends Controller
 {
@@ -25,25 +26,44 @@ class RacePaymentsController extends Controller
         $filterChannel = $request->string('channel')->toString() ?: null;
         $filterConfirmed = $request->string('confirmed')->toString() ?: null;
 
+
+
+        
+
         // Load all participants (unfiltered) for the summary counters
         $allParticipants = $race->participants()->with('payments')->get();
 
-        $totalExpected = $allParticipants->sum(fn ($p) => $p->price()->last());
+        $totalParticipants = $allParticipants->count();
+        $completedParticipants = $allParticipants->filter(fn ($p) => $p->registration_completed_at !== null);
+        $confirmedParticipants = $allParticipants->filter(fn ($p) => $p->payment_confirmed_at !== null);
 
-        $summary = collect(PaymentChannelType::cases())->map(function (PaymentChannelType $channel) use ($allParticipants, $totalExpected) {
+        $totals = [
+            'total_participants' => $totalParticipants,
+            'completed_participants' => $completedParticipants->count(),
+            'confirmed_participants' => $confirmedParticipants->count(),
+            'total_amount' => $allParticipants->sum(fn ($p) => $p->price()->last()),
+            'completed_amount' => $completedParticipants->sum(fn ($p) => $p->price()->last()),
+            'confirmed_amount' => $confirmedParticipants->sum(fn ($p) => $p->price()->last()),
+        ];
+
+
+        
+
+        $summary = collect(PaymentChannelType::cases())->map(function (PaymentChannelType $channel) use ($allParticipants) {
             $group = $allParticipants->filter(fn ($p) => $p->payment_channel === $channel);
+            $confirmedGroup = $group->filter(fn ($p) => $p->payment_confirmed_at !== null);
 
             return [
                 'channel' => $channel,
                 'count' => $group->count(),
-                'total' => $group->sum(fn ($p) => $p->price()->last()),
-                'expected' => $totalExpected,
+                'amount' => $group->sum(fn ($p) => $p->price()->last()),
+                'confirmed_amount' => $confirmedGroup->sum(fn ($p) => $p->price()->last()),
             ];
         })->push([
             'channel' => null,
             'count' => $allParticipants->filter(fn ($p) => $p->payment_channel === null)->count(),
-            'total' => 0,
-            'expected' => $totalExpected,
+            'amount' => 0,
+            'confirmed_amount' => 0,
         ]);
 
         // Build filtered query for the table
@@ -78,7 +98,7 @@ class RacePaymentsController extends Controller
             'championship' => $race->championship,
             'participants' => $participants,
             'summary' => $summary,
-            'totalExpected' => $totalExpected,
+            'totals' => $totals,
             'search' => $search,
             'filterChannel' => $filterChannel,
             'filterConfirmed' => $filterConfirmed,

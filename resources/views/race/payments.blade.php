@@ -8,21 +8,35 @@
 
     <div class="px-4 sm:px-6 lg:px-8">
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+
+            {{-- Totals box --}}
+            <div class="p-4 bg-white shadow rounded">
+
+                <p class="font-medium">{{ $totals['completed_participants'] }} / {{ $totals['total_participants'] }} {{ __('confirmed participants') }}</p>
+                <p class="font-medium">{{ $totals['confirmed_participants'] }} {{ __('payment confirmed') }}</p>
+                <div class="mt-1 space-y-0.5 text-sm">
+                    <p class="text-zinc-500">{{ __('Expected') }}: <x-price class="font-medium text-zinc-700">{{ $totals['total_amount'] }}</x-price></p>
+                    <p class="text-zinc-500">{{ __('Collected') }}: <x-price class="font-medium text-green-700">{{ $totals['confirmed_amount'] }}</x-price></p>
+                </div>
+            </div>
+
+            {{-- Per-channel boxes --}}
             @foreach ($summary as $item)
                 <div class="p-4 bg-white shadow rounded">
-                    <p class="text-3xl font-black">
+                    <p class="text-2xl font-black">
                         {{ $item['count'] }}
-                        @if ($item['channel'] !== null)
-                            <span class="text-base font-normal text-zinc-500">/ {{ $summary->sum('count') }}</span>
-                        @endif
                     </p>
                     <p class="font-medium">{{ $item['channel']?->localizedName() ?? __('Not set') }}</p>
                     @if ($item['channel'] !== null)
-                        <p class="text-zinc-600 text-sm"><x-price>{{ $item['total'] }}</x-price> / <x-price>{{ $item['expected'] }}</x-price></p>
+                        <div class="mt-1 space-y-0.5 text-sm">
+                            <p class="text-zinc-500">{{ __('Expected') }}: <x-price class="font-medium text-zinc-700">{{ $item['amount'] }}</x-price></p>
+                            <p class="text-zinc-500">{{ __('Collected') }}: <x-price class="font-medium text-green-700">{{ $item['confirmed_amount'] }}</x-price></p>
+                        </div>
                     @endif
                 </div>
             @endforeach
+
         </div>
 
         <form method="GET" action="{{ route('races.payments', $race) }}" class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 mb-4">

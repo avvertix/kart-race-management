@@ -428,7 +428,7 @@ class SelfRegistrationTest extends TestCase
             'C12',
         ]);
     }
-    
+
     public function test_bank_transfer_not_possible_before_three_days()
     {
         config([

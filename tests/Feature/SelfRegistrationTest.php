@@ -420,7 +420,7 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertViewHas('championship', $race->championship);
 
-        $response->assertSeeText('Race participation can be paid via bank transfer to');
+        $response->assertSeeText('Bank transfer (until');
 
         $response->assertSeeTextInOrder([
             'Config Holder',
@@ -446,7 +446,9 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertViewHas('championship', $championship);
 
-        $response->assertSeeText('Race participation can be paid via bank transfer to');
+        $response->assertSeeText('Bank transfer (until');
+        
+        $response->assertSeeText($participant->id . ' ' . $participant->full_name . ' iscrizione gara');
 
         $response->assertSeeTextInOrder([
             'Test Holder',

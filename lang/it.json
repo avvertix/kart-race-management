@@ -556,5 +556,18 @@
     "Wildcard filter": "Filtro wildcard",
     "Select categories": "Seleziona categorie",
     "Select races": "Seleziona gare",
-    "Races counted": "Gare conteggiate"
+    "Races counted": "Gare conteggiate",
+    "Your participation to :race": "La tua partecipazione a :race",
+    "You must present yourself to the race track the day before of the race to complete the registration process.": "Devi presentarti alla pista il giorno prima della gara per completare la procedura di iscrizione.",
+    "We need to verify the email address so we can use it for communication.": "Dobbiamo verificare l'indirizzo email per poterlo utilizzare per le comunicazioni.",
+    "We sent an email to :driver_email with a link to ensure the address exists.": "Abbiamo inviato una mail a :driver_email con un link per verificare che l'indirizzo esista.",
+    "Your identity is confirmed using the email :driver_email.": "La tua identità è confermata tramite l'email :driver_email.",
+    "Race participation can be paid via:": "L'iscrizione alla gara può essere pagata tramite:",
+    "Credit card or cash at the race track": "Carta di credito o contanti presso la segreteria in pista",
+    "Bank transfer (until :date)": "Bonifico bancario (entro il :date)",
+    "It may take up to five business days for the bank transfer payment to be confirmed. If the payment date falls after the deadline, you will be asked to pay by credit card or in cash at the race track.": "Il pagamento tramite bonifico bancario può richiedere fino a cinque giorni lavorativi per essere confermato. Se la data di pagamento supera la scadenza, ti verrà chiesto di pagare con carta di credito o in contanti presso la segreteria in pista.",
+    "Once paid upload the bank transfer confirmation slip. Ensure that the sender's name, the transfer amount, the given reason, the date of the transfer and the bank account number are clearly visible. Transfers that cannot be matched to a participant will not be reimbursed.": "Una volta effettuato il pagamento, carica la copia contabile del bonifico. Assicurati che il nome del mittente, l'importo del bonifico, la causale indicata, la data del bonifico e il numero di conto siano chiaramente visibili. I bonifici che non possono essere abbinati ad un partecipante non verranno rimborsati.",
+    "Payments": "Pagamenti",
+    "Bank transfer reason": "Causale bonifico",
+    "Payment proof": "Ricevuta"
 }

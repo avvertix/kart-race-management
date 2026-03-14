@@ -37,6 +37,7 @@ use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
 use App\Http\Controllers\RaceParticipantController;
+use App\Http\Controllers\RacePaymentsController;
 use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
@@ -148,6 +149,8 @@ Route::middleware([
         Route::get('races/{race}/participants/print', PrintRaceParticipantsController::class)->name('races.participants.print');
 
         Route::get('races/{race}/participant-receipts/print', PrintRaceParticipantReceiptsController::class)->name('races.participant-receipts.print');
+
+        Route::get('races/{race}/payments', RacePaymentsController::class)->name('races.payments');
 
         Route::get('races/{race}/tires', RaceTiresController::class)->name('races.tires');
 

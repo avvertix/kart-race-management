@@ -25,6 +25,13 @@ class ChangeParticipantPaymentChannel extends Component
         $this->paymentChannel = $participant->payment_channel?->value;
     }
 
+    public function confirmPayment(): void
+    {
+        $this->participant->update([
+            'payment_confirmed_at' => $this->participant->payment_confirmed_at ? null : now(),
+        ]);
+    }
+
     public function updated($name, $value): void
     {
         $this->validate();

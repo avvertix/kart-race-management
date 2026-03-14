@@ -75,11 +75,17 @@ class RaceParticipantController extends Controller
 
         }
 
+        $lastAcceptedDateForBankTransfer = $race->event_start_at->copy()->subDays(config('races.organizer.bank_transfer_available_until_days', 3));
+
+        $bankTransferAvailable = now()->lessThan($lastAcceptedDateForBankTransfer);
+
         return view('participant.create', [
             'race' => $race,
             'categories' => $race->championship->categories()->enabled()->get(),
             'participant' => $templateParticipant,
             'tires' => $race->championship->tires,
+            'bankTransferAvailable' => $bankTransferAvailable,
+            'lastAcceptedDateForBankTransfer' => $lastAcceptedDateForBankTransfer,
         ]);
     }
 

@@ -62,6 +62,7 @@ class Participant extends Model implements HasLocalePreference
         'locale',
         'registration_completed_at',
         'payment_channel',
+        'payment_confirmed_at',
         'notes',
         'aliases',
     ];
@@ -512,6 +513,7 @@ class Participant extends Model implements HasLocalePreference
             'vehicles' => AsCollection::class,
             'confirmed_at' => 'datetime',
             'registration_completed_at' => 'datetime',
+            'payment_confirmed_at' => 'datetime',
             'consents' => AsArrayObject::class,
             'use_bonus' => 'boolean',
             'properties' => AsArrayObject::class,

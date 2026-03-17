@@ -58,7 +58,7 @@ class ApplyBonusToParticipantTest extends TestCase
 
     }
 
-    public function test_bonus_not_applied_when_national_race()
+    public function test_bonus_applied_when_national_race()
     {
         $race = Race::factory()->national()->create();
 
@@ -76,17 +76,26 @@ class ApplyBonusToParticipantTest extends TestCase
             ])
             ->create();
 
+        $bonus = Bonus::factory()
+            ->recycle($race->championship)
+
+            ->create([
+                'driver_licence' => 'D0001',
+                'driver_licence_hash' => hash('sha512', 'D0001'),
+                'amount' => 2,
+            ]);
+
         $event = new ParticipantRegistered($participant, $race);
 
         (new ApplyBonusToParticipant())->handle($event, function ($event) {
             return $event;
         });
 
-        $this->assertEquals(0, $participant->bonuses()->count());
+        $this->assertEquals(1, $participant->bonuses()->count());
 
     }
 
-    public function test_bonus_not_applied_when_international_race()
+    public function test_bonus_applied_when_international_race()
     {
         $race = Race::factory()->international()->create();
 
@@ -104,13 +113,22 @@ class ApplyBonusToParticipantTest extends TestCase
             ])
             ->create();
 
+        $bonus = Bonus::factory()
+            ->recycle($race->championship)
+
+            ->create([
+                'driver_licence' => 'D0001',
+                'driver_licence_hash' => hash('sha512', 'D0001'),
+                'amount' => 2,
+            ]);
+
         $event = new ParticipantRegistered($participant, $race);
 
         (new ApplyBonusToParticipant())->handle($event, function ($event) {
             return $event;
         });
 
-        $this->assertEquals(0, $participant->bonuses()->count());
+        $this->assertEquals(1, $participant->bonuses()->count());
 
     }
 

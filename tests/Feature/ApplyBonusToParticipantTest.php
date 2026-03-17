@@ -76,6 +76,15 @@ class ApplyBonusToParticipantTest extends TestCase
             ])
             ->create();
 
+        $bonus = Bonus::factory()
+            ->recycle($race->championship)
+
+            ->create([
+                'driver_licence' => 'D0001',
+                'driver_licence_hash' => hash('sha512', 'D0001'),
+                'amount' => 2,
+            ]);
+
         $event = new ParticipantRegistered($participant, $race);
 
         (new ApplyBonusToParticipant())->handle($event, function ($event) {
@@ -103,6 +112,15 @@ class ApplyBonusToParticipantTest extends TestCase
                 'bib' => 100,
             ])
             ->create();
+
+        $bonus = Bonus::factory()
+            ->recycle($race->championship)
+
+            ->create([
+                'driver_licence' => 'D0001',
+                'driver_licence_hash' => hash('sha512', 'D0001'),
+                'amount' => 2,
+            ]);
 
         $event = new ParticipantRegistered($participant, $race);
 

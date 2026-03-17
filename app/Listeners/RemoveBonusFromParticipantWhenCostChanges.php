@@ -23,10 +23,6 @@ class RemoveBonusFromParticipantWhenCostChanges
      */
     public function handle(ParticipantRegistered|ParticipantUpdated $event, Closure $next): ParticipantRegistered|ParticipantUpdated
     {
-        if ($event->race->isNationalOrInternational()) {
-            return $next($event);
-        }
-
         // If the registration cost has changed, we need to remove the bonus usage before it gets calculated again
 
         if ($event->race->isCancelled()) {

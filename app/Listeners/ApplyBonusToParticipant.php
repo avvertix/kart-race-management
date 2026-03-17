@@ -23,9 +23,6 @@ class ApplyBonusToParticipant
      */
     public function handle(ParticipantRegistered|ParticipantUpdated $event, Closure $next): ParticipantRegistered|ParticipantUpdated
     {
-        if ($event->race->isNationalOrInternational()) {
-            return $next($event);
-        }
 
         $championship = $event->race->championship;
 

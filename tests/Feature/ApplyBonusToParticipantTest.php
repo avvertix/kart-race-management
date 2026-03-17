@@ -58,7 +58,7 @@ class ApplyBonusToParticipantTest extends TestCase
 
     }
 
-    public function test_bonus_not_applied_when_national_race()
+    public function test_bonus_applied_when_national_race()
     {
         $race = Race::factory()->national()->create();
 
@@ -82,11 +82,11 @@ class ApplyBonusToParticipantTest extends TestCase
             return $event;
         });
 
-        $this->assertEquals(0, $participant->bonuses()->count());
+        $this->assertEquals(1, $participant->bonuses()->count());
 
     }
 
-    public function test_bonus_not_applied_when_international_race()
+    public function test_bonus_applied_when_international_race()
     {
         $race = Race::factory()->international()->create();
 
@@ -110,7 +110,7 @@ class ApplyBonusToParticipantTest extends TestCase
             return $event;
         });
 
-        $this->assertEquals(0, $participant->bonuses()->count());
+        $this->assertEquals(1, $participant->bonuses()->count());
 
     }
 

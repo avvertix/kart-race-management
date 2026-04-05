@@ -32,7 +32,7 @@ class AssignPointsToRunResult
 
             $categoryCount = $categoryCounts->get($participantResult->category, 0);
 
-            if ($categoryCount <= $config->smallCategoryThreshold && $categoryCount > 0) {
+            if ($categoryCount < $config->smallCategoryThreshold && $categoryCount > 0) {
                 $points = $points * (1 + ($config->smallCategoryPercentage / 100));
             }
 

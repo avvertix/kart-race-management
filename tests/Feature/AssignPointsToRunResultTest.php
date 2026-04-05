@@ -184,6 +184,48 @@ class AssignPointsToRunResultTest extends TestCase
         $this->assertEquals(12.5, $first->points);
     }
 
+    public function test_do_not_apply_small_category_modifier(): void
+    {
+        $race = Race::factory()->create();
+
+        $pointScheme = ChampionshipPointScheme::factory()->create([
+            'championship_id' => $race->championship_id,
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => RunType::RACE_1,
+        ]);
+
+        // Only 2 participants in category (below default threshold of 3)
+        $first = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '1',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        $second = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '2',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        $third = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '3',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        $action = new AssignPointsToRunResult;
+        $action($runResult, $pointScheme);
+
+        $first->refresh();
+        $this->assertEquals(25, $first->points);
+    }
+
     public function test_assigns_points_for_qualifying(): void
     {
         $race = Race::factory()->create();

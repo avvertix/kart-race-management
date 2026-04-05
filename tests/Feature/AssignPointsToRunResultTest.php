@@ -211,7 +211,7 @@ class AssignPointsToRunResultTest extends TestCase
             'category' => 'SmallCat',
             'status' => ResultStatus::FINISHED,
         ]);
-        
+
         $third = ParticipantResult::factory()->create([
             'run_result_id' => $runResult->getKey(),
             'position_in_category' => '3',

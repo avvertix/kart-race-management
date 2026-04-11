@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\BibReservationController;
+use App\Http\Controllers\BibReservationImportController;
 use App\Http\Controllers\ChampionshipAwardController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
+use App\Http\Controllers\ChampionshipBonusImportController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
@@ -115,6 +117,9 @@ Route::middleware([
 
         Route::resource('championships.bonuses', ChampionshipBonusController::class)->shallow()->except(['destroy']);
 
+        Route::get('championships/{championship}/bonuses/import', [ChampionshipBonusImportController::class, 'create'])->name('championships.bonuses.import.create');
+        Route::post('championships/{championship}/bonuses/import', [ChampionshipBonusImportController::class, 'store'])->name('championships.bonuses.import.store');
+
         Route::get('championships/{championship}/categories/copy', [CopyChampionshipCategoriesController::class, 'create'])->name('championships.categories.copy');
         Route::post('championships/{championship}/categories/copy', [CopyChampionshipCategoriesController::class, 'store'])->name('championships.categories.store-copy');
         Route::resource('championships.categories', ChampionshipCategoryController::class)->shallow()->except(['destroy']);
@@ -128,6 +133,9 @@ Route::middleware([
         Route::resource('championships.awards', ChampionshipAwardController::class)->shallow();
 
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
+
+        Route::get('championships/{championship}/bib-reservations/import', [BibReservationImportController::class, 'create'])->name('championships.bib-reservations.import.create');
+        Route::post('championships/{championship}/bib-reservations/import', [BibReservationImportController::class, 'store'])->name('championships.bib-reservations.import.store');
 
         Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 

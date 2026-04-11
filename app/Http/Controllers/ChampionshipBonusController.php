@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\CreateBonus;
 use App\Models\Bonus;
 use App\Models\BonusType;
 use App\Models\Championship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
@@ -55,65 +55,9 @@ class ChampionshipBonusController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Championship $championship)
+    public function store(Request $request, Championship $championship, CreateBonus $createBonus)
     {
-        $validated = $this->validate($request, [
-            'driver' => 'required|string|max:250',
-            'driver_licence' => [
-                'required_without:driver_fiscal_code',
-                'nullable',
-                'string',
-                'max:250',
-            ],
-            'driver_fiscal_code' => [
-                'required_without:driver_licence',
-                'nullable',
-                'string',
-                'max:250',
-            ],
-            'bonus_type' => ['required', 'integer', new Enum(BonusType::class)],
-            'amount' => 'required|integer|min:1',
-        ]);
-
-        $licenceHash = isset($validated['driver_licence']) ? hash('sha512', $validated['driver_licence']) : null;
-        $fiscalCodeHash = isset($validated['driver_fiscal_code']) ? hash('sha512', Str::lower($validated['driver_fiscal_code'])) : null;
-
-        $uniqueRules = [];
-
-        if ($licenceHash) {
-            $uniqueRules['driver_licence'] = [
-                'required',
-                'string',
-                Rule::unique('bonuses', 'driver_licence_hash')
-                    ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
-            ];
-        }
-
-        if ($fiscalCodeHash) {
-            $uniqueRules['driver_fiscal_code'] = [
-                'required',
-                'string',
-                Rule::unique('bonuses', 'driver_fiscal_code_hash')
-                    ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
-            ];
-        }
-
-        if (! empty($uniqueRules)) {
-            Validator::validate(array_filter([
-                'driver_licence' => $licenceHash,
-                'driver_fiscal_code' => $fiscalCodeHash,
-            ]), $uniqueRules);
-        }
-
-        $bonus = $championship->bonuses()->create([
-            'driver' => $validated['driver'],
-            'driver_licence' => $validated['driver_licence'] ?? null,
-            'driver_licence_hash' => $licenceHash,
-            'driver_fiscal_code' => $validated['driver_fiscal_code'] ?? null,
-            'driver_fiscal_code_hash' => $fiscalCodeHash,
-            'amount' => $validated['amount'],
-            'bonus_type' => BonusType::from((int) ($validated['bonus_type'])),
-        ]);
+        $bonus = $createBonus($championship, $request->all());
 
         return redirect()->route('championships.bonuses.index', $championship)
             ->with('flash.banner', __('Bonus activated for :driver.', [

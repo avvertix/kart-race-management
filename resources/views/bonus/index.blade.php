@@ -7,6 +7,9 @@
             <x-button-link href="{{ route('championships.bonuses.create', $championship) }}">
                 {{ __('Add bonus') }}
             </x-button-link>
+            <x-button-link href="{{ route('championships.bonuses.import.create', $championship) }}">
+                {{ __('Import bonuses') }}
+            </x-button-link>
         @endcan
 
         @can('update', $championship)

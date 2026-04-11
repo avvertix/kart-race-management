@@ -6,6 +6,7 @@ use App\Http\Controllers\BibReservationController;
 use App\Http\Controllers\ChampionshipAwardController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
+use App\Http\Controllers\ChampionshipBonusImportController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
@@ -114,6 +115,9 @@ Route::middleware([
         Route::get('championships/{championship}/export-participants', ExportChampionshipParticipantsController::class)->name('championships.export.participants');
 
         Route::resource('championships.bonuses', ChampionshipBonusController::class)->shallow()->except(['destroy']);
+
+        Route::get('championships/{championship}/bonuses/import', [ChampionshipBonusImportController::class, 'create'])->name('championships.bonuses.import.create');
+        Route::post('championships/{championship}/bonuses/import', [ChampionshipBonusImportController::class, 'store'])->name('championships.bonuses.import.store');
 
         Route::get('championships/{championship}/categories/copy', [CopyChampionshipCategoriesController::class, 'create'])->name('championships.categories.copy');
         Route::post('championships/{championship}/categories/copy', [CopyChampionshipCategoriesController::class, 'store'])->name('championships.categories.store-copy');

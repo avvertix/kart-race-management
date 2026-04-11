@@ -581,5 +581,28 @@
     "Expected": "Atteso",
     "Collected": "Incassato",
     "confirmed participants": "partecipanti confermati",
-    "payment confirmed": "pagamento confermato"
+    "payment confirmed": "pagamento confermato",
+
+    "Import bonuses": "Importa bonus",
+    "Import multiple bonuses": "Importa più bonus",
+    "Specify each bonus on its own line.": "Specifica un bonus per riga.",
+    "Either driver_licence or driver_fiscal_code must be provided. Leave the other empty.": "È necessario fornire driver_licence o driver_fiscal_code. Lasciare vuoto l'altro.",
+    "Supported bonus types:": "Tipi di bonus supportati:",
+    "Bonuses to import": "Bonus da importare",
+    ":count bonuses imported.": ":count bonus importati.",
+    "Either driver licence or fiscal code is required.": "È necessario fornire il numero di licenza o il codice fiscale.",
+    "A bonus with this driver licence already exists.": "Esiste già un bonus con questo numero di licenza.",
+    "A bonus with this fiscal code already exists.": "Esiste già un bonus con questo codice fiscale.",
+
+    "Import race number reservations": "Importa prenotazioni numeri di gara",
+    "Import multiple reservations": "Importa più prenotazioni",
+    "Specify each reservation on its own line.": "Specifica una prenotazione per riga.",
+    "contact_email and expiration_date are optional. Leave them empty if not needed.": "contact_email e expiration_date sono opzionali. Lasciarli vuoti se non necessari.",
+    "Dates must be in YYYY-MM-DD format and must be after today.": "Le date devono essere nel formato AAAA-MM-GG e successive ad oggi.",
+    "Reservations to import": "Prenotazioni da importare",
+    "Import reservations": "Importa prenotazioni",
+    ":count reservations imported.": ":count prenotazioni importate.",
+    "Race number :bib is already reserved.": "Il numero di gara :bib è già prenotato.",
+    "Race number :bib is already assigned to a participant.": "Il numero di gara :bib è già assegnato a un partecipante.",
+    "A reservation for driver :driver already exists.": "Esiste già una prenotazione per il pilota :driver."
 }

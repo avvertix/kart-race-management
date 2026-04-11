@@ -68,10 +68,14 @@
                     <div class="space-y-3">
                         @foreach ($bonusUsage as $participant)
                             <div class="border-l-2 border-orange-500 pl-3 py-1">
-                                <p class="font-medium">
-                                    <a href="{{ route('participants.show', $participant) }}" class="text-orange-600 hover:text-orange-900">
+                                <p class="">
+                                    <a href="{{ route('participants.show', $participant) }}" class="font-medium text-orange-600 hover:text-orange-900">
                                         {{ $participant->race->title }}
                                     </a>
+
+                                    @if($bonus_mode === \App\Models\BonusMode::BALANCE)
+                                         - <x-price>{{ $participant->pivot->amount }}</x-price>
+                                    @endif
                                 </p>
                                 <p class="text-xs text-zinc-500">
                                     {{ $participant->pivot->created_at->format('d/m/Y H:i') }}

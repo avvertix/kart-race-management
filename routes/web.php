@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\BibReservationController;
+use App\Http\Controllers\BibReservationImportController;
 use App\Http\Controllers\ChampionshipAwardController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
@@ -132,6 +133,9 @@ Route::middleware([
         Route::resource('championships.awards', ChampionshipAwardController::class)->shallow();
 
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
+
+        Route::get('championships/{championship}/bib-reservations/import', [BibReservationImportController::class, 'create'])->name('championships.bib-reservations.import.create');
+        Route::post('championships/{championship}/bib-reservations/import', [BibReservationImportController::class, 'store'])->name('championships.bib-reservations.import.store');
 
         Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 

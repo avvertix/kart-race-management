@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\CreateBibReservation;
 use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Participant;
@@ -46,57 +47,9 @@ class BibReservationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Championship $championship, Request $request)
+    public function store(Championship $championship, Request $request, CreateBibReservation $createBibReservation)
     {
-        $validated = $this->validate($request, [
-            'bib' => [
-                'required',
-                'integer',
-                'min:1',
-                Rule::unique((new BibReservation())->getTable(), 'bib')->where(function ($query) use ($championship) {
-                    return $query->where('championship_id', $championship->getKey());
-                }),
-
-                Rule::unique('participants', 'bib')
-                    ->where(fn ($query) => $query
-                        ->where('championship_id', $championship->getKey())),
-            ],
-            'driver' => [
-                'required',
-                'string',
-                'max:250',
-                Rule::unique((new BibReservation())->getTable(), 'driver')->where(function ($query) use ($championship) {
-                    return $query->where('championship_id', $championship->getKey());
-                }),
-            ],
-
-            'driver_licence_number' => ['required', 'string', 'max:250'],
-
-            'contact_email' => 'nullable|string|email',
-
-            'reservation_expiration_date' => 'nullable|date|after:today',
-        ]);
-
-        $licenceHash = ($validated['driver_licence_number'] ?? null) ? hash('sha512', $validated['driver_licence_number']) : null;
-
-        // Prevent to use a bib different than what already assigned to the same driver licence
-
-        if (! is_null($licenceHash)) {
-            $part = Participant::where('driver_licence', $licenceHash)->where('championship_id', $championship->getKey())->first();
-
-            if ($part && $part->bib !== $validated['bib']) {
-                throw ValidationException::withMessages(['bib' => __('Participant with same licence has the race number :bib.', ['bib' => $part->bib])]);
-            }
-        }
-
-        $reservation = $championship->reservations()->create([
-            'bib' => $validated['bib'],
-            'driver' => $validated['driver'],
-            'contact_email' => $validated['contact_email'],
-            'driver_licence_hash' => $licenceHash,
-            'driver_licence' => $validated['driver_licence_number'] ?? null,
-            'reservation_expires_at' => $request->date('reservation_expiration_date')?->endOfDay(),
-        ]);
+        $reservation = $createBibReservation($championship, $request->all());
 
         return redirect()->route('championships.bib-reservations.index', $championship)
             ->with('flash.banner', __('Race number :bib reserved.', [

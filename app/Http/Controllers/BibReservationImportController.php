@@ -33,7 +33,7 @@ class BibReservationImportController extends Controller
         ]);
 
         $data = collect(Str::of($validated['reservations'])->split('/[\n\r]+/'))->map(function ($line) {
-            if (empty(trim($line))) {
+            if (empty(mb_trim($line))) {
                 return null;
             }
 

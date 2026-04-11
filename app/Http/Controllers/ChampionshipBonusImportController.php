@@ -33,7 +33,7 @@ class ChampionshipBonusImportController extends Controller
         ]);
 
         $data = collect(Str::of($validated['bonuses'])->split('/[\n\r]+/'))->map(function ($line) {
-            if (empty(trim($line))) {
+            if (empty(mb_trim($line))) {
                 return null;
             }
 

@@ -604,5 +604,12 @@
     ":count reservations imported.": ":count prenotazioni importate.",
     "Race number :bib is already reserved.": "Il numero di gara :bib è già prenotato.",
     "Race number :bib is already assigned to a participant.": "Il numero di gara :bib è già assegnato a un partecipante.",
-    "A reservation for driver :driver already exists.": "Esiste già una prenotazione per il pilota :driver."
+    "A reservation for driver :driver already exists.": "Esiste già una prenotazione per il pilota :driver.",
+
+    "Accepted licences": "Licenze accettate",
+    ":championship accepted licences updated.": "Licenze accettate per :championship aggiornate.",
+    "Driver licences": "Licenze pilota",
+    "Select which driver licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza pilota accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza.",
+    "Competitor licences": "Licenze accompagnatore",
+    "Select which competitor licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza accompagnatore accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza."
 }

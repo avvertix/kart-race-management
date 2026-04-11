@@ -20,6 +20,9 @@
         @endcan
 
         @can('update', $championship)
+            <x-button-link href="{{ route('championships.licence-settings.edit', $championship) }}">
+                {{ __('Accepted licences') }}
+            </x-button-link>
             <x-button-link href="{{ route('championships.edit', $championship) }}">
                 {{ __('Edit championship') }}
             </x-button-link>

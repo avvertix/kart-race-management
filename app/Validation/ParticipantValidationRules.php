@@ -76,10 +76,17 @@ trait ParticipantValidationRules
         ];
     }
 
-    protected function getDriverValidationRules(): array
+    protected function getDriverValidationRules(?Championship $championship = null): array
     {
+        $acceptedDriverLicences = $championship?->licences->accepted_driver_licences ?? [];
+
+        $driverLicenceTypeRules = ['required', new Enum(DriverLicence::class)];
+        if (! empty($acceptedDriverLicences)) {
+            $driverLicenceTypeRules[] = Rule::in($acceptedDriverLicences);
+        }
+
         $rules = [
-            'driver_licence_type' => ['required', new Enum(DriverLicence::class)],
+            'driver_licence_type' => $driverLicenceTypeRules,
 
             'driver_first_name' => ['required', 'string', 'max:250'],
             'driver_last_name' => ['required', 'string', 'max:250'],
@@ -113,11 +120,18 @@ trait ParticipantValidationRules
         return $rules;
     }
 
-    protected function getCompetitorValidationRules(): array
+    protected function getCompetitorValidationRules(?Championship $championship = null): array
     {
+        $acceptedCompetitorLicences = $championship?->licences->accepted_competitor_licences ?? [];
+
+        $competitorLicenceTypeRules = ['nullable', 'required_with:competitor_licence_number', new Enum(CompetitorLicence::class)];
+        if (! empty($acceptedCompetitorLicences)) {
+            $competitorLicenceTypeRules[] = Rule::in($acceptedCompetitorLicences);
+        }
+
         $rules = [
             'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
-            'competitor_licence_type' => ['nullable', 'required_with:competitor_licence_number', new Enum(CompetitorLicence::class)],
+            'competitor_licence_type' => $competitorLicenceTypeRules,
             'competitor_first_name' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_last_name' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_fiscal_code' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],

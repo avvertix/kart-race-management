@@ -47,6 +47,7 @@ use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
+use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use App\Http\Controllers\UpdateRaceScoringController;
 use App\Http\Controllers\UserController;
@@ -104,6 +105,9 @@ Route::middleware([
 
         Route::get('championships/{championship}/bonus-settings', [UpdateChampionshipBonusSettingsController::class, 'edit'])->name('championships.bonus-settings.edit');
         Route::put('championships/{championship}/bonus-settings', [UpdateChampionshipBonusSettingsController::class, 'update'])->name('championships.bonus-settings.update');
+
+        Route::get('championships/{championship}/licence-settings', [UpdateChampionshipLicenceSettingsController::class, 'edit'])->name('championships.licence-settings.edit');
+        Route::put('championships/{championship}/licence-settings', [UpdateChampionshipLicenceSettingsController::class, 'update'])->name('championships.licence-settings.update');
 
         Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
 

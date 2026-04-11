@@ -36,8 +36,8 @@ class UpdateParticipantRegistration
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
             ...$this->getCategoryValidationRules((int) $race->championship_id),
-            ...$this->getDriverValidationRules(),
-            ...$this->getCompetitorValidationRules(),
+            ...$this->getDriverValidationRules($race->championship),
+            ...$this->getCompetitorValidationRules($race->championship),
             ...$this->getMechanicValidationRules(),
             ...$this->getVehicleValidationRules(),
         ])->validate();

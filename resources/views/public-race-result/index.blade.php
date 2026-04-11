@@ -14,6 +14,9 @@
             @if ($race->rain)
                 &middot; {{ __('Wet race') }}
             @endif
+            @if ($race->red_flag)
+                &middot; {{ __('Red flag') }}
+            @endif
         </p>
     </x-slot>
 

@@ -15,6 +15,7 @@ class PointsConfigData extends Data
      */
     public function __construct(
         public float $rainPercentage = 50,
+        public float $redFlagPercentage = 50,
         public float $smallCategoryPercentage = -50,
         public int $smallCategoryThreshold = 3,
         public array $runTypes = [],
@@ -51,6 +52,7 @@ class PointsConfigData extends Data
 
         return new self(
             rainPercentage: (float) ($data['rain_percentage'] ?? 50),
+            redFlagPercentage: (float) ($data['red_flag_percentage'] ?? 50),
             smallCategoryPercentage: (float) ($data['small_category_percentage'] ?? -50),
             smallCategoryThreshold: (int) ($data['small_category_threshold'] ?? 3),
             runTypes: $runTypes,
@@ -93,6 +95,7 @@ class PointsConfigData extends Data
     {
         $config = [
             'rain_percentage' => $this->rainPercentage,
+            'red_flag_percentage' => $this->redFlagPercentage,
             'small_category_percentage' => $this->smallCategoryPercentage,
             'small_category_threshold' => $this->smallCategoryThreshold,
         ];

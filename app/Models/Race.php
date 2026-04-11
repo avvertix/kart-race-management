@@ -35,6 +35,7 @@ class Race extends Model
         'type',
         'point_multiplier',
         'rain',
+        'red_flag',
     ];
 
     /**
@@ -300,6 +301,7 @@ class Race extends Model
             'type' => RaceType::class,
             'point_multiplier' => 'float',
             'rain' => 'boolean',
+            'red_flag' => 'boolean',
         ];
     }
 }

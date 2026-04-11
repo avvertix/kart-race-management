@@ -19,11 +19,13 @@ class UpdateRaceScoringController extends Controller
         $validated = $this->validate($request, [
             'point_multiplier' => ['nullable', 'numeric', 'min:0'],
             'rain' => ['nullable', 'boolean'],
+            'red_flag' => ['nullable', 'boolean'],
         ]);
 
         $race->update([
             'point_multiplier' => $validated['point_multiplier'] ?? null,
             'rain' => $request->boolean('rain'),
+            'red_flag' => $request->boolean('red_flag'),
         ]);
 
         return to_route('races.edit', $race)

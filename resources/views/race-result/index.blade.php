@@ -47,6 +47,13 @@
                         {{ __('Wet race') }}
                     </p>
                 @endif
+                
+                @if ($race->red_flag)
+                    <p class="flex items-center gap-2">
+                        <x-ri-flag-2-fill class="size-4 text-zinc-500 shrink-0" />
+                        {{ __('Red flag') }}
+                    </p>
+                @endif
 
                 <p class="space-x-4">
                     <a class="inline-flex items-center gap-2" target="_blank" href="{{ route('championships.awards.index', $race->championship) }}">

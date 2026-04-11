@@ -40,6 +40,10 @@ class AssignPointsToRunResult
                 $points = $points * (1 - ($config->rainPercentage / 100));
             }
 
+            if ($race->red_flag) {
+                $points = $points * (1 - ($config->redFlagPercentage / 100));
+            }
+
             if ($race->point_multiplier) {
                 $points = $points * $race->point_multiplier;
             }

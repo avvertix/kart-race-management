@@ -65,6 +65,13 @@
                         </x-label>
                         <p class="text-zinc-500 text-sm mt-1">{{ __('Mark this race as a rain race. This may affect championship point calculations.') }}</p>
                     </div>
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-label for="red_flag" class="flex items-center">
+                            <x-checkbox id="red_flag" name="red_flag" value="1" :checked="old('red_flag', $race->red_flag)" />
+                            <span class="ms-2 text-sm text-zinc-600">{{ __('Red flag') }}</span>
+                        </x-label>
+                        <p class="text-zinc-500 text-sm mt-1">{{ __('Mark this race as having a red flag. This may affect championship point calculations.') }}</p>
+                    </div>
                 </div>
             </div>
 

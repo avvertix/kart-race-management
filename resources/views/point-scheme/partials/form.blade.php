@@ -64,6 +64,22 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-4">
+                    <x-label for="red_flag_percentage" value="{{ __('Red flag modifier') }}" />
+                    <p class="text-sm text-zinc-500">{{ __('Percentage applied to points when the race has a red flag.') }}</p>
+                    <div class="mt-1 flex items-center gap-2">
+                        <x-input
+                            id="red_flag_percentage"
+                            type="number"
+                            name="points_config[red_flag_percentage]"
+                            :value="old('points_config.red_flag_percentage', $existingConfig['red_flag_percentage'] ?? 50)"
+                            step="any"
+                            class="w-24" />
+                        <span class="text-sm text-zinc-600">%</span>
+                    </div>
+                    <x-input-error for="points_config.red_flag_percentage" class="mt-2" />
+                </div>
+
+                <div class="col-span-6 sm:col-span-4">
                     <x-label for="small_category_percentage" value="{{ __('Small category modifier') }}" />
                     <p class="text-sm text-zinc-500">{{ __('Percentage applied to points when a category has fewer participants than the threshold.') }}</p>
                     <div class="mt-1 flex items-center gap-2">

@@ -62,7 +62,7 @@
                     <x-input-error for="driver_last_name" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="driver_fiscal_code" value="{{ __('Fiscal code') }}*" />
+                    <x-label for="driver_fiscal_code" value="{{ __('Fiscal code') }} {{ __('(only for Italian drivers)') }}" />
                     <x-input id="driver_fiscal_code" type="text" name="driver_fiscal_code" class="mt-1 block w-full" :value="old('driver_fiscal_code', $driver['fiscal_code'] ?? null)"  />
                     <x-input-error for="driver_fiscal_code" class="mt-2" />
                 </div>
@@ -81,8 +81,14 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="driver_nationality" value="{{ __('Nationality') }}*" />
-                    <x-input id="driver_nationality" type="text" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality', $driver['nationality'] ?? null)"  />
+                    <x-label for="driver_nationality" value="{{ __('Nation') }}*" />
+                    <x-input id="driver_nationality"  list="driver_nationality_options" type="text" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality', $driver['nationality'] ?? null)"  />
+                    <datalist id="driver_nationality_options">
+                        <option value="Italian"></option>
+                        <option value="French"></option>
+                        <option value="German"></option>
+                        <option value="Spanish"></option>
+                    </datalist>
                     <x-input-error for="driver_nationality" class="mt-2" />
                 </div>
 

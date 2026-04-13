@@ -32,7 +32,7 @@ trait CreateDriver
             'driver_residence_province' => 'Milan',
             'driver_residence_postal_code' => '20146',
             'driver_sex' => Sex::MALE->value,
-            'driver_fiscal_code' => 'DRV-FC',
+            'driver_fiscal_code' => 'RSSMRA85T10A562S',
         ], $exclude);
     }
 }

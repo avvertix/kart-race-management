@@ -15,9 +15,12 @@ use App\Models\RegistrationForm;
 use App\Models\Sex;
 use App\Models\User;
 use App\Rules\DateFormat;
+use App\Rules\FiscalCodeFormatRule;
+use App\Rules\LicenseNumberValidationRule;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Throwable;
@@ -93,9 +96,9 @@ trait ParticipantValidationRules
             'driver_first_name' => ['required', 'string', 'max:250'],
             'driver_last_name' => ['required', 'string', 'max:250'],
 
-            'driver_licence_number' => ['required', 'string', 'max:250'],
+            'driver_licence_number' => ['required', 'string', 'max:250', 'min:3', new LicenseNumberValidationRule],
             'driver_licence_renewed_at' => ['nullable'],
-            'driver_nationality' => ['required', 'string', 'max:250'],
+            'driver_nationality' => ['required', 'string', 'max:250'], // Impostare possibili nazionalità
             'driver_email' => ['required', 'string', 'email'],
             'driver_phone' => ['required', 'string'],
             'driver_birth_date' => ['required', 'string', new DateFormat],
@@ -107,7 +110,10 @@ trait ParticipantValidationRules
             'driver_residence_city' => ['required', 'string',  'max:250'],
             'driver_residence_province' => ['nullable', 'string',  'max:250'],
             'driver_residence_postal_code' => ['required', 'string', 'max:250'],
-            'driver_fiscal_code' => ['required', 'string', 'max:250'],
+            'driver_fiscal_code' => ['string', 'max:250', new FiscalCodeFormatRule(check_driver: true)], // indicare che obbligatorio se nazionalità = italia o licenza diversa da internazionale, validare formato codice fiscale italiano
+            // in base ai dati forniti si può validare parte del codice fiscale
+            // check spam, we do continue processing, we add spam score and we do not send email if score is too high, but we do not block registration since we need to allow also real users to register even if they trigger false positives in spam check
+            // use the request ip and user agent to also double check if the same ip or user agent was used for other registrations with high spam score, in that case we can increase the spam score of the current registration
         ];
 
         if ($this->useMinimalForm($race)) {
@@ -140,18 +146,17 @@ trait ParticipantValidationRules
         }
 
         $rules = [
-            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
+            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250', 'min:3', new LicenseNumberValidationRule],
             'competitor_licence_type' => $competitorLicenceTypeRules,
             'competitor_first_name' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_last_name' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_fiscal_code' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_fiscal_code' => ['nullable', 'string', 'max:250', new FiscalCodeFormatRule(check_competitor: true)],
             'competitor_licence_renewed_at' => ['nullable'],
             'competitor_nationality' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_email' => ['nullable', 'required_with:competitor_licence_number', 'string', 'email'],
             'competitor_phone' => ['nullable', 'required_with:competitor_licence_number', 'string'],
             'competitor_birth_date' => ['nullable', 'required_with:competitor_licence_number', 'string', new DateFormat],
             'competitor_birth_place' => ['nullable', 'required_with:competitor_licence_number', 'string'],
-            'competitor_residence_address' => ['nullable', 'required_with:competitor_licence_number', 'string'],
             'competitor_residence_address' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_residence_city' => ['nullable', 'required_with:competitor_licence_number', 'string',  'max:250'],
             'competitor_residence_province' => ['nullable', 'string',  'max:250'],
@@ -181,7 +186,7 @@ trait ParticipantValidationRules
         }
 
         return [
-            'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
+            'mechanic_licence_number' => ['nullable', 'string', 'max:250', 'min:3', new LicenseNumberValidationRule],
             'mechanic_name' => ['nullable', 'required_with:mechanic_licence_number', 'string', 'max:250'],
         ];
     }

@@ -18,6 +18,7 @@
         "league/flysystem-path-prefixing": "^3.23",
         "livewire/livewire": "^3.4",
         "maatwebsite/excel": "^3.1",
+        "prinsfrank/standards": "^3.16",
         "rinvex/countries": "^9.0",
         "saloonphp/xml-wrangler": "^1.3",
         "spatie/icalendar-generator": "^3.2",

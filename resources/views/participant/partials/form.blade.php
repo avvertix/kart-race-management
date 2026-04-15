@@ -84,10 +84,13 @@
                     <x-label for="driver_nationality" value="{{ __('Nation') }}*" />
                     <x-input id="driver_nationality"  list="driver_nationality_options" type="text" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality', $driver['nationality'] ?? null)"  />
                     <datalist id="driver_nationality_options">
-                        <option value="Italian"></option>
-                        <option value="French"></option>
-                        <option value="German"></option>
-                        <option value="Spanish"></option>
+
+                        @foreach (\PrinsFrank\Standards\Region\GeographicRegion::Europe->getAllSubCountries() as $case)
+                        {{--  \PrinsFrank\Standards\Country\CountryAlpha2::cases() --}}
+                        {{-- TODO: they are wrongly sorted --}}
+                            
+                            <option value="{{ $case->getNameInLanguage(\PrinsFrank\Standards\Language\LanguageAlpha2::from(app()->getLocale())) }}"></option>
+                        @endforeach
                     </datalist>
                     <x-input-error for="driver_nationality" class="mt-2" />
                 </div>
@@ -177,7 +180,7 @@
                     <x-input-error for="competitor_last_name" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="competitor_fiscal_code" value="{{ __('Fiscal Code') }}*" />
+                    <x-label for="competitor_fiscal_code" value="{{ __('Fiscal Code') }} {{ __('(only for Italian competitors)') }}" />
                     <x-input id="competitor_fiscal_code" type="text" name="competitor_fiscal_code" class="mt-1 block w-full" :value="old('competitor_fiscal_code', $competitor['fiscal_code'] ?? null)"  />
                     <x-input-error for="competitor_fiscal_code" class="mt-2" />
                 </div>

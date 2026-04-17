@@ -10,6 +10,7 @@ use App\Models\Bonus;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\Participant;
+use App\Models\Payment;
 use App\Models\Race;
 use Illuminate\Support\Facades\DB;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
@@ -208,6 +209,78 @@ class ApplyBonusToParticipantTest extends TestCase
         $freshBonus = $bonus->fresh();
 
         $this->assertEquals(5000, $freshBonus->remaining);
+    }
+
+    public function test_bonus_not_applied_when_payment_confirmed(): void
+    {
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $participant = Participant::factory()
+            ->for($race)
+            ->for($race->championship)
+            ->category($category)
+            ->driver([
+                'first_name' => 'John',
+                'last_name' => 'Racer',
+                'licence_number' => 'D0001',
+                'bib' => 100,
+            ])
+            ->create(['payment_confirmed_at' => now()]);
+
+        Bonus::factory()
+            ->recycle($race->championship)
+            ->create([
+                'driver_licence' => 'D0001',
+                'driver_licence_hash' => hash('sha512', 'D0001'),
+                'amount' => 2,
+            ]);
+
+        $event = new ParticipantRegistered($participant, $race);
+
+        (new ApplyBonusToParticipant())->handle($event, function ($event) {
+            return $event;
+        });
+
+        $this->assertEquals(0, $participant->bonuses()->count());
+    }
+
+    public function test_bonus_not_applied_when_payment_submitted(): void
+    {
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $participant = Participant::factory()
+            ->for($race)
+            ->for($race->championship)
+            ->category($category)
+            ->driver([
+                'first_name' => 'John',
+                'last_name' => 'Racer',
+                'licence_number' => 'D0001',
+                'bib' => 100,
+            ])
+            ->create();
+
+        Payment::factory()->forParticipant($participant)->create();
+
+        Bonus::factory()
+            ->recycle($race->championship)
+            ->create([
+                'driver_licence' => 'D0001',
+                'driver_licence_hash' => hash('sha512', 'D0001'),
+                'amount' => 2,
+            ]);
+
+        $event = new ParticipantRegistered($participant, $race);
+
+        (new ApplyBonusToParticipant())->handle($event, function ($event) {
+            return $event;
+        });
+
+        $this->assertEquals(0, $participant->bonuses()->count());
     }
 
     public function test_bonus_matched_via_fiscal_code_when_licence_does_not_match()

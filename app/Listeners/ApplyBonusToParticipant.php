@@ -38,8 +38,12 @@ class ApplyBonusToParticipant
             $bonus = $championship->bonuses()->fiscalCode($event->participant->driver_fiscal_code)->first();
         }
 
-        // Check if bonus already applied to participant
+        // Check if bonus already applied to participant or if payment is already submitted/confirmed
         if ($event->participant->bonuses()->exists() || $event->participant->use_bonus) {
+            return $next($event);
+        }
+
+        if (filled($event->participant->payment_confirmed_at) || $event->participant->payments()->exists()) {
             return $next($event);
         }
 

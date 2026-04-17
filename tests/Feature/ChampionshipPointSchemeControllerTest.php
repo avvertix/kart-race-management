@@ -202,6 +202,7 @@ class ChampionshipPointSchemeControllerTest extends TestCase
 
         $updatedConfig = [
             'rain_percentage' => 75,
+            'red_flag_percentage' => 30,
             'small_category_percentage' => -25,
             'small_category_threshold' => 4,
             '20' => ['positions' => [5, 3, 1], 'statuses' => $defaultStatuses],
@@ -237,6 +238,7 @@ class ChampionshipPointSchemeControllerTest extends TestCase
 
         $pointsConfig = [
             'rain_percentage' => 50,
+            'red_flag_percentage' => 50,
             'small_category_percentage' => -50,
             'small_category_threshold' => 3,
             '20' => [
@@ -331,6 +333,7 @@ class ChampionshipPointSchemeControllerTest extends TestCase
 
         return [
             'rain_percentage' => 50,
+            'red_flag_percentage' => 50,
             'small_category_percentage' => -50,
             'small_category_threshold' => 3,
             '20' => ['positions' => [3, 2, 1], 'statuses' => $defaultStatuses],

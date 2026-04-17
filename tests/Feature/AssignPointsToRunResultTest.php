@@ -115,6 +115,40 @@ class AssignPointsToRunResultTest extends TestCase
         $this->assertEquals(12.5, $participants[0]->points);
     }
 
+    public function test_applies_red_flag_modifier(): void
+    {
+        $race = Race::factory()->create([
+            'red_flag' => true,
+        ]);
+
+        $pointScheme = ChampionshipPointScheme::factory()->create([
+            'championship_id' => $race->championship_id,
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => RunType::RACE_1,
+        ]);
+
+        // Need enough participants to avoid small category modifier
+        $participants = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $participants[] = ParticipantResult::factory()->create([
+                'run_result_id' => $runResult->getKey(),
+                'position_in_category' => (string) $i,
+                'category' => 'Senior',
+                'status' => ResultStatus::FINISHED,
+            ]);
+        }
+
+        $action = new AssignPointsToRunResult;
+        $action($runResult, $pointScheme);
+
+        $participants[0]->refresh();
+        // 25 * (1 - 50/100) = 12.5
+        $this->assertEquals(12.5, $participants[0]->points);
+    }
+
     public function test_applies_point_multiplier(): void
     {
         $race = Race::factory()->create([

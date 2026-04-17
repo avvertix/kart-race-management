@@ -22,7 +22,7 @@ class LicenseNumberValidationRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             $fail(':attribute is not a valid licence number.');
 
             return;

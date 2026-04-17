@@ -42,7 +42,9 @@ class RemoveBonusFromParticipantWhenCostChanges
             return isset($changes['attributes']['category_id']);
         });
 
-        if ($categoryChanged) {
+        if ($categoryChanged
+            && blank($event->participant->payment_confirmed_at)
+            && ! $event->participant->payments()->exists()) {
             $event->participant->bonuses()->detach();
             $event->participant->update(['use_bonus' => false]);
         }

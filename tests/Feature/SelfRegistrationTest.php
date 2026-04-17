@@ -172,7 +172,7 @@ class SelfRegistrationTest extends TestCase
             return $notification->target === 'competitor';
         });
     }
-    
+
     public function test_driver_fiscal_code_required_for_italian_drivers()
     {
         Notification::fake();
@@ -192,7 +192,7 @@ class SelfRegistrationTest extends TestCase
                 ...$this->generateValidCompetitor(),
                 ...$this->generateValidMechanic(),
                 ...$this->generateValidVehicle(),
-                ...['driver_fiscal_code' => '',],
+                ...['driver_fiscal_code' => ''],
                 'consent_privacy' => true,
                 'use_bonus' => 'false',
             ]);
@@ -202,7 +202,7 @@ class SelfRegistrationTest extends TestCase
         $response->assertSessionHasErrors('driver_fiscal_code');
 
     }
-    
+
     public function test_driver_fiscal_code_required_when_nationality_is_italy()
     {
         Notification::fake();
@@ -236,7 +236,7 @@ class SelfRegistrationTest extends TestCase
         $response->assertSessionHasErrors('driver_fiscal_code');
 
     }
-    
+
     public function test_driver_fiscal_code_ignored_for_foreign_drivers()
     {
         Notification::fake();
@@ -283,8 +283,6 @@ class SelfRegistrationTest extends TestCase
             'registration' => $participant,
             'p' => $participant->signatureContent(),
         ]);
-
-        
 
         $response->assertSessionHas('flash.banner', 'Race registration recorded. Please confirm it using the link sent in the email.');
 

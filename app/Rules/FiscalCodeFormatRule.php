@@ -13,21 +13,20 @@ use Illuminate\Support\Str;
 use Illuminate\Translation\PotentiallyTranslatedString;
 use InvalidArgumentException;
 
-class FiscalCodeFormatRule implements ValidationRule, DataAwareRule
+class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
 {
+    // women char
+    protected const CHR_WOMEN = 'F';
+
+    // male char
+    protected const CHR_MALE = 'M';
+
     /**
      * All of the data under validation.
      *
      * @var array<string, mixed>
      */
     protected $data = [];
-
-
-    // women char
-    protected const CHR_WOMEN = 'F';
-
-    // male char
-    protected const CHR_MALE = 'M';
 
     /**
      * Array of all available months.
@@ -283,7 +282,6 @@ class FiscalCodeFormatRule implements ValidationRule, DataAwareRule
         '/^[a-z]{16}$/i', // RSSMRAURTMLARSNL
     ];
 
-
     public function __construct(protected bool $check_driver = false, protected bool $check_competitor = false)
     {
         //
@@ -296,36 +294,37 @@ class FiscalCodeFormatRule implements ValidationRule, DataAwareRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if($this->check_driver &&( ($this->input('driver_nationality') ?? false || $this->input('driver_licence_type') ?? false))) {
+        if ($this->check_driver && (($this->input('driver_nationality') ?? false || $this->input('driver_licence_type') ?? false))) {
 
-            if(blank($value) && 
+            if (blank($value) &&
                 (Str::contains(Str::lower($this->input('driver_nationality', '')), ['italian', 'italiana', 'italia', 'italy'])
-                    || (filled($this->input('driver_licence_type')) && $this->input('driver_licence_type') !== DriverLicence::FOREIGN->value))){
+                    || (filled($this->input('driver_licence_type')) && $this->input('driver_licence_type') !== DriverLicence::FOREIGN->value))) {
 
-            $fail('validation.required')->translate();
-            return;
-                    }
+                $fail('validation.required')->translate();
+
+                return;
+            }
 
         }
-        
-        if($this->check_competitor && (($this->input('competitor_nationality') ?? false || $this->input('competitor_licence_type') ?? false))) {
 
-            if(blank($value) && 
+        if ($this->check_competitor && (($this->input('competitor_nationality') ?? false || $this->input('competitor_licence_type') ?? false))) {
+
+            if (blank($value) &&
                 (Str::contains(Str::lower($this->input('competitor_nationality', '')), ['italian', 'italiana', 'italia', 'italy'])
-                    || (filled($this->input('competitor_licence_type')) && $this->input('competitor_licence_type') !== CompetitorLicence::FOREIGN->value))){
+                    || (filled($this->input('competitor_licence_type')) && $this->input('competitor_licence_type') !== CompetitorLicence::FOREIGN->value))) {
 
-            $fail('validation.required')->translate();
-            return;
-                    }
+                $fail('validation.required')->translate();
+
+                return;
+            }
 
         }
 
-        if(!is_string($value)) {
+        if (! is_string($value)) {
             $fail('validation.fiscal_code')->translate();
+
             return;
         }
-
-        
 
         try {
             $this->validateLength($value);
@@ -337,6 +336,18 @@ class FiscalCodeFormatRule implements ValidationRule, DataAwareRule
         } catch (InvalidArgumentException $e) {
             $fail('validation.fiscal_code')->translate();
         }
+    }
+
+    /**
+     * Set the data under validation.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function setData(array $data): static
+    {
+        $this->data = $data;
+
+        return $this;
     }
 
     /**
@@ -370,6 +381,11 @@ class FiscalCodeFormatRule implements ValidationRule, DataAwareRule
         $sumOdd = $this->calculateSumByDictionary($temporaryCodiceFiscale, $this->odd, 0);
 
         return chr(($sumOdd + $sumEven) % 26 + 65);
+    }
+
+    protected function input(string $value, mixed $default = null): ?string
+    {
+        return $this->data[$value] ?? $default;
     }
 
     /**
@@ -422,23 +438,5 @@ class FiscalCodeFormatRule implements ValidationRule, DataAwareRule
         if ($checkDigit !== $value[15]) {
             throw new InvalidArgumentException('The codice fiscale to validate has an invalid control character');
         }
-    }
-
-    protected function input(string $value, mixed $default = null): ?string
-    {
-        return $this->data[$value] ?? $default;
-    }
-
-
-    /**
-     * Set the data under validation.
-     *
-     * @param  array<string, mixed>  $data
-     */
-    public function setData(array $data): static
-    {
-        $this->data = $data;
- 
-        return $this;
     }
 }

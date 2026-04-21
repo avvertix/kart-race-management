@@ -97,7 +97,7 @@ trait ParticipantValidationRules
 
             'driver_licence_number' => ['required', 'string', 'max:250', 'min:3', new LicenseNumberValidationRule],
             'driver_licence_renewed_at' => ['nullable'],
-            'driver_nationality' => ['required', 'string', 'max:250'], // Impostare possibili nazionalità
+            'driver_nationality' => ['required', 'string', 'max:250'],
             'driver_email' => ['required', 'string', 'email'],
             'driver_phone' => ['required', 'string'],
             'driver_birth_date' => ['required', 'string', new DateFormat],
@@ -109,10 +109,7 @@ trait ParticipantValidationRules
             'driver_residence_city' => ['required', 'string',  'max:250'],
             'driver_residence_province' => ['nullable', 'string',  'max:250'],
             'driver_residence_postal_code' => ['required', 'string', 'max:250'],
-            'driver_fiscal_code' => ['string', 'max:250', new FiscalCodeFormatRule(check_driver: true)], // indicare che obbligatorio se nazionalità = italia o licenza diversa da internazionale, validare formato codice fiscale italiano
-            // in base ai dati forniti si può validare parte del codice fiscale
-            // check spam, we do continue processing, we add spam score and we do not send email if score is too high, but we do not block registration since we need to allow also real users to register even if they trigger false positives in spam check
-            // use the request ip and user agent to also double check if the same ip or user agent was used for other registrations with high spam score, in that case we can increase the spam score of the current registration
+            'driver_fiscal_code' => ['string', 'max:250', new FiscalCodeFormatRule(check_driver: true)],
         ];
 
         if ($this->useMinimalForm($race)) {

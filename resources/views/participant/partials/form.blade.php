@@ -70,7 +70,7 @@
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="driver_licence_type" class="mt-2" />
-                    <x-options-selector id="driver_licence_type" name="driver_licence_type" class="mt-1" :value="old('driver_licence_type', $driver['licence_type'] ?? null)"  />
+                    <x-options-selector :options="$driverLicences ?? \App\Models\DriverLicence::cases()" id="driver_licence_type" name="driver_licence_type" class="mt-1" :value="old('driver_licence_type', $driver['licence_type'] ?? null)"  />
                 </div>
                 @enduseCompleteRegistrationForm
                 <div class="col-span-6 sm:col-span-4">
@@ -179,7 +179,7 @@
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="competitor_licence_type" class="mt-2" />
-                    <x-options-selector :options="\App\Models\CompetitorLicence::class" id="competitor_licence_type" name="competitor_licence_type" class="mt-1  " :value="old('competitor_licence_type', $competitor['licence_type'] ?? null)"  />
+                    <x-options-selector :options="$competitorLicences ?? \App\Models\CompetitorLicence::cases()" id="competitor_licence_type" name="competitor_licence_type" class="mt-1  " :value="old('competitor_licence_type', $competitor['licence_type'] ?? null)"  />
                 </div>
                 @enduseCompleteRegistrationForm
                 <div class="col-span-6 sm:col-span-4">

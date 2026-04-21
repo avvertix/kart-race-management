@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Actions\RegisterParticipant;
 use App\Data\PaymentSettingsData;
 use App\Exceptions\InvalidParticipantSignatureException;
+use App\Models\CompetitorLicence;
+use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Http\Request;
@@ -32,6 +34,18 @@ class RaceRegistrationController extends Controller
 
         $bankTransferAvailable = now()->lessThan($lastAcceptedDateForBankTransfer);
 
+        $licenceSettings = $race->championship->licences;
+
+        $acceptedDriverLicences = $licenceSettings->accepted_driver_licences;
+        $driverLicences = empty($acceptedDriverLicences)
+            ? DriverLicence::cases()
+            : array_values(array_filter(DriverLicence::cases(), fn ($l) => in_array($l->value, $acceptedDriverLicences)));
+
+        $acceptedCompetitorLicences = $licenceSettings->accepted_competitor_licences;
+        $competitorLicences = empty($acceptedCompetitorLicences)
+            ? CompetitorLicence::cases()
+            : array_values(array_filter(CompetitorLicence::cases(), fn ($l) => in_array($l->value, $acceptedCompetitorLicences)));
+
         return view('race-registration.create', [
             'race' => $race,
             'categories' => $race->championship->categories()->enabled()->get(),
@@ -39,6 +53,8 @@ class RaceRegistrationController extends Controller
             'tires' => $race->championship->tires,
             'bankTransferAvailable' => $bankTransferAvailable,
             'lastAcceptedDateForBankTransfer' => $lastAcceptedDateForBankTransfer,
+            'driverLicences' => $driverLicences,
+            'competitorLicences' => $competitorLicences,
         ]);
     }
 

@@ -62,7 +62,7 @@
                 <input type="text" name="driver_alias" id="driver_alias" value="" autocomplete="off" tabindex="-1">
             </div>
 
-            @include('participant.partials.form')
+            @include('participant.partials.form', ['driverLicences' => $driverLicences, 'competitorLicences' => $competitorLicences])
             
             @include('participant.partials.consents')
 

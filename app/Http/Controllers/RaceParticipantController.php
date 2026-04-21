@@ -7,6 +7,9 @@ namespace App\Http\Controllers;
 use App\Actions\DeleteParticipant;
 use App\Actions\RegisterParticipant;
 use App\Actions\UpdateParticipantRegistration;
+use App\Models\Championship;
+use App\Models\CompetitorLicence;
+use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Http\Request;
@@ -86,6 +89,7 @@ class RaceParticipantController extends Controller
             'tires' => $race->championship->tires,
             'bankTransferAvailable' => $bankTransferAvailable,
             'lastAcceptedDateForBankTransfer' => $lastAcceptedDateForBankTransfer,
+            ...$this->licenceOptions($race->championship),
         ]);
     }
 
@@ -136,6 +140,7 @@ class RaceParticipantController extends Controller
             'championship' => $participant->championship,
             'participant' => $participant,
             'categories' => $participant->championship->categories()->enabled()->get(),
+            ...$this->licenceOptions($participant->championship),
         ]);
     }
 
@@ -194,5 +199,20 @@ class RaceParticipantController extends Controller
             'oil_type' => $input['vehicle_oil_type'],
             'oil_percentage' => $input['vehicle_oil_percentage'],
         ]];
+    }
+
+    private function licenceOptions(Championship $championship): array
+    {
+        $acceptedDriverLicences = $championship->licences->accepted_driver_licences;
+        $acceptedCompetitorLicences = $championship->licences->accepted_competitor_licences;
+
+        return [
+            'driverLicences' => empty($acceptedDriverLicences)
+                ? DriverLicence::cases()
+                : array_values(array_filter(DriverLicence::cases(), fn ($l) => in_array($l->value, $acceptedDriverLicences))),
+            'competitorLicences' => empty($acceptedCompetitorLicences)
+                ? CompetitorLicence::cases()
+                : array_values(array_filter(CompetitorLicence::cases(), fn ($l) => in_array($l->value, $acceptedCompetitorLicences))),
+        ];
     }
 }

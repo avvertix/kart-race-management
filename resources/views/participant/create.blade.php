@@ -27,7 +27,7 @@
             <form method="POST" action="{{ route('races.participants.store', $race) }}">
                 @csrf
 
-                @include('participant.partials.form')
+                @include('participant.partials.form', ['driverLicences' => $driverLicences, 'competitorLicences' => $competitorLicences])
 
                 <x-section-border />
                 

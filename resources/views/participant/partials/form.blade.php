@@ -189,8 +189,8 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
-                    <x-input id="competitor_nationality" type="text" name="competitor_nationality" class="mt-1 block w-full" :value="old('competitor_nationality', $competitor['nationality'] ?? null)"  />
+                    <x-label for="competitor_nationality" value="{{ __('Nation') }}*" />
+                    <x-nationality-input id="competitor_nationality" name="competitor_nationality" class="mt-1 block w-full" :value="old('competitor_nationality', $competitor['nationality'] ?? null)" />
                     <x-input-error for="competitor_nationality" class="mt-2" />
                 </div>
 

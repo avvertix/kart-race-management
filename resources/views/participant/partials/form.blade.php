@@ -82,16 +82,7 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_nationality" value="{{ __('Nation') }}*" />
-                    <x-input id="driver_nationality"  list="driver_nationality_options" type="text" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality', $driver['nationality'] ?? null)"  />
-                    <datalist id="driver_nationality_options">
-
-                        @foreach (\PrinsFrank\Standards\Region\GeographicRegion::Europe->getAllSubCountries() as $case)
-                        {{--  \PrinsFrank\Standards\Country\CountryAlpha2::cases() --}}
-                        {{-- TODO: they are wrongly sorted --}}
-                            
-                            <option value="{{ $case->getNameInLanguage(\PrinsFrank\Standards\Language\LanguageAlpha2::from(app()->getLocale())) }}"></option>
-                        @endforeach
-                    </datalist>
+                    <x-nationality-input id="driver_nationality" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality', $driver['nationality'] ?? null)" />
                     <x-input-error for="driver_nationality" class="mt-2" />
                 </div>
 

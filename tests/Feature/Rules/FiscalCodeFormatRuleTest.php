@@ -159,7 +159,7 @@ class FiscalCodeFormatRuleTest extends TestCase
     public function test_fiscal_code_required_when_driver_nationality_is_italian(): void
     {
         $validator = Validator::make([
-            'fiscal_code' => '',
+            'fiscal_code' => null,
             'driver_nationality' => 'Italia',
         ], [
             'fiscal_code' => new FiscalCodeFormatRule(check_driver: true),
@@ -171,7 +171,7 @@ class FiscalCodeFormatRuleTest extends TestCase
     public function test_fiscal_code_required_when_driver_licence_is_not_foreign(): void
     {
         $validator = Validator::make([
-            'fiscal_code' => '',
+            'fiscal_code' => null,
             'driver_nationality' => '',
             'driver_licence_type' => DriverLicence::LOCAL_NATIONAL->value,
         ], [
@@ -184,7 +184,7 @@ class FiscalCodeFormatRuleTest extends TestCase
     public function test_fiscal_code_required_when_competitor_nationality_is_italian(): void
     {
         $validator = Validator::make([
-            'fiscal_code' => '',
+            'fiscal_code' => null,
             'competitor_nationality' => 'Italia',
         ], [
             'fiscal_code' => new FiscalCodeFormatRule(check_competitor: true),
@@ -196,7 +196,7 @@ class FiscalCodeFormatRuleTest extends TestCase
     public function test_fiscal_code_required_when_competitor_licence_is_not_foreign(): void
     {
         $validator = Validator::make([
-            'fiscal_code' => '',
+            'fiscal_code' => null,
             'competitor_nationality' => '',
             'competitor_licence_type' => CompetitorLicence::LOCAL->value,
         ], [

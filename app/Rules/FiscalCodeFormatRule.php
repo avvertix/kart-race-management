@@ -295,11 +295,12 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if ($this->check_driver && (($this->input('driver_nationality') ?? false || $this->input('driver_licence_type') ?? false))) {
+        dump($attribute, $value);
 
             if (blank($value) &&
                 (Str::contains(Str::lower($this->input('driver_nationality', '')), ['italian', 'italiana', 'italia', 'italy'])
                     || (filled($this->input('driver_licence_type')) && $this->input('driver_licence_type') !== DriverLicence::FOREIGN->value))) {
-
+dd('here');
                 $fail('validation.required')->translate();
 
                 return;
@@ -383,7 +384,7 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
         return chr(($sumOdd + $sumEven) % 26 + 65);
     }
 
-    protected function input(string $value, mixed $default = null): ?string
+    protected function input(string $value, mixed $default = null): mixed
     {
         return $this->data[$value] ?? $default;
     }

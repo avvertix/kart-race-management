@@ -267,6 +267,8 @@ class SelfRegistrationTest extends TestCase
 
         $this->travelBack();
 
+        // dump($response->ddBody());
+
         $response->assertSessionHasNoErrors();
 
         $participant = Participant::first();

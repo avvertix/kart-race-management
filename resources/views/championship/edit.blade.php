@@ -191,6 +191,17 @@
                         });
                     </script>
 
+                    <div class="mt-4">
+                        <x-label for="bonus_enabled_championship" value="{{ __('Bonus enabled') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('Control bonus usage for races in this championship. Individual races can override this setting.') }}</p>
+                        <select name="bonus_enabled" id="bonus_enabled_championship" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="" @selected(blank(old('bonus_enabled', $championship->bonus_enabled)))>{{ __('Use default (enabled)') }}</option>
+                            <option value="true" @selected(old('bonus_enabled', $championship->bonus_enabled) === true)>{{ __('Enabled') }}</option>
+                            <option value="false" @selected(old('bonus_enabled', $championship->bonus_enabled) === false)>{{ __('Disabled') }}</option>
+                        </select>
+                        <x-input-error for="bonus_enabled" class="mt-2" />
+                    </div>
+
                     <div class="flex items-center justify-end mt-4">
                         <x-button class="ml-4" type="submit">
                             {{ __('Save') }}

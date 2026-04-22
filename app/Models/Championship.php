@@ -29,6 +29,7 @@ class Championship extends Model
         'title',
         'description',
         'registration_form',
+        'bonus_enabled',
     ];
 
     /**
@@ -137,6 +138,7 @@ class Championship extends Model
             'bonuses' => BonusSettingsData::class.':default',
             'licences' => LicenceSettingsData::class.':default',
             'registration_form' => RegistrationForm::class,
+            'bonus_enabled' => 'boolean',
         ];
     }
 }

@@ -37,6 +37,7 @@ class Race extends Model
         'rain',
         'red_flag',
         'registration_form',
+        'bonus_enabled',
     ];
 
     /**
@@ -229,6 +230,20 @@ class Race extends Model
         return ! is_null($this->canceled_at);
     }
 
+    public function isBonusEnabled(): bool
+    {
+        if ($this->bonus_enabled !== null) {
+            return $this->bonus_enabled;
+        }
+
+        $championshipBonusEnabled = $this->championship?->bonus_enabled;
+        if ($championshipBonusEnabled !== null) {
+            return $championshipBonusEnabled;
+        }
+
+        return true;
+    }
+
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
@@ -304,6 +319,7 @@ class Race extends Model
             'rain' => 'boolean',
             'red_flag' => 'boolean',
             'registration_form' => RegistrationForm::class,
+            'bonus_enabled' => 'boolean',
         ];
     }
 }

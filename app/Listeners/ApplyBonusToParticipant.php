@@ -23,6 +23,9 @@ class ApplyBonusToParticipant
      */
     public function handle(ParticipantRegistered|ParticipantUpdated $event, Closure $next): ParticipantRegistered|ParticipantUpdated
     {
+        if (! $event->race->isBonusEnabled()) {
+            return $next($event);
+        }
 
         $championship = $event->race->championship;
 

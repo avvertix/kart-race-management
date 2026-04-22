@@ -66,7 +66,7 @@
                     <x-input id="driver_fiscal_code" type="text" name="driver_fiscal_code" class="mt-1 block w-full" :value="old('driver_fiscal_code', $driver['fiscal_code'] ?? null)"  />
                     <x-input-error for="driver_fiscal_code" class="mt-2" />
                 </div>
-                @useCompleteRegistrationForm()
+                @useCompleteRegistrationForm($race)
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="driver_licence_type" class="mt-2" />
@@ -112,7 +112,7 @@
                     <x-input-error for="driver_birth_place" class="mt-2" />
                 </div>
 
-                @useCompleteRegistrationForm()
+                @useCompleteRegistrationForm($race)
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
                     <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date-input.placeholder') }}</code></p>
@@ -127,7 +127,7 @@
                     <x-address id="driver_residence" type="text" name="driver_residence" class="mt-1 block w-full" :value="$driver['residence_address'] ?? null"  />
                 </div>
 
-                @useCompleteRegistrationForm()
+                @useCompleteRegistrationForm($race)
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_sex" value="{{ __('Sex') }}*" />
                     <x-input-error for="driver_sex" class="mt-2" />
@@ -175,7 +175,7 @@
                     <x-input id="competitor_fiscal_code" type="text" name="competitor_fiscal_code" class="mt-1 block w-full" :value="old('competitor_fiscal_code', $competitor['fiscal_code'] ?? null)"  />
                     <x-input-error for="competitor_fiscal_code" class="mt-2" />
                 </div>
-                @useCompleteRegistrationForm()
+                @useCompleteRegistrationForm($race)
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="competitor_licence_type" class="mt-2" />
@@ -230,7 +230,7 @@
     </div>
 </div>
 
-@useCompleteRegistrationForm()
+@useCompleteRegistrationForm($race)
 <x-section-border />
 
 <div class="md:grid md:grid-cols-3 md:gap-6">

@@ -36,6 +36,7 @@ class Race extends Model
         'point_multiplier',
         'rain',
         'red_flag',
+        'registration_form',
     ];
 
     /**
@@ -302,6 +303,7 @@ class Race extends Model
             'point_multiplier' => 'float',
             'rain' => 'boolean',
             'red_flag' => 'boolean',
+            'registration_form' => RegistrationForm::class,
         ];
     }
 }

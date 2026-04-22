@@ -28,6 +28,7 @@ class Championship extends Model
         'end_at',
         'title',
         'description',
+        'registration_form',
     ];
 
     /**
@@ -135,6 +136,7 @@ class Championship extends Model
             'payment' => PaymentSettingsData::class.':default',
             'bonuses' => BonusSettingsData::class.':default',
             'licences' => LicenceSettingsData::class.':default',
+            'registration_form' => RegistrationForm::class,
         ];
     }
 }

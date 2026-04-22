@@ -36,10 +36,10 @@ class UpdateParticipantRegistration
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
             ...$this->getCategoryValidationRules((int) $race->championship_id),
-            ...$this->getDriverValidationRules($race->championship),
-            ...$this->getCompetitorValidationRules($race->championship),
-            ...$this->getMechanicValidationRules(),
-            ...$this->getVehicleValidationRules(),
+            ...$this->getDriverValidationRules($race),
+            ...$this->getCompetitorValidationRules($race),
+            ...$this->getMechanicValidationRules($race),
+            ...$this->getVehicleValidationRules($race),
         ])->validate();
 
         $category = Category::whereUlid($validatedInput['category'])->firstOrFail();
@@ -50,7 +50,7 @@ class UpdateParticipantRegistration
 
             $licenceHash = hash('sha512', $validatedInput['driver_licence_number']);
 
-            $updatedParticipant = Cache::lock("participant:{$validatedInput['bib']}", 10)->block(5, function () use ($validatedInput, $participant, $category, $licenceHash) {
+            $updatedParticipant = Cache::lock("participant:{$validatedInput['bib']}", 10)->block(5, function () use ($race, $validatedInput, $participant, $category, $licenceHash) {
 
                 $validatedBib = Validator::make($validatedInput, [
                     'bib' => [
@@ -121,7 +121,7 @@ class UpdateParticipantRegistration
                         'name' => $validatedInput['mechanic_name'],
                         'licence_number' => $validatedInput['mechanic_licence_number'],
                     ] : null,
-                    'vehicles' => $this->processVehicle($validatedInput),
+                    'vehicles' => $this->processVehicle($validatedInput, $race),
                 ]);
 
                 return $participant->fresh();

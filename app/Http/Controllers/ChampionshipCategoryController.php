@@ -26,7 +26,7 @@ class ChampionshipCategoryController extends Controller
     {
         return view('category.index', [
             'championship' => $championship,
-            'categories' => $championship->categories()->with('tire')->orderBy('name', 'ASC')->get(),
+            'categories' => $championship->categories()->with('tire')->withCount('participants')->orderBy('name', 'ASC')->get(),
         ]);
     }
 
@@ -88,12 +88,52 @@ class ChampionshipCategoryController extends Controller
      */
     public function show(Category $category)
     {
-        $category->load('tire');
+        $category->load('tire')->loadCount('participants');
+
+        $rawActivities = $category->activities()
+            // ->forEvent('updated')
+            ->with('causer')
+            ->latest()
+            ->get();
+
+        $tireIds = $rawActivities->flatMap(function ($activity) {
+            $attrs = $activity->properties->get('attributes', []);
+            $old = $activity->properties->get('old', []);
+
+            return array_filter([
+                $attrs['championship_tire_id'] ?? null,
+                $old['championship_tire_id'] ?? null,
+            ], fn ($v) => ! is_null($v));
+        })->unique()->values();
+
+        $tiresById = $tireIds->isNotEmpty()
+            ? ChampionshipTire::whereIn('id', $tireIds)->pluck('name', 'id')
+            : collect();
+
+        $activities = $rawActivities->map(function ($activity) use ($tiresById) {
+            $attrs = $activity->properties->get('attributes', []);
+            $old = $activity->properties->get('old', []);
+
+            $changes = collect($attrs)->map(function ($newValue, $field) use ($old, $tiresById) {
+                return [
+                    'field' => $this->categoryFieldLabel($field),
+                    'old' => $this->formatCategoryFieldValue($field, $old[$field] ?? null, $tiresById),
+                    'new' => $this->formatCategoryFieldValue($field, $newValue, $tiresById),
+                ];
+            })->values();
+
+            return [
+                'event' => $activity->event,
+                'date' => $activity->created_at,
+                'causer' => $activity->causer?->name,
+                'changes' => $changes,
+            ];
+        });
 
         return view('category.show', [
             'category' => $category,
             'championship' => $category->championship,
-            'activities' => $category->activities,
+            'activities' => $activities,
         ]);
     }
 
@@ -139,14 +179,6 @@ class ChampionshipCategoryController extends Controller
             'registration_price' => 'nullable|integer|min:0',
         ]);
 
-        if (! ($request->boolean('enabled') ?? false)) {
-            $hasParticipants = Participant::where('championship_id', $championship->getKey())->where('category_id', $category->getKey())->exists();
-
-            if ($hasParticipants) {
-                throw ValidationException::withMessages(['enabled' => __('The category cannot be deactivated because one or more competitors are registered in it.')]);
-            }
-        }
-
         if ($request->has('registration_price') && $request->integer('registration_price') !== $category->registration_price) {
             $hasParticipants = Participant::where('championship_id', $championship->getKey())->where('category_id', $category->getKey())->exists();
 
@@ -168,5 +200,33 @@ class ChampionshipCategoryController extends Controller
             ->with('flash.banner', __(':category updated.', [
                 'category' => $category->name,
             ]));
+    }
+
+    private function categoryFieldLabel(string $field): string
+    {
+        return match ($field) {
+            'code' => __('Code'),
+            'name' => __('Name'),
+            'description' => __('Description'),
+            'enabled' => __('Status'),
+            'short_name' => __('Short name'),
+            'championship_tire_id' => __('Tire'),
+            'registration_price' => __('Registration price'),
+            default => $field,
+        };
+    }
+
+    private function formatCategoryFieldValue(string $field, mixed $value, $tiresById): string
+    {
+        if (is_null($value)) {
+            return '—';
+        }
+
+        return match ($field) {
+            'enabled' => $value ? __('Active') : __('Inactive'),
+            'championship_tire_id' => $tiresById->get($value) ?? __('Unknown tire (#:id)', ['id' => $value]),
+            'registration_price' => number_format($value / 100, 2, ',', '.').' €',
+            default => (string) $value,
+        };
     }
 }

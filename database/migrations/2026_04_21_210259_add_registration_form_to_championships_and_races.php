@@ -21,12 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('championships', function (Blueprint $table) {
-            $table->dropColumn('registration_form');
-        });
-
-        Schema::table('races', function (Blueprint $table) {
-            $table->dropColumn('registration_form');
-        });
+        // We don't want to lose data, so we won't drop the columns on down.
     }
 };

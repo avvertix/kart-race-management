@@ -595,7 +595,7 @@ class ChampionshipCategoryControllerTest extends TestCase
         $this->assertFalse($updatedCategory->enabled);
     }
 
-    public function test_category_cannot_be_disabled_when_assigned_to_a_participant(): void
+    public function test_category_can_be_disabled_even_when_assigned_to_a_participant(): void
     {
         $user = User::factory()->organizer()->create();
 
@@ -604,7 +604,7 @@ class ChampionshipCategoryControllerTest extends TestCase
                 'enabled' => true,
             ]);
 
-        $existingParticipant = Participant::factory()
+        Participant::factory()
             ->recycle($category->championship)
             ->category($category)
             ->create();
@@ -616,15 +616,13 @@ class ChampionshipCategoryControllerTest extends TestCase
                 'name' => 'Category name',
             ]);
 
-        $response->assertRedirectToRoute('categories.edit', $category);
-
-        $response->assertSessionHasErrors(['enabled' => 'The category cannot be deactivated because one or more competitors are registered in it.']);
+        $response->assertRedirectToRoute('championships.categories.index', $category->championship);
 
         $updatedCategory = $category->fresh();
 
         $this->assertInstanceOf(Category::class, $updatedCategory);
 
-        $this->assertTrue($updatedCategory->enabled);
+        $this->assertFalse($updatedCategory->enabled);
     }
 
     public function test_category_details_shown(): void

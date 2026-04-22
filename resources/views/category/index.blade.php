@@ -49,9 +49,13 @@
                     @endif
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                    <span class="inline-block px-2 py-1 text-sm rounded-full {{ $item->enabled ? 'bg-lime-100 text-lime-800' : 'bg-zinc-100 text-zinc-800' }}">
-                        {{ $item->enabled ? __('active') : __('inactive') }}
-                    </span>
+                    @if ($item->enabled)
+                        <span class="inline-block px-2 py-1 text-sm rounded-full bg-lime-100 text-lime-800">{{ __('active') }}</span>
+                    @elseif ($item->participants_count > 0)
+                        <span class="inline-block px-2 py-1 text-sm rounded-full bg-amber-100 text-amber-800">{{ __('paused') }}</span>
+                    @else
+                        <span class="inline-block px-2 py-1 text-sm rounded-full bg-zinc-100 text-zinc-800">{{ __('inactive') }}</span>
+                    @endif
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     @can('update', $item)

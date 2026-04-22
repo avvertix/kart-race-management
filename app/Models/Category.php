@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -65,6 +66,11 @@ class Category extends Model
     public function championship()
     {
         return $this->belongsTo(Championship::class);
+    }
+
+    public function participants(): HasMany
+    {
+        return $this->hasMany(Participant::class);
     }
 
     /**

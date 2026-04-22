@@ -95,6 +95,7 @@ class RaceController extends Controller
             'registration_opens_at' => ['nullable', 'date', 'before:start'],
             'registration_closes_at' => ['nullable', 'date', 'after:registration_opens_at'],
             'registration_form' => ['nullable', new Enum(RegistrationForm::class)],
+            'bonus_enabled' => ['nullable', 'in:true,false'],
         ]);
 
         $configuredStartTime = config('races.start_time');
@@ -121,6 +122,7 @@ class RaceController extends Controller
             'participant_limits' => $validated['participants_total_limit'] ? ($race->participant_limits ?? collect())->merge(['total' => $validated['participants_total_limit']]) : null,
             'type' => $validated['race_type'] ?? RaceType::LOCAL,
             'registration_form' => blank($validated['registration_form'] ?? null) ? null : RegistrationForm::from($validated['registration_form']),
+            'bonus_enabled' => blank($validated['bonus_enabled'] ?? null) ? null : ($validated['bonus_enabled'] === 'true'),
         ]);
 
         return to_route('races.show', $race)

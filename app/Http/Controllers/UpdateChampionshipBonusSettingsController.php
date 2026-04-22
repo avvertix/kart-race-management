@@ -33,6 +33,7 @@ class UpdateChampionshipBonusSettingsController extends Controller
         $validated = $this->validate($request, [
             'bonus_mode' => ['required', 'integer', new Enum(BonusMode::class)],
             'fixed_bonus_amount' => 'nullable|integer|min:100|max:'.($championship->registration_price ?? config('races.price')),
+            'bonus_enabled' => ['nullable', 'in:true,false'],
         ]);
 
         $bonusMode = BonusMode::from((int) $validated['bonus_mode']);
@@ -43,6 +44,7 @@ class UpdateChampionshipBonusSettingsController extends Controller
             $championship->bonuses->fixed_bonus_amount = (int) ($validated['fixed_bonus_amount']);
         }
 
+        $championship->bonus_enabled = blank($validated['bonus_enabled'] ?? null) ? null : ($validated['bonus_enabled'] === 'true');
         $championship->save();
 
         return to_route('championships.bonuses.index', $championship)

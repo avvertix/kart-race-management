@@ -98,6 +98,16 @@
                         </select>
                         <x-input-error for="registration_form" class="mt-2" />
                     </div>
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-label for="bonus_enabled" value="{{ __('Bonus') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('Control bonus usage for this race. Leave blank to use the championship setting or the default.') }}</p>
+                        <select name="bonus_enabled" id="bonus_enabled" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                            <option value="" @selected(blank(old('bonus_enabled', optional($race ?? null)->bonus_enabled)))>{{ __('Use championship / default') }}</option>
+                            <option value="true" @selected(old('bonus_enabled', optional($race ?? null)->bonus_enabled) === true)>{{ __('Enabled') }}</option>
+                            <option value="false" @selected(old('bonus_enabled', optional($race ?? null)->bonus_enabled) === false)>{{ __('Disabled') }}</option>
+                        </select>
+                        <x-input-error for="bonus_enabled" class="mt-2" />
+                    </div>
                 </div>
             </div>
     </div>

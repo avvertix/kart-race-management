@@ -202,9 +202,43 @@
 
         <x-section-border />
 
-        <livewire:wildcard-settings :championship="$championship" /> 
-        
-        
+        <livewire:wildcard-settings :championship="$championship" />
+
+        <x-section-border />
+
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <x-section-title>
+                <x-slot name="title">{{ __('Registration form') }}</x-slot>
+                <x-slot name="description">
+                    {{ __('Choose the registration form to use for this championship. Leave blank to use the application default.') }}
+                </x-slot>
+            </x-section-title>
+
+            <div class="mt-5 md:mt-0 md:col-span-2">
+                <form method="POST" action="{{ route('championships.registration-form.update', $championship) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mt-4">
+                        <x-label for="registration_form" value="{{ __('Registration form') }}" />
+                        <select name="registration_form" id="registration_form" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="" @selected(old('registration_form', $championship->registration_form) === null)>{{ __('Use default') }}</option>
+                            @foreach (\App\Models\RegistrationForm::cases() as $form)
+                                <option value="{{ $form->value }}" @selected(old('registration_form', $championship->registration_form?->value) === $form->value)>{{ ucfirst($form->value) }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="registration_form" class="mt-2" />
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4" type="submit">
+                            {{ __('Save') }}
+                        </x-button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         </div>
     </div>
 </x-app-layout>

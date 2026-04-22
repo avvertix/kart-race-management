@@ -179,14 +179,6 @@ class ChampionshipCategoryController extends Controller
             'registration_price' => 'nullable|integer|min:0',
         ]);
 
-        if ($request->has('registration_price') && $request->integer('registration_price') !== $category->registration_price) {
-            $hasParticipants = Participant::where('championship_id', $championship->getKey())->where('category_id', $category->getKey())->exists();
-
-            if ($hasParticipants) {
-                throw ValidationException::withMessages(['registration_price' => __('The registration price cannot be changed because one or more competitors already registered in it.')]);
-            }
-        }
-
         $category->update([
             'name' => $validated['name'],
             'short_name' => $validated['short_name'] ?? null,

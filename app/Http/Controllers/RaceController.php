@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Race;
 use App\Models\RaceType;
+use App\Models\RegistrationForm;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +94,7 @@ class RaceController extends Controller
             'race_type' => ['nullable', 'integer', new Enum(RaceType::class)],
             'registration_opens_at' => ['nullable', 'date', 'before:start'],
             'registration_closes_at' => ['nullable', 'date', 'after:registration_opens_at'],
+            'registration_form' => ['nullable', new Enum(RegistrationForm::class)],
         ]);
 
         $configuredStartTime = config('races.start_time');
@@ -118,6 +120,7 @@ class RaceController extends Controller
             'hide' => ($validated['hidden'] ?? '') === 'true' ? true : false,
             'participant_limits' => $validated['participants_total_limit'] ? ($race->participant_limits ?? collect())->merge(['total' => $validated['participants_total_limit']]) : null,
             'type' => $validated['race_type'] ?? RaceType::LOCAL,
+            'registration_form' => blank($validated['registration_form'] ?? null) ? null : RegistrationForm::from($validated['registration_form']),
         ]);
 
         return to_route('races.show', $race)

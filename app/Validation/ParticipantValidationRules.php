@@ -11,6 +11,7 @@ use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\RegistrationForm;
 use App\Models\Sex;
 use App\Models\User;
 use App\Rules\DateFormat;
@@ -33,9 +34,9 @@ trait ParticipantValidationRules
         ];
     }
 
-    protected function processVehicle($input)
+    protected function processVehicle($input, ?Race $race = null)
     {
-        if ($this->useMinimalForm()) {
+        if (! $this->useCompleteForm($race)) {
             return [];
         }
 
@@ -76,8 +77,9 @@ trait ParticipantValidationRules
         ];
     }
 
-    protected function getDriverValidationRules(?Championship $championship = null): array
+    protected function getDriverValidationRules(?Race $race = null): array
     {
+        $championship = $race?->championship;
         $acceptedDriverLicences = $championship?->licences->accepted_driver_licences ?? [];
 
         $driverLicenceTypeRules = ['required', new Enum(DriverLicence::class)];
@@ -108,7 +110,7 @@ trait ParticipantValidationRules
             'driver_fiscal_code' => ['required', 'string', 'max:250'],
         ];
 
-        if ($this->useMinimalForm()) {
+        if ($this->useMinimalForm($race)) {
             return Arr::except($rules, [
                 'driver_licence_type',
                 'driver_licence_renewed_at',
@@ -117,11 +119,19 @@ trait ParticipantValidationRules
             ]);
         }
 
+        if (! $this->useCompleteForm($race)) {
+            return Arr::except($rules, [
+                'driver_licence_renewed_at',
+                'driver_sex',
+            ]);
+        }
+
         return $rules;
     }
 
-    protected function getCompetitorValidationRules(?Championship $championship = null): array
+    protected function getCompetitorValidationRules(?Race $race = null): array
     {
+        $championship = $race?->championship;
         $acceptedCompetitorLicences = $championship?->licences->accepted_competitor_licences ?? [];
 
         $competitorLicenceTypeRules = ['nullable', 'required_with:competitor_licence_number', new Enum(CompetitorLicence::class)];
@@ -148,9 +158,15 @@ trait ParticipantValidationRules
             'competitor_residence_postal_code' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
         ];
 
-        if ($this->useMinimalForm()) {
+        if ($this->useMinimalForm($race)) {
             return Arr::except($rules, [
                 'competitor_licence_type',
+                'competitor_licence_renewed_at',
+            ]);
+        }
+
+        if (! $this->useCompleteForm($race)) {
+            return Arr::except($rules, [
                 'competitor_licence_renewed_at',
             ]);
         }
@@ -158,9 +174,9 @@ trait ParticipantValidationRules
         return $rules;
     }
 
-    protected function getMechanicValidationRules(): array
+    protected function getMechanicValidationRules(?Race $race = null): array
     {
-        if ($this->useMinimalForm()) {
+        if (! $this->useCompleteForm($race)) {
             return [];
         }
 
@@ -170,9 +186,9 @@ trait ParticipantValidationRules
         ];
     }
 
-    protected function getVehicleValidationRules(): array
+    protected function getVehicleValidationRules(?Race $race = null): array
     {
-        if ($this->useMinimalForm()) {
+        if (! $this->useCompleteForm($race)) {
             return [];
         }
 
@@ -191,9 +207,14 @@ trait ParticipantValidationRules
         ];
     }
 
-    protected function useMinimalForm(): bool
+    protected function useMinimalForm(?Race $race = null): bool
     {
-        return config('races.registration.form') !== 'complete';
+        return RegistrationForm::resolve($race) === RegistrationForm::Minimal;
+    }
+
+    protected function useCompleteForm(?Race $race = null): bool
+    {
+        return RegistrationForm::resolve($race) === RegistrationForm::Complete;
     }
 
     /**

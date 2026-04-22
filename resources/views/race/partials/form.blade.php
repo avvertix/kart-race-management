@@ -86,6 +86,18 @@
                         <x-input id="registration_closes_at" type="datetime-local" name="registration_closes_at" class="mt-1 block w-full" :value="old('registration_closes_at', optional($race ?? null)->registration_closes_at?->setTimezone(config('races.timezone'))->toDateTimeString())" />
                         <x-input-error for="registration_closes_at" class="mt-2" />
                     </div>
+
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-label for="registration_form" value="{{ __('Registration form') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('Select the registration form to use for this race. Leave blank to use the championship setting or the default.') }}</p>
+                        <select name="registration_form" id="registration_form" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                            <option value="" @selected(old('registration_form', optional($race ?? null)->registration_form) === null)>{{ __('Use championship / default') }}</option>
+                            @foreach (\App\Models\RegistrationForm::cases() as $form)
+                                <option value="{{ $form->value }}" @selected(old('registration_form', optional($race ?? null)->registration_form?->value) === $form->value)>{{ ucfirst($form->value) }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="registration_form" class="mt-2" />
+                    </div>
                 </div>
             </div>
     </div>

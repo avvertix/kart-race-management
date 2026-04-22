@@ -49,6 +49,7 @@ use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
+use App\Http\Controllers\UpdateChampionshipRegistrationFormController;
 use App\Http\Controllers\UpdateRaceScoringController;
 use App\Http\Controllers\UserController;
 use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\DenyAgentMiddleware;
@@ -108,6 +109,8 @@ Route::middleware([
 
         Route::get('championships/{championship}/licence-settings', [UpdateChampionshipLicenceSettingsController::class, 'edit'])->name('championships.licence-settings.edit');
         Route::put('championships/{championship}/licence-settings', [UpdateChampionshipLicenceSettingsController::class, 'update'])->name('championships.licence-settings.update');
+
+        Route::put('championships/{championship}/registration-form', UpdateChampionshipRegistrationFormController::class)->name('championships.registration-form.update');
 
         Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
 

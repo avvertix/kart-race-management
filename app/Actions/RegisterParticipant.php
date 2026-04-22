@@ -50,11 +50,10 @@ class RegisterParticipant
 
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
-            ...$this->getCategoryValidationRules((int) $race->championship_id),
-            ...$this->getDriverValidationRules($race->championship),
-            ...$this->getCompetitorValidationRules($race->championship),
-            ...$this->getMechanicValidationRules(),
-            ...$this->getVehicleValidationRules(),
+            ...$this->getCategoryValidationRules((int) $race->championship_id),            ...$this->getDriverValidationRules($race),
+            ...$this->getCompetitorValidationRules($race),
+            ...$this->getMechanicValidationRules($race),
+            ...$this->getVehicleValidationRules($race),
 
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
         ])->validate();
@@ -130,7 +129,7 @@ class RegisterParticipant
                             'name' => $validatedInput['mechanic_name'],
                             'licence_number' => $validatedInput['mechanic_licence_number'],
                         ] : null,
-                        'vehicles' => $this->processVehicle($validatedInput),
+                        'vehicles' => $this->processVehicle($validatedInput, $race),
                         'consents' => [
                             'privacy' => ($validatedInput['consent_privacy'] ?? false) ? true : false,
                         ],

@@ -10,6 +10,7 @@ use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\RegistrationForm;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -51,8 +52,12 @@ class AppServiceProvider extends ServiceProvider
 
         Participant::addLogChange(new EncryptSensibleParticipantData());
 
-        Blade::if('useCompleteRegistrationForm', function () {
-            return config('races.registration.form') === 'complete';
+        Blade::if('useStandardRegistrationForm', function (?Race $race = null): bool {
+            return RegistrationForm::resolve($race) !== RegistrationForm::Minimal;
+        });
+
+        Blade::if('useCompleteRegistrationForm', function (?Race $race = null): bool {
+            return RegistrationForm::resolve($race) === RegistrationForm::Complete;
         });
 
         Date::macro('normalizeToDateString', function (?string $value): ?string {

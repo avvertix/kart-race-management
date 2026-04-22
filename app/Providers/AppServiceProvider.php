@@ -52,18 +52,12 @@ class AppServiceProvider extends ServiceProvider
 
         Participant::addLogChange(new EncryptSensibleParticipantData());
 
+        Blade::if('useStandardRegistrationForm', function (?Race $race = null): bool {
+            return RegistrationForm::resolve($race) !== RegistrationForm::Minimal;
+        });
+
         Blade::if('useCompleteRegistrationForm', function (?Race $race = null): bool {
-            $raceForm = $race?->registration_form;
-            if ($raceForm !== null) {
-                return $raceForm === RegistrationForm::Complete;
-            }
-
-            $championshipForm = $race?->championship?->registration_form;
-            if ($championshipForm !== null) {
-                return $championshipForm === RegistrationForm::Complete;
-            }
-
-            return config('races.registration.form') === RegistrationForm::Complete->value;
+            return RegistrationForm::resolve($race) === RegistrationForm::Complete;
         });
 
         Date::macro('normalizeToDateString', function (?string $value): ?string {

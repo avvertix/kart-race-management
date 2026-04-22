@@ -66,13 +66,13 @@
                     <x-input id="driver_fiscal_code" type="text" name="driver_fiscal_code" class="mt-1 block w-full" :value="old('driver_fiscal_code', $driver['fiscal_code'] ?? null)"  />
                     <x-input-error for="driver_fiscal_code" class="mt-2" />
                 </div>
-                @useCompleteRegistrationForm($race)
+                @useStandardRegistrationForm($race)
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="driver_licence_type" class="mt-2" />
                     <x-options-selector :options="$driverLicences ?? \App\Models\DriverLicence::cases()" id="driver_licence_type" name="driver_licence_type" class="mt-1" :value="old('driver_licence_type', $driver['licence_type'] ?? null)"  />
                 </div>
-                @enduseCompleteRegistrationForm
+                @enduseStandardRegistrationForm
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
                     <p class="text-sm text-zinc-700">{{ __('Use a licence number provided by :provider.', ['provider' => config('races.licence.provider')]) }} <a class="underline" href="mailto:{{config('races.organizer.email')}}?subject=Non%20ho%20una%20licenza%20valida%20per%20l'iscrizione">{{ __('Don\'t have a licence, contact the organizer!') }}</a></p>
@@ -112,14 +112,14 @@
                     <x-input-error for="driver_birth_place" class="mt-2" />
                 </div>
 
-                @useCompleteRegistrationForm($race)
+                @useStandardRegistrationForm($race)
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_medical_certificate_expiration_date" value="{{ __('Date of expiration of the medical certificate') }}*" />
                     <p class="text-sm">{{ __('Supported format:') }} <code>{{ trans('date-input.placeholder') }}</code></p>
                     <x-input-date id="driver_medical_certificate_expiration_date" name="driver_medical_certificate_expiration_date" class="mt-1 block w-full" :value="old('driver_medical_certificate_expiration_date', $driver['medical_certificate_expiration_date'] ?? null)"/>
                     <x-input-error for="driver_medical_certificate_expiration_date" class="mt-2" />
                 </div>
-                @enduseCompleteRegistrationForm
+                @enduseStandardRegistrationForm
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_residence" value="{{ __('Residence address') }}*" />
@@ -175,13 +175,13 @@
                     <x-input id="competitor_fiscal_code" type="text" name="competitor_fiscal_code" class="mt-1 block w-full" :value="old('competitor_fiscal_code', $competitor['fiscal_code'] ?? null)"  />
                     <x-input-error for="competitor_fiscal_code" class="mt-2" />
                 </div>
-                @useCompleteRegistrationForm($race)
+                @useStandardRegistrationForm($race)
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="competitor_licence_type" class="mt-2" />
                     <x-options-selector :options="$competitorLicences ?? \App\Models\CompetitorLicence::cases()" id="competitor_licence_type" name="competitor_licence_type" class="mt-1  " :value="old('competitor_licence_type', $competitor['licence_type'] ?? null)"  />
                 </div>
-                @enduseCompleteRegistrationForm
+                @enduseStandardRegistrationForm
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_number" value="{{ __('Licence Number') }}*" />
                     <x-input id="competitor_licence_number" type="text" name="competitor_licence_number" class="mt-1 block w-full" :value="old('competitor_licence_number', $competitor['licence_number'] ?? null)"  />

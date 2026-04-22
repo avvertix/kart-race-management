@@ -36,7 +36,7 @@ trait ParticipantValidationRules
 
     protected function processVehicle($input, ?Race $race = null)
     {
-        if ($this->useMinimalForm($race)) {
+        if (! $this->useCompleteForm($race)) {
             return [];
         }
 
@@ -119,6 +119,13 @@ trait ParticipantValidationRules
             ]);
         }
 
+        if (! $this->useCompleteForm($race)) {
+            return Arr::except($rules, [
+                'driver_licence_renewed_at',
+                'driver_sex',
+            ]);
+        }
+
         return $rules;
     }
 
@@ -158,12 +165,18 @@ trait ParticipantValidationRules
             ]);
         }
 
+        if (! $this->useCompleteForm($race)) {
+            return Arr::except($rules, [
+                'competitor_licence_renewed_at',
+            ]);
+        }
+
         return $rules;
     }
 
     protected function getMechanicValidationRules(?Race $race = null): array
     {
-        if ($this->useMinimalForm($race)) {
+        if (! $this->useCompleteForm($race)) {
             return [];
         }
 
@@ -175,7 +188,7 @@ trait ParticipantValidationRules
 
     protected function getVehicleValidationRules(?Race $race = null): array
     {
-        if ($this->useMinimalForm($race)) {
+        if (! $this->useCompleteForm($race)) {
             return [];
         }
 
@@ -196,17 +209,12 @@ trait ParticipantValidationRules
 
     protected function useMinimalForm(?Race $race = null): bool
     {
-        $raceForm = $race?->registration_form;
-        if ($raceForm !== null) {
-            return $raceForm === RegistrationForm::Minimal;
-        }
+        return RegistrationForm::resolve($race) === RegistrationForm::Minimal;
+    }
 
-        $championshipForm = $race?->championship?->registration_form;
-        if ($championshipForm !== null) {
-            return $championshipForm === RegistrationForm::Minimal;
-        }
-
-        return config('races.registration.form') !== RegistrationForm::Complete->value;
+    protected function useCompleteForm(?Race $race = null): bool
+    {
+        return RegistrationForm::resolve($race) === RegistrationForm::Complete;
     }
 
     /**

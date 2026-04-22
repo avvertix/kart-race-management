@@ -60,6 +60,17 @@ class UseCompleteRegistrationFormDirectiveTest extends TestCase
         $view->assertSee('no');
     }
 
+    public function test_standard_form_is_not_complete(): void
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        $race = Race::factory()->for(Championship::factory())->create(['registration_form' => RegistrationForm::Standard]);
+
+        $view = $this->blade('@useCompleteRegistrationForm($race) yes @else no @enduseCompleteRegistrationForm', ['race' => $race]);
+
+        $view->assertSee('no');
+    }
+
     public function test_championship_registration_form_used_when_race_has_none(): void
     {
         config(['races.registration.form' => 'minimal']);
@@ -95,5 +106,38 @@ class UseCompleteRegistrationFormDirectiveTest extends TestCase
         $view = $this->blade('@useCompleteRegistrationForm() yes @else no @enduseCompleteRegistrationForm');
 
         $view->assertSee('yes');
+    }
+
+    public function test_standard_form_shows_for_use_standard_directive(): void
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        $race = Race::factory()->for(Championship::factory())->create(['registration_form' => RegistrationForm::Standard]);
+
+        $view = $this->blade('@useStandardRegistrationForm($race) yes @else no @enduseStandardRegistrationForm', ['race' => $race]);
+
+        $view->assertSee('yes');
+    }
+
+    public function test_complete_form_shows_for_use_standard_directive(): void
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        $race = Race::factory()->for(Championship::factory())->create(['registration_form' => RegistrationForm::Complete]);
+
+        $view = $this->blade('@useStandardRegistrationForm($race) yes @else no @enduseStandardRegistrationForm', ['race' => $race]);
+
+        $view->assertSee('yes');
+    }
+
+    public function test_minimal_form_does_not_show_for_use_standard_directive(): void
+    {
+        config(['races.registration.form' => 'complete']);
+
+        $race = Race::factory()->for(Championship::factory())->create(['registration_form' => RegistrationForm::Minimal]);
+
+        $view = $this->blade('@useStandardRegistrationForm($race) yes @else no @enduseStandardRegistrationForm', ['race' => $race]);
+
+        $view->assertSee('no');
     }
 }

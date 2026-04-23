@@ -144,5 +144,9 @@ class JetstreamServiceProvider extends ServiceProvider
             'orbits-backup:update',
         ])->description('Time-keeping service');
 
+        Jetstream::role('driver', 'Driver', [
+
+        ])->description('Drivers that manage their participation');
+
     }
 }

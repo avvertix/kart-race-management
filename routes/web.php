@@ -18,7 +18,6 @@ use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ConfirmParticipantPaymentController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
 use App\Http\Controllers\CopyChampionshipTiresController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
@@ -46,6 +45,7 @@ use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
+use App\Http\Controllers\TemplateDriverController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
@@ -74,7 +74,9 @@ Route::middleware([
     'verified',
     DenyAgentMiddleware::class,
 ])->group(function () {
-    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
+
+    Route::resource('drivers', TemplateDriverController::class)->except(['show']);
 });
 
 // Championships and Races management
@@ -189,6 +191,7 @@ Route::middleware([
         Route::resource('communications', CommunicationMessageController::class)->except(['create', 'show']);
 
         Route::resource('users', UserController::class)->except(['show']);
+
     });
 
 // Public race results

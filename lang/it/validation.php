@@ -153,6 +153,12 @@ return [
     'ulid' => ':attribute deve essere un ULID valido.',
     'uuid' => ':attribute deve essere un UUID valido.',
 
+    'fiscal_code' => ':attribute deve essere un codice fiscale valido',
+
+    'licence_number' => ':attribute non sembra essere un numero di licenza valido. Una licenza valida deve contenere almeno 3 caratteri, di cui almeno una cifra.',
+
+    'category' => ':attribute deve essere una categoria valida',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

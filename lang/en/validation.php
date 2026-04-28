@@ -147,6 +147,10 @@ return [
     'ulid' => 'The :attribute must be a valid ULID.',
     'uuid' => 'The :attribute must be a valid UUID.',
 
+    'fiscal_code' => 'The :attribute must be a valid fiscal code',
+
+    'licence_number' => ':attribute does not appear to be a valid licence number. A licence number must contain at least 3 characters, including at least one digit.',
+
     'category' => 'The :attribute must be a valid category',
 
     /*

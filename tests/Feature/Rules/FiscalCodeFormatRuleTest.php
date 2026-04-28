@@ -18,8 +18,8 @@ class FiscalCodeFormatRuleTest extends TestCase
         return [
             ['RSSMRA85T10A562S'],
             ['VRNGPP80A01H501H'],
-            ['RSSMRA85T10A562S'],
-            ['RSSMRAURTMLARSNL'],
+            ['rssmra85t10a562s'],
+            ['rssmraurtmlarsnl'],
         ];
     }
 
@@ -129,6 +129,8 @@ class FiscalCodeFormatRuleTest extends TestCase
             ['///'],
             ['N/A'],
             ['72 297/2540'],
+            ['0000000'],
+            ['0000000000000000'],
         ];
     }
 

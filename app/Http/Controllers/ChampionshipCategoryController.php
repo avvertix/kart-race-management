@@ -7,10 +7,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
-use App\Models\Participant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class ChampionshipCategoryController extends Controller
 {

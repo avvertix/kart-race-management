@@ -6,7 +6,7 @@
         <div class="flex justify-between items-center">
 
             <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
-                <span><a href="{{ route('races.show', $race) }}">{{ $race->title }}</a></span>
+                <span><a href="{{ route('races.participants.index', $race) }}">{{ $race->title }}</a></span>
                 <span>/</span>
                 <span>{{ __('Add new participant') }}</span>
             </h2>

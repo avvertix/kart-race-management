@@ -4,7 +4,7 @@
     </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
-            <span><a href="{{ route('races.show', $participant->race) }}">{{ $participant->race->title }}</a></span>
+            <span><a href="{{ route('races.participants.index', $participant->race) }}">{{ $participant->race->title }}</a></span>
             <span>/</span>
             <span>{{ __('Edit participant') }}</span>
         </h2>

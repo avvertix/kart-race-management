@@ -120,7 +120,7 @@ class RaceParticipantController extends Controller
         $participant->load(['race', 'championship']);
 
         return view('participant.show', [
-            'race' => $participant,
+            'race' => $participant->race,
             'championship' => $participant->championship,
             'participant' => $participant,
         ]);
@@ -136,7 +136,7 @@ class RaceParticipantController extends Controller
         $participant->load(['race', 'championship']);
 
         return view('participant.edit', [
-            'race' => $participant,
+            'race' => $participant->race,
             'championship' => $participant->championship,
             'participant' => $participant,
             'categories' => $participant->championship->categories()->enabled()->get(),

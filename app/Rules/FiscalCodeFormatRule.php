@@ -21,6 +21,8 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
     // male char
     protected const CHR_MALE = 'M';
 
+    public bool $implicit = true;
+
     /**
      * All of the data under validation.
      *
@@ -294,30 +296,12 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if ($this->check_driver && (($this->input('driver_nationality') ?? false || $this->input('driver_licence_type') ?? false))) {
-
-            if (blank($value) &&
-                (Str::contains(Str::lower($this->input('driver_nationality', '')), ['italian', 'italiana', 'italia', 'italy'])
-                    || (filled($this->input('driver_licence_type')) && $this->input('driver_licence_type') !== DriverLicence::FOREIGN->value))) {
-
+        if (blank($value)) {
+            if ($this->isRequired()) {
                 $fail('validation.required')->translate();
-
-                return;
             }
 
-        }
-
-        if ($this->check_competitor && (($this->input('competitor_nationality') ?? false || $this->input('competitor_licence_type') ?? false))) {
-
-            if (blank($value) &&
-                (Str::contains(Str::lower($this->input('competitor_nationality', '')), ['italian', 'italiana', 'italia', 'italy'])
-                    || (filled($this->input('competitor_licence_type')) && $this->input('competitor_licence_type') !== CompetitorLicence::FOREIGN->value))) {
-
-                $fail('validation.required')->translate();
-
-                return;
-            }
-
+            return;
         }
 
         if (! is_string($value)) {
@@ -326,16 +310,12 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
             return;
         }
 
-        // normalize to uppercase
         $value = Str::upper($value);
 
         try {
             $this->validateLength($value);
-
             $this->validateFormat($value);
-
             $this->validateCheckDigit($value);
-
         } catch (InvalidArgumentException $e) {
             $fail('validation.fiscal_code')->translate();
         }
@@ -389,6 +369,37 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
     protected function input(string $value, mixed $default = null): mixed
     {
         return $this->data[$value] ?? $default;
+    }
+
+    private function isRequired(): bool
+    {
+        if ($this->check_driver) {
+            $nationality = Str::lower($this->input('driver_nationality', ''));
+            $licenceType = $this->input('driver_licence_type');
+
+            if (Str::contains($nationality, ['italian', 'italiana', 'italia', 'italy'])) {
+                return true;
+            }
+
+            if (filled($licenceType) && $licenceType !== DriverLicence::FOREIGN->value) {
+                return true;
+            }
+        }
+
+        if ($this->check_competitor) {
+            $nationality = Str::lower($this->input('competitor_nationality', ''));
+            $licenceType = $this->input('competitor_licence_type');
+
+            if (Str::contains($nationality, ['italian', 'italiana', 'italia', 'italy'])) {
+                return true;
+            }
+
+            if (filled($licenceType) && $licenceType !== CompetitorLicence::FOREIGN->value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

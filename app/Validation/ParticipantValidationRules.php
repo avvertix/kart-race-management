@@ -103,13 +103,12 @@ trait ParticipantValidationRules
             'driver_birth_date' => ['required', 'string', new DateFormat],
             'driver_birth_place' => ['required', 'string'],
             'driver_medical_certificate_expiration_date' => ['required', 'string', new DateFormat],
-            'driver_residence_address' => ['required', 'string'],
             'driver_sex' => ['required', new Enum(Sex::class)],
             'driver_residence_address' => ['required', 'string', 'max:250'],
             'driver_residence_city' => ['required', 'string',  'max:250'],
             'driver_residence_province' => ['nullable', 'string',  'max:250'],
             'driver_residence_postal_code' => ['required', 'string', 'max:250'],
-            'driver_fiscal_code' => ['string', 'max:250', new FiscalCodeFormatRule(check_driver: true)],
+            'driver_fiscal_code' => ['nullable', 'string', 'max:250', new FiscalCodeFormatRule(check_driver: true)],
         ];
 
         if ($this->useMinimalForm($race)) {

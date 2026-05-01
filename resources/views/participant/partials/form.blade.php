@@ -62,7 +62,7 @@
                     <x-input-error for="driver_last_name" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="driver_fiscal_code" value="{{ __('Fiscal code') }}*" />
+                    <x-label for="driver_fiscal_code" value="{{ __('Fiscal code') }} {{ __('(only for Italian drivers)') }}" />
                     <x-input id="driver_fiscal_code" type="text" name="driver_fiscal_code" class="mt-1 block w-full" :value="old('driver_fiscal_code', $driver['fiscal_code'] ?? null)"  />
                     <x-input-error for="driver_fiscal_code" class="mt-2" />
                 </div>
@@ -81,8 +81,8 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="driver_nationality" value="{{ __('Nationality') }}*" />
-                    <x-input id="driver_nationality" type="text" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality', $driver['nationality'] ?? null)"  />
+                    <x-label for="driver_nationality" value="{{ __('Nation') }}*" />
+                    <x-nationality-input id="driver_nationality" name="driver_nationality" class="mt-1 block w-full" :value="old('driver_nationality', $driver['nationality'] ?? null)" />
                     <x-input-error for="driver_nationality" class="mt-2" />
                 </div>
 
@@ -171,7 +171,7 @@
                     <x-input-error for="competitor_last_name" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="competitor_fiscal_code" value="{{ __('Fiscal Code') }}*" />
+                    <x-label for="competitor_fiscal_code" value="{{ __('Fiscal Code') }} {{ __('(only for Italian competitors)') }}" />
                     <x-input id="competitor_fiscal_code" type="text" name="competitor_fiscal_code" class="mt-1 block w-full" :value="old('competitor_fiscal_code', $competitor['fiscal_code'] ?? null)"  />
                     <x-input-error for="competitor_fiscal_code" class="mt-2" />
                 </div>
@@ -189,8 +189,8 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-4">
-                    <x-label for="competitor_nationality" value="{{ __('Nationality') }}*" />
-                    <x-input id="competitor_nationality" type="text" name="competitor_nationality" class="mt-1 block w-full" :value="old('competitor_nationality', $competitor['nationality'] ?? null)"  />
+                    <x-label for="competitor_nationality" value="{{ __('Nation') }}*" />
+                    <x-nationality-input id="competitor_nationality" name="competitor_nationality" class="mt-1 block w-full" :value="old('competitor_nationality', $competitor['nationality'] ?? null)" />
                     <x-input-error for="competitor_nationality" class="mt-2" />
                 </div>
 

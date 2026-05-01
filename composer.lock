@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b3bde3b12f4175e8c73969e42f1e59e",
+    "content-hash": "f7d2d06967e7d8b07040d5bad361d58e",
     "packages": [
         {
             "name": "andreiio/blade-remix-icon",
@@ -4891,6 +4891,113 @@
                 "source": "https://github.com/antonioribeiro/google2fa/tree/v9.0.0"
             },
             "time": "2025-09-19T22:51:08+00:00"
+        },
+        {
+            "name": "prinsfrank/enums",
+            "version": "v1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PrinsFrank/enums.git",
+                "reference": "3acfedf3fca35d6c6c134b45de489edff6306a2b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PrinsFrank/enums/zipball/3acfedf3fca35d6c6c134b45de489edff6306a2b",
+                "reference": "3acfedf3fca35d6c6c134b45de489edff6306a2b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1 || ^8.2 || ^8.3 || ^8.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.43",
+                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan-strict-rules": "^1.5",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PrinsFrank\\Enums\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Adds missing strictly typed methods to work with enums",
+            "support": {
+                "issues": "https://github.com/PrinsFrank/enums/issues",
+                "source": "https://github.com/PrinsFrank/enums/tree/v1.4.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/PrinsFrank",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-12-29T14:11:26+00:00"
+        },
+        {
+            "name": "prinsfrank/standards",
+            "version": "v3.16.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PrinsFrank/standards.git",
+                "reference": "c1f5b5ed8416adc0726d061c54ffd6c11c5b7a08"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PrinsFrank/standards/zipball/c1f5b5ed8416adc0726d061c54ffd6c11c5b7a08",
+                "reference": "c1f5b5ed8416adc0726d061c54ffd6c11c5b7a08",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+                "prinsfrank/enums": "^1.4"
+            },
+            "require-dev": {
+                "composer/composer": "^2.3",
+                "dbrekelmans/bdi": "^1.0",
+                "ext-dom": "*",
+                "friendsofphp/php-cs-fixer": "^3.8",
+                "phpstan/phpstan": "^2",
+                "phpstan/phpstan-strict-rules": "^2",
+                "phpunit/phpunit": "^11.2.6",
+                "prinsfrank/pdfparser": "^2.1",
+                "prinsfrank/phpstan-doc-code-analyzer": "^0.0.3",
+                "prinsfrank/transliteration": "^1.0",
+                "symfony/panther": "dev-main"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PrinsFrank\\Standards\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A collection of standards as PHP Enums: ISO3166, ISO4217, ISO639...",
+            "support": {
+                "issues": "https://github.com/PrinsFrank/standards/issues",
+                "source": "https://github.com/PrinsFrank/standards/tree/v3.16.3"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/PrinsFrank",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-04-23T19:06:25+00:00"
         },
         {
             "name": "psr/clock",

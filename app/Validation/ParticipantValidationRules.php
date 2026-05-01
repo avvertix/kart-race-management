@@ -15,6 +15,8 @@ use App\Models\RegistrationForm;
 use App\Models\Sex;
 use App\Models\User;
 use App\Rules\DateFormat;
+use App\Rules\FiscalCodeFormatRule;
+use App\Rules\LicenseNumberValidationRule;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -93,7 +95,7 @@ trait ParticipantValidationRules
             'driver_first_name' => ['required', 'string', 'max:250'],
             'driver_last_name' => ['required', 'string', 'max:250'],
 
-            'driver_licence_number' => ['required', 'string', 'max:250'],
+            'driver_licence_number' => ['required', 'string', 'max:250', 'min:3', new LicenseNumberValidationRule],
             'driver_licence_renewed_at' => ['nullable'],
             'driver_nationality' => ['required', 'string', 'max:250'],
             'driver_email' => ['required', 'string', 'email'],
@@ -101,13 +103,12 @@ trait ParticipantValidationRules
             'driver_birth_date' => ['required', 'string', new DateFormat],
             'driver_birth_place' => ['required', 'string'],
             'driver_medical_certificate_expiration_date' => ['required', 'string', new DateFormat],
-            'driver_residence_address' => ['required', 'string'],
             'driver_sex' => ['required', new Enum(Sex::class)],
             'driver_residence_address' => ['required', 'string', 'max:250'],
             'driver_residence_city' => ['required', 'string',  'max:250'],
             'driver_residence_province' => ['nullable', 'string',  'max:250'],
             'driver_residence_postal_code' => ['required', 'string', 'max:250'],
-            'driver_fiscal_code' => ['required', 'string', 'max:250'],
+            'driver_fiscal_code' => ['nullable', 'string', 'max:250', new FiscalCodeFormatRule(check_driver: true)],
         ];
 
         if ($this->useMinimalForm($race)) {
@@ -140,18 +141,17 @@ trait ParticipantValidationRules
         }
 
         $rules = [
-            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250'],
+            'competitor_licence_number' => ['sometimes', 'nullable', 'string', 'max:250', 'min:3', new LicenseNumberValidationRule],
             'competitor_licence_type' => $competitorLicenceTypeRules,
             'competitor_first_name' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_last_name' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
-            'competitor_fiscal_code' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
+            'competitor_fiscal_code' => ['nullable', 'string', 'max:250', new FiscalCodeFormatRule(check_competitor: true)],
             'competitor_licence_renewed_at' => ['nullable'],
             'competitor_nationality' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_email' => ['nullable', 'required_with:competitor_licence_number', 'string', 'email'],
             'competitor_phone' => ['nullable', 'required_with:competitor_licence_number', 'string'],
             'competitor_birth_date' => ['nullable', 'required_with:competitor_licence_number', 'string', new DateFormat],
             'competitor_birth_place' => ['nullable', 'required_with:competitor_licence_number', 'string'],
-            'competitor_residence_address' => ['nullable', 'required_with:competitor_licence_number', 'string'],
             'competitor_residence_address' => ['nullable', 'required_with:competitor_licence_number', 'string', 'max:250'],
             'competitor_residence_city' => ['nullable', 'required_with:competitor_licence_number', 'string',  'max:250'],
             'competitor_residence_province' => ['nullable', 'string',  'max:250'],
@@ -181,7 +181,7 @@ trait ParticipantValidationRules
         }
 
         return [
-            'mechanic_licence_number' => ['nullable', 'string', 'max:250'],
+            'mechanic_licence_number' => ['nullable', 'string', 'max:250', 'min:3', new LicenseNumberValidationRule],
             'mechanic_name' => ['nullable', 'required_with:mechanic_licence_number', 'string', 'max:250'],
         ];
     }

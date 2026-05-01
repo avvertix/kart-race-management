@@ -166,7 +166,7 @@ class RaceParticipantTest extends TestCase
                 'postal_code' => '20146',
             ],
             'sex' => Sex::MALE->value,
-            'fiscal_code' => 'DRV-FC',
+            'fiscal_code' => 'RSSMRA85T10A562S',
         ], $participant->driver);
 
         $this->assertEquals([
@@ -186,7 +186,7 @@ class RaceParticipantTest extends TestCase
                 'province' => 'Milan',
                 'postal_code' => '20146',
             ],
-            'fiscal_code' => 'CMPT-FC',
+            'fiscal_code' => 'RSSMRA85T10A562S',
         ], $participant->competitor);
 
         $this->assertEquals('Mechanic Racer', $participant->mechanic['name']);
@@ -285,7 +285,7 @@ class RaceParticipantTest extends TestCase
                 'postal_code' => '20146',
             ],
             'sex' => Sex::MALE->value,
-            'fiscal_code' => 'DRV-FC',
+            'fiscal_code' => 'RSSMRA85T10A562S',
         ], $participant->driver);
 
         $this->assertNull($participant->competitor);

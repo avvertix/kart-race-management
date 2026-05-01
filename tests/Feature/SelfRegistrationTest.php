@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Championship;
+use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Notifications\ConfirmParticipantRegistration;
@@ -158,6 +159,130 @@ class SelfRegistrationTest extends TestCase
         ]);
 
         $response->assertSessionHasNoErrors();
+
+        $response->assertSessionHas('flash.banner', 'Race registration recorded. Please confirm it using the link sent in the email.');
+
+        Notification::assertCount(2);
+
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
+            return $notification->target === 'driver';
+        });
+
+        Notification::assertSentTo($participant, function (ConfirmParticipantRegistration $notification, $channels) {
+            return $notification->target === 'competitor';
+        });
+    }
+
+    public function test_driver_fiscal_code_required_for_italian_drivers()
+    {
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 100,
+                'category' => $category->ulid,
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                ...['driver_fiscal_code' => ''],
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+        $response->assertSessionHasErrors('driver_fiscal_code');
+
+    }
+
+    public function test_driver_fiscal_code_required_when_nationality_is_italy()
+    {
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 100,
+                'category' => $category->ulid,
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                ...[
+                    'driver_fiscal_code' => 'A Value',
+                    'driver_licence_type' => DriverLicence::FOREIGN->value,
+                    'driver_nationality' => 'Italy',
+                ],
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+        $response->assertSessionHasErrors('driver_fiscal_code');
+
+    }
+
+    public function test_driver_fiscal_code_ignored_for_foreign_drivers()
+    {
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 100,
+                'category' => $category->ulid,
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                ...[
+                    'driver_fiscal_code' => '',
+                    'driver_licence_type' => DriverLicence::FOREIGN->value,
+                    'driver_nationality' => 'Other',
+                ],
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+        $response->assertSessionHasNoErrors();
+
+        $participant = Participant::first();
+
+        $this->assertInstanceOf(Participant::class, $participant);
+        $this->assertEquals(100, $participant->bib);
+        $this->assertEquals($category->ulid, $participant->category);
+        $this->assertTrue($participant->racingCategory->is($category));
+        $this->assertEquals('John', $participant->first_name);
+        $this->assertEquals('Racer', $participant->last_name);
+        $this->assertEquals('en', $participant->locale);
+
+        $response->assertRedirectToSignedRoute('registration.show', [
+            'registration' => $participant,
+            'p' => $participant->signatureContent(),
+        ]);
 
         $response->assertSessionHas('flash.banner', 'Race registration recorded. Please confirm it using the link sent in the email.');
 

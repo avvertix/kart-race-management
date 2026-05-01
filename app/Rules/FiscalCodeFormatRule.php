@@ -299,6 +299,8 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
         if (blank($value)) {
             if ($this->isRequired()) {
                 $fail('validation.required')->translate();
+            } elseif (! $this->check_driver && ! $this->check_competitor) {
+                $fail('validation.fiscal_code')->translate();
             }
 
             return;

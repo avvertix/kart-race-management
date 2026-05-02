@@ -23,6 +23,28 @@
 
     </x-slot>
 
+    @guest
+        <div x-data="{ show: true }" x-show="show" x-transition class="mb-3 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-lg flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <x-ri-user-add-line class="size-5 text-indigo-500 shrink-0 mt-0.5" />
+                    <div class="text-sm text-indigo-800">
+                        <span class="font-semibold">{{ __('Speed up registration by creating a free account.') }}</span>
+                        {{ __('Your personal details will be saved and pre-filled for future races.') }}
+                        <span class="ml-2 whitespace-nowrap">
+                            <a href="{{ route('register') }}" class="font-medium underline hover:text-indigo-600">{{ __('Create account') }}</a>
+                            <span class="mx-1 text-indigo-400">&middot;</span>
+                            <a href="{{ route('login') }}" class="font-medium underline hover:text-indigo-600">{{ __('Sign in') }}</a>
+                        </span>
+                    </div>
+                </div>
+                <button aria-label="{{ __('Close') }}" type="button" @click="show = false" class="shrink-0 text-indigo-400 hover:text-indigo-600">
+                    <x-ri-close-line class="size-5" />
+                </button>
+            </div>
+        </div>
+    @endguest
+
     @if (!$registration_open)
         
         <div class="mb-3 p-2 bg-red-100 text-red-800 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -46,6 +46,14 @@ class RaceRegistrationController extends Controller
             ? CompetitorLicence::cases()
             : array_values(array_filter(CompetitorLicence::cases(), fn ($l) => in_array($l->value, $acceptedCompetitorLicences)));
 
+        $templateDriver = null;
+        if (auth()->check()) {
+            $userTemplates = auth()->user()->templateDrivers;
+            if ($userTemplates->count() === 1) {
+                $templateDriver = $userTemplates->first();
+            }
+        }
+
         return view('race-registration.create', [
             'race' => $race,
             'categories' => $race->championship->categories()->enabled()->get(),
@@ -55,6 +63,7 @@ class RaceRegistrationController extends Controller
             'lastAcceptedDateForBankTransfer' => $lastAcceptedDateForBankTransfer,
             'driverLicences' => $driverLicences,
             'competitorLicences' => $competitorLicences,
+            'templateDriver' => $templateDriver,
         ]);
     }
 

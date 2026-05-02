@@ -27,6 +27,7 @@
 
             <div class="mt-4">
                 <x-label for="password" value="{{ __('Password') }}" />
+                <p class="text-sm text-zinc-700">{{ __('Password must be at least of 8 characters, and include special characters like !$? and a number') }}</p>
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             </div>
 

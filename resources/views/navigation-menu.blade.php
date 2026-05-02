@@ -43,14 +43,32 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ml-6 print:hidden">
+            <div class="hidden sm:flex sm:items-center sm:ml-6 print:hidden gap-4">
 
                 {{-- Language selector --}}
                 <x-language-selector />
 
+                @guest
+                    @if (Route::has('login'))
+                    <a
+                            href="{{ route('login') }}"
+                            class="inline-block px-4 py-2  rounded-md font-semibold text-sm text-zinc-800 border border-transparent  leading-normal hover:bg-zinc-200 active:bg-zinc-200 focus:outline-none focus:border-zinc-900 focus:ring focus:ring-zinc-300"
+                        >
+                            {{ __('Log in') }}
+                        </a>
+
+                        @if (Route::has('register'))
+                            <x-button-link
+                                href="{{ route('register') }}">
+                                {{ __('Register') }}
+                            </x-button-link>
+                        @endif
+                    @endif
+                @endguest
+
                 {{-- Settings Dropdown --}}
                 @auth
-                    <div class="ml-3 relative">
+                    <div class="relative">
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
                                 @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
@@ -140,6 +158,26 @@
                 @endcan
             @endauth
         </div>
+
+        {{-- Language selector --}}
+        <x-language-selector />
+
+        @guest
+            @if (Route::has('login'))
+                <x-responsive-nav-link
+                    href="{{ route('login') }}"
+                >
+                    {{ __('Log in') }}
+                </x-responsive-nav-link>
+
+                @if (Route::has('register'))
+                    <x-responsive-nav-link
+                        href="{{ route('register') }}">
+                        {{ __('Register') }}
+                    </x-responsive-nav-link>
+                @endif
+            @endif
+        @endguest
         
         @auth
             {{-- Responsive Settings Options --}}

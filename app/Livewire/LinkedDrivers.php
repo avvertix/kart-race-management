@@ -6,9 +6,13 @@ namespace App\Livewire;
 
 use App\Models\Participant;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
-class LinkPastRaces extends Component
+#[Layout('layouts.app')]
+#[Title('Drivers and Competitors')]
+class LinkedDrivers extends Component
 {
     public string $search = '';
 
@@ -16,6 +20,24 @@ class LinkPastRaces extends Component
 
     /** @var array<string> */
     public array $linkedUuids = [];
+
+    public bool $showForm = false;
+
+    public function mount(): void
+    {
+        $user = auth()->user();
+
+        $this->showForm = ! Participant::registered()
+            ->where(function ($q) use ($user) {
+                $q->where('claimed_by', $user->id)->orWhere('added_by', $user->id);
+            })
+            ->exists();
+    }
+
+    public function toggleForm(): void
+    {
+        $this->showForm = ! $this->showForm;
+    }
 
     public function performSearch(): void
     {
@@ -93,6 +115,15 @@ class LinkPastRaces extends Component
     {
         $user = auth()->user();
 
+        $linkedParticipants = Participant::registered()
+            ->where(function ($q) use ($user) {
+                $q->where('claimed_by', $user->id)->orWhere('added_by', $user->id);
+            })
+            ->with('race.championship')
+            ->latest()
+            ->get()
+            ->unique('driver_licence');
+
         $participants = collect();
 
         if ($this->verifiedSearch) {
@@ -113,7 +144,8 @@ class LinkPastRaces extends Component
                 ->get();
         }
 
-        return view('livewire.link-past-races', [
+        return view('livewire.linked-drivers', [
+            'linkedParticipants' => $linkedParticipants,
             'participants' => $participants,
         ]);
     }

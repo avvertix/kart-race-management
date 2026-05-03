@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire;
 
-use App\Livewire\LinkPastRaces;
+use App\Livewire\LinkedDrivers;
 use App\Models\Participant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class LinkPastRacesTest extends TestCase
@@ -21,7 +20,7 @@ class LinkPastRacesTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->assertOk();
     }
 
@@ -36,7 +35,7 @@ class LinkPastRacesTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', $licenceNumber)
             ->call('performSearch');
 
@@ -48,7 +47,7 @@ class LinkPastRacesTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', 'ab')
             ->call('performSearch')
             ->assertHasErrors(['search']);
@@ -61,7 +60,7 @@ class LinkPastRacesTest extends TestCase
         Participant::factory()->create(['driver_licence' => hash('sha512', $licenceNumber)]);
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', $licenceNumber)
             ->call('performSearch')
             ->assertSet('verifiedSearch', $licenceNumber)
@@ -79,7 +78,7 @@ class LinkPastRacesTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', 'DRAFT-LICENCE')
             ->call('performSearch');
 
@@ -98,7 +97,7 @@ class LinkPastRacesTest extends TestCase
         ]);
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', $licenceNumber)
             ->call('performSearch')
             ->call('link', $participant->uuid)
@@ -119,7 +118,7 @@ class LinkPastRacesTest extends TestCase
         ]);
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', $licenceNumber)
             ->call('performSearch')
             ->call('link', $participant->uuid);
@@ -133,7 +132,7 @@ class LinkPastRacesTest extends TestCase
         $participant = Participant::factory()->create(['added_by' => null]);
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->call('link', $participant->uuid)
             ->assertHasErrors(['action']);
 
@@ -153,7 +152,7 @@ class LinkPastRacesTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', $licenceNumber)
             ->call('performSearch')
             ->call('linkAll');
@@ -177,7 +176,7 @@ class LinkPastRacesTest extends TestCase
         ]);
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', $licenceNumber)
             ->call('performSearch')
             ->call('linkAll');
@@ -190,7 +189,7 @@ class LinkPastRacesTest extends TestCase
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->call('linkAll')
             ->assertHasErrors(['action']);
     }
@@ -213,11 +212,64 @@ class LinkPastRacesTest extends TestCase
         ]);
 
         $component = Livewire::actingAs($user)
-            ->test(LinkPastRaces::class)
+            ->test(LinkedDrivers::class)
             ->set('search', $licenceNumber)
             ->call('performSearch');
 
         $this->assertFalse($component->viewData('participants')->contains('uuid', $participant->uuid));
     }
 
+    // --- Form visibility ---
+
+    public function test_form_shows_by_default_when_no_linked_participants(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(LinkedDrivers::class)
+            ->assertSet('showForm', true);
+    }
+
+    public function test_form_hidden_by_default_when_linked_participants_exist(): void
+    {
+        $user = User::factory()->create();
+        Participant::factory()->create(['claimed_by' => $user->id]);
+
+        Livewire::actingAs($user)
+            ->test(LinkedDrivers::class)
+            ->assertSet('showForm', false);
+    }
+
+    public function test_toggle_form_flips_visibility(): void
+    {
+        $user = User::factory()->create();
+        Participant::factory()->create(['claimed_by' => $user->id]);
+
+        Livewire::actingAs($user)
+            ->test(LinkedDrivers::class)
+            ->assertSet('showForm', false)
+            ->call('toggleForm')
+            ->assertSet('showForm', true)
+            ->call('toggleForm')
+            ->assertSet('showForm', false);
+    }
+
+    public function test_linked_participants_appear_after_linking(): void
+    {
+        $user = User::factory()->create();
+        $licenceNumber = 'REALTIME-UPDATE-01';
+        $participant = Participant::factory()->create([
+            'driver_licence' => hash('sha512', $licenceNumber),
+            'added_by' => null,
+            'claimed_by' => null,
+        ]);
+
+        $component = Livewire::actingAs($user)
+            ->test(LinkedDrivers::class)
+            ->set('search', $licenceNumber)
+            ->call('performSearch')
+            ->call('link', $participant->uuid);
+
+        $this->assertTrue($component->viewData('linkedParticipants')->contains('uuid', $participant->uuid));
+    }
 }

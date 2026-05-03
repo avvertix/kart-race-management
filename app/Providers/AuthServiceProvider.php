@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('drivers:view', fn (User $user) => $user->hasPermission('drivers:view'));
+        Gate::define('drivers:create', fn (User $user) => $user->hasPermission('drivers:create'));
+        Gate::define('drivers:update', fn (User $user) => $user->hasPermission('drivers:update'));
+        Gate::define('drivers:delete', fn (User $user) => $user->hasPermission('drivers:delete'));
     }
 }

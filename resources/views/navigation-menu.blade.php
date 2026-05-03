@@ -14,9 +14,13 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex print:hidden">
 
                     @auth
-                        @can('viewAny', \App\Models\TemplateDriver::class)
+                        @can('drivers:view')
+                            <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+
                             <x-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*')">
-                                {{ __('Your Drivers') }}
+                                {{ __('Drivers and competitors') }}
                             </x-nav-link>
                         @endcan
                         @can('viewAny', \App\Models\Championship::class)
@@ -131,9 +135,9 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white print:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @auth
-                @can('viewAny', \App\Models\TemplateDriver::class)
+                @can('drivers:view')
                     <x-responsive-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*')">
-                        {{ __('Your Drivers') }}
+                        {{ __('Drivers and competitors') }}
                     </x-responsive-nav-link>
                 @endcan
                 @can('viewAny', \App\Models\Championship::class)

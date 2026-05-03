@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Data\AliasesData;
 use App\Data\RegistrationCostData;
 use App\Notifications\ConfirmParticipantRegistration;
+use App\ParticipantStatus;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -40,12 +41,14 @@ class Participant extends Model implements HasLocalePreference
      * @var string[]
      */
     protected $fillable = [
+        'status',
         'bib',
         'category',
         'category_id',
         'first_name',
         'last_name',
         'added_by',
+        'claimed_by',
         'confirmed_at',
         'consents',
         'race_id',
@@ -211,6 +214,11 @@ class Participant extends Model implements HasLocalePreference
     public function scopeLicenceHash($query, $licence)
     {
         return $query->where('driver_licence', $licence);
+    }
+
+    public function scopeEmailHash($query, string $emailHash)
+    {
+        return $query->where('driver_email_hash', $emailHash);
     }
 
     public function scopeLicence($query, $licence)
@@ -452,13 +460,22 @@ class Participant extends Model implements HasLocalePreference
         return $this->properties['out_of_zone'] ? __('Out of zone') : __('Within zone');
     }
 
+    public function scopeRegistered(\Illuminate\Database\Eloquent\Builder $query): void
+    {
+        $query->where('status', '!=', ParticipantStatus::Draft->value);
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->status === ParticipantStatus::Draft;
+    }
+
     /**
      * The "booted" method of the model.
      */
     protected static function booted(): void
     {
         static::saving(function (Participant $participant) {
-            // Auto-populate racer_hash from driver_licence if it's not already set
             if ($participant->driver_licence && blank($participant->racer_hash)) {
                 $participant->racer_hash = mb_substr($participant->driver_licence, 0, 8);
             }
@@ -506,6 +523,7 @@ class Participant extends Model implements HasLocalePreference
     protected function casts(): array
     {
         return [
+            'status' => ParticipantStatus::class,
             'licence_type' => DriverLicence::class,
             'driver' => 'encrypted:json',
             'competitor' => 'encrypted:json',
@@ -521,7 +539,6 @@ class Participant extends Model implements HasLocalePreference
             'payment_channel' => PaymentChannelType::class,
             'aliases' => AliasesData::class,
             'cost' => RegistrationCostData::class,
-
         ];
     }
 }

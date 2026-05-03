@@ -14,7 +14,7 @@ class TemplateDriverPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('driver');
+        return $user->hasPermission('drivers:view');
     }
 
     /**
@@ -22,7 +22,7 @@ class TemplateDriverPolicy
      */
     public function view(User $user, TemplateDriver $templateDriver): bool
     {
-        return $user->hasRole('driver') && $user->id === $templateDriver->user_id;
+        return $user->hasPermission('drivers:view') && $user->id === $templateDriver->user_id;
     }
 
     /**
@@ -30,7 +30,7 @@ class TemplateDriverPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('driver');
+        return $user->hasPermission('drivers:create');
     }
 
     /**
@@ -38,7 +38,7 @@ class TemplateDriverPolicy
      */
     public function update(User $user, TemplateDriver $templateDriver): bool
     {
-        return $user->hasRole('driver') && $user->id === $templateDriver->user_id;
+        return $user->hasPermission('drivers:update') && $user->id === $templateDriver->user_id;
     }
 
     /**
@@ -46,6 +46,6 @@ class TemplateDriverPolicy
      */
     public function delete(User $user, TemplateDriver $templateDriver): bool
     {
-        return $user->hasRole('driver') && $user->id === $templateDriver->user_id;
+        return $user->hasPermission('drivers:delete') && $user->id === $templateDriver->user_id;
     }
 }

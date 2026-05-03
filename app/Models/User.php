@@ -57,14 +57,6 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
-     * Get the template drivers for the user.
-     */
-    public function templateDrivers(): HasMany
-    {
-        return $this->hasMany(TemplateDriver::class);
-    }
-
-    /**
      * The attributes that should be cast.
      */
     protected function casts(): array

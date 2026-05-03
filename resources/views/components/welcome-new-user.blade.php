@@ -10,7 +10,9 @@
             </p>
         </div>
 
-        <livewire:link-past-races />
+        <x-button-link href="{{ route('drivers.index') }}">
+            {{ __('Go to Drivers and competitors') }}
+        </x-button-link>
     </div>
 </div>
 @endif

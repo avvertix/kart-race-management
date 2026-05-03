@@ -13,6 +13,8 @@ use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class RaceRegistrationController extends Controller
 {
@@ -21,7 +23,7 @@ class RaceRegistrationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Race $race)
+    public function create(Race $race, Request $request)
     {
         $race
             ->load([
@@ -46,11 +48,35 @@ class RaceRegistrationController extends Controller
             ? CompetitorLicence::cases()
             : array_values(array_filter(CompetitorLicence::cases(), fn ($l) => in_array($l->value, $acceptedCompetitorLicences)));
 
+        $participant = null;
         $templateDriver = null;
+
         if (auth()->check()) {
-            $userTemplates = auth()->user()->templateDrivers;
-            if ($userTemplates->count() === 1) {
-                $templateDriver = $userTemplates->first();
+            $user = auth()->user();
+
+            try {
+                $validated = $this->validate($request, [
+                    'from' => ['sometimes', 'nullable', 'string', Rule::exists('participants', 'uuid')],
+                ]);
+
+                if ($validated['from'] ?? false) {
+                    $participant = Participant::where('uuid', $validated['from'])
+                        ->where('championship_id', $race->championship_id)
+                        ->where(function ($q) use ($user) {
+                            $q->where('claimed_by', $user->id)
+                                ->orWhere('added_by', $user->id);
+                        })
+                        ->first();
+                }
+            } catch (ValidationException) {
+                // ignore invalid from param
+            }
+
+            if ($participant === null) {
+                $userTemplates = $user->templateDrivers;
+                if ($userTemplates->count() === 1) {
+                    $templateDriver = $userTemplates->first();
+                }
             }
         }
 
@@ -63,6 +89,7 @@ class RaceRegistrationController extends Controller
             'lastAcceptedDateForBankTransfer' => $lastAcceptedDateForBankTransfer,
             'driverLicences' => $driverLicences,
             'competitorLicences' => $competitorLicences,
+            'participant' => $participant,
             'templateDriver' => $templateDriver,
         ]);
     }

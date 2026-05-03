@@ -26,6 +26,7 @@ use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
+use App\Http\Controllers\LinkedDriverController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantPaymentController;
@@ -52,7 +53,6 @@ use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\RaceTranspondersImportController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
-use App\Http\Controllers\TemplateDriverController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
@@ -83,7 +83,7 @@ Route::middleware([
 ])->group(function () {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
 
-    Route::resource('drivers', TemplateDriverController::class)->except(['show']);
+    Route::resource('drivers', LinkedDriverController::class)->only(['index']);
 });
 
 // Championships and Races management

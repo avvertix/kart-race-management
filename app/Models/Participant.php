@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Data\AliasesData;
 use App\Data\RegistrationCostData;
 use App\Notifications\ConfirmParticipantRegistration;
+use App\Notifications\UpdateParticipantRegistration;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
@@ -295,6 +296,23 @@ class Participant extends Model implements HasLocalePreference
         if ($this->competitor['email'] ?? false) {
             if ($this->competitor['email'] !== $this->driver['email']) {
                 $this->notify(new ConfirmParticipantRegistration('competitor'));
+            }
+        }
+    }
+
+    /**
+     * Send the participant update notification.
+     *
+     * @return void
+     */
+    public function sendUpdateParticipantNotification()
+    {
+        $notification = new UpdateParticipantRegistration;
+        $this->notify($notification);
+
+        if ($this->competitor['email'] ?? false) {
+            if ($this->competitor['email'] !== $this->driver['email']) {
+                $this->notify($notification);
             }
         }
     }

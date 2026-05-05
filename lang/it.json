@@ -617,5 +617,11 @@
     "Driver licences": "Licenze pilota",
     "Select which driver licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza pilota accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza.",
     "Competitor licences": "Licenze accompagnatore",
-    "Select which competitor licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza accompagnatore accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza."
+    "Select which competitor licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza accompagnatore accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza.",
+
+    "Your registration for :race has been updated": "La tua iscrizione a :race è stata aggiornata",
+    "Hi, there are updates on your registration!": "Ciao, ci sono aggiornamenti sulla tua iscrizione!",
+    "The registration of **:name** for the race :race has been updated.": "L'iscrizione di **:name** alla gara :race è stata aggiornata.",
+    "View the participation": "Guarda i dettagli della tua iscrizione",
+    "This notification was sent by :organizer as you or your team registered for a race.": "Questa notifica è stata inviata da :organizer perché tu o il tuo team vi siete iscritti a una gara."
 }

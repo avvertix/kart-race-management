@@ -56,7 +56,7 @@ class AddUserCommandTest extends TestCase
         $this->artisan('user:add', [
             '--email' => 'test@local.host',
             '--role' => 'unknown',
-            '--password' => 'password',
+            '--password' => '!password1',
         ])
             ->assertFailed()
             ->expectsOutputToContain('The role must be a valid role.');

@@ -9,6 +9,8 @@ use App\Models\Championship;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\TemplateDriver;
+use App\Models\User;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
@@ -619,5 +621,78 @@ class SelfRegistrationTest extends TestCase
         $response->assertForbidden();
 
         $response->assertViewIs('errors.participant-link-invalid');
+    }
+
+    public function test_registration_form_prepopulated_from_single_template_driver()
+    {
+        config(['races.registration.form' => 'complete']);
+
+        $user = User::factory()->create();
+
+        $template = TemplateDriver::factory()
+            ->withCompetitor()
+            ->withMechanic()
+            ->for($user)
+            ->create();
+
+        $race = Race::factory()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertViewHas('templateDriver', $template);
+
+        $response->assertSee($template->driver['first_name']);
+        $response->assertSee($template->driver['last_name']);
+        $response->assertSee((string) $template->bib);
+        $response->assertSee($template->competitor['first_name']);
+        $response->assertSee($template->mechanic['name']);
+    }
+
+    public function test_registration_form_not_prepopulated_when_user_has_multiple_templates()
+    {
+        config(['races.registration.form' => 'complete']);
+
+        $user = User::factory()->create();
+
+        TemplateDriver::factory()->for($user)->count(2)->create();
+
+        $race = Race::factory()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertViewHas('templateDriver', null);
+    }
+
+    public function test_registration_form_not_prepopulated_for_guest()
+    {
+        config(['races.registration.form' => 'complete']);
+
+        $race = Race::factory()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertViewHas('templateDriver', null);
     }
 }

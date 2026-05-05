@@ -407,8 +407,8 @@
     "Next races": "Prossime gare",
     ":value/:available participant|:value/:available participants": ":value/:available partecipante|:value/:available partecipanti",
     ":value participant|:value participants": ":value partecipante|:value partecipanti",
-    "No race in sight.": "Nessuna gara.",
-    "No races scheduled yet.": "Nessuna gara in programma.",
+    "No race in sight": "Nessuna gara programmata",
+    "There are no races scheduled yet. Get back soon!": "Nessuna gara è ancora in programma. Controlla tra qualche giorno!",
     ":value race|:value races": ":value gara|:value gare",
     "No championships.": "Nessun campionato,",
     "No championships scheduled yet.": "Nessun campionato in programma.",
@@ -454,6 +454,10 @@
     "Championship: :champ": "Campionato: :champ",
     "Registration: :dates": "Iscrizioni: :dates",
     "Register at: ": "Iscriviti su: ",
+    "Speed up registration by creating a free account.": "Velocizza l'iscrizione creando un account gratuito.",
+    "Your personal details will be saved and pre-filled for future races.": "I tuoi dati anagrafici verranno salvati e precompilati per le gare future.",
+    "Create account": "Crea account",
+    "Sign in": "Accedi",
     "Add category": "Crea categoria",
     "Add tire": "Crea gomma",
     ":value tire copied|:value tires copied": ":value gomma copiata|:value gomme copiate",
@@ -617,5 +621,8 @@
     "Driver licences": "Licenze pilota",
     "Select which driver licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza pilota accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza.",
     "Competitor licences": "Licenze accompagnatore",
-    "Select which competitor licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza accompagnatore accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza."
+    "Select which competitor licence types are accepted for registration. Leave all unchecked to accept any licence type.": "Seleziona i tipi di licenza accompagnatore accettati per la registrazione. Lascia tutto deselezionato per accettare qualsiasi tipo di licenza.",
+    "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.": "Prima di continuare, potresti verificare il tuo indirizzo email cliccando sul link che ti abbiamo appena inviato? Se non hai ricevuto l'email, saremo felici di inviartene un'altra.",
+    "A new verification link has been sent to the email address you provided in your profile settings.": "Un nuovo link di verifica è stato inviato all'indirizzo email indicato nelle impostazioni del tuo profilo.",
+    "Password must be at least of 8 characters, and include special characters like !$? and a number": "La password deve essere di almeno 8 caratteri, contenere un carattere speciale come !$? e un numero."
 }

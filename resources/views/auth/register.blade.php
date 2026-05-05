@@ -9,6 +9,12 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
+            {{-- Honeypot field to prevent bot registrations --}}
+            <div class="hidden" aria-hidden="true">
+                <x-label for="website" value="Website" />
+                <x-input id="website" type="text" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
             <div>
                 <x-label for="name" value="{{ __('Name') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -21,6 +27,7 @@
 
             <div class="mt-4">
                 <x-label for="password" value="{{ __('Password') }}" />
+                <p class="text-sm text-zinc-700">{{ __('Password must be at least of 8 characters, and include special characters like !$? and a number') }}</p>
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             </div>
 

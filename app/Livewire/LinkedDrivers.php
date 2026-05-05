@@ -148,11 +148,22 @@ class LinkedDrivers extends Component
         $nextRaces = $linkedParticipants->mapWithKeys(function (Participant $participant) {
             $nextRace = Race::withRegistrationOpen()
                 ->where('championship_id', $participant->championship_id)
-                ->whereDoesntHave('participants', fn ($q) => $q->where('driver_licence', $participant->driver_licence))
                 ->orderBy('event_start_at')
                 ->first();
 
-            return [$participant->uuid => $nextRace];
+            if (! $nextRace) {
+                return [$participant->uuid => null];
+            }
+
+            $existingParticipation = Participant::registered()
+                ->where('race_id', $nextRace->id)
+                ->where('driver_licence', $participant->driver_licence)
+                ->first();
+
+            return [$participant->uuid => [
+                'race' => $nextRace,
+                'participation' => $existingParticipation,
+            ]];
         });
 
         return view('livewire.linked-drivers', [

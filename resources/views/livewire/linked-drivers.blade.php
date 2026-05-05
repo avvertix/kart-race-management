@@ -157,10 +157,17 @@
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                            @if ($nextRaces[$participant->uuid] ?? null)
-                                <a href="{{ route('races.registration.create', ['race' => $nextRaces[$participant->uuid], 'from' => $participant->uuid]) }}" class="text-sm text-zinc-700 underline hover:text-zinc-900">
-                                    {{ __('Register to :race', ['race' => $nextRaces[$participant->uuid]->title]) }}
-                                </a>
+                            @php $nextRaceData = $nextRaces[$participant->uuid] ?? null; @endphp
+                            @if ($nextRaceData)
+                                @if ($nextRaceData['participation'])
+                                    <a href="{{ route('participants.show', $nextRaceData['participation']) }}" class="text-sm text-zinc-700 underline hover:text-zinc-900">
+                                        {{ __('View registration for :race', ['race' => $nextRaceData['race']->title]) }}
+                                    </a>
+                                @else
+                                    <a href="{{ route('races.participants.create', ['race' => $nextRaceData['race'], 'from' => $participant->uuid]) }}" class="text-sm text-zinc-700 underline hover:text-zinc-900">
+                                        {{ __('Register to :race', ['race' => $nextRaceData['race']->title]) }}
+                                    </a>
+                                @endif
                             @endif
                         </td>
                     </tr>

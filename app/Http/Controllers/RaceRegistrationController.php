@@ -134,6 +134,8 @@ class RaceRegistrationController extends Controller
     {
         throw_unless($request->hasValidSignature(), InvalidParticipantSignatureException::class);
 
+        // TODO: if logged in and can see driver than maybe it can be shown without signature
+
         $registration
             ->load(['race', 'championship', 'signatures', 'payments']);
 

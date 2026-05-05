@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Participant;
+use App\Models\Race;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -144,9 +145,20 @@ class LinkedDrivers extends Component
                 ->get();
         }
 
+        $nextRaces = $linkedParticipants->mapWithKeys(function (Participant $participant) {
+            $nextRace = Race::withRegistrationOpen()
+                ->where('championship_id', $participant->championship_id)
+                ->whereDoesntHave('participants', fn ($q) => $q->where('driver_licence', $participant->driver_licence))
+                ->orderBy('event_start_at')
+                ->first();
+
+            return [$participant->uuid => $nextRace];
+        });
+
         return view('livewire.linked-drivers', [
             'linkedParticipants' => $linkedParticipants,
             'participants' => $participants,
+            'nextRaces' => $nextRaces,
         ]);
     }
 

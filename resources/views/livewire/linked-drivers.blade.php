@@ -3,16 +3,26 @@
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
             {{ __('Drivers and Competitors') }}
         </h2>
-        @if ($linkedParticipants->isNotEmpty())
-            <x-button wire:click="toggleForm" type="button">
-                {{ __('Claim a participation') }}
-            </x-button>
-        @endif
+        
+        <div id="actions">
+
+        </div>
+            
+        
     </div>
 </x-slot>
 
 <div class="pb-12">
     <div class="px-4 sm:px-6 lg:px-8 space-y-8">
+
+        @teleport('#actions')
+            <div class="flex justify-end">
+                <x-button wire:click="toggleForm" type="button">
+                    {{ __('Claim a participation') }}
+                </x-button>
+            </div>
+        @endteleport
+        
 
         {{-- Claim form --}}
         @if ($showForm)
@@ -55,9 +65,9 @@
                         @endphp
                         @if ($linkableCount > 1)
                             <div class="flex justify-end">
-                                <button wire:click="linkAll" wire:loading.attr="disabled" type="button" class="text-sm text-zinc-700 underline hover:text-zinc-900">
+                                <x-button wire:click="linkAll" wire:loading.attr="disabled" type="button" >
                                     {{ __('Link all') }}
-                                </button>
+                                </x-button>
                             </div>
                         @endif
                         @foreach ($participants as $participant)
@@ -94,9 +104,9 @@
                                     @if ($isLinked)
                                         <span class="text-xs text-green-600 font-medium">{{ __('Linked') }}</span>
                                     @else
-                                        <button wire:click="link('{{ $participant->uuid }}')" wire:loading.attr="disabled" type="button" class="text-sm text-zinc-700 underline hover:text-zinc-900">
+                                        <x-button wire:click="link('{{ $participant->uuid }}')" wire:loading.attr="disabled" type="button">
                                             {{ __('Link') }}
-                                        </button>
+                                        </x-button>
                                     @endif
                                 </div>
                             </div>
@@ -128,13 +138,17 @@
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                             <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                             {{ $participant->first_name }} {{ $participant->last_name }}
-                            Show licence
+                            <span class="font-mono block">{{ $participant->driver_licence_number }}</span>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                            category
+                            {{ $participant->racingCategory?->name }}
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                            competitor
+                            @if ($participant->competitor)
+                                {{ $participant->competitor['first_name'] }} {{ $participant->competitor['last_name'] }}
+                            @else
+                            &mdash;
+                            @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                             {{ $participant->race?->title ?? '-' }}
@@ -143,7 +157,11 @@
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                            Button to register to next race
+                            @if ($nextRaces[$participant->uuid] ?? null)
+                                <a href="{{ route('races.registration.create', ['race' => $nextRaces[$participant->uuid], 'from' => $participant->uuid]) }}" class="text-sm text-zinc-700 underline hover:text-zinc-900">
+                                    {{ __('Register to :race', ['race' => $nextRaces[$participant->uuid]->title]) }}
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

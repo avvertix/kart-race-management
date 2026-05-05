@@ -26,8 +26,8 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => '!password1',
+            'password_confirmation' => '!password1',
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
         ]);
 
@@ -46,8 +46,8 @@ class RegistrationTest extends TestCase
             ->post('/register', [
                 'name' => 'Bot User',
                 'email' => 'bot@example.com',
-                'password' => 'password',
-                'password_confirmation' => 'password',
+                'password' => '!password1',
+                'password_confirmation' => '!password1',
                 'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
                 'website' => 'https://spam-site.com',
             ]);

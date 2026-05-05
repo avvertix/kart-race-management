@@ -516,6 +516,13 @@ class Participant extends Model implements HasLocalePreference
             return $this->driver['fiscal_code'] ?? null;
         });
     }
+    
+    protected function driverLicenceNumber(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+            return $this->driver['licence_number'] ?? null;
+        });
+    }
 
     /**
      * The attributes that should be cast.

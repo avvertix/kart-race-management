@@ -7,14 +7,18 @@ namespace App\Http\Controllers;
 use App\Actions\DeleteParticipant;
 use App\Actions\RegisterParticipant;
 use App\Actions\UpdateParticipantRegistration;
+use App\Models\Category;
 use App\Models\Championship;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use ValueError;
 
 class RaceParticipantController extends Controller
 {
@@ -116,13 +120,23 @@ class RaceParticipantController extends Controller
      */
     public function show(Participant $participant)
     {
+        $participant->load([
+            'race',
+            'championship',
+            'racingCategory.tire',
+            'tires',
+            'transponders',
+            'payments',
+            'bonuses',
+        ])->loadCount('tires', 'transponders');
 
-        $participant->load(['race', 'championship']);
+        $activities = $this->buildActivityLog($participant);
 
         return view('participant.show', [
             'race' => $participant->race,
             'championship' => $participant->championship,
             'participant' => $participant,
+            'activities' => $activities,
         ]);
     }
 
@@ -199,6 +213,156 @@ class RaceParticipantController extends Controller
             'oil_type' => $input['vehicle_oil_type'],
             'oil_percentage' => $input['vehicle_oil_percentage'],
         ]];
+    }
+
+    private function buildActivityLog(Participant $participant): \Illuminate\Support\Collection
+    {
+        $rawActivities = $participant->activities()
+            ->with('causer')
+            ->latest()
+            ->get();
+
+        $categoryIds = $rawActivities->flatMap(function ($activity) {
+            $attrs = $activity->properties->get('attributes', []);
+            $old = $activity->properties->get('old', []);
+
+            return array_filter([
+                $attrs['category_id'] ?? null,
+                $old['category_id'] ?? null,
+            ], fn ($v) => ! is_null($v));
+        })->unique()->values();
+
+        $categoriesById = $categoryIds->isNotEmpty()
+            ? Category::whereIn('id', $categoryIds)->pluck('name', 'id')
+            : collect();
+
+        return $rawActivities->map(function ($activity) use ($categoriesById) {
+            $attrs = $activity->properties->get('attributes', []);
+            $old = $activity->properties->get('old', []);
+
+            // Fields that are hashed, raw IDs, or redundant — not useful to display
+            $skippedFields = ['category', 'driver_licence', 'competitor_licence', 'added_by'];
+
+            $changes = collect($attrs)
+                ->reject(fn ($value, $field) => in_array($field, $skippedFields))
+                ->flatMap(function ($newValue, $field) use ($old, $categoriesById) {
+                    // driver->email and competitor->email are stored as nested arrays
+                    // by EncryptSensibleParticipantData (attributes.driver.email / attributes.competitor.email)
+                    if ($field === 'driver' && is_array($newValue) && array_key_exists('email', $newValue)) {
+                        return [[
+                            'field' => __('Driver email'),
+                            'old' => $this->decryptActivityEmail($old['driver']['email'] ?? null),
+                            'new' => $this->decryptActivityEmail($newValue['email']),
+                        ]];
+                    }
+                    if ($field === 'competitor' && is_array($newValue) && array_key_exists('email', $newValue)) {
+                        return [[
+                            'field' => __('Competitor email'),
+                            'old' => $this->decryptActivityEmail($old['competitor']['email'] ?? null),
+                            'new' => $this->decryptActivityEmail($newValue['email']),
+                        ]];
+                    }
+
+                    return [[
+                        'field' => $this->participantFieldLabel($field),
+                        'old' => $this->formatParticipantFieldValue($field, $old[$field] ?? null, $categoriesById),
+                        'new' => $this->formatParticipantFieldValue($field, $newValue, $categoriesById),
+                    ]];
+                })->values();
+
+            return [
+                'event' => $activity->event,
+                'date' => $activity->created_at,
+                'causer' => $activity->causer?->name,
+                'changes' => $changes,
+            ];
+        })->sortBy(fn ($activity) => $activity['event'] === 'created' ? 1 : 0)->values();
+    }
+
+    private function participantFieldLabel(string $field): string
+    {
+        return match ($field) {
+            'bib' => __('Race number'),
+            'category_id' => __('Category'),
+            'first_name' => __('Name'),
+            'last_name' => __('Surname'),
+            'confirmed_at' => __('Confirmed at'),
+            'licence_type' => __('Licence type'),
+            'vehicles' => __('Vehicle'),
+            'use_bonus' => __('Bonus'),
+            'cost' => __('Cost'),
+            default => $field,
+        };
+    }
+
+    private function decryptActivityEmail(?string $value): string
+    {
+        if (is_null($value)) {
+            return '—';
+        }
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (DecryptException) {
+            return $value;
+        }
+    }
+
+    private function formatParticipantFieldValue(string $field, mixed $value, $categoriesById = null): string
+    {
+        if (is_null($value)) {
+            return '—';
+        }
+
+        return match ($field) {
+            'use_bonus' => $value ? __('Yes') : __('No'),
+            'confirmed_at' => $value ? (string) $value : '—',
+            'licence_type' => $this->formatDriverLicence($value),
+            'category_id' => $categoriesById?->get($value) ?? __('Unknown category (#:id)', ['id' => $value]),
+            'vehicles' => $this->formatVehicles($value),
+            'cost' => $this->formatCost($value),
+            default => is_array($value) ? implode(', ', array_filter(array_values($value))) : (string) $value,
+        };
+    }
+
+    private function formatDriverLicence(mixed $value): string
+    {
+        try {
+            return DriverLicence::from((int) $value)->localizedName();
+        } catch (ValueError) {
+            return (string) $value;
+        }
+    }
+
+    private function formatVehicles(mixed $value): string
+    {
+        if (! is_array($value)) {
+            return (string) $value;
+        }
+
+        return collect($value)->map(function (array $vehicle) {
+            $parts = array_filter([
+                $vehicle['chassis_manufacturer'] ?? null,
+                $vehicle['engine_manufacturer'] ?? null,
+                $vehicle['engine_model'] ?? null,
+                isset($vehicle['oil_manufacturer']) ? $vehicle['oil_manufacturer'].' '.$vehicle['oil_percentage'].'%' : null,
+            ]);
+
+            return implode(' / ', $parts);
+        })->implode('; ');
+    }
+
+    private function formatCost(mixed $value): string
+    {
+        if (! is_array($value)) {
+            return (string) $value;
+        }
+
+        $total = ($value['registration_cost'] ?? 0)
+            + ($value['tire_cost'] ?? 0)
+            - abs($value['discount'] ?? 0);
+
+        return number_format(max(0, $total) / 100, 2, ',', '.').' €';
     }
 
     private function licenceOptions(Championship $championship): array

@@ -941,4 +941,40 @@ class RegisterParticipantTest extends TestCase
 
         Notification::assertCount(0);
     }
+
+    public function test_participant_cannot_register_with_high_bib_number()
+    {
+        Notification::fake();
+
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        try {
+
+            $participant = $registerParticipant($race, [
+                'bib' => 7000000,
+                'category' => $category->ulid,
+                ...$this->generateValidDriver(),
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+            ]);
+
+            $this->fail('Expected ValidationException. Nothing thrown.');
+
+        } catch (ValidationException $th) {
+
+            $this->assertEquals([
+                'bib' => [
+                    'The race number must not be greater than 5000.',
+                ],
+            ], $th->errors());
+        }
+
+        Notification::assertCount(0);
+    }
 }

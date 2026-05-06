@@ -60,7 +60,7 @@ trait ParticipantValidationRules
     protected function getBibValidationRules(): array
     {
         return [
-            'bib' => ['required', 'integer', 'min:1'],
+            'bib' => ['required', 'integer', 'min:1', 'max:5000'],
         ];
     }
 

@@ -24,7 +24,7 @@
             {{-- Page Heading --}}
             @if (isset($header))
                 <header class="">
-                    <div {{ $header->attributes->class(['py-6','px-4','sm:px-6','lg:px-8']) }}>
+                    <div {{ $header->attributes->class(['py-6','px-4','sm:px-6','lg:px-8', 'print:py-2']) }}>
                         {{ $header }}
                     </div>
                 </header>

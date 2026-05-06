@@ -51,9 +51,12 @@
                     </div>
                 @endcan
                 <div class="flex gap-1">
-                    <x-secondary-button wire:click.prevent="select(null)">
-                        {{ __('Collapse') }}
-                    </x-button>
+                    <x-secondary-button-link href="{{ route('participants.show', $item) }}"  aria-label="{{ __('Open in another window') }}">
+                        <x-ri-external-link-line class="size-5 shrink-0" />
+                    </x-secondary-button>
+                    <x-secondary-button wire:click.prevent="select(null)" aria-label="{{ __('Collapse') }}">
+                        <x-ri-collapse-diagonal-line class="size-5 shrink-0" />
+                    </x-secondary-button>
                 </div>
             
             </div>

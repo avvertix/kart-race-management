@@ -103,7 +103,7 @@ class GenerateRaceNumberTest extends TestCase
                 'first_name' => 'John',
                 'last_name' => 'Racer',
                 'licence_number' => 'LN1',
-                'bib' => 1000,
+                'bib' => 700000,
             ])
             ->create();
 

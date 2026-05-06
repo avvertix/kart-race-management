@@ -7,7 +7,7 @@
     </x-slot>
 
 
-    <div class="pb-3 print:hidden">
+    <div class="pb-3 print:hidden print:pb-0">
         <div class="px-4 sm:px-6 lg:px-8">
             <form action="" id="print_filter" method="get" class=" flex gap-6 items-center lg:justify-between">
                 <div class=" flex gap-6 items-center">
@@ -177,7 +177,7 @@
                             <div class="">
                                 <p class="font-bold col-span-2">{{ __('Vehicle') }}</p>
 
-                                @foreach ($participant->vehicles as $vehicle)
+                                @forelse ($participant->vehicles as $vehicle)
                                     <div class="space-y-1">
                                         <div class="">
                                             <span class="text-sm text-zinc-500 block">{{ __('Chassis') }}</span>
@@ -200,7 +200,31 @@
                                             {{ $vehicle['oil_percentage'] }}
                                         </div>
                                     </div>
-                                @endforeach
+                                @empty
+
+                                @useCompleteRegistrationForm($race)
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <div class="space-y-2">
+                                            <p class="text-sm text-zinc-500 block">{{ __('Chassis Manufacturer') }} </span>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Chassis Model') }}</span>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Serial Number') }}</span>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Homologation') }}</p>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <p class="text-sm text-zinc-500 block">{{ __('Engine Manufacturer') }} </p>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Engine Model') }} </p>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Serial Number') }}</p>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Homologation') }}</p>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <p class="text-sm text-zinc-500 block">{{ __('Oil Manufacturer') }} </p>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Oil Type') }}</p>
+                                            <p class="text-sm text-zinc-500 block">{{ __('Oil Percentage') }} </p>
+                                        </div>
+                                    </div>
+                                @enduseCompleteRegistrationForm
+                                    
+                                @endforelse
                             </div>
                         </div>
                     </div>

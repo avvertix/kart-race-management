@@ -15,7 +15,7 @@ use Tests\TestCase;
 class FiscalCodeFormatRuleTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     public static function valid_fiscal_codes_provider()
     {
         return [

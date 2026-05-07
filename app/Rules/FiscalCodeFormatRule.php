@@ -313,7 +313,7 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
             return;
         }
 
-        if ($this->check_competitor){
+        if ($this->check_competitor) {
             // TODO: Let's only use this validation to check for required, competitors can be companies therefore we cannot do the same validation
             return;
         }

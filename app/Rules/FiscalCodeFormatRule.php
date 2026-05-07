@@ -296,6 +296,7 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        // TODO: Move required check to its own rule, this should only validate fiscal codes as-is
         if (blank($value)) {
             if ($this->isRequired()) {
                 $fail('validation.required')->translate();
@@ -309,6 +310,11 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
         if (! is_string($value)) {
             $fail('validation.fiscal_code')->translate();
 
+            return;
+        }
+
+        if ($this->check_competitor){
+            // TODO: Let's only use this validation to check for required, competitors can be companies therefore we cannot do the same validation
             return;
         }
 
@@ -383,7 +389,8 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
                 return true;
             }
 
-            if (filled($licenceType) && $licenceType !== DriverLicence::FOREIGN->value) {
+            if (filled($licenceType) && "{$licenceType}" !== ''.DriverLicence::FOREIGN->value) {
+                // we compare strings as input comes in string form, linting will always prefer strict comparison
                 return true;
             }
         }
@@ -396,7 +403,8 @@ class FiscalCodeFormatRule implements DataAwareRule, ValidationRule
                 return true;
             }
 
-            if (filled($licenceType) && $licenceType !== CompetitorLicence::FOREIGN->value) {
+            if (filled($licenceType) && "{$licenceType}" !== ''.CompetitorLicence::FOREIGN->value) {
+                // we compare strings as input comes in string form, linting will always prefer strict comparison
                 return true;
             }
         }

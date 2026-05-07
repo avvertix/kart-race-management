@@ -7,12 +7,15 @@ namespace Tests\Feature\Rules;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Rules\FiscalCodeFormatRule;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class FiscalCodeFormatRuleTest extends TestCase
 {
+    use RefreshDatabase;
+    
     public static function valid_fiscal_codes_provider()
     {
         return [

@@ -19,7 +19,7 @@
                                 {{ __('Dashboard') }}
                             </x-nav-link>
 
-                            <x-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*')">
+                            <x-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*') || request()->routeIs('registration.*')">
                                 {{ __('Drivers and competitors') }}
                             </x-nav-link>
                         @endcan
@@ -136,7 +136,7 @@
         <div class="pt-2 pb-3 space-y-1">
             @auth
                 @can('drivers:view')
-                    <x-responsive-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*')">
+                    <x-responsive-nav-link href="{{ route('drivers.index') }}" :active="request()->routeIs('drivers.*') || request()->routeIs('registration.*')">
                         {{ __('Drivers and competitors') }}
                     </x-responsive-nav-link>
                 @endcan

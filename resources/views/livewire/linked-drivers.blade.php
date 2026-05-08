@@ -77,18 +77,17 @@
                             <div class="flex items-center justify-between p-3 bg-zinc-50 rounded border border-zinc-200">
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
-                                        <span class="font-mono text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-700 shrink-0">{{ $participant->bib }}</span>
-                                        <span class="font-medium text-sm truncate">{{ $participant->first_name }} {{ $participant->last_name }}</span>
+                                        <span class="font-mono  px-2 py-0.5 rounded bg-orange-100 text-orange-700 shrink-0">{{ $participant->bib }}</span>
+                                        <span class="font-medium truncate">{{ $participant->first_name }} {{ $participant->last_name }}</span>
                                     </div>
-                                    <p class="text-xs text-zinc-500 mt-0.5 truncate">
+                                    <p class=" text-zinc-500 mt-0.5 truncate">
                                         {{ $participant->race?->title ?? '-' }}
                                         @if ($participant->race?->championship)
                                             &middot; {{ $participant->race->championship->title }}
                                         @endif
-                                        &middot; {{ $participant->created_at->toDateString() }}
                                     </p>
                                     @if (! $isLinked)
-                                        <p class="text-xs text-zinc-400 mt-0.5">
+                                        <p class=" text-zinc-400 mt-0.5">
                                             @if (! empty($participant->competitor))
                                                 {{ __('Driver + Competitor') }}
                                             @else
@@ -160,7 +159,7 @@
                             @php $nextRaceData = $nextRaces[$participant->uuid] ?? null; @endphp
                             @if ($nextRaceData)
                                 @if ($nextRaceData['participation'])
-                                    <a href="{{ route('participants.show', $nextRaceData['participation']) }}" class="text-sm text-zinc-700 underline hover:text-zinc-900">
+                                    <a href="{{ route('registration.show', $nextRaceData['participation']) }}" class="text-sm text-zinc-700 underline hover:text-zinc-900">
                                         {{ __('View registration for :race', ['race' => $nextRaceData['race']->title]) }}
                                     </a>
                                 @else

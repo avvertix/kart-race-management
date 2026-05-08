@@ -46,6 +46,10 @@
 
                     <x-tab-link href="{{ route('championships.awards.index', $championship) }}" :active="request()->routeIs('championships.awards.*') || request()->routeIs('awards.*')">{{ __('Awards') }}</x-tab-link>
 
+                    @can('viewAny', \App\Models\ChampionshipPenalty::class)
+                        <x-tab-link href="{{ route('championships.penalties.index', $championship) }}" :active="request()->routeIs('championships.penalties.*') || request()->routeIs('penalties.*')">{{ __('Saved Penalties') }}</x-tab-link>
+                    @endcan
+
                 </nav>
             </div>       
         </div>

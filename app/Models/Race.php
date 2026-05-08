@@ -94,6 +94,14 @@ class Race extends Model
     }
 
     /**
+     * Get the communications posted for this race.
+     */
+    public function communications()
+    {
+        return $this->hasMany(RaceCommunication::class)->latest();
+    }
+
+    /**
      * Filter races available for registration
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query

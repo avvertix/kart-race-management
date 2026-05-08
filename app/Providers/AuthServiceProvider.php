@@ -26,9 +26,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('drivers:view', fn (User $user) => $user->hasPermission('drivers:view'));
-        Gate::define('drivers:create', fn (User $user) => $user->hasPermission('drivers:create'));
-        Gate::define('drivers:update', fn (User $user) => $user->hasPermission('drivers:update'));
-        Gate::define('drivers:delete', fn (User $user) => $user->hasPermission('drivers:delete'));
+        Gate::define('drivers:view', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:view'));
+        Gate::define('drivers:create', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:create'));
+        Gate::define('drivers:update', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:update'));
+        Gate::define('drivers:delete', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:delete'));
     }
 }

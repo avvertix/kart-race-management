@@ -132,9 +132,11 @@ class RaceRegistrationController extends Controller
      */
     public function show(Participant $registration, Request $request)
     {
-        throw_unless(blank($request->user()) && $request->hasValidSignature(), InvalidParticipantSignatureException::class);
+        $user = $request->user();
 
-        // TODO: if logged in and can see driver than maybe it can be shown without signature
+        throw_unless(filled($user) || $request->hasValidSignature(), InvalidParticipantSignatureException::class);
+
+        throw_if(filled($user) && ($registration->added_by !== $user->id && $registration->claimed_by !== $user->id), InvalidParticipantSignatureException::class);
 
         $registration
             ->load(['race', 'championship', 'signatures', 'payments']);

@@ -17,7 +17,7 @@ class AddUserCommandTest extends TestCase
         $this->artisan('user:add', [
             '--email' => 'test@local.host',
         ])
-            ->expectsQuestion('Please specify an 8 character password for the administrator', 'password')
+            ->expectsQuestion('Please specify an 8 character password for the administrator', 'password1!')
             ->assertSuccessful()
             ->expectsOutputToContain('User test@local.host created');
 
@@ -33,7 +33,7 @@ class AddUserCommandTest extends TestCase
             '--email' => 'test@local.host',
             '--role' => 'admin',
         ])
-            ->expectsQuestion('Please specify an 8 character password for the administrator', 'password')
+            ->expectsQuestion('Please specify an 8 character password for the administrator', 'password1!')
             ->assertSuccessful()
             ->expectsOutputToContain('User test@local.host created');
 

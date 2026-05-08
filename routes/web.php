@@ -11,6 +11,8 @@ use App\Http\Controllers\ChampionshipBonusImportController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipParticipantController;
+use App\Http\Controllers\ChampionshipPenaltyController;
+use App\Http\Controllers\ChampionshipPenaltyImportController;
 use App\Http\Controllers\ChampionshipPointSchemeController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
@@ -36,6 +38,8 @@ use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
+use App\Http\Controllers\RaceCommunicationImportController;
+use App\Http\Controllers\RaceCommunicationsController;
 use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
@@ -187,6 +191,16 @@ Route::middleware([
         Route::get('races/{race}/export-signature', ExportRaceParticipantsForSigningController::class)->name('races.export.signature');
 
         Route::resource('communications', CommunicationMessageController::class)->except(['create', 'show']);
+
+        Route::resource('championships.penalties', ChampionshipPenaltyController::class)->shallow()->except(['show']);
+
+        Route::get('championships/{championship}/penalties/import', [ChampionshipPenaltyImportController::class, 'create'])->name('championships.penalties.import.create');
+        Route::post('championships/{championship}/penalties/import', [ChampionshipPenaltyImportController::class, 'store'])->name('championships.penalties.import.store');
+
+        Route::get('races/{race}/communications', RaceCommunicationsController::class)->name('races.communications.index');
+
+        Route::get('races/{race}/communications/import', [RaceCommunicationImportController::class, 'create'])->name('races.communications.import.create');
+        Route::post('races/{race}/communications/import', [RaceCommunicationImportController::class, 'store'])->name('races.communications.import.store');
 
         Route::resource('users', UserController::class)->except(['show']);
     });

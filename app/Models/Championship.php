@@ -117,6 +117,14 @@ class Championship extends Model
         return $this->hasMany(Bonus::class);
     }
 
+    /**
+     * Get the saved penalty templates for this championship.
+     */
+    public function penalties(): HasMany
+    {
+        return $this->hasMany(ChampionshipPenalty::class)->orderBy('title');
+    }
+
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {

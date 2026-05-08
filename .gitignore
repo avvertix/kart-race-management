@@ -23,3 +23,4 @@ yarn-error.log
 *.oxb
 docker-compose.override.yml
 boost.json
+.claude/skills

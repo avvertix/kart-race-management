@@ -24,6 +24,7 @@
     </x-slot>
 
     @guest
+        @if (Route::has('register'))
         <div x-data="{ show: true }" x-show="show" x-transition class="mb-3 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-lg flex items-start justify-between gap-4">
                 <div class="flex items-start gap-3">
@@ -43,6 +44,7 @@
                 </button>
             </div>
         </div>
+        @endif
     @endguest
 
     @if (!$registration_open)

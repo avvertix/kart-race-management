@@ -16,6 +16,7 @@ use App\Http\Controllers\ChampionshipPenaltyImportController;
 use App\Http\Controllers\ChampionshipPointSchemeController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
+use App\Http\Controllers\ConfigureRacePenaltySheetController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ConfirmParticipantPaymentController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\ParticipantTireVerificationController;
 use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
+use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
@@ -169,6 +171,10 @@ Route::middleware([
         Route::get('races/{race}/participants/print', PrintRaceParticipantsController::class)->name('races.participants.print');
 
         Route::get('races/{race}/participant-receipts/print', PrintRaceParticipantReceiptsController::class)->name('races.participant-receipts.print');
+
+        Route::get('races/{race}/penalty-sheet', ConfigureRacePenaltySheetController::class)->name('races.penalty-sheet.configure');
+
+        Route::get('races/{race}/penalty-sheet/print', PrintRacePenaltySheetController::class)->name('races.penalty-sheet.print');
 
         Route::get('races/{race}/payments', RacePaymentsController::class)->name('races.payments');
 

@@ -16,6 +16,7 @@ use App\Http\Controllers\ChampionshipPenaltyImportController;
 use App\Http\Controllers\ChampionshipPointSchemeController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
+use App\Http\Controllers\ConfigureRacePenaltySheetController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ConfirmParticipantPaymentController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\ParticipantTireVerificationController;
 use App\Http\Controllers\ParticipantTransponderController;
 use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
+use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
@@ -48,6 +50,7 @@ use App\Http\Controllers\RacePaymentsController;
 use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
+use App\Http\Controllers\RaceTranspondersImportController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
@@ -170,6 +173,10 @@ Route::middleware([
 
         Route::get('races/{race}/participant-receipts/print', PrintRaceParticipantReceiptsController::class)->name('races.participant-receipts.print');
 
+        Route::get('races/{race}/penalty-sheet', ConfigureRacePenaltySheetController::class)->name('races.penalty-sheet.configure');
+
+        Route::get('races/{race}/penalty-sheet/print', PrintRacePenaltySheetController::class)->name('races.penalty-sheet.print');
+
         Route::get('races/{race}/payments', RacePaymentsController::class)->name('races.payments');
 
         Route::post('participants/{participant}/confirm-payment', ConfirmParticipantPaymentController::class)->name('participants.confirm-payment');
@@ -179,6 +186,9 @@ Route::middleware([
         Route::resource('participants.tires', ParticipantTiresController::class)->shallow()->only(['index', 'create', 'store', 'edit', 'update']);
 
         Route::get('races/{race}/transponders', RaceTranspondersController::class)->name('races.transponders');
+
+        Route::get('races/{race}/transponders/import', [RaceTranspondersImportController::class, 'create'])->name('races.transponders.import.create');
+        Route::post('races/{race}/transponders/import', [RaceTranspondersImportController::class, 'store'])->name('races.transponders.import.store');
 
         Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->except(['show']);
 

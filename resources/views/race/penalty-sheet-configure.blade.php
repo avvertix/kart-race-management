@@ -1,0 +1,151 @@
+<x-app-layout>
+    <x-slot name="title">
+        {{ $race->title }} - {{ __('Weight & Penalty Sheet') }} - {{ $championship->title }}
+    </x-slot>
+    <x-slot name="header">
+        @include('race.partials.heading')
+    </x-slot>
+
+    <div class="px-4 sm:px-6 lg:px-8 py-6">
+
+        @if ($categories->isEmpty())
+            <div class="bg-white rounded-lg shadow p-8 text-center text-zinc-500">
+                {{ __('No confirmed participants found for this race.') }}
+            </div>
+        @else
+
+            <script>
+                function penaltySheetConfigurator(categories) {
+                    return {
+                        groups: categories.map((cat, i) => ({ id: i + 1, categories: [cat] })),
+                        nextId: categories.length + 1,
+
+                        addGroup() {
+                            this.groups.push({ id: this.nextId++, categories: [] });
+                        },
+
+                        removeGroup(groupId) {
+                            this.groups = this.groups.filter(g => g.id !== groupId);
+                        },
+
+                        moveCategory(catUlid, fromGroupId, toGroupId) {
+                            const fromGroup = this.groups.find(g => g.id === fromGroupId);
+                            const toGroup = this.groups.find(g => g.id === toGroupId);
+                            const catIndex = fromGroup.categories.findIndex(c => c.ulid === catUlid);
+                            const [cat] = fromGroup.categories.splice(catIndex, 1);
+                            toGroup.categories.push(cat);
+                        },
+
+                        get printUrl() {
+                            const base = '{{ route('races.penalty-sheet.print', $race) }}';
+                            const params = new URLSearchParams();
+                            this.groups
+                                .filter(g => g.categories.length > 0)
+                                .forEach((group, i) => {
+                                    group.categories.forEach(cat => {
+                                        params.append('groups[' + i + '][]', cat.ulid);
+                                    });
+                                });
+                            const qs = params.toString();
+                            return qs ? base + '?' + qs : base;
+                        },
+                    };
+                }
+            </script>
+
+            <div
+                x-data="penaltySheetConfigurator({{ Js::from($categories->map(fn ($c) => ['ulid' => $c->ulid, 'name' => $c->name])->values()) }})"
+                class="space-y-6"
+            >
+                <div>
+                    <h3 class="text-lg font-semibold text-zinc-800">{{ __('Define groups') }}</h3>
+                    <p class="mt-1 text-sm text-zinc-500">{{ __('Each group will be printed on a separate page. Move categories between groups using the arrows.') }}</p>
+                </div>
+
+                <div class="flex flex-wrap gap-4 items-start">
+
+                    <template x-for="(group, gIdx) in groups" :key="group.id">
+                        <div class="bg-white rounded-lg border border-zinc-200 shadow-sm p-4 w-52">
+
+                            <h4 class="font-semibold text-sm text-zinc-600 mb-3">
+                                {{ __('Group') }}&nbsp;<span x-text="gIdx + 1"></span>
+                            </h4>
+
+                            <div class="space-y-2 min-h-10">
+                                <template x-for="cat in group.categories" :key="cat.ulid">
+                                    <div class="flex items-center justify-between gap-1 bg-orange-50 border border-orange-200 rounded px-2 py-1.5">
+                                        <span class="text-sm font-medium text-zinc-800 truncate" x-text="cat.name"></span>
+                                        <div class="flex gap-0.5 shrink-0">
+                                            <button
+                                                type="button"
+                                                x-show="gIdx > 0"
+                                                @click="moveCategory(cat.ulid, group.id, groups[gIdx - 1].id)"
+                                                class="p-0.5 rounded text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+                                                title="{{ __('Move to previous group') }}"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                x-show="gIdx < groups.length - 1"
+                                                @click="moveCategory(cat.ulid, group.id, groups[gIdx + 1].id)"
+                                                class="p-0.5 rounded text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+                                                title="{{ __('Move to next group') }}"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <p
+                                    x-show="group.categories.length === 0"
+                                    class="text-xs text-zinc-400 italic py-1"
+                                >{{ __('Empty') }}</p>
+                            </div>
+
+                            <button
+                                type="button"
+                                x-show="group.categories.length === 0"
+                                @click="removeGroup(group.id)"
+                                class="mt-3 text-xs text-red-500 hover:text-red-700 hover:underline"
+                            >{{ __('Remove group') }}</button>
+
+                        </div>
+                    </template>
+
+                    <button
+                        type="button"
+                        @click="addGroup()"
+                        class="flex flex-col items-center justify-center gap-2 w-52 min-h-20 rounded-lg border-2 border-dashed border-zinc-300 text-zinc-400 hover:border-orange-400 hover:text-orange-600 text-sm font-medium transition-colors"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        {{ __('Add group') }}
+                    </button>
+
+                </div>
+
+                <div class="pt-2">
+                    <a
+                        :href="printUrl"
+                        target="_blank"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+                    >
+                        <x-ri-printer-line class="size-4 shrink-0" />
+                        {{ __('Print PDF') }}
+                    </a>
+                </div>
+
+            </div>
+
+        @endif
+
+    </div>
+
+</x-app-layout>

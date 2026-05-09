@@ -50,6 +50,7 @@ use App\Http\Controllers\RacePaymentsController;
 use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
+use App\Http\Controllers\RaceTranspondersImportController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
@@ -185,6 +186,9 @@ Route::middleware([
         Route::resource('participants.tires', ParticipantTiresController::class)->shallow()->only(['index', 'create', 'store', 'edit', 'update']);
 
         Route::get('races/{race}/transponders', RaceTranspondersController::class)->name('races.transponders');
+
+        Route::get('races/{race}/transponders/import', [RaceTranspondersImportController::class, 'create'])->name('races.transponders.import.create');
+        Route::post('races/{race}/transponders/import', [RaceTranspondersImportController::class, 'store'])->name('races.transponders.import.store');
 
         Route::resource('participants.transponders', ParticipantTransponderController::class)->shallow()->except(['show']);
 

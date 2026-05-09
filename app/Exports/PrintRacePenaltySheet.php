@@ -68,7 +68,8 @@ class PrintRacePenaltySheet
                 ->with('racingCategory')
                 ->whereIn('category_id', $categoryIds)
                 ->orderBy('bib')
-                ->get();
+                ->get()
+                ->sortBy(['category_id', 'bib']);
 
             return $this->buildGroup($title, $participants, $categories->count() > 1);
         })->filter(fn (array $group) => $group['participants']->isNotEmpty())->values();

@@ -16,7 +16,7 @@
         <div class="px-4 py-5">
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-4">
-                    <livewire:race-number :championship="$race->championship" :value="old('bib', optional($participant ?? null)->bib)" />
+                    <livewire:race-number :championship="$race->championship" :value="old('bib', optional($participant ?? null)->bib ?? optional($templateDriver ?? null)->bib)" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="category" value="{{ __('Category') }}*" />
@@ -47,18 +47,20 @@
             <div class="grid grid-cols-6 gap-6">
 
                 @php
-                    $driver = optional($participant ?? null)->driver;
+                    $driver = optional($participant ?? null)->driver
+                        ?? optional($templateDriver ?? null)->driver
+                        ?? [];
                 @endphp
-                
-                
+
+
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_first_name" value="{{ __('Name') }}*" />
-                    <x-input id="driver_first_name" type="text" name="driver_first_name" class="mt-1 block w-full" :value="old('driver_first_name', optional($participant ?? null)->first_name)"  />
+                    <x-input id="driver_first_name" type="text" name="driver_first_name" class="mt-1 block w-full" :value="old('driver_first_name', optional($participant ?? null)->first_name ?? $driver['first_name'] ?? null)"  />
                     <x-input-error for="driver_first_name" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_last_name" value="{{ __('Surname') }}*" />
-                    <x-input id="driver_last_name" type="text" name="driver_last_name" class="mt-1 block w-full" :value="old('driver_last_name', optional($participant ?? null)->last_name)"  />
+                    <x-input id="driver_last_name" type="text" name="driver_last_name" class="mt-1 block w-full" :value="old('driver_last_name', optional($participant ?? null)->last_name ?? $driver['last_name'] ?? null)"  />
                     <x-input-error for="driver_last_name" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">
@@ -154,7 +156,9 @@
     <div class="mt-5 md:mt-0 md:col-span-2">
 
         @php
-            $competitor = optional($participant ?? null)->competitor;
+            $competitor = optional($participant ?? null)->competitor
+                ?? optional($templateDriver ?? null)->competitor
+                ?? [];
         @endphp
         
         <div class="px-4 py-5">
@@ -242,7 +246,9 @@
     <div class="mt-5 md:mt-0 md:col-span-2">
         <div class="px-4 py-5">
             @php
-                $mechanic = optional($participant ?? null)->mechanic;
+                $mechanic = optional($participant ?? null)->mechanic
+                    ?? optional($templateDriver ?? null)->mechanic
+                    ?? [];
             @endphp
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-4">

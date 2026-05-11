@@ -13,7 +13,7 @@
                 <x-section-border />
             @endif
 
-            @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()))
+            @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()) && auth()->user()->hasVerifiedEmail())
                 <div class="mt-10 sm:mt-0">
                     @livewire('profile.update-password-form')
                 </div>
@@ -21,19 +21,23 @@
                 <x-section-border />
             @endif
 
-            @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
+            @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication() && auth()->user()->hasVerifiedEmail())
                 <div class="mt-10 sm:mt-0">
                     @livewire('profile.two-factor-authentication-form')
                 </div>
 
-                <x-section-border />
             @endif
 
-            <div class="mt-10 sm:mt-0">
-                @livewire('profile.logout-other-browser-sessions-form')
-            </div>
+            @if (auth()->user()->hasVerifiedEmail())
+                <x-section-border />
 
-            @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
+                <div class="mt-10 sm:mt-0">
+                    @livewire('profile.logout-other-browser-sessions-form')
+                </div>
+
+            @endif
+
+            @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures() && auth()->user()->hasVerifiedEmail())
                 <x-section-border />
 
                 <div class="mt-10 sm:mt-0">

@@ -244,7 +244,7 @@ class UserControllerTest extends TestCase
                 'role' => $user->role,
             ]);
 
-        $response->assertRedirectToRoute('users.edit', $user);
+        $response->assertRedirectToRoute('users.index');
 
         $user->refresh();
 

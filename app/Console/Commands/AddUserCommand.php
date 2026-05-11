@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Actions\Fortify\CreateNewUser;
+use App\Actions\Fortify\CreateNewUserWithRole;
 use Illuminate\Console\Command;
 use Illuminate\Validation\ValidationException;
 use Laravel\Jetstream\Jetstream;
@@ -45,7 +45,7 @@ class AddUserCommand extends Command
             $password = $this->secret('Please specify an 8 character password for the administrator');
         }
 
-        $createUserAction = new CreateNewUser();
+        $createUserAction = new CreateNewUserWithRole();
 
         try {
             $user = $createUserAction->create([

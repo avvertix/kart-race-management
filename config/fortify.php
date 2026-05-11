@@ -134,8 +134,9 @@ return [
     */
 
     'features' => [
+        (bool) env('APP_REGISTRATION', false) ? Features::registration() : null,
         Features::resetPasswords(),
-        // Features::emailVerification(),
+        Features::emailVerification(),
         Features::updateProfileInformation(),
         Features::updatePasswords(),
         Features::twoFactorAuthentication([

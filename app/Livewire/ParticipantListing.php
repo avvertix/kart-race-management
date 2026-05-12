@@ -62,26 +62,39 @@ class ParticipantListing extends Component
 
     public function confirm($item)
     {
-        // TODO: add some validation and/or an action to be reused
-        Participant::findOrFail($item)->update(['confirmed_at' => now()]);
+        $p = Participant::findOrFail($item);
+        $this->authorize('update', $p);
+        $p->update(['confirmed_at' => now()]);
     }
 
     public function markAsComplete($item)
     {
-        // TODO: add some validation and/or an action to be reused
-        Participant::findOrFail($item)->update(['registration_completed_at' => now()]);
+        $p = Participant::findOrFail($item);
+        $this->authorize('update', $p);
+        $p->update(['registration_completed_at' => now()]);
     }
 
     public function markAsOutOfZone($item, $outOfZone = true)
     {
-        // TODO: add some validation and/or an action to be reused
-        Participant::findOrFail($item)->markOutOfZone($outOfZone);
+        $p = Participant::findOrFail($item);
+        $this->authorize('update', $p);
+        $p->markOutOfZone($outOfZone);
+    }
+    
+    public function removeWildcardMark($item)
+    {
+        $p = Participant::findOrFail($item);
+        $this->authorize('update', $p);
+
+        $p->wildcard = false;
+        $p->save();
     }
 
     public function resendSignatureNotification($item)
     {
-        // TODO: add some validation and/or an action to be reused
         $participant = Participant::findOrFail($item);
+
+        $this->authorize('update', $participant);
 
         if ($participant->hasSignedTheRequest()) {
             return;

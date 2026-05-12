@@ -39,7 +39,7 @@ class WildcardSettings extends Component
 
         $this->wildcardForm['enabled'] = $championship->wildcard?->enabled ?? false;
         $this->wildcardForm['strategy'] = $championship->wildcard?->strategy?->value ?? null;
-        $this->wildcardForm['bonus_amount'] = $championship->wildcard?->bonusRequired ?? null;
+        $this->wildcardForm['bonus_amount'] = $championship->wildcard?->requiredBonusAmount ?? null;
     }
 
     public function updateWildcardSettings()

@@ -18,6 +18,8 @@ class PointsConfigData extends Data
         public float $redFlagPercentage = 50,
         public float $smallCategoryPercentage = -50,
         public int $smallCategoryThreshold = 3,
+        public WildcardPointsMode $wildcardPointsMode = WildcardPointsMode::AsOtherDrivers,
+        public float $wildcardFixedPoints = 0,
         public array $runTypes = [],
     ) {}
 
@@ -55,6 +57,8 @@ class PointsConfigData extends Data
             redFlagPercentage: (float) ($data['red_flag_percentage'] ?? 50),
             smallCategoryPercentage: (float) ($data['small_category_percentage'] ?? -50),
             smallCategoryThreshold: (int) ($data['small_category_threshold'] ?? 3),
+            wildcardPointsMode: WildcardPointsMode::tryFrom($data['wildcard_points_mode'] ?? '') ?? WildcardPointsMode::AsOtherDrivers,
+            wildcardFixedPoints: (float) ($data['wildcard_fixed_points'] ?? 0),
             runTypes: $runTypes,
         );
     }
@@ -98,6 +102,8 @@ class PointsConfigData extends Data
             'red_flag_percentage' => $this->redFlagPercentage,
             'small_category_percentage' => $this->smallCategoryPercentage,
             'small_category_threshold' => $this->smallCategoryThreshold,
+            'wildcard_points_mode' => $this->wildcardPointsMode->value,
+            'wildcard_fixed_points' => $this->wildcardFixedPoints,
         ];
 
         foreach ($this->runTypes as $runTypeValue => $runTypeData) {

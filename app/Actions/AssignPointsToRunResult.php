@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Data\WildcardPointsMode;
 use App\Models\ChampionshipPointScheme;
 use App\Models\RunResult;
+use Illuminate\Support\Collection;
 
 class AssignPointsToRunResult
 {
@@ -17,15 +19,26 @@ class AssignPointsToRunResult
         $runType = $runResult->run_type;
         $config = $pointScheme->points_config;
 
-        $participantResults = $runResult->participantResults()->get();
+        $participantResults = $runResult->participantResults()->with('participant')->get();
 
         $categoryCounts = $participantResults->countBy('category');
 
+        $needsReranking = $config->wildcardPointsMode !== WildcardPointsMode::AsOtherDrivers;
+        $rankedPositions = $needsReranking
+            ? $this->computeRankedFromFirstPositions($participantResults)
+            : [];
+
         foreach ($participantResults as $participantResult) {
             $position = (int) $participantResult->position_in_category;
+            $isWildcard = (bool) ($participantResult->participant?->wildcard);
 
             if ($participantResult->status->unfinishedOrPenalty()) {
                 $points = $config->getPointsForStatus($runType, $participantResult->status, $position);
+            } elseif ($isWildcard && $config->wildcardPointsMode === WildcardPointsMode::FixedPoints) {
+                $points = $config->wildcardFixedPoints;
+            } elseif ($needsReranking) {
+                $rankedPosition = $rankedPositions[$participantResult->getKey()] ?? $position;
+                $points = $config->getPointsForPosition($runType, $rankedPosition);
             } else {
                 $points = $config->getPointsForPosition($runType, $position);
             }
@@ -52,5 +65,34 @@ class AssignPointsToRunResult
 
             $participantResult->update(['points' => $points]);
         }
+    }
+
+    /**
+     * Compute per-result ranked positions for RankedFromFirst mode.
+     * Within each category, wildcards and non-wildcards are ranked independently from 1.
+     *
+     * @param  Collection<int, \App\Models\ParticipantResult>  $participantResults
+     * @return array<mixed, int>
+     */
+    private function computeRankedFromFirstPositions(Collection $participantResults): array
+    {
+        $positions = [];
+
+        $participantResults
+            ->filter(fn ($r) => ! $r->status->unfinishedOrPenalty())
+            ->groupBy('category')
+            ->each(function (Collection $categoryResults) use (&$positions): void {
+                [$wildcards, $nonWildcards] = $categoryResults->partition(fn ($r) => (bool) ($r->participant?->wildcard));
+
+                foreach ([$wildcards, $nonWildcards] as $group) {
+                    $group->sortBy(fn ($r) => (int) $r->position_in_category)
+                        ->values()
+                        ->each(function ($result, int $index) use (&$positions): void {
+                            $positions[$result->getKey()] = $index + 1;
+                        });
+                }
+            });
+
+        return $positions;
     }
 }

@@ -106,6 +106,33 @@
                     <x-input-error for="points_config.small_category_percentage" class="mt-2" />
                     <x-input-error for="points_config.small_category_threshold" class="mt-2" />
                 </div>
+
+                <div class="col-span-6 sm:col-span-4" x-data="{ wildcardMode: @js($existingConfig['wildcard_points_mode'] ?? 'as_other_drivers') }">
+                    <x-label for="wildcard_points_mode" value="{{ __('Wildcard points mode') }}" />
+                    <p class="text-sm text-zinc-500">{{ __('How points are assigned to wildcard participants.') }}</p>
+                    <select
+                        id="wildcard_points_mode"
+                        name="points_config[wildcard_points_mode]"
+                        x-model="wildcardMode"
+                        class="mt-1 border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm text-sm">
+                        <option value="as_other_drivers">{{ __('Same as other drivers') }}</option>
+                        <option value="fixed_points">{{ __('Assign fixed points') }}</option>
+                        <option value="ranked_from_first">{{ __('Ranked from first in category') }}</option>
+                    </select>
+                    <div x-show="wildcardMode === 'fixed_points'" class="mt-2 flex items-center gap-2">
+                        <x-input
+                            id="wildcard_fixed_points"
+                            type="number"
+                            name="points_config[wildcard_fixed_points]"
+                            :value="old('points_config.wildcard_fixed_points', $existingConfig['wildcard_fixed_points'] ?? 0)"
+                            min="0"
+                            step="any"
+                            class="w-24" />
+                        <span class="text-sm text-zinc-600">{{ __('pts') }}</span>
+                    </div>
+                    <x-input-error for="points_config.wildcard_points_mode" class="mt-2" />
+                    <x-input-error for="points_config.wildcard_fixed_points" class="mt-2" />
+                </div>
             </div>
         </div>
     </div>

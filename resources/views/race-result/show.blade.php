@@ -74,6 +74,9 @@
                             <td class="px-2 py-2 border-b font-bold">{{ $participantResult->bib }}</td>
                             <td class="px-2 py-2 border-b">
                                 {{ $participantResult->name }}
+                                @if ($participantResult->participant?->wildcard)
+                                    <span class="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">{{ __('wildcard') }}</span>
+                                @endif
                                 @if (!$participantResult->participant_id)
                                     <span class="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">{{ __('Unlinked') }}</span>
                                 @endif

@@ -13,7 +13,7 @@ class AttributeWildcardBasedOnBonus
     /**
      * Identify if a participant should have the wildcard status in a race within a championship
      *
-     * @return bool|null the wildcard status
+     * @return bool|null the wildcard status. True if participant is wildcard.
      */
     public function __invoke(Participant $participant, Race $race): ?bool
     {

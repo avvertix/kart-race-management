@@ -1,6 +1,6 @@
 <div>
 
-    <div class="sticky top-0 bg-zinc-100 print:bg-white pb-2">
+    <div class="sticky top-1 bg-zinc-100 print:bg-white pb-2 z-50">
         <!-- Search bar - full width on mobile, grows on desktop -->
         <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
             <x-search-input 
@@ -85,7 +85,11 @@
 
                         <p class="text-xs text-zinc-700">{{ __('registered at') }} <x-time :value="$item->created_at" /></p>
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->racingCategory?->name ?? __('no category') }} / {{ $item->engine }}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->racingCategory?->name ?? __('no category') }} @if(filled($item->engine)) / {{ $item->engine }} @endif
+                        @if ($item->wildcard)
+                            <span class="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">{{ __('wildcard') }}</span>
+                        @endif
+                    </td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->licence_type?->localizedName() }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">
                         @include('participant.partials.status')

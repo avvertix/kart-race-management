@@ -108,7 +108,7 @@ class ResultRaceController extends Controller
      */
     public function show(RunResult $result)
     {
-        $result->load(['race.championship', 'participantResults']);
+        $result->load(['race.championship', 'participantResults', 'participantResults.participant']);
 
         $this->authorize('view', $result->race);
 

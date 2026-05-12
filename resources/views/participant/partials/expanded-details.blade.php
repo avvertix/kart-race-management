@@ -8,7 +8,12 @@
         </button>
         <div class="flex items-center mt-2 gap-4 mb-1">
             @if ($item->wildcard)
-                <span class="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">{{ __('wildcard') }}</span>
+                <div class="inline-flex gap-2 items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">{{ __('wildcard') }}
+                
+                <button wire:click.prevent="removeWildcardMark({{ $item->getKey() }})" class="size-4 rounded-full text-xs font-bold text-pink-700 hover:text-pink-900 hover:bg-white focus:bg-white">
+                    X
+                </button>
+                </div>
             @endif
             <p class="text-xl">{{ $item->racingCategory?->name ?? __('no category') }} / {{ $item->engine }}</p>
         </div>

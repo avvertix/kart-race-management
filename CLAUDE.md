@@ -6,14 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Kart Race Management (KRM) is a Laravel-based web application designed to help race organizers manage kart racing championships and events. The application handles participant registrations, race number assignments, category management, tire tracking, transponder assignments, payment tracking, and exports data for MyLaps Orbits timekeeping systems.
 
-**Stack:**
-- Laravel 12.0 (PHP 8.3+)
-- Laravel Jetstream 5.0 (authentication and team management)
-- Livewire 3.4 (dynamic components)
-- TailwindCSS (UI styling)
-- Vite (frontend build tool)
-- MariaDB 10.8+ (database)
-
 ## Development Commands
 
 ### Installation & Setup
@@ -65,15 +57,11 @@ vendor/bin/pint
 # Run migrations
 php artisan migrate
 
-# Rollback migrations
-php artisan migrate:rollback
-
-# Fresh database with migrations
-php artisan migrate:fresh
-
 # Seed database
 php artisan db:seed
 ```
+
+When executing tests and output shows error of missing table, remove `storage/app/migration-checksum_testing.txt and re-run the test.
 
 ### Artisan Commands
 ```bash

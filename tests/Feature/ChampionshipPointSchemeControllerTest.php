@@ -205,6 +205,8 @@ class ChampionshipPointSchemeControllerTest extends TestCase
             'red_flag_percentage' => 30,
             'small_category_percentage' => -25,
             'small_category_threshold' => 4,
+            'wildcard_points_mode' => 'as_other_drivers',
+            'wildcard_fixed_points' => 0.0,
             '20' => ['positions' => [5, 3, 1], 'statuses' => $defaultStatuses],
             '30' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
             '40' => ['positions' => [30, 20, 15, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
@@ -241,6 +243,7 @@ class ChampionshipPointSchemeControllerTest extends TestCase
             'red_flag_percentage' => 50,
             'small_category_percentage' => -50,
             'small_category_threshold' => 3,
+            'wildcard_points_mode' => 'as_other_drivers',
             '20' => [
                 'positions' => [3, 2, 1],
                 'statuses' => [
@@ -320,6 +323,77 @@ class ChampionshipPointSchemeControllerTest extends TestCase
         $this->assertEquals(5, $pointScheme->points_config->smallCategoryThreshold);
     }
 
+    public function test_point_scheme_created_with_wildcard_fixed_points_mode(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()->create();
+
+        $pointsConfig = $this->samplePointsConfig();
+        $pointsConfig['wildcard_points_mode'] = 'fixed_points';
+        $pointsConfig['wildcard_fixed_points'] = 5.0;
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.point-schemes.create', $championship))
+            ->post(route('championships.point-schemes.store', $championship), [
+                'name' => 'Wildcard Fixed',
+                'points_config' => $pointsConfig,
+            ]);
+
+        $response->assertRedirectToRoute('championships.point-schemes.index', $championship);
+
+        $pointScheme = ChampionshipPointScheme::first();
+
+        $this->assertEquals(\App\Data\WildcardPointsMode::FixedPoints, $pointScheme->points_config->wildcardPointsMode);
+        $this->assertEquals(5.0, $pointScheme->points_config->wildcardFixedPoints);
+    }
+
+    public function test_point_scheme_created_with_wildcard_ranked_from_first_mode(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()->create();
+
+        $pointsConfig = $this->samplePointsConfig();
+        $pointsConfig['wildcard_points_mode'] = 'ranked_from_first';
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.point-schemes.create', $championship))
+            ->post(route('championships.point-schemes.store', $championship), [
+                'name' => 'Wildcard Ranked',
+                'points_config' => $pointsConfig,
+            ]);
+
+        $response->assertRedirectToRoute('championships.point-schemes.index', $championship);
+
+        $pointScheme = ChampionshipPointScheme::first();
+
+        $this->assertEquals(\App\Data\WildcardPointsMode::RankedFromFirst, $pointScheme->points_config->wildcardPointsMode);
+    }
+
+    public function test_point_scheme_creation_rejects_invalid_wildcard_mode(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()->create();
+
+        $pointsConfig = $this->samplePointsConfig();
+        $pointsConfig['wildcard_points_mode'] = 'invalid_mode';
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.point-schemes.create', $championship))
+            ->post(route('championships.point-schemes.store', $championship), [
+                'name' => 'Bad Mode',
+                'points_config' => $pointsConfig,
+            ]);
+
+        $response->assertRedirectToRoute('championships.point-schemes.create', $championship);
+        $response->assertSessionHasErrors('points_config.wildcard_points_mode');
+    }
+
     /**
      * @return array<string, array{positions: list<int|float>, statuses: array<string, array{mode: string, points?: int|float}>}>
      */
@@ -336,6 +410,8 @@ class ChampionshipPointSchemeControllerTest extends TestCase
             'red_flag_percentage' => 50,
             'small_category_percentage' => -50,
             'small_category_threshold' => 3,
+            'wildcard_points_mode' => 'as_other_drivers',
+            'wildcard_fixed_points' => 0.0,
             '20' => ['positions' => [3, 2, 1], 'statuses' => $defaultStatuses],
             '30' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],
             '40' => ['positions' => [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], 'statuses' => $defaultStatuses],

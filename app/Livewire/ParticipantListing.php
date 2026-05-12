@@ -80,7 +80,7 @@ class ParticipantListing extends Component
         $this->authorize('update', $p);
         $p->markOutOfZone($outOfZone);
     }
-    
+
     public function removeWildcardMark($item)
     {
         $p = Participant::findOrFail($item);

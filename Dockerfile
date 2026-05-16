@@ -26,7 +26,7 @@ RUN \
 
 ## second step, assemble the image
 
-FROM php:8.3.24-fpm-bullseye AS php
+FROM php:8.3.31-fpm-trixie AS php
 
 LABEL maintainer="Alessio <alessio@avsoft.it>" \
   org.label-schema.name="avvertix/kart-race-management" \
@@ -79,7 +79,7 @@ RUN locale-gen "en_US.UTF-8" \
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION "1.29.0-1~bullseye"
+ENV NGINX_VERSION "1.30.1-1~trixie"
 RUN set -ex \
     && apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 \
@@ -99,7 +99,7 @@ RUN set -ex \
     gpg1 --export "$NGINX_GPGKEY" > "$NGINX_GPGKEY_PATH" ; \
     rm -rf "$GNUPGHOME"; \
     apt-get remove --purge --auto-remove -y gnupg1 && rm -rf /var/lib/apt/lists/* \
-    && echo "deb [signed-by=$NGINX_GPGKEY_PATH] https://nginx.org/packages/mainline/debian/ bullseye nginx" >> /etc/apt/sources.list.d/nginx.list \
+    && echo "deb [signed-by=$NGINX_GPGKEY_PATH] https://nginx.org/packages/debian/ trixie nginx" >> /etc/apt/sources.list.d/nginx.list \
 	&& apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y nginx=${NGINX_VERSION} \
     && apt-get remove --purge --auto-remove -y && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx.list

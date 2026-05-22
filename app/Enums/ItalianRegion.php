@@ -47,7 +47,7 @@ enum ItalianRegion: string
      */
     public static function fromDatasetRegionName(string $name): ?self
     {
-        return match (trim($name)) {
+        return match (mb_trim($name)) {
             'Abruzzo' => self::ABRUZZO,
             'Basilicata' => self::BASILICATA,
             'Calabria' => self::CALABRIA,
@@ -261,7 +261,7 @@ enum ItalianRegion: string
      */
     public function containsProvince(string $province): bool
     {
-        $normalized = trim($province);
+        $normalized = mb_trim($province);
 
         foreach ($this->provinces() as $p) {
             if (strcasecmp($p['code'], $normalized) === 0 || strcasecmp($p['name'], $normalized) === 0) {

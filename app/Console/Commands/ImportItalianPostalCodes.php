@@ -43,9 +43,9 @@ class ImportItalianPostalCodes extends Command
         $skipped = 0;
 
         foreach ($records as $record) {
-            $cap = trim($record['cap'] ?? '');
-            $provinceCode = mb_strtoupper(trim($record['sigla_provincia'] ?? ''));
-            $regionName = trim($record['denominazione_regione'] ?? '');
+            $cap = mb_trim($record['cap'] ?? '');
+            $provinceCode = mb_strtoupper(mb_trim($record['sigla_provincia'] ?? ''));
+            $regionName = mb_trim($record['denominazione_regione'] ?? '');
 
             if ($cap === '' || $provinceCode === '') {
                 $skipped++;
@@ -65,8 +65,8 @@ class ImportItalianPostalCodes extends Command
             $byCap[$cap] = [
                 'cap' => $cap,
                 'province_code' => $provinceCode,
-                'province' => trim($record['denominazione_provincia'] ?? ''),
-                'municipality' => trim($record['denominazione_ita'] ?? ''),
+                'province' => mb_trim($record['denominazione_provincia'] ?? ''),
+                'municipality' => mb_trim($record['denominazione_ita'] ?? ''),
                 'region' => $region->value,
             ];
         }

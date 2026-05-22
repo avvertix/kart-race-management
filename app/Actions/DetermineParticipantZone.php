@@ -37,7 +37,7 @@ class DetermineParticipantZone
         $region = blank($province) ? null : ItalianRegion::fromProvince($province);
 
         if ($region === null && ! blank($postalCode)) {
-            $region = ItalianPostalCode::findRegionByCap(trim($postalCode));
+            $region = ItalianPostalCode::findRegionByCap(mb_trim($postalCode));
         }
 
         $participant->region = $region;

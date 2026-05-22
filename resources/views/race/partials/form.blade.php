@@ -48,10 +48,34 @@
                         <x-input id="description" type="text" name="description" class="mt-1 block w-full" autocomplete="description" :value="old('description', optional($race ?? null)->description)" />
                         <x-input-error for="description" class="mt-2" />
                     </div>
-                    <div class="col-span-6 sm:col-span-4">
+                    <div class="col-span-6 sm:col-span-4"
+                         x-data="{ raceType: '{{ old('race_type', optional($race ?? null)->type?->value ?? '') }}' }"
+                         @change.capture="$event.target.name === 'race_type' && (raceType = $event.target.value)">
                         <x-label for="race_type" value="{{ __('Race type') }}" />
                         <x-input-error for="race_type" class="mt-2" />
                         <x-options-selector :options="\App\Models\RaceType::class" id="race_type" name="race_type" class="mt-1" :value="old('race_type', optional($race ?? null)->type?->value ?? null)" />
+
+                        <div x-show="raceType == '{{ \App\Models\RaceType::NATIONAL->value }}' || raceType == '{{ \App\Models\RaceType::INTERNATIONAL->value }}'"
+                             x-cloak
+                             class="mt-4">
+                            <x-label value="{{ __('Zone regions') }}" />
+                            <p class="text-zinc-600 text-sm mb-2">{{ __('Select the Italian regions that belong to this race zone. Participants residing outside these regions will be flagged as out of zone.') }}</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                                @php $selectedRegions = old('zone_regions', optional($race ?? null)->zone_regions?->toArray() ?? []); @endphp
+                                @foreach (\App\Enums\ItalianRegion::cases() as $region)
+                                    <label class="flex items-center gap-2 cursor-pointer rounded border border-zinc-200 px-3 py-2 hover:bg-zinc-50 has-[:checked]:border-orange-400 has-[:checked]:bg-orange-50">
+                                        <input type="checkbox"
+                                               name="zone_regions[]"
+                                               value="{{ $region->value }}"
+                                               @checked(in_array($region->value, $selectedRegions))
+                                               class="rounded border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                        <span class="text-sm text-zinc-700">{{ $region->label() }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <x-input-error for="zone_regions" class="mt-2" />
+                            <x-input-error for="zone_regions.*" class="mt-1" />
+                        </div>
                     </div>
                     <div class="col-span-6 sm:col-span-4">
                         <x-label for="participants_total_limit" value="{{ __('Maximum number of participants (leave blank for no limit)') }}" />

@@ -144,6 +144,7 @@ class RegisterParticipant
                 ->through([
                     ApplyBonusToParticipant::class,
                     CalculateParticipationCost::class,
+                    DetermineParticipantZone::class,
                     CheckParticipantForWildcard::class,
                 ])
                 ->thenReturn();

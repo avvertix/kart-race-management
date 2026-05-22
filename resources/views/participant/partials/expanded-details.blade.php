@@ -97,16 +97,30 @@
     @if ($race->isNationalOrInternational())
         <div class="{{ $item->wasProcessedForOutOfZone() ? 'bg-zinc-100' : 'bg-yellow-200' }} mb-4 p-2 flex gap-2 flex-col md:flex-row justify-between md:items-center">
 
-            <div>
+            <div class="flex-1">
                 <p><strong>{{ __('This race is part of a zonal championship.') }}</strong></p>
                 @if ($item->wasProcessedForOutOfZone())
                     <p>{{ __('Out of zone status: :status', ['status' => $item->outOfZoneStatus()]) }}</p>
-                @else            
+                @else
                     <p>{{ __('Please check if the participant is out of zone and mark it accordingly.') }}</p>
                 @endif
+
+                <div class="mt-2 flex items-center gap-2">
+                    <label for="region-{{ $item->getKey() }}" class="text-sm font-medium text-zinc-700">{{ __('Region') }}:</label>
+                    <select
+                        id="region-{{ $item->getKey() }}"
+                        class="text-sm border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                        @change="$wire.setRegion({{ $item->getKey() }}, $event.target.value)"
+                    >
+                        <option value="" @selected($item->region === null)>{{ __('— not identified —') }}</option>
+                        @foreach (\App\Enums\ItalianRegion::cases() as $region)
+                            <option value="{{ $region->value }}" @selected($item->region === $region)>{{ $region->label() }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
-            <div class="flex gap-4">
+            <div class="flex gap-4 shrink-0">
                 <x-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }}, false)">
                     {{ __('Within zone') }}
                 </x-secondary-button>
@@ -114,7 +128,6 @@
                 <x-secondary-button class="inline-flex gap-1" wire:click.prevent="markAsOutOfZone({{ $item->getKey() }})">
                     {{ __('Out of zone') }}
                 </x-secondary-button>
-
             </div>
         </div>
     @endif

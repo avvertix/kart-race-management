@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Enums\ItalianRegion;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Support\Collection;
@@ -79,6 +80,24 @@ class ParticipantListing extends Component
         $p = Participant::findOrFail($item);
         $this->authorize('update', $p);
         $p->markOutOfZone($outOfZone);
+    }
+
+    public function setRegion($item, $regionValue)
+    {
+        $p = Participant::findOrFail($item);
+        $this->authorize('update', $p);
+
+        $region = filled($regionValue) ? ItalianRegion::tryFrom($regionValue) : null;
+
+        $p->region = $region;
+
+        if ($region !== null && $this->race->hasZoneConfigured()) {
+            $properties = $p->properties;
+            $properties['out_of_zone'] = ! in_array($region->value, $this->race->zone_regions->toArray(), true);
+            $p->properties = $properties;
+        }
+
+        $p->save();
     }
 
     public function removeWildcardMark($item)

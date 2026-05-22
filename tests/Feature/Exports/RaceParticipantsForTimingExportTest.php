@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Exports;
 
 use App\Data\AliasesData;
+use App\Enums\ItalianRegion;
 use App\Models\Category;
 use App\Models\Participant;
 use App\Models\Race;
@@ -289,7 +290,93 @@ class RaceParticipantsForTimingExportTest extends TestCase
                 '', // transponder
                 '',
                 '',
-                'Out of zone',
+                'OZ',
+                '2023-02-28',
+                $participant->licence_type->localizedName(),
+                mb_strtoupper($vehicle['engine_manufacturer']),
+                mb_strtoupper($vehicle['engine_model']),
+                $participant->driver['phone'].' - '.($participant->competitor['phone'] ?? ''),
+            ],
+        ], $csv->toArray());
+    }
+
+    public function test_export_participants_with_out_of_zone_and_region_state()
+    {
+        config(['races.organizer.name' => 'Organizer name']);
+
+        $user = User::factory()->timekeeper()->create();
+
+        $race = Race::factory()
+            ->create([
+                'event_start_at' => Carbon::parse('2023-02-28'),
+                'title' => 'Race title',
+                'type' => RaceType::NATIONAL->value,
+            ]);
+
+        $participant = Participant::factory()
+            ->recycle($race->championship)
+            ->category()
+            ->has(Transponder::factory()->state([
+                'code' => 11,
+                'race_id' => $race->getKey(),
+            ]), 'transponders')
+            ->create([
+                'driver_licence' => 'a1234567890',
+                'race_id' => $race->getKey(),
+                'properties' => ['out_of_zone' => true],
+                'region' => ItalianRegion::SICILIA,
+            ]);
+
+        $vehicle = $participant->vehicles[0];
+
+        $this->withoutExceptionHandling();
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.export.transponders', $race));
+
+        $expected_filename = 'mylaps-organizer-name-2023-02-28-race-title.csv';
+
+        $response->assertDownload($expected_filename);
+
+        $csv = collect(str($response->streamedContent())->split('/\r?\n|\r/'))
+            ->filter()
+            ->map(function ($l) {
+                return str_getcsv($l, ';');
+            });
+
+        $this->assertCount(2, $csv);
+        $this->assertEquals([
+            [
+                'No',
+                'Class',
+                'LastName',
+                'FirstName',
+                'CarRegistration',
+                'DriverRegistration',
+                'Transponder1',
+                'Transponder2',
+                'Additional1',
+                'Additional2',
+                'Additional3',
+                'Additional4',
+                'Additional5',
+                'Additional6',
+                'Additional7',
+                'Additional8',
+            ],
+            [
+                ''.$participant->bib,
+                $participant->racingCategory->name,
+                mb_strtoupper($participant->first_name),
+                mb_strtoupper($participant->last_name),
+                'a1234567', // car registration
+                'a1234567', // driver registration
+                '5753071', // transponder
+                '', // transponder
+                '',
+                '',
+                'OZ sicilia',
                 '2023-02-28',
                 $participant->licence_type->localizedName(),
                 mb_strtoupper($vehicle['engine_manufacturer']),

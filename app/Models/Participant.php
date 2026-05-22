@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Data\AliasesData;
 use App\Data\RegistrationCostData;
+use App\Enums\ItalianRegion;
 use App\Notifications\ConfirmParticipantRegistration;
 use App\Notifications\UpdateParticipantRegistration;
 use BaconQrCode\Renderer\Color\Rgb;
@@ -66,6 +67,7 @@ class Participant extends Model implements HasLocalePreference
         'payment_confirmed_at',
         'notes',
         'aliases',
+        'region',
     ];
 
     /**
@@ -446,6 +448,23 @@ class Participant extends Model implements HasLocalePreference
         return $this->locale ?? config('app.locale');
     }
 
+    /**
+     * Determine whether this participant is out of zone for the given race, using the stored region.
+     * Returns true = out of zone, false = within zone, null = cannot determine.
+     */
+    public function detectOutOfZone(Race $race): ?bool
+    {
+        if (! $race->hasZoneConfigured()) {
+            return null;
+        }
+
+        if ($this->region === null) {
+            return null;
+        }
+
+        return ! in_array($this->region->value, $race->zone_regions?->toArray() ?? [], true);
+    }
+
     public function markOutOfZone($outOfZone = true)
     {
         $this->properties['out_of_zone'] = $outOfZone;
@@ -459,6 +478,15 @@ class Participant extends Model implements HasLocalePreference
         }
 
         return true;
+    }
+
+    public function isOutOfZone()
+    {
+        if (is_null($this->properties['out_of_zone'] ?? null)) {
+            return false;
+        }
+
+        return $this->properties['out_of_zone'] === true;
     }
 
     public function outOfZoneStatus()
@@ -539,7 +567,7 @@ class Participant extends Model implements HasLocalePreference
             'payment_channel' => PaymentChannelType::class,
             'aliases' => AliasesData::class,
             'cost' => RegistrationCostData::class,
-
+            'region' => ItalianRegion::class,
         ];
     }
 }

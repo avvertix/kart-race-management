@@ -1,6 +1,6 @@
 <div>
 
-    <div class="sticky top-1 bg-zinc-100 print:bg-white pb-2 z-50">
+    <div class="sticky top-1 bg-zinc-100 print:bg-white pb-2 z-10">
         <!-- Search bar - full width on mobile, grows on desktop -->
         <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
             <x-search-input 

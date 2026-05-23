@@ -448,23 +448,6 @@ class Participant extends Model implements HasLocalePreference
         return $this->locale ?? config('app.locale');
     }
 
-    /**
-     * Determine whether this participant is out of zone for the given race, using the stored region.
-     * Returns true = out of zone, false = within zone, null = cannot determine.
-     */
-    public function detectOutOfZone(Race $race): ?bool
-    {
-        if (! $race->hasZoneConfigured()) {
-            return null;
-        }
-
-        if ($this->region === null) {
-            return null;
-        }
-
-        return ! in_array($this->region->value, $race->zone_regions?->toArray() ?? [], true);
-    }
-
     public function markOutOfZone($outOfZone = true)
     {
         $this->properties['out_of_zone'] = $outOfZone;

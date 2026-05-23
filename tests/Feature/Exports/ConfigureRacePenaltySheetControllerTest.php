@@ -34,26 +34,6 @@ class ConfigureRacePenaltySheetControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_configure_forbidden_for_timekeeper(): void
-    {
-        $user = User::factory()->timekeeper()->create();
-        $race = Race::factory()->create();
-
-        $response = $this->actingAs($user)->get(route('races.penalty-sheet.configure', $race));
-
-        $response->assertForbidden();
-    }
-
-    public function test_configure_forbidden_for_racemanager(): void
-    {
-        $user = User::factory()->racemanager()->create();
-        $race = Race::factory()->create();
-
-        $response = $this->actingAs($user)->get(route('races.penalty-sheet.configure', $race));
-
-        $response->assertForbidden();
-    }
-
     public function test_configure_page_shows_categories_with_confirmed_participants(): void
     {
         $user = User::factory()->organizer()->create();

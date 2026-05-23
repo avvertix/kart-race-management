@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="title">
-        {{ $race->title }} - {{ __('Weight & Penalty Sheet') }} - {{ $championship->title }}
+        {{ $race->title }} - {{ __('Print check sheet') }} - {{ $championship->title }}
     </x-slot>
     <x-slot name="header">
         @include('race.partials.heading')
@@ -15,10 +15,41 @@
         @else
 
             <script>
-                function penaltySheetConfigurator(categories) {
+                function penaltySheetConfigurator(categories, storageKey) {
                     return {
-                        groups: categories.map((cat, i) => ({ id: i + 1, categories: [cat] })),
-                        nextId: categories.length + 1,
+                        groups: [],
+                        nextId: 2,
+                        dragging: null,
+                        dragOverGroupId: null,
+
+                        init() {
+                            this.loadFromStorage(categories);
+                            this.$watch('groups', () => this.saveToStorage(), { deep: true });
+                        },
+
+                        loadFromStorage(categories) {
+                            const stored = localStorage.getItem(storageKey);
+                            if (stored) {
+                                try {
+                                    const parsed = JSON.parse(stored);
+                                    const storedUlids = parsed.groups.flatMap(g => g.categories.map(c => c.ulid));
+                                    const currentUlids = categories.map(c => c.ulid);
+                                    const allPresent = currentUlids.every(u => storedUlids.includes(u));
+                                    const noExtra = storedUlids.every(u => currentUlids.includes(u));
+                                    if (allPresent && noExtra) {
+                                        this.groups = parsed.groups;
+                                        this.nextId = parsed.nextId ?? (parsed.groups.length + 1);
+                                        return;
+                                    }
+                                } catch (e) {}
+                            }
+                            this.groups = [{ id: 1, categories: categories }];
+                            this.nextId = 2;
+                        },
+
+                        saveToStorage() {
+                            localStorage.setItem(storageKey, JSON.stringify({ groups: this.groups, nextId: this.nextId }));
+                        },
 
                         addGroup() {
                             this.groups.push({ id: this.nextId++, categories: [] });
@@ -34,6 +65,38 @@
                             const catIndex = fromGroup.categories.findIndex(c => c.ulid === catUlid);
                             const [cat] = fromGroup.categories.splice(catIndex, 1);
                             toGroup.categories.push(cat);
+                        },
+
+                        onDragStart(catUlid, fromGroupId, event) {
+                            this.dragging = { catUlid, fromGroupId };
+                            event.dataTransfer.effectAllowed = 'move';
+                        },
+
+                        onDragOver(groupId, event) {
+                            if (!this.dragging) { return; }
+                            event.preventDefault();
+                            event.dataTransfer.dropEffect = 'move';
+                            this.dragOverGroupId = groupId;
+                        },
+
+                        onDragLeave(groupId) {
+                            if (this.dragOverGroupId === groupId) {
+                                this.dragOverGroupId = null;
+                            }
+                        },
+
+                        onDrop(toGroupId, event) {
+                            event.preventDefault();
+                            if (this.dragging && this.dragging.fromGroupId !== toGroupId) {
+                                this.moveCategory(this.dragging.catUlid, this.dragging.fromGroupId, toGroupId);
+                            }
+                            this.dragging = null;
+                            this.dragOverGroupId = null;
+                        },
+
+                        onDragEnd() {
+                            this.dragging = null;
+                            this.dragOverGroupId = null;
                         },
 
                         get printUrl() {
@@ -54,18 +117,24 @@
             </script>
 
             <div
-                x-data="penaltySheetConfigurator({{ Js::from($categories->map(fn ($c) => ['ulid' => $c->ulid, 'name' => $c->name])->values()) }})"
+                x-data="penaltySheetConfigurator({{ Js::from($categories->map(fn ($c) => ['ulid' => $c->ulid, 'name' => $c->name])->values()) }}, 'penalty-sheet-groups-{{ $race->ulid }}')"
                 class="space-y-6"
             >
                 <div>
-                    <h3 class="text-lg font-semibold text-zinc-800">{{ __('Define groups') }}</h3>
-                    <p class="mt-1 text-sm text-zinc-500">{{ __('Each group will be printed on a separate page. Move categories between groups using the arrows.') }}</p>
+                    <h3 class="text-lg font-semibold text-zinc-800">{{ __('Print check sheet') }} - {{ __('Define groups') }}</h3>
+                    <p class="mt-1 text-sm text-zinc-500">{{ __('Each group will be printed on a separate page. Drag categories between groups or use the arrows. Your arrangement is saved automatically.') }}</p>
                 </div>
 
                 <div class="flex flex-wrap gap-4 items-start">
 
                     <template x-for="(group, gIdx) in groups" :key="group.id">
-                        <div class="bg-white rounded-lg border border-zinc-200 shadow-sm p-4 w-52">
+                        <div
+                            class="bg-white rounded-lg border shadow-sm p-4 w-52 transition-colors"
+                            :class="dragOverGroupId === group.id ? 'border-orange-400 bg-orange-50' : 'border-zinc-200'"
+                            @dragover="onDragOver(group.id, $event)"
+                            @dragleave="onDragLeave(group.id)"
+                            @drop="onDrop(group.id, $event)"
+                        >
 
                             <h4 class="font-semibold text-sm text-zinc-600 mb-3">
                                 {{ __('Group') }}&nbsp;<span x-text="gIdx + 1"></span>
@@ -73,8 +142,17 @@
 
                             <div class="space-y-2 min-h-10">
                                 <template x-for="cat in group.categories" :key="cat.ulid">
-                                    <div class="flex items-center justify-between gap-1 bg-orange-50 border border-orange-200 rounded px-2 py-1.5">
-                                        <span class="text-sm font-medium text-zinc-800 truncate" x-text="cat.name"></span>
+                                    <div
+                                        class="flex items-center justify-between gap-1 bg-orange-50 border border-orange-200 rounded px-2 py-1.5 cursor-grab active:cursor-grabbing"
+                                        :class="dragging && dragging.catUlid === cat.ulid ? 'opacity-40' : ''"
+                                        draggable="true"
+                                        @dragstart="onDragStart(cat.ulid, group.id, $event)"
+                                        @dragend="onDragEnd()"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-3 text-zinc-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8.5 21a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM15.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM15.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM15.5 21a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/>
+                                        </svg>
+                                        <span class="text-sm font-medium text-zinc-800 truncate flex-1" x-text="cat.name"></span>
                                         <div class="flex gap-0.5 shrink-0">
                                             <button
                                                 type="button"

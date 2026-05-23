@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\AciParticipantPromotionExport;
 use App\Models\Race;
+use App\Models\Transponder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -19,7 +20,8 @@ class ExportRaceParticipantsForAciPromotionController extends Controller
      */
     public function __invoke(Request $request, Race $race)
     {
-        $this->authorize('update', $race);
+        $this->authorize('view', $race);
+        $this->authorize('create', Transponder::class);
 
         $filename = Str::slug('ACI-'.$race->title.'-'.$race->event_start_at->toDateString());
 

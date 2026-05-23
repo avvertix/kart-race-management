@@ -625,5 +625,7 @@
     "Hi, there are updates on your registration!": "Ciao, ci sono aggiornamenti sulla tua iscrizione!",
     "The registration of **:name** for the race :race has been updated.": "L'iscrizione di **:name** alla gara :race è stata aggiornata.",
     "View the participation": "Guarda i dettagli della tua iscrizione",
-    "This notification was sent by :organizer as you or your team registered for a race.": "Questa notifica è stata inviata da :organizer perché tu o il tuo team vi siete iscritti a una gara."
+    "This notification was sent by :organizer as you or your team registered for a race.": "Questa notifica è stata inviata da :organizer perché tu o il tuo team vi siete iscritti a una gara.",
+    "Print check sheet": "Stampa controllo ingressi",
+    "Print weight and pre-grid check sheet": "Stampa foglio per verifica peso e controllo ingressi pre-griglia"
 }

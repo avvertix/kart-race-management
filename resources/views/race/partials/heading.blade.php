@@ -42,15 +42,6 @@
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Export form for signing the attendence of the briefing') }}</span>
                                     </a>
-                                    @if ($race->isNationalOrInternational())
-                                        <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
-                                            <span class="inline-flex gap-1">
-                                                <x-ri-table-2 class="size-5 shrink-0" />
-                                                {{ __('Export for ACI Italian Cup') }}
-                                            </span>
-                                            <span class="block ml-6 text-xs text-zinc-600">{{ __('Export confirmed participants as requested by ACI Karting') }}</span>
-                                        </a>
-                                    @endif
                                     <div class="border-t border-zinc-100"></div>
                                     <a href="{{ route('races.participants.print', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
@@ -66,16 +57,20 @@
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Print receipts for all participants') }}</span>
                                     </a>
-                                    <a href="{{ route('races.penalty-sheet.configure', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
-                                        <span class="inline-flex gap-1">
-                                            <x-ri-scales-3-line class="size-5 shrink-0" />
-                                            {{ __('Print weight & penalty sheet') }}
-                                        </span>
-                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Print weight check and penalty sheet per category') }}</span>
-                                    </a>
                                     <div class="border-t border-zinc-100"></div>
                                 @endcan
+
                                 @can('create', \App\Model\Transponder::class)
+                                    @if ($race->isNationalOrInternational())
+                                        <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                            <span class="inline-flex gap-1">
+                                                <x-ri-table-2 class="size-5 shrink-0" />
+                                                {{ __('Export for ACI Italian Cup') }}
+                                            </span>
+                                            <span class="block ml-6 text-xs text-zinc-600">{{ __('Export confirmed participants as requested by ACI Karting') }}</span>
+                                        </a>
+                                        <div class="border-t border-zinc-100"></div>
+                                    @endif
                                     <a href="{{ route('races.export.transponders', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-steering-2-line class="size-5 shrink-0" />
@@ -83,6 +78,14 @@
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Export drivers and transponder for MyLaps Orbits') }}</span>
                                     </a>
+                                    <a href="{{ route('races.penalty-sheet.configure', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                        <span class="inline-flex gap-1">
+                                            <x-ri-scales-3-line class="size-5 shrink-0" />
+                                            {{ __('Print check sheet') }}
+                                        </span>
+                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Print weight and pre-grid check sheet') }}</span>
+                                    </a>
+                                    <div class="border-t border-zinc-100"></div>
                                 @endcan
                             </div>
                         </x-slot>

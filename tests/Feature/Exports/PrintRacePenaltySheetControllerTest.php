@@ -37,26 +37,6 @@ class PrintRacePenaltySheetControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_print_forbidden_for_timekeeper(): void
-    {
-        $user = User::factory()->timekeeper()->create();
-        $race = Race::factory()->create();
-
-        $response = $this->actingAs($user)->get(route('races.penalty-sheet.print', $race));
-
-        $response->assertForbidden();
-    }
-
-    public function test_print_forbidden_for_racemanager(): void
-    {
-        $user = User::factory()->racemanager()->create();
-        $race = Race::factory()->create();
-
-        $response = $this->actingAs($user)->get(route('races.penalty-sheet.print', $race));
-
-        $response->assertForbidden();
-    }
-
     public function test_print_returns_a_pdf(): void
     {
         $user = User::factory()->organizer()->create();

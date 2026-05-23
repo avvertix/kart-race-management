@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ItalianRegion;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -38,6 +39,7 @@ class Race extends Model
         'red_flag',
         'registration_form',
         'bonus_enabled',
+        'zone_regions',
     ];
 
     /**
@@ -213,6 +215,23 @@ class Race extends Model
         return $this->participant_limits?->get('total');
     }
 
+    public function hasZoneConfigured(): bool
+    {
+        return $this->zone_regions !== null && $this->zone_regions->isNotEmpty();
+    }
+
+    public function isProvinceInZone(string $province): bool
+    {
+        foreach ($this->zone_regions ?? [] as $regionValue) {
+            $region = ItalianRegion::tryFrom($regionValue);
+            if ($region?->containsProvince($province)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isLocal()
     {
         return $this->type === RaceType::LOCAL;
@@ -328,6 +347,7 @@ class Race extends Model
             'red_flag' => 'boolean',
             'registration_form' => RegistrationForm::class,
             'bonus_enabled' => 'boolean',
+            'zone_regions' => AsCollection::class,
         ];
     }
 }

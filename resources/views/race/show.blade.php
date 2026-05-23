@@ -27,7 +27,8 @@
                     @endif
                     <p>{{ __('participants') }}</p>
                     <p class="text-xl md:text-3xl font-black">{{ $statistics->total }}</p>
-                    <p>{{ $statistics->confirmed }} {{ __('confirmed') }}, {{ $statistics->transponders }} {{ __('transponders') }}</p>
+                    <p>{{ $statistics->confirmed }} {{ __('confirmed') }}, {{ $statistics->registration_completed }} {{ __('completed') }}</p>
+                    <p>{{ $statistics->transponders }} {{ __('transponders') }}</p>
                 </div>
             </div>
 

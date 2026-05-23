@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Data\AliasesData;
 use App\Data\RegistrationCostData;
+use App\Enums\ItalianRegion;
 use App\Notifications\ConfirmParticipantRegistration;
 use App\Notifications\UpdateParticipantRegistration;
 use BaconQrCode\Renderer\Color\Rgb;
@@ -66,6 +67,7 @@ class Participant extends Model implements HasLocalePreference
         'payment_confirmed_at',
         'notes',
         'aliases',
+        'region',
     ];
 
     /**
@@ -461,6 +463,15 @@ class Participant extends Model implements HasLocalePreference
         return true;
     }
 
+    public function isOutOfZone()
+    {
+        if (is_null($this->properties['out_of_zone'] ?? null)) {
+            return false;
+        }
+
+        return $this->properties['out_of_zone'] === true;
+    }
+
     public function outOfZoneStatus()
     {
         if (! $this->wasProcessedForOutOfZone()) {
@@ -511,6 +522,18 @@ class Participant extends Model implements HasLocalePreference
         });
     }
 
+    protected function regionAndNationality(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
+
+            if (blank($this->region)) {
+                return $this->driver['nationality'];
+            }
+
+            return str()->title($this->driver['nationality'].' '.$this->region->label());
+        });
+    }
+
     protected function driverFiscalCode(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
@@ -539,7 +562,7 @@ class Participant extends Model implements HasLocalePreference
             'payment_channel' => PaymentChannelType::class,
             'aliases' => AliasesData::class,
             'cost' => RegistrationCostData::class,
-
+            'region' => ItalianRegion::class,
         ];
     }
 }

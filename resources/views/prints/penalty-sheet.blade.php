@@ -31,10 +31,10 @@
             height: 16px;
             font-size: 12px;
         }
-        .col-bib { width: 10%; text-align: center; }
-        .col-name { width: 55%; }
-        .col-category { width: 25%; }
-        .col-session { width: 10%; text-align: center; }
+        .col-bib { width: 5%; text-align: center; }
+        .col-name { width: 35%; }
+        .col-category { width: 20%; }
+        .col-session { width: 13%; text-align: center; }
 
         .penalty-title {
             text-align: center;
@@ -78,9 +78,9 @@
     <table class="weight-table">
         <thead>
             <tr>
-                <th class="col-bib">N° KART</th>
-                <th class="col-name">PILOTA</th>
-                <th class="col-category">CATEGORIA</th>
+                <th width="100px" class="col-bib">N°</th>
+                <th width="" class="col-name">PILOTA</th>
+                <th width="" class="col-category">CATEGORIA</th>
                 <th class="col-session">CRONO</th>
                 <th class="col-session">PREFINALE</th>
                 <th class="col-session">FINALE</th>
@@ -125,14 +125,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for ($i = 0; $i < 2; $i++)
                             <tr>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
-                        @endfor
                     </tbody>
                 </table>
             </td>
@@ -149,14 +147,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for ($i = 0; $i < 2; $i++)
                             <tr>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
-                        @endfor
                     </tbody>
                 </table>
             </td>

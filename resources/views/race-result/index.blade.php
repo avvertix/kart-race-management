@@ -11,7 +11,7 @@
         <div class="flex justify-between mb-4 items-center">
         
             <div class="flex items-center gap-3">
-                @can('update', $race)
+                @can('create', \App\Models\RunResult::class)
                     <x-button-link href="{{ route('races.results.create', $race) }}">
                         {{ __('Upload results') }}
                     </x-button-link>
@@ -108,7 +108,7 @@
                             <x-time :value="$runResult->created_at" />
                         </td>
                         <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-4">
-                            @can('update', $race)
+                            @can('update', $runResult)
                                 <a href="{{ route('results.edit', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}</a>
 
                                 <form class="inline" action="{{ route('results.link-participants', $runResult) }}" method="post">

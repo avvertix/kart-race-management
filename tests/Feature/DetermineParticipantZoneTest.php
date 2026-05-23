@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\RegisterParticipant;
-use App\Actions\UpdateParticipantRegistration;
 use App\Enums\ItalianRegion;
 use App\Models\Category;
 use App\Models\ItalianPostalCode;
-use App\Models\Participant;
 use App\Models\Race;
 use App\Models\RaceType;
 use Illuminate\Support\Facades\Notification;
@@ -296,5 +294,4 @@ class DetermineParticipantZoneTest extends TestCase
         $this->assertSame(ItalianRegion::LAZIO, $fresh->region);
         $this->assertTrue($fresh->properties['out_of_zone']);
     }
-
 }

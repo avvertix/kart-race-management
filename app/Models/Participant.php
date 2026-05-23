@@ -521,12 +521,12 @@ class Participant extends Model implements HasLocalePreference
             return str()->title($this->first_name.' '.$this->last_name);
         });
     }
-    
+
     protected function regionAndNationality(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {
 
-            if(blank($this->region)){
+            if (blank($this->region)) {
                 return $this->driver['nationality'];
             }
 

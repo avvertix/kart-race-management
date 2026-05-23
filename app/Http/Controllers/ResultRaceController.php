@@ -27,6 +27,7 @@ class ResultRaceController extends Controller
     public function index(Race $race)
     {
         $this->authorize('view', $race);
+        $this->authorize('viewAny', RunResult::class);
 
         $race->load('championship');
 
@@ -55,6 +56,7 @@ class ResultRaceController extends Controller
     public function create(Race $race)
     {
         $this->authorize('view', $race);
+        $this->authorize('create', RunResult::class);
 
         $race->load('championship');
 
@@ -69,7 +71,7 @@ class ResultRaceController extends Controller
      */
     public function store(Request $request, Race $race)
     {
-        $this->authorize('update', $race);
+        $this->authorize('create', RunResult::class);
 
         $this->validate($request, [
             'files' => ['required', 'array'],
@@ -110,7 +112,7 @@ class ResultRaceController extends Controller
     {
         $result->load(['race.championship', 'participantResults', 'participantResults.participant']);
 
-        $this->authorize('view', $result->race);
+        $this->authorize('view', $result);
 
         return view('race-result.show', [
             'race' => $result->race,
@@ -127,7 +129,7 @@ class ResultRaceController extends Controller
     {
         $result->load(['race.championship', 'participantResults']);
 
-        $this->authorize('update', $result->race);
+        $this->authorize('update', $result);
 
         return view('race-result.edit', [
             'race' => $result->race,
@@ -145,7 +147,7 @@ class ResultRaceController extends Controller
     {
         $result->load('race');
 
-        $this->authorize('update', $result->race);
+        $this->authorize('update', $result);
 
         $validated = $this->validate($request, [
             'title' => ['required', 'string', 'max:250'],
@@ -205,7 +207,7 @@ class ResultRaceController extends Controller
     {
         $result->load('race');
 
-        $this->authorize('update', $result->race);
+        $this->authorize('update', $result);
 
         $validated = $this->validate($request, [
             'point_scheme_id' => ['required', 'exists:championship_point_schemes,id'],
@@ -223,7 +225,7 @@ class ResultRaceController extends Controller
      */
     public function assignPointsToAll(Request $request, Race $race)
     {
-        $this->authorize('update', $race);
+        $this->authorize('updateAny', RunResult::class);
 
         $validated = $this->validate($request, [
             'point_scheme_id' => ['required', 'exists:championship_point_schemes,id'],
@@ -241,7 +243,7 @@ class ResultRaceController extends Controller
      */
     public function publishAll(Race $race)
     {
-        $this->authorize('update', $race);
+        $this->authorize('updateAny', RunResult::class);
 
         $race->results()->whereNull('published_at')->update(['published_at' => now()]);
 
@@ -253,7 +255,7 @@ class ResultRaceController extends Controller
      */
     public function linkAllParticipants(Race $race)
     {
-        $this->authorize('update', $race);
+        $this->authorize('updateAny', RunResult::class);
 
         $race->results()->each(fn (RunResult $result) => LinkParticipantResults::dispatch($result));
 
@@ -267,7 +269,7 @@ class ResultRaceController extends Controller
     {
         $result->load('race');
 
-        $this->authorize('update', $result->race);
+        $this->authorize('update', $result);
 
         LinkParticipantResults::dispatch($result);
 
@@ -281,7 +283,7 @@ class ResultRaceController extends Controller
     {
         $result->load('race');
 
-        $this->authorize('update', $result->race);
+        $this->authorize('update', $result);
 
         $result->update([
             'published_at' => $result->isPublished() ? null : now(),
@@ -301,7 +303,7 @@ class ResultRaceController extends Controller
     {
         $result->load('race');
 
-        $this->authorize('update', $result->race);
+        $this->authorize('delete', $result);
 
         Storage::disk('race-results')->delete($result->file_name);
 

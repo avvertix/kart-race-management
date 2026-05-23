@@ -217,9 +217,9 @@ class ResultRaceControllerTest extends TestCase
         Storage::disk('race-results')->assertMissing($filePath);
     }
 
-    public function test_timekeeper_cannot_upload_results(): void
+    public function test_tireagent_cannot_upload_results(): void
     {
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
         $race = Race::factory()->create();
 
         $response = $this
@@ -231,9 +231,9 @@ class ResultRaceControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_timekeeper_cannot_delete_results(): void
+    public function test_tireagent_cannot_delete_results(): void
     {
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
 
         $runResult = RunResult::factory()->create();
 
@@ -284,7 +284,7 @@ class ResultRaceControllerTest extends TestCase
 
     public function test_toggle_publish_requires_authorization(): void
     {
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
 
         $runResult = RunResult::factory()->create();
 
@@ -329,7 +329,7 @@ class ResultRaceControllerTest extends TestCase
 
     public function test_publish_all_requires_authorization(): void
     {
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
         $race = Race::factory()->create();
 
         $this->actingAs($user)->post(route('races.results.publish-all', $race))->assertForbidden();
@@ -359,7 +359,7 @@ class ResultRaceControllerTest extends TestCase
     {
         Queue::fake();
 
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
         $race = Race::factory()->create();
 
         $response = $this
@@ -374,7 +374,7 @@ class ResultRaceControllerTest extends TestCase
     {
         Queue::fake();
 
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
         $runResult = RunResult::factory()->create();
 
         $response = $this
@@ -410,7 +410,7 @@ class ResultRaceControllerTest extends TestCase
 
     public function test_edit_requires_authorization(): void
     {
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
 
         $runResult = RunResult::factory()->create();
 
@@ -686,7 +686,7 @@ class ResultRaceControllerTest extends TestCase
 
     public function test_update_requires_authorization(): void
     {
-        $user = User::factory()->timekeeper()->create();
+        $user = User::factory()->tireagent()->create();
 
         $runResult = RunResult::factory()->create();
 

@@ -376,7 +376,7 @@ class RaceParticipantsForTimingExportTest extends TestCase
                 '', // transponder
                 '',
                 '',
-                'OZ sicilia',
+                'OZ Italy Sicilia',
                 '2023-02-28',
                 $participant->licence_type->localizedName(),
                 mb_strtoupper($vehicle['engine_manufacturer']),

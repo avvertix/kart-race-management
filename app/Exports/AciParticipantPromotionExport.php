@@ -41,7 +41,7 @@ class AciParticipantPromotionExport implements FromView, WithDrawings
     public function view(): View
     {
         return view('exports.aci', [
-            'participants' => $this->query()->groupBy('racingCategory.short_name')->sortKeys(),
+            'participants' => $this->query()->groupBy('racingCategory.name')->sortKeys(),
             'race' => $this->race,
         ]);
     }

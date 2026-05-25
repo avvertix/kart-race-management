@@ -149,10 +149,9 @@ class RegisterParticipant
                 ])
                 ->thenReturn();
 
-            if(blank($user) || (filled($user) && !$user->hasVerifiedEmail())){
+            if (blank($user) || (filled($user) && ! $user->hasVerifiedEmail())) {
                 $participant->sendConfirmParticipantNotification();
             }
-
 
             return $participant;
 

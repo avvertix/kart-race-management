@@ -72,12 +72,6 @@ class RaceRegistrationController extends Controller
                 // ignore invalid from param
             }
 
-            if ($participant === null) {
-                $userTemplates = $user->templateDrivers;
-                if ($userTemplates->count() === 1) {
-                    $templateDriver = $userTemplates->first();
-                }
-            }
         }
 
         return view('race-registration.create', [
@@ -90,7 +84,6 @@ class RaceRegistrationController extends Controller
             'driverLicences' => $driverLicences,
             'competitorLicences' => $competitorLicences,
             'participant' => $participant,
-            'templateDriver' => $templateDriver,
         ]);
     }
 
@@ -112,7 +105,7 @@ class RaceRegistrationController extends Controller
                 ]);
         }
 
-        $participant = $registerParticipant($race, $request->all());
+        $participant = $registerParticipant($race, $request->all(), $request->user());
 
         return redirect()
             ->setIntendedUrl(URL::signedRoute('registration.show',

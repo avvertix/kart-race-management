@@ -88,7 +88,9 @@
 
             @include('participant.partials.form', ['driverLicences' => $driverLicences, 'competitorLicences' => $competitorLicences])
             
-            @include('participant.partials.consents')
+            @guest
+                @include('participant.partials.consents')
+            @endguest
 
             @include('participant.partials.costs')
 

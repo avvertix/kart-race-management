@@ -7,7 +7,11 @@
 
         <x-welcome-new-user class="md:col-span-12" />
 
-        <x-next-races class="md:col-span-7 lg:col-span-8" />
+        @can('viewAny', \App\Models\Race::class)
+            <x-next-races class="md:col-span-7 lg:col-span-8" />
+        @else
+            <x-next-races-for-drivers class="md:col-span-7 lg:col-span-8" />
+        @endcan
 
         <x-championships-list class="md:col-span-5 lg:col-span-4" />
 

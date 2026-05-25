@@ -638,5 +638,22 @@
     "Print PDF": "Stampa PDF",
     "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.": "Prima di continuare, potresti verificare il tuo indirizzo email cliccando sul link che ti abbiamo appena inviato? Se non hai ricevuto l'email, saremo felici di inviartene un'altra.",
     "A new verification link has been sent to the email address you provided in your profile settings.": "Un nuovo link di verifica è stato inviato all'indirizzo email indicato nelle impostazioni del tuo profilo.",
-    "Password must be at least of 8 characters, and include special characters like !$? and a number": "La password deve essere di almeno 8 caratteri, contenere un carattere speciale come !$? e un numero."
+    "Password must be at least of 8 characters, and include special characters like !$? and a number": "La password deve essere di almeno 8 caratteri, contenere un carattere speciale come !$? e un numero.",
+    "Link race registrations to your account": "Collega le gare al tuo account",
+    "Find your past races using your licence number. Connect the participation to your account. Use your connected registrations to speed-up future registrations.": "Trova le tue gare passate utilizzando il numero di licenza. Collega la partecipazione al tuo account. Usa le iscrizioni collegate per velocizzare le iscrizioni future.",
+    "Type your licence number...": "Digita la tua licenza...",
+    "Search": "Cerca",
+    "Searching…": "Ricerca in corso…",
+    "Link all": "Collega tutte",
+    "Linked": "Collegata",
+    "Driver + Competitor": "Pilota + Concorrente",
+    "Driver only": "Pilota",
+    "No past registrations found for \":search\".": "Nessuna iscrizione trovata per \":search\".",
+    "Last race": "Ultima gara",
+    "View registration for :race": "Vedi l'iscrizione per :race",
+    "Register to :race": "Partecipa a :race",
+    "View registration for :name": "Vedi l'iscrizione di :name",
+    "Register :name": "Iscriviti come :name",
+    "Here are the details used in previous registrations. When a race registration opens you can reuse previous registrations to prefill your registration.": "Qui sono elencati i dati utilizzati nelle precedenti iscrizioni. All'apertura dell'iscrizione di una gara puoi riutilizzare le precedenti iscrizioni per precompilare la tua iscrizione."
+
 }

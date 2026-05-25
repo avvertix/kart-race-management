@@ -11,7 +11,7 @@
         </div>
 
         <x-button-link href="{{ route('drivers.index') }}">
-            {{ __('Go to Drivers and competitors') }}
+            {{ __('Link races') }}
         </x-button-link>
     </div>
 </div>

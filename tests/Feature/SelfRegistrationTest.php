@@ -9,6 +9,7 @@ use App\Models\Championship;
 use App\Models\DriverLicence;
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\User;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
@@ -526,6 +527,97 @@ class SelfRegistrationTest extends TestCase
         ]);
     }
 
+    public function test_participant_can_access_registration_receipt_when_logged_in()
+    {
+        $race = Race::factory()->create();
+
+        $user = User::factory()->create();
+
+        $participant = Participant::factory()->for($race)
+            ->recycle($race->championship)
+            ->category()
+            ->create(['claimed_by' => $user->id]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('registration.show', ['registration' => $participant]));
+
+        $response->assertOk();
+
+        $response->assertViewHas('participant', $participant);
+        $response->assertViewHas('race', $participant->race);
+        $response->assertViewHas('championship', $participant->championship);
+
+        $response->assertSeeTextInOrder([
+            $participant->bib,
+            $participant->first_name,
+            $participant->last_name,
+        ]);
+    }
+
+    public function test_participant_can_access_registration_created_using_registered_user()
+    {
+        $race = Race::factory()->create();
+
+        $user = User::factory()->create();
+
+        $participant = Participant::factory()->for($race)
+            ->recycle($race->championship)
+            ->category()
+            ->create(['added_by' => $user->id]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('registration.show', ['registration' => $participant]));
+
+        $response->assertOk();
+
+        $response->assertViewHas('participant', $participant);
+        $response->assertViewHas('race', $participant->race);
+        $response->assertViewHas('championship', $participant->championship);
+
+        $response->assertSeeTextInOrder([
+            $participant->bib,
+            $participant->first_name,
+            $participant->last_name,
+        ]);
+    }
+
+    public function test_participant_cannot_access_registration_receipt_when_logged_in_and_registration_is_not_claimed()
+    {
+        $race = Race::factory()->create();
+
+        $user = User::factory()->create();
+
+        $participant = Participant::factory()->for($race)->recycle($race->championship)->category()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('registration.show', ['registration' => $participant]));
+
+        $response->assertForbidden();
+    }
+
+    public function test_participant_cannot_access_registration_created_by_others()
+    {
+        $race = Race::factory()->create();
+
+        $user1 = User::factory()->create();
+
+        $user2 = User::factory()->create();
+
+        $participant = Participant::factory()->for($race)
+            ->recycle($race->championship)
+            ->category()
+            ->create(['added_by' => $user2->id]);
+
+        $response = $this
+            ->actingAs($user1)
+            ->get(route('registration.show', ['registration' => $participant]));
+
+        $response->assertForbidden();
+    }
+
     public function test_bank_details_loaded_from_environment()
     {
         config([
@@ -619,5 +711,22 @@ class SelfRegistrationTest extends TestCase
         $response->assertForbidden();
 
         $response->assertViewIs('errors.participant-link-invalid');
+    }
+
+    public function test_registration_form_not_prepopulated_for_guest()
+    {
+        config(['races.registration.form' => 'complete']);
+
+        $race = Race::factory()->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this->get(route('races.registration.create', $race));
+
+        $this->travelBack();
+
+        $response->assertOk();
+
+        $response->assertViewHas('participant', null);
     }
 }

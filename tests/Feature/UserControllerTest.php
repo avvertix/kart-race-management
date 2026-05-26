@@ -104,8 +104,8 @@ class UserControllerTest extends TestCase
             ->post(route('users.store'), [
                 'name' => 'New User',
                 'email' => 'newuser@example.com',
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
+                'password' => '!password123',
+                'password_confirmation' => '!password123',
                 'role' => 'organizer',
             ]);
 
@@ -244,7 +244,7 @@ class UserControllerTest extends TestCase
                 'role' => $user->role,
             ]);
 
-        $response->assertRedirectToRoute('users.edit', $user);
+        $response->assertRedirectToRoute('users.index');
 
         $user->refresh();
 

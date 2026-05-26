@@ -1,4 +1,5 @@
 <x-guest-layout>
+    <x-slot name="title">{{ __('Create account') }}</x-slot>
     <x-authentication-card>
         <x-slot name="logo">
             <x-authentication-card-logo />
@@ -8,6 +9,12 @@
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
+
+            {{-- Honeypot field to prevent bot registrations --}}
+            <div class="hidden" aria-hidden="true">
+                <x-label for="website" value="Website" />
+                <x-input id="website" type="text" name="website" tabindex="-1" autocomplete="off" />
+            </div>
 
             <div>
                 <x-label for="name" value="{{ __('Name') }}" />
@@ -21,6 +28,7 @@
 
             <div class="mt-4">
                 <x-label for="password" value="{{ __('Password') }}" />
+                <p class="text-sm text-zinc-700">{{ __('Password must be at least of 8 characters, and include special characters like !$? and a number') }}</p>
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             </div>
 
@@ -29,22 +37,19 @@
                 <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
             </div>
 
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-label for="terms">
-                        <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
+            <div class="mt-4">
+                <x-label for="terms">
+                    <div class="flex items-center">
+                        <x-checkbox name="terms" id="terms" required />
 
-                            <div class="ml-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-zinc-600 hover:text-zinc-900">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-zinc-600 hover:text-zinc-900">'.__('Privacy Policy').'</a>',
-                                ]) !!}
-                            </div>
+                        <div class="ml-2">
+                            {!! __('I agree to the :privacy_policy', [
+                                'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-zinc-600 hover:text-zinc-900">'.__('Privacy Policy').'</a>',
+                            ]) !!}
                         </div>
-                    </x-label>
-                </div>
-            @endif
+                    </div>
+                </x-label>
+            </div>
 
             <div class="flex items-center justify-end mt-4">
                 <a class="underline text-sm text-zinc-600 hover:text-zinc-900" href="{{ route('login') }}">

@@ -654,6 +654,9 @@
     "Register to :race": "Partecipa a :race",
     "View registration for :name": "Vedi l'iscrizione di :name",
     "Register :name": "Iscriviti come :name",
-    "Here are the details used in previous registrations. When a race registration opens you can reuse previous registrations to prefill your registration.": "Qui sono elencati i dati utilizzati nelle precedenti iscrizioni. All'apertura dell'iscrizione di una gara puoi riutilizzare le precedenti iscrizioni per precompilare la tua iscrizione."
-
+    "Here are the details used in previous registrations. When a race registration opens you can reuse previous registrations to prefill your registration.": "Qui sono elencati i dati utilizzati nelle precedenti iscrizioni. All'apertura dell'iscrizione di una gara puoi riutilizzare le precedenti iscrizioni per precompilare la tua iscrizione.",
+    "Register": "Crea account",
+    "Already registered?": "Sei già registrato?",
+    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Hai dimenticato la password? Nessun problema. Comunicaci il tuo indirizzo email e ti invieremo un link per reimpostare la password che ti permetterà di sceglierne una nuova.",
+    "Email Password Reset Link": "Invia link per reimpostare la password"
 }

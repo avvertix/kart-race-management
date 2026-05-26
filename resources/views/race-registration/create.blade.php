@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="title">{{ __('Register for :race', ['race' => $race->title]) }}</x-slot>
     <x-slot name="header">
         <h1 class="font-bold text-xl sm:text-2xl md:text-3xl text-zinc-800 leading-tight flex gap-2">
             {{ __('Register for :race', ['race' => $race->title]) }}

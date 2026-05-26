@@ -727,6 +727,6 @@ class SelfRegistrationTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertViewHas('templateDriver', null);
+        $response->assertViewHas('participant', null);
     }
 }

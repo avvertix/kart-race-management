@@ -10,6 +10,7 @@ use App\Models\Bonus;
 use App\Models\Category;
 use App\Models\Participant;
 use App\Models\Race;
+use App\Models\User;
 use App\Notifications\ConfirmParticipantRegistration;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
@@ -976,5 +977,114 @@ class RegisterParticipantTest extends TestCase
         }
 
         Notification::assertCount(0);
+    }
+
+    public function test_notification_sent_when_user_email_matches_driver_email_but_unverified()
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create();
+        $user = User::factory()->unverified()->create(['email' => 'john@racer.local']);
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            'consent_privacy' => true,
+        ], $user);
+
+        $this->travelBack();
+
+        Notification::assertSentTo($participant, ConfirmParticipantRegistration::class);
+    }
+
+    public function test_notification_not_sent_when_verified_user_email_matches_driver_email()
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create();
+        $user = User::factory()->create(['email' => 'john@racer.local']);
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            'consent_privacy' => true,
+        ], $user);
+
+        $this->travelBack();
+
+        Notification::assertNothingSent();
+    }
+
+    public function test_signature_auto_created_when_verified_user_email_matches_driver_email()
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create();
+        $user = User::factory()->create(['email' => 'john@racer.local']);
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            'consent_privacy' => true,
+        ], $user);
+
+        $this->travelBack();
+
+        $this->assertTrue($participant->hasSignedTheRequest());
+        $this->assertTrue($participant->signatures()->where('signature', sha1($participant->getEmailForVerification('driver')))->exists());
+    }
+
+    public function test_notification_sent_when_verified_user_email_differs_from_driver_email()
+    {
+        config(['races.registration.form' => 'minimal']);
+
+        Notification::fake();
+
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create();
+        $user = User::factory()->create(['email' => 'organizer@example.local']);
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $registerParticipant = app()->make(RegisterParticipant::class);
+
+        $participant = $registerParticipant($race, [
+            'bib' => 100,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            'consent_privacy' => true,
+        ], $user);
+
+        $this->travelBack();
+
+        Notification::assertSentTo($participant, ConfirmParticipantRegistration::class);
     }
 }

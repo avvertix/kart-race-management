@@ -149,8 +149,17 @@ class RegisterParticipant
                 ])
                 ->thenReturn();
 
-            if (blank($user) || (filled($user) && ! $user->hasVerifiedEmail())) {
+            if (
+                blank($user) ||
+                ! $user->hasVerifiedEmail() ||
+                mb_strtolower($user->email) !== str($validatedInput['driver_email'])->lower()->toString()
+            ) {
                 $participant->sendConfirmParticipantNotification();
+            } else {
+                $participant->signatures()->create([
+                    'signature' => sha1($participant->getEmailForVerification('driver')),
+                    'signed_at' => now(),
+                ]);
             }
 
             return $participant;

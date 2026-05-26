@@ -12,7 +12,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.app')]
-#[Title('Drivers and Competitors')]
+#[Title('Drivers and competitors')]
 class LinkedDrivers extends Component
 {
     public string $search = '';

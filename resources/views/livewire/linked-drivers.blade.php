@@ -1,7 +1,7 @@
 <x-slot name="header">
     <div class="flex justify-between items-center">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
-            {{ __('Drivers and Competitors') }}
+            {{ __('Drivers and competitors') }}
         </h2>
         
         <div id="actions">

@@ -19,26 +19,25 @@
 
                 @php $entries = $registrationsByRace->get($race->uuid, collect()); @endphp
                 <div class="relative mt-1 flex flex-col gap-2">
-                    @forelse ($entries as $entry)
-                            @if ($entry['participation'])
-                                <a href="{{ route('registration.show', $entry['participation']) }}"
-                                   class="text-zinc-700 hover:text-zinc-900 rounded px-3 py-2 group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 bg-zinc-100 hover:bg-orange-100">
-                                    {{ __('View registration for :name', ['name' => $entry['linked']->first_name . ' ' . $entry['linked']->last_name]) }}
-                                </a>
-                            @elseif ($race->is_registration_open)
-                                <a href="{{ route('races.registration.create', ['race' => $race, 'from' => $entry['linked']->uuid]) }}"
-                                   class="font-medium px-3 py-2 rounded group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 bg-zinc-100 hover:bg-orange-100">
-                                    {{ __('Register :name', ['name' => $entry['linked']->first_name . ' ' . $entry['linked']->last_name]) }}
-                                </a>
-                            @endif
-                    @empty
-                        @if ($race->is_registration_open)
-                            <a href="{{ route('races.registration.create', $race) }}"
+                    @foreach ($entries as $entry)
+                        @if ($entry['participation'])
+                            <a href="{{ route('registration.show', $entry['participation']) }}"
+                                class="text-zinc-700 hover:text-zinc-900 rounded px-3 py-2 group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 bg-zinc-100 hover:bg-orange-100">
+                                {{ __('View registration for :name', ['name' => $entry['linked']->first_name . ' ' . $entry['linked']->last_name]) }}
+                            </a>
+                        @elseif ($race->is_registration_open)
+                            <a href="{{ route('races.registration.create', ['race' => $race, 'from' => $entry['linked']->uuid]) }}"
                                 class="font-medium px-3 py-2 rounded group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 bg-zinc-100 hover:bg-orange-100">
-                                {{ __('Register for the race') }}
+                                {{ __('Register :name', ['name' => $entry['linked']->first_name . ' ' . $entry['linked']->last_name]) }}
                             </a>
                         @endif
-                    @endforelse
+                    @endforeach
+                    @if ($race->is_registration_open)
+                        <a href="{{ route('races.registration.create', $race) }}"
+                            class="font-medium px-3 py-2 rounded group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 bg-zinc-100 hover:bg-orange-100">
+                            {{ __('Register for the race') }}
+                        </a>
+                    @endif
                 </div>
 
             </article>

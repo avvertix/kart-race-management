@@ -31,21 +31,21 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.3]
+        php: [8.4]
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0
       with:
         fetch-depth: 1
     
     - name: Cache dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1
       with:
         path: /home/php/.composer/cache
         key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
     - name: Cache JS dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1
       with:
         path: ~/.npm
         key: dependencies-js-${{ matrix.php }}-npm-${{ hashFiles('package-lock.json') }}

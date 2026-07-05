@@ -1,5 +1,5 @@
 
-FROM klinktechnology/k-box-ci-pipeline-php:8.3 AS builder
+FROM klinktechnology/k-box-ci-pipeline-php:8.4 AS builder
 
 COPY --chown=php:php . /var/www/html
 RUN \
@@ -26,7 +26,7 @@ RUN \
 
 ## second step, assemble the image
 
-FROM php:8.3.31-fpm-trixie AS php
+FROM php:8.4.21-fpm-trixie AS php
 
 LABEL maintainer="Alessio <alessio@avsoft.it>" \
   org.label-schema.name="avvertix/kart-race-management" \
@@ -35,12 +35,12 @@ LABEL maintainer="Alessio <alessio@avsoft.it>" \
   org.label-schema.vcs-url="https://github.com/avvertix/kart-race-management"
 
 ## Default environment variables
-ENV PHP_MAX_EXECUTION_TIME 120
-ENV PHP_MAX_INPUT_TIME 120
-ENV PHP_MEMORY_LIMIT 3072M
-ENV WORKDIR /var/www
+ENV PHP_MAX_EXECUTION_TIME=120
+ENV PHP_MAX_INPUT_TIME=120
+ENV PHP_MEMORY_LIMIT=3072M
+ENV WORKDIR=/var/www
 
-ENV RUNNERS_COUNT 1
+ENV RUNNERS_COUNT=1
 
 ## Install libraries, supervisor and php modules
 RUN apt-get update -yqq && \
@@ -79,7 +79,7 @@ RUN locale-gen "en_US.UTF-8" \
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION "1.30.1-1~trixie"
+ENV NGINX_VERSION="1.30.1-1~trixie"
 RUN set -ex \
     && apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 \

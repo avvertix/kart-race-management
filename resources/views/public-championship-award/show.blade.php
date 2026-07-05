@@ -3,18 +3,29 @@
         {{ $award->name }} - {{ $championship->title }}
     </x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
-            {{ $championship->title }}
-        </h2>
+        <div class="flex justify-between">
+        
+            <div>
+                <a class="text-sm underline" href="{{ route('public.championships.awards.index', $championship) }}">{{ __('Back to awards') }}</a>
+                <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
+                    {{ $championship->title }} - {{ $award->name }}
+                </h2>
+                <p class="text-sm text-zinc-700">{{ $award->type->localizedName() }}</p>
+            </div>
+
+            <div>
+                <a
+                    href="{{ route('public.awards.show', ['award' => $award, 'format' => 'pdf']) }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+                >
+                    <x-ri-printer-line class="size-4 shrink-0" />
+                    {{ __('Print PDF') }}
+                </a>
+            </div>
+        </div>
     </x-slot>
 
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
-
-        <div class="mb-4">
-            <a class="text-sm underline" href="{{ route('public.championships.awards.index', $championship) }}">{{ __('Back to awards') }}</a>
-            <h3 class="text-lg font-bold">{{ $award->name }}</h3>
-            <p class="text-sm text-zinc-500">{{ $award->type->localizedName() }}</p>
-        </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm">

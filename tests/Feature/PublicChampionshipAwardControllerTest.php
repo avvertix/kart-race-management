@@ -141,4 +141,20 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $response->assertSee('Junior Trophy');
         $response->assertSee('Junior');
     }
+
+    public function test_show_return_pdf_when_requested(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->categoryAward($category)->create([
+            'championship_id' => $championship->getKey(),
+            'name' => 'Speed Trophy',
+        ]);
+
+        $response = $this->get(route('public.awards.show', ['award' => $award, 'format' => 'pdf']));
+
+        $response->assertSuccessful();
+        $this->assertTrue(str($response->getContent())->substr(0, 4)->is('%PDF'));
+    }
 }

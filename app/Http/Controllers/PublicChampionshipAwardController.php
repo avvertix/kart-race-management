@@ -42,7 +42,7 @@ class PublicChampionshipAwardController extends Controller
 
         $ranking = $calculateRanking($award);
 
-        if($request->input('format') === 'pdf') {
+        if ($request->input('format') === 'pdf') {
 
             return Pdf::loadView('public-championship-award.show-pdf', [
                 'championship' => $championship,
@@ -59,7 +59,6 @@ class PublicChampionshipAwardController extends Controller
                 ])
                 ->stream($award->name.'.pdf');
         }
-
 
         return view('public-championship-award.show', [
             'championship' => $championship,

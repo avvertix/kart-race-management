@@ -250,6 +250,40 @@
             </div>
         </div>
 
+        <x-section-border />
+
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+            <x-section-title>
+                <x-slot name="title">{{ __('BIB') }}</x-slot>
+                <x-slot name="description">
+                    {{ __('Configure how BIB (race number) assignment is enforced across the championship.') }}
+                </x-slot>
+            </x-section-title>
+
+            <div class="mt-5 md:mt-0 md:col-span-2">
+                <form method="POST" action="{{ route('championships.bib-settings.update', $championship) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mt-4">
+                        <x-label for="allow_different_bibs" value="{{ __('Allow different BIBs for the same driver') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('When enabled, a driver is allowed to register with a different BIB than the one already used elsewhere in the championship. When disabled, a driver must keep using the same BIB across all races of the championship.') }}</p>
+                        <select name="allow_different_bibs" id="allow_different_bibs" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="false" @selected(old('allow_different_bibs', $championship->registration_settings->allow_different_bibs) == false)>{{ __('Disabled, all drivers must use the same BIB') }}</option>
+                            <option value="true" @selected(old('allow_different_bibs', $championship->registration_settings->allow_different_bibs) == true)>{{ __('Enabled, different BIBs allowed') }}</option>
+                        </select>
+                        <x-input-error for="allow_different_bibs" class="mt-2" />
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4" type="submit">
+                            {{ __('Save') }}
+                        </x-button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         </div>
     </div>
 </x-app-layout>

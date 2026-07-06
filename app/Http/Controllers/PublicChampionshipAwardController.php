@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Actions\CalculateAwardRanking;
 use App\Models\Championship;
 use App\Models\ChampionshipAward;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class PublicChampionshipAwardController extends Controller
 {
@@ -31,7 +33,7 @@ class PublicChampionshipAwardController extends Controller
     /**
      * Display the ranking for a single award.
      */
-    public function show(ChampionshipAward $award, CalculateAwardRanking $calculateRanking)
+    public function show(Request $request, ChampionshipAward $award, CalculateAwardRanking $calculateRanking)
     {
         $award->load(['championship', 'category', 'categories', 'races']);
 
@@ -39,6 +41,24 @@ class PublicChampionshipAwardController extends Controller
         $races = $championship->races()->orderBy('event_start_at')->get();
 
         $ranking = $calculateRanking($award);
+
+        if ($request->input('format') === 'pdf') {
+
+            return Pdf::loadView('public-championship-award.show-pdf', [
+                'championship' => $championship,
+                'award' => $award,
+                'ranking' => $ranking,
+                'races' => $races,
+            ])
+                ->setPaper('a4', 'landscape')
+                ->addInfo([
+                    'Title' => $award->name,
+                    'Author' => config('app.name'),
+                    'Creator' => config('app.name'),
+                    'PDFProducer' => config('app.name'),
+                ])
+                ->stream($award->name.'.pdf');
+        }
 
         return view('public-championship-award.show', [
             'championship' => $championship,

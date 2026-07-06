@@ -250,18 +250,20 @@ trait ParticipantValidationRules
 
                 $validated = $validator->validated();
 
-                $bibs = collect(Participant::query()
-                    ->where('championship_id', $race->championship_id)
-                    ->registered()
-                    ->licenceHash($validated['driver_licence_number'])
-                    ->select(['bib'])
-                    ->get(['bib'])->pluck('bib'))->unique()->filter();
+                if (! $race->championship->registration_settings->allow_different_bibs) {
+                    $bibs = collect(Participant::query()
+                        ->where('championship_id', $race->championship_id)
+                        ->registered()
+                        ->licenceHash($validated['driver_licence_number'])
+                        ->select(['bib'])
+                        ->get(['bib'])->pluck('bib'))->unique()->filter();
 
-                // check if participant by licence has equal bib
-                if ($bibs->isNotEmpty() && ! $bibs->contains($validated['bib'])) {
-                    $validator->errors()->add(
-                        'bib', 'The entered bib does not reflect what has been used so far in the championship by the same driver.'
-                    );
+                    // check if participant by licence has equal bib
+                    if ($bibs->isNotEmpty() && ! $bibs->contains($validated['bib'])) {
+                        $validator->errors()->add(
+                            'bib', 'The entered bib does not reflect what has been used so far in the championship by the same driver.'
+                        );
+                    }
                 }
 
                 // check if bib was reserved to other driver

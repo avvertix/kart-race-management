@@ -52,6 +52,7 @@ use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\RaceTranspondersImportController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
+use App\Http\Controllers\UpdateChampionshipBibSettingsController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
@@ -120,6 +121,8 @@ Route::middleware([
         Route::put('championships/{championship}/licence-settings', [UpdateChampionshipLicenceSettingsController::class, 'update'])->name('championships.licence-settings.update');
 
         Route::put('championships/{championship}/registration-form', UpdateChampionshipRegistrationFormController::class)->name('championships.registration-form.update');
+
+        Route::put('championships/{championship}/bib-settings', UpdateChampionshipBibSettingsController::class)->name('championships.bib-settings.update');
 
         Route::post('championships/{championship}/banner', [ChampionshipBannerController::class, 'store'])->name('championships.banner.store');
 

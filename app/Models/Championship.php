@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Data\BonusSettingsData;
 use App\Data\LicenceSettingsData;
 use App\Data\PaymentSettingsData;
+use App\Data\RegistrationSettingsData;
 use App\Data\WildcardSettingsData;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -147,6 +148,7 @@ class Championship extends Model
             'licences' => LicenceSettingsData::class.':default',
             'registration_form' => RegistrationForm::class,
             'bonus_enabled' => 'boolean',
+            'registration_settings' => RegistrationSettingsData::class.':default',
         ];
     }
 }

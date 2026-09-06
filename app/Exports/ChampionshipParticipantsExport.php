@@ -6,6 +6,7 @@ namespace App\Exports;
 
 use App\Models\Championship;
 use App\Models\Participant;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -29,7 +30,7 @@ class ChampionshipParticipantsExport implements FromQuery, WithHeadings, WithMap
         ];
     }
 
-    public function query()
+    public function query(): Builder
     {
         $subQuery = Participant::where('championship_id', $this->championship->getKey())
             ->groupBy('driver_licence')
@@ -37,7 +38,8 @@ class ChampionshipParticipantsExport implements FromQuery, WithHeadings, WithMap
 
         return Participant::query()
             ->whereIn('id', $subQuery)
-            ->orderBy('bib', 'asc');
+            ->orderBy('bib', 'asc')
+            ->orderBy('id', 'asc');
     }
 
     /**

@@ -60,7 +60,7 @@ class DeleteParticipant
 
                 $participant->transponders()->delete();
 
-                $participant->activities()->delete();
+                $participant->activitiesAsSubject()->delete();
 
                 $activeBonuses = $participant->bonuses()->get();
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\ActivityLog\EncryptSensibleParticipantData;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
@@ -49,8 +48,6 @@ class AppServiceProvider extends ServiceProvider
             'championship' => Championship::class,
             'race' => Race::class,
         ]);
-
-        Participant::addLogChange(new EncryptSensibleParticipantData());
 
         Blade::if('useStandardRegistrationForm', function (?Race $race = null): bool {
             return RegistrationForm::resolve($race) !== RegistrationForm::Minimal;

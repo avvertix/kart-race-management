@@ -74,7 +74,7 @@ class ChampionshipTireController extends Controller
         return view('championship-tire.show', [
             'tire' => $tireOption,
             'championship' => $tireOption->championship,
-            'activities' => $tireOption->activities,
+            'activities' => $tireOption->activitiesAsSubject,
         ]);
     }
 

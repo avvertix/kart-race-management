@@ -185,15 +185,15 @@ class ChampionshipTiresControllerTest extends TestCase
 
         $updatedTire = $tire->fresh();
 
-        $lastActivity = $updatedTire->activities()->get()->last();
+        $lastActivity = $updatedTire->activitiesAsSubject()->get()->last();
 
         $this->assertInstanceOf(ChampionshipTire::class, $updatedTire);
 
         $this->assertEquals('Tire name', $updatedTire->name);
         $this->assertNull($updatedTire->code);
         $this->assertEquals(40000, $updatedTire->price);
-        $this->assertEquals(['price' => 40000], $lastActivity->changes()->get('attributes'));
-        $this->assertEquals(['price' => $tire->price], $lastActivity->changes()->get('old'));
+        $this->assertEquals(['price' => 40000], $lastActivity->attribute_changes->get('attributes'));
+        $this->assertEquals(['price' => $tire->price], $lastActivity->attribute_changes->get('old'));
     }
 
     public function test_tire_price_updated_when_same_tire_is_present_in_another_championship(): void
@@ -224,15 +224,15 @@ class ChampionshipTiresControllerTest extends TestCase
 
         $updatedTire = $tire->fresh();
 
-        $lastActivity = $updatedTire->activities()->get()->last();
+        $lastActivity = $updatedTire->activitiesAsSubject()->get()->last();
 
         $this->assertInstanceOf(ChampionshipTire::class, $updatedTire);
 
         $this->assertEquals($tire->name, $updatedTire->name);
         $this->assertNull($updatedTire->code);
         $this->assertEquals(40000, $updatedTire->price);
-        $this->assertEquals(['price' => 40000], $lastActivity->changes()->get('attributes'));
-        $this->assertEquals(['price' => $tire->price], $lastActivity->changes()->get('old'));
+        $this->assertEquals(['price' => 40000], $lastActivity->attribute_changes->get('attributes'));
+        $this->assertEquals(['price' => $tire->price], $lastActivity->attribute_changes->get('old'));
     }
 
     public function test_tire_details_shown(): void

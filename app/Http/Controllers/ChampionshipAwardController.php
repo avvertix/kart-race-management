@@ -143,6 +143,24 @@ class ChampionshipAwardController extends Controller
     }
 
     /**
+     * Toggle the publish status of the specified award.
+     */
+    public function togglePublish(ChampionshipAward $award)
+    {
+        $this->authorize('update', $award);
+
+        $award->update([
+            'published_at' => $award->isPublished() ? null : now(),
+        ]);
+
+        $message = $award->isPublished()
+            ? __('Award published.')
+            : __('Award unpublished.');
+
+        return redirect()->back()->with('flash.banner', $message);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(ChampionshipAward $award)

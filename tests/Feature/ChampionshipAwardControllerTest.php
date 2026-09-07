@@ -293,6 +293,65 @@ class ChampionshipAwardControllerTest extends TestCase
         $this->assertFalse($races->contains('id', $race2->getKey()));
     }
 
+    public function test_award_is_private_by_default(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $this->assertFalse($award->isPublished());
+    }
+
+    public function test_organizer_can_toggle_award_publish_status(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('awards.show', $award))
+            ->post(route('awards.toggle-publish', $award));
+
+        $response->assertRedirect(route('awards.show', $award));
+        $this->assertTrue($award->fresh()->isPublished());
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('awards.show', $award))
+            ->post(route('awards.toggle-publish', $award));
+
+        $this->assertFalse($award->fresh()->isPublished());
+    }
+
+    public function test_racemanager_cannot_toggle_award_publish_status(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('awards.toggle-publish', $award));
+
+        $response->assertForbidden();
+        $this->assertFalse($award->fresh()->isPublished());
+    }
+
     public function test_award_edit_form_shown(): void
     {
         $user = User::factory()->organizer()->create();

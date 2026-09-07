@@ -78,4 +78,11 @@ class ChampionshipAwardFactory extends Factory
             'wildcard_filter' => WildcardFilter::ExcludeWildcards,
         ]);
     }
+
+    public function published(): static
+    {
+        return $this->state(fn () => [
+            'published_at' => now(),
+        ]);
+    }
 }

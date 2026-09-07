@@ -19,6 +19,7 @@ class PublicChampionshipAwardController extends Controller
     public function index(Championship $championship)
     {
         $awards = $championship->awards()
+            ->whereNotNull('published_at')
             ->with(['category'])
             ->orderBy('name')
             ->get();
@@ -36,6 +37,8 @@ class PublicChampionshipAwardController extends Controller
      */
     public function show(Request $request, ChampionshipAward $award, CalculateAwardRanking $calculateRanking)
     {
+        abort_unless($award->isPublished(), 404);
+
         $award->load(['championship', 'category', 'categories', 'races']);
 
         $championship = $award->championship;

@@ -29,12 +29,12 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $categoryAward = ChampionshipAward::factory()->categoryAward($category)->create([
+        $categoryAward = ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Category Trophy',
         ]);
 
-        $overallAward = ChampionshipAward::factory()->overallAward()->create([
+        $overallAward = ChampionshipAward::factory()->overallAward()->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Overall Trophy',
         ]);
@@ -67,7 +67,7 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $award = ChampionshipAward::factory()->categoryAward($category)->create([
+        $award = ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
         ]);
 
@@ -76,12 +76,45 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $response->assertSuccessful();
     }
 
-    public function test_show_displays_award_name_and_ranking(): void
+    public function test_show_returns_not_found_for_private_award(): void
     {
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
         $award = ChampionshipAward::factory()->categoryAward($category)->create([
+            'championship_id' => $championship->getKey(),
+        ]);
+
+        $response = $this->get(route('public.awards.show', $award));
+
+        $response->assertNotFound();
+    }
+
+    public function test_index_excludes_private_awards(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        ChampionshipAward::factory()->categoryAward($category)->create([
+            'championship_id' => $championship->getKey(),
+            'name' => 'Private Trophy',
+        ]);
+
+        $response = $this->get(route('public.championships.awards.index', $championship));
+
+        $response->assertSuccessful();
+        $response->assertDontSee('Private Trophy');
+
+        $groupedAwards = $response->viewData('groupedAwards');
+        $this->assertCount(0, $groupedAwards);
+    }
+
+    public function test_show_displays_award_name_and_ranking(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Speed Trophy',
         ]);
@@ -103,7 +136,7 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
         $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $award = ChampionshipAward::factory()->categoryAward($category)->specificRaces()->create([
+        $award = ChampionshipAward::factory()->categoryAward($category)->specificRaces()->published()->create([
             'championship_id' => $championship->getKey(),
         ]);
 
@@ -123,7 +156,7 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $award = ChampionshipAward::factory()->categoryAward($category)->create([
+        $award = ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
         ]);
 
@@ -137,7 +170,7 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $award = ChampionshipAward::factory()->categoryAward($category)->create([
+        $award = ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
         ]);
 
@@ -154,7 +187,7 @@ class PublicChampionshipAwardControllerTest extends TestCase
             'name' => 'Junior',
         ]);
 
-        ChampionshipAward::factory()->categoryAward($category)->create([
+        ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Junior Trophy',
         ]);
@@ -170,7 +203,7 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $award = ChampionshipAward::factory()->categoryAward($category)->create([
+        $award = ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Speed Trophy',
         ]);

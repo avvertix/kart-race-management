@@ -3,11 +3,19 @@
         {{ $award->name }} - {{ $championship->title }}
     </x-slot>
     <x-slot name="actions">
-        <a class="inline-flex items-center gap-2" target="_blank" href="{{ route('public.awards.show', $award) }}">
-            <x-ri-external-link-line class="size-4 text-zinc-500 shrink-0" />
-            {{ __('Public page') }}
-        </a>
+        @if($award->isPublished())
+            <a class="inline-flex items-center gap-2" target="_blank" href="{{ route('public.awards.show', $award) }}">
+                <x-ri-external-link-line class="size-4 text-zinc-500 shrink-0" />
+                {{ __('Public page') }}
+            </a>
+        @endif
         @can('update', $award)
+            <form action="{{ route('awards.toggle-publish', $award) }}" method="post">
+                @csrf
+                <x-secondary-button type="submit">
+                    {{ $award->isPublished() ? __('Unpublish') : __('Publish') }}
+                </x-secondary-button>
+            </form>
             <x-button-link href="{{ route('awards.edit', $award) }}">
                 {{ __('Edit') }}
             </x-button-link>
@@ -28,6 +36,17 @@
             <div>
                 <dt class="text-sm font-medium text-zinc-500">{{ __('Type') }}</dt>
                 <dd class="mt-1 text-sm text-zinc-900">{{ $award->type->localizedName() }}</dd>
+            </div>
+
+            <div>
+                <dt class="text-sm font-medium text-zinc-500">{{ __('Visibility') }}</dt>
+                <dd class="mt-1 text-sm">
+                    @if($award->isPublished())
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">{{ __('Public') }}</span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800">{{ __('Private') }}</span>
+                    @endif
+                </dd>
             </div>
 
             @if($award->isCategoryAward())

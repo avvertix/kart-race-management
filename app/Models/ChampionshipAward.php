@@ -27,6 +27,7 @@ class ChampionshipAward extends Model
         'best_n',
         'wildcard_filter',
         'category_id',
+        'published_at',
     ];
 
     /**
@@ -91,6 +92,11 @@ class ChampionshipAward extends Model
         return $this->type === AwardType::Overall;
     }
 
+    public function isPublished(): bool
+    {
+        return $this->published_at !== null;
+    }
+
     protected function casts(): array
     {
         return [
@@ -98,6 +104,7 @@ class ChampionshipAward extends Model
             'ranking_mode' => AwardRankingMode::class,
             'wildcard_filter' => WildcardFilter::class,
             'best_n' => 'integer',
+            'published_at' => 'datetime',
         ];
     }
 }

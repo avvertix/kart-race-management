@@ -36,14 +36,12 @@ class RemoveBonusFromParticipantWhenCostChanges
         // TODO: what if the race is already completed?
 
         // Check if category_id changed in any of the updated activities
-        $activities = $event->participant->activities()
+        $activities = $event->participant->activitiesAsSubject()
             ->forEvent('updated')
             ->get();
 
         $categoryChanged = $activities->contains(function ($activity) {
-            $changes = $activity->changes();
-
-            return isset($changes['attributes']['category_id']);
+            return isset($activity->changedAttributes()['category_id']);
         });
 
         if ($categoryChanged

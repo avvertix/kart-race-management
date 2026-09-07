@@ -217,14 +217,14 @@ class RaceParticipantController extends Controller
 
     private function buildActivityLog(Participant $participant): \Illuminate\Support\Collection
     {
-        $rawActivities = $participant->activities()
+        $rawActivities = $participant->activitiesAsSubject()
             ->with('causer')
             ->latest()
             ->get();
 
         $categoryIds = $rawActivities->flatMap(function ($activity) {
-            $attrs = $activity->properties->get('attributes', []);
-            $old = $activity->properties->get('old', []);
+            $attrs = $activity->changedAttributes();
+            $old = $activity->changedOldAttributes();
 
             return array_filter([
                 $attrs['category_id'] ?? null,
@@ -237,8 +237,8 @@ class RaceParticipantController extends Controller
             : collect();
 
         return $rawActivities->map(function ($activity) use ($categoriesById) {
-            $attrs = $activity->properties->get('attributes', []);
-            $old = $activity->properties->get('old', []);
+            $attrs = $activity->changedAttributes();
+            $old = $activity->changedOldAttributes();
 
             // Fields that are hashed, raw IDs, or redundant — not useful to display
             $skippedFields = ['category', 'driver_licence', 'competitor_licence', 'added_by'];

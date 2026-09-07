@@ -88,15 +88,15 @@ class ChampionshipCategoryController extends Controller
     {
         $category->load('tire')->loadCount('participants');
 
-        $rawActivities = $category->activities()
+        $rawActivities = $category->activitiesAsSubject()
             // ->forEvent('updated')
             ->with('causer')
             ->latest()
             ->get();
 
         $tireIds = $rawActivities->flatMap(function ($activity) {
-            $attrs = $activity->properties->get('attributes', []);
-            $old = $activity->properties->get('old', []);
+            $attrs = $activity->changedAttributes();
+            $old = $activity->changedOldAttributes();
 
             return array_filter([
                 $attrs['championship_tire_id'] ?? null,
@@ -109,8 +109,8 @@ class ChampionshipCategoryController extends Controller
             : collect();
 
         $activities = $rawActivities->map(function ($activity) use ($tiresById) {
-            $attrs = $activity->properties->get('attributes', []);
-            $old = $activity->properties->get('old', []);
+            $attrs = $activity->changedAttributes();
+            $old = $activity->changedOldAttributes();
 
             $changes = collect($attrs)->map(function ($newValue, $field) use ($old, $tiresById) {
                 return [

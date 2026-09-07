@@ -21,19 +21,13 @@ class CalculateAwardRanking
      */
     public function __invoke(ChampionshipAward $award, bool $publishedOnly = true): Collection
     {
-        if ($award->isCategoryAward()) {
-            return $this->calculateCategoryRanking($award, $publishedOnly);
-        }
-
-        return $this->calculateOverallRanking($award, $publishedOnly);
-    }
-
-    private function calculateCategoryRanking(ChampionshipAward $award, bool $publishedOnly): Collection
-    {
         $raceIds = $this->resolveRaceIds($award);
+        $categoryIds = $award->isCategoryAward()
+            ? collect([$award->category_id])
+            : $award->categories()->pluck('categories.id');
 
         $query = $this->buildBaseQuery($raceIds, $publishedOnly)
-            ->where('participant_results.category_id', $award->category_id);
+            ->whereIn('participant_results.category_id', $categoryIds);
 
         $this->applyWildcardFilter($query, $award->wildcard_filter);
 
@@ -42,18 +36,6 @@ class CalculateAwardRanking
         if ($award->ranking_mode === AwardRankingMode::BestN) {
             return $this->rankByBestN($perRacePoints, $award->best_n);
         }
-
-        return $this->rankByTotal($perRacePoints);
-    }
-
-    private function calculateOverallRanking(ChampionshipAward $award, bool $publishedOnly): Collection
-    {
-        $categoryIds = $award->categories()->pluck('categories.id');
-        $raceIds = Race::where('championship_id', $award->championship_id)->pluck('id');
-
-        $perRacePoints = $this->fetchPerRacePoints(
-            $this->buildBaseQuery($raceIds, $publishedOnly)->whereIn('participant_results.category_id', $categoryIds)
-        );
 
         return $this->rankByTotal($perRacePoints);
     }

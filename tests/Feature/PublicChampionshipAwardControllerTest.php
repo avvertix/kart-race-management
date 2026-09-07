@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipAward;
+use App\Models\Race;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
@@ -93,6 +94,28 @@ class PublicChampionshipAwardControllerTest extends TestCase
         $response->assertViewHas('ranking');
         $response->assertViewHas('races');
         $response->assertSee('Speed Trophy');
+    }
+
+    public function test_show_only_lists_selected_races_for_specific_races_mode(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->categoryAward($category)->specificRaces()->create([
+            'championship_id' => $championship->getKey(),
+        ]);
+
+        $award->races()->sync([$race1->getKey()]);
+
+        $response = $this->get(route('public.awards.show', $award));
+
+        $response->assertSuccessful();
+        $races = $response->viewData('races');
+        $this->assertCount(1, $races);
+        $this->assertTrue($races->contains('id', $race1->getKey()));
+        $this->assertFalse($races->contains('id', $race2->getKey()));
     }
 
     public function test_show_contains_back_link_to_championship_awards(): void

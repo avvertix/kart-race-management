@@ -61,8 +61,6 @@
     </div>
 </div>
 
-@if($isCategory)
-
 <x-section-border />
 
 <div class="md:grid md:grid-cols-3 md:gap-6" x-data="{ rankingMode: '{{ old('ranking_mode', optional($currentAward)?->ranking_mode?->value ?? 'all') }}' }">
@@ -133,5 +131,3 @@
         </div>
     </div>
 </div>
-
-@endif

@@ -32,13 +32,9 @@
                     {{ $item->type->localizedName() }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                    @if($item->isCategoryAward())
-                        {{ $item->ranking_mode->localizedName() }}
-                        @if($item->ranking_mode === \App\Models\AwardRankingMode::BestN)
-                            ({{ $item->best_n }})
-                        @endif
-                    @else
-                        —
+                    {{ $item->ranking_mode->localizedName() }}
+                    @if($item->ranking_mode === \App\Models\AwardRankingMode::BestN)
+                        ({{ $item->best_n }})
                     @endif
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-4">

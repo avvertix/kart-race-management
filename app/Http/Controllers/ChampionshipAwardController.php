@@ -9,7 +9,9 @@ use App\Models\AwardRankingMode;
 use App\Models\AwardType;
 use App\Models\Championship;
 use App\Models\ChampionshipAward;
+use App\Models\Participant;
 use App\Models\WildcardFilter;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -84,15 +86,33 @@ class ChampionshipAwardController extends Controller
         $ranking = app(CalculateAwardRanking::class)($award, publishedOnly: false);
         $championship = $award->championship;
 
-        $races = $award->ranking_mode === AwardRankingMode::SpecificRaces
-            ? $award->races->sortBy('event_start_at')->values()
-            : $championship->races()->orderBy('event_start_at')->get();
-
         return view('award.show', [
             'championship' => $championship,
             'award' => $award,
             'ranking' => $ranking,
-            'races' => $races,
+            'races' => $this->resolveScopedRaces($award),
+        ]);
+    }
+
+    /**
+     * Display the points breakdown for a single participant within the award, showing every
+     * run result that contributed to their score across all races in scope.
+     */
+    public function breakdown(ChampionshipAward $award, Participant $participant)
+    {
+        $this->authorize('view', $award);
+
+        $award->load(['category', 'categories', 'races']);
+        $championship = $award->championship;
+
+        $breakdown = app(CalculateAwardRanking::class)->breakdown($award, $participant->racer_hash, publishedOnly: false);
+
+        return view('award.breakdown', [
+            'championship' => $championship,
+            'award' => $award,
+            'participant' => $participant,
+            'breakdown' => $breakdown,
+            'races' => $this->resolveScopedRaces($award),
         ]);
     }
 
@@ -171,6 +191,17 @@ class ChampionshipAwardController extends Controller
 
         return redirect()->route('championships.awards.index', $championship)
             ->with('flash.banner', __('Award deleted.'));
+    }
+
+    /**
+     * Resolve the races in scope for an award's ranking table: its selected races when the
+     * ranking mode is specific-races, otherwise every race in the championship.
+     */
+    private function resolveScopedRaces(ChampionshipAward $award): Collection
+    {
+        return $award->ranking_mode === AwardRankingMode::SpecificRaces
+            ? $award->races->sortBy('event_start_at')->values()
+            : $award->championship->races()->orderBy('event_start_at')->get();
     }
 
     /**

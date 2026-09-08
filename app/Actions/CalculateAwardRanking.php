@@ -8,6 +8,8 @@ use App\Models\AwardRankingMode;
 use App\Models\ChampionshipAward;
 use App\Models\ParticipantResult;
 use App\Models\Race;
+use App\Models\ResultStatus;
+use App\Models\RunType;
 use App\Models\WildcardFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -38,6 +40,99 @@ class CalculateAwardRanking
         }
 
         return $this->rankByTotal($perRacePoints);
+    }
+
+    /**
+     * Build a detailed points breakdown for a single racer within an award: every run result
+     * that contributed to their points, grouped by race, alongside the same totals shown in
+     * the ranking so organizers can verify how a driver's score was calculated.
+     *
+     * @return array{
+     *     total_points: float,
+     *     races_counted: int,
+     *     counted_race_ids: array<int, int>,
+     *     points_per_race: array<int, float>,
+     *     entries_by_race: Collection<int, Collection<int, array>>,
+     * }
+     */
+    public function breakdown(ChampionshipAward $award, string $racerHash, bool $publishedOnly = false): array
+    {
+        $raceIds = $this->resolveRaceIds($award);
+        $categoryIds = $award->isCategoryAward()
+            ? collect([$award->category_id])
+            : $award->categories()->pluck('categories.id');
+
+        $summaryQuery = $this->buildBaseQuery($raceIds, $publishedOnly)
+            ->whereIn('participant_results.category_id', $categoryIds)
+            ->where('participants.racer_hash', $racerHash);
+
+        $this->applyWildcardFilter($summaryQuery, $award->wildcard_filter);
+
+        $perRacePoints = $this->fetchPerRacePoints($summaryQuery);
+
+        $summary = ($award->ranking_mode === AwardRankingMode::BestN
+            ? $this->rankByBestN($perRacePoints, $award->best_n)
+            : $this->rankByTotal($perRacePoints))->first();
+
+        if ($summary === null) {
+            return [
+                'total_points' => 0.0,
+                'races_counted' => 0,
+                'counted_race_ids' => [],
+                'points_per_race' => [],
+                'entries_by_race' => collect(),
+            ];
+        }
+
+        $entriesQuery = $this->buildBaseQuery($raceIds, $publishedOnly)
+            ->whereIn('participant_results.category_id', $categoryIds)
+            ->where('participants.racer_hash', $racerHash);
+
+        $this->applyWildcardFilter($entriesQuery, $award->wildcard_filter);
+
+        return [
+            'total_points' => $summary['total_points'],
+            'races_counted' => $summary['races_counted'],
+            'counted_race_ids' => $summary['counted_race_ids'] ?? array_keys($summary['points_per_race']),
+            'points_per_race' => $summary['points_per_race'],
+            'entries_by_race' => $this->fetchRunDetails($entriesQuery),
+        ];
+    }
+
+    /**
+     * Fetch the individual run-result rows behind a racer's points, grouped by race.
+     */
+    private function fetchRunDetails(Builder $query): Collection
+    {
+        return $query
+            ->selectRaw('
+                run_results.race_id as race_id,
+                run_results.run_type as run_type_value,
+                run_results.title as run_title,
+                participant_results.points as points_value,
+                participant_results.position as position_value,
+                participant_results.status as status_value,
+                participant_results.is_dnf as is_dnf_value,
+                participant_results.is_dns as is_dns_value,
+                participant_results.is_dq as is_dq_value,
+                participant_results.category as category_label
+            ')
+            ->orderBy('run_results.race_id')
+            ->orderBy('run_results.run_type')
+            ->get()
+            ->map(fn ($row) => [
+                'run_type' => RunType::from((int) $row->run_type_value),
+                'run_title' => $row->run_title,
+                'points' => (float) $row->points_value,
+                'position' => $row->position_value,
+                'status' => ResultStatus::from((int) $row->status_value),
+                'is_dnf' => (bool) $row->is_dnf_value,
+                'is_dns' => (bool) $row->is_dns_value,
+                'is_dq' => (bool) $row->is_dq_value,
+                'category_label' => $row->category_label,
+                'race_id' => (int) $row->race_id,
+            ])
+            ->groupBy('race_id');
     }
 
     /**
@@ -91,6 +186,7 @@ class CalculateAwardRanking
         return $query
             ->selectRaw('
                 participant_results.participant_id,
+                participants.uuid,
                 participants.racer_hash,
                 participants.first_name,
                 participants.last_name,
@@ -100,6 +196,7 @@ class CalculateAwardRanking
             ')
             ->groupBy(
                 'participant_results.participant_id',
+                'participants.uuid',
                 'participants.racer_hash',
                 'participants.first_name',
                 'participants.last_name',
@@ -119,6 +216,7 @@ class CalculateAwardRanking
 
                 return [
                     'participant_id' => $first->participant_id,
+                    'uuid' => $first->uuid,
                     'racer_hash' => $first->racer_hash,
                     'first_name' => str()->title($first->first_name),
                     'last_name' => str()->title($first->last_name),
@@ -146,6 +244,7 @@ class CalculateAwardRanking
 
                 return [
                     'participant_id' => $first->participant_id,
+                    'uuid' => $first->uuid,
                     'racer_hash' => $first->racer_hash,
                     'first_name' => str()->title($first->first_name),
                     'last_name' => str()->title($first->last_name),

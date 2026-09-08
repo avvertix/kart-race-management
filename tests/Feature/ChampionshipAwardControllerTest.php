@@ -9,7 +9,10 @@ use App\Models\AwardType;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipAward;
+use App\Models\Participant;
+use App\Models\ParticipantResult;
 use App\Models\Race;
+use App\Models\RunResult;
 use App\Models\User;
 use App\Models\WildcardFilter;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
@@ -291,6 +294,174 @@ class ChampionshipAwardControllerTest extends TestCase
         $this->assertCount(1, $races);
         $this->assertTrue($races->contains('id', $race1->getKey()));
         $this->assertFalse($races->contains('id', $race2->getKey()));
+    }
+
+    public function test_award_breakdown_page_shows_run_level_details(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $runResult = RunResult::factory()->published()->create([
+            'race_id' => $race->getKey(),
+            'title' => 'Final',
+        ]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'bib' => 10,
+        ]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 25,
+        ]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('awards.participants.breakdown', ['award' => $award, 'participant' => $participant]));
+
+        $response->assertSuccessful();
+        $response->assertViewIs('award.breakdown');
+        $response->assertSee('Final');
+        $response->assertSee('25');
+
+        $breakdown = $response->viewData('breakdown');
+        $this->assertEquals(25.0, $breakdown['total_points']);
+    }
+
+    public function test_award_breakdown_requires_login(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+        ]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this->get(route('awards.participants.breakdown', ['award' => $award, 'participant' => $participant]));
+
+        $response->assertRedirectToRoute('login');
+    }
+
+    public function test_award_show_page_links_to_participant_breakdown(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $runResult = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'bib' => 10,
+        ]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 25,
+        ]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('awards.show', $award));
+
+        $response->assertSuccessful();
+        $response->assertSee(route('awards.participants.breakdown', ['award' => $award, 'participant' => $participant]));
+    }
+
+    public function test_award_show_page_displays_races_participated_for_best_n_mode(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $race3 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $runResult1 = RunResult::factory()->published()->create(['race_id' => $race1->getKey()]);
+        $runResult2 = RunResult::factory()->published()->create(['race_id' => $race2->getKey()]);
+        $runResult3 = RunResult::factory()->published()->create(['race_id' => $race3->getKey()]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race1->getKey(),
+            'bib' => 10,
+        ]);
+
+        foreach ([$runResult1, $runResult2, $runResult3] as $runResult) {
+            ParticipantResult::factory()->forParticipant($participant)->create([
+                'run_result_id' => $runResult->getKey(),
+                'category_id' => $category->getKey(),
+                'points' => 10,
+            ]);
+        }
+
+        $award = ChampionshipAward::factory()->bestN(2)->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('awards.show', $award));
+
+        $response->assertSuccessful();
+        $response->assertSee('3 races');
+    }
+
+    public function test_award_show_page_does_not_display_races_participated_for_all_races_mode(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $runResult = RunResult::factory()->published()->create(['race_id' => $race->getKey()]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'bib' => 10,
+        ]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 10,
+        ]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('awards.show', $award));
+
+        $response->assertSuccessful();
+        $response->assertDontSee('1 race');
     }
 
     public function test_award_is_private_by_default(): void

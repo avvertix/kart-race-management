@@ -582,4 +582,118 @@ class CalculateAwardRankingTest extends TestCase
 
         $this->assertCount(0, $ranking);
     }
+
+    public function test_breakdown_lists_every_run_result_that_contributed_to_the_total(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $qualifying = RunResult::factory()->published()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => \App\Models\RunType::QUALIFY->value,
+            'title' => 'Qualifying',
+        ]);
+        $finalRun = RunResult::factory()->published()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => \App\Models\RunType::RACE_2->value,
+            'title' => 'Final',
+        ]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'bib' => 10,
+        ]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $qualifying->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 5,
+            'position' => '2',
+        ]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $finalRun->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 20,
+            'position' => '1',
+        ]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $breakdown = app(CalculateAwardRanking::class)->breakdown($award, $participant->racer_hash);
+
+        $this->assertEquals(25.0, $breakdown['total_points']);
+        $this->assertEquals(25.0, $breakdown['points_per_race'][$race->getKey()]);
+
+        $entries = $breakdown['entries_by_race']->get($race->getKey());
+        $this->assertCount(2, $entries);
+        $this->assertEqualsCanonicalizing(
+            ['Qualifying', 'Final'],
+            $entries->pluck('run_title')->all(),
+        );
+        $this->assertEqualsCanonicalizing([5.0, 20.0], $entries->pluck('points')->all());
+    }
+
+    public function test_breakdown_marks_races_excluded_by_best_n(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $runResult1 = RunResult::factory()->published()->create(['race_id' => $race1->getKey()]);
+        $runResult2 = RunResult::factory()->published()->create(['race_id' => $race2->getKey()]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race1->getKey(),
+            'bib' => 10,
+        ]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult1->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 25,
+        ]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult2->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 10,
+        ]);
+
+        $award = ChampionshipAward::factory()->bestN(1)->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $breakdown = app(CalculateAwardRanking::class)->breakdown($award, $participant->racer_hash);
+
+        $this->assertEquals(25.0, $breakdown['total_points']);
+        $this->assertContains($race1->getKey(), $breakdown['counted_race_ids']);
+        $this->assertNotContains($race2->getKey(), $breakdown['counted_race_ids']);
+        $this->assertCount(1, $breakdown['entries_by_race']->get($race2->getKey()));
+    }
+
+    public function test_breakdown_returns_empty_result_for_racer_with_no_points(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $breakdown = app(CalculateAwardRanking::class)->breakdown($award, 'nonexistent-hash');
+
+        $this->assertEquals(0.0, $breakdown['total_points']);
+        $this->assertTrue($breakdown['entries_by_race']->isEmpty());
+    }
 }

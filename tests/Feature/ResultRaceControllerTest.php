@@ -185,6 +185,28 @@ class ResultRaceControllerTest extends TestCase
         $this->assertEquals(5, $participantResults->count());
     }
 
+    public function test_show_can_download_pdf(): void
+    {
+        $user = User::factory()->admin()->create();
+
+        $race = Race::factory()->create();
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        ParticipantResult::factory()->count(3)->create([
+            'run_result_id' => $runResult->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('results.show', ['result' => $runResult, 'format' => 'pdf']));
+
+        $response->assertSuccessful();
+        $response->assertHeader('content-type', 'application/pdf');
+    }
+
     public function test_destroy_removes_records_and_file(): void
     {
         Storage::fake('race-results');

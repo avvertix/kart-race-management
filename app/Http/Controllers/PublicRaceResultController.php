@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Race;
 use App\Models\RunResult;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class PublicRaceResultController extends Controller
 {
@@ -33,17 +35,31 @@ class PublicRaceResultController extends Controller
     /**
      * Display a single published run result with participant results.
      */
-    public function show(RunResult $result)
+    public function show(Request $request, RunResult $result)
     {
         abort_unless($result->isPublished(), 404);
 
-        $result->load(['race.championship', 'participantResults']);
+        $result->load(['race.championship', 'participantResults.participant']);
 
-        return view('public-race-result.show', [
+        $data = [
             'race' => $result->race,
             'championship' => $result->race->championship,
             'runResult' => $result,
             'participantResults' => $result->participantResults,
-        ]);
+        ];
+
+        if ($request->input('format') === 'pdf') {
+            return Pdf::loadView('public-race-result.show-pdf', $data)
+                ->setPaper('a4', 'portrait')
+                ->addInfo([
+                    'Title' => $result->title,
+                    'Author' => config('app.name'),
+                    'Creator' => config('app.name'),
+                    'PDFProducer' => config('app.name'),
+                ])
+                ->stream($result->title.'.pdf');
+        }
+
+        return view('public-race-result.show', $data);
     }
 }

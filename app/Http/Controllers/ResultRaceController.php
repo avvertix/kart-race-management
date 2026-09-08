@@ -14,6 +14,7 @@ use App\Models\ParticipantResult;
 use App\Models\Race;
 use App\Models\RunResult;
 use App\Models\RunType;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -108,18 +109,32 @@ class ResultRaceController extends Controller
     /**
      * Display the specified run result.
      */
-    public function show(RunResult $result)
+    public function show(Request $request, RunResult $result)
     {
         $result->load(['race.championship', 'participantResults', 'participantResults.participant']);
 
         $this->authorize('view', $result);
 
-        return view('race-result.show', [
+        $data = [
             'race' => $result->race,
             'championship' => $result->race->championship,
             'runResult' => $result,
             'participantResults' => $result->participantResults,
-        ]);
+        ];
+
+        if ($request->input('format') === 'pdf') {
+            return Pdf::loadView('public-race-result.show-pdf', $data)
+                ->setPaper('a4', 'portrait')
+                ->addInfo([
+                    'Title' => $result->title,
+                    'Author' => config('app.name'),
+                    'Creator' => config('app.name'),
+                    'PDFProducer' => config('app.name'),
+                ])
+                ->stream($result->title.'.pdf');
+        }
+
+        return view('race-result.show', $data);
     }
 
     /**

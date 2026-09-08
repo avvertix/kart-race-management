@@ -19,10 +19,20 @@
 
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
 
-        <div class="mb-4 flex flex-col items-start justify-between print:hidden">
-            <a class="text-sm underline text-zinc-600 hover:text-zinc-700" href="{{ route('public.races.results.index', $race) }}">{{ __('← Back to results') }}</a>
-            <h3 class="text-lg font-bold">{{ $runResult->title }}</h3>
-            <p class="text-sm text-zinc-500">{{ $runResult->run_type->localizedName() }}</p>
+        <div class="mb-4 flex items-start justify-between print:hidden">
+            <div class="flex flex-col items-start">
+                <a class="text-sm underline text-zinc-600 hover:text-zinc-700" href="{{ route('public.races.results.index', $race) }}">{{ __('← Back to results') }}</a>
+                <h3 class="text-lg font-bold">{{ $runResult->title }}</h3>
+                <p class="text-sm text-zinc-500">{{ $runResult->run_type->localizedName() }}</p>
+            </div>
+
+            <a
+                href="{{ route('public.results.show', ['result' => $runResult, 'format' => 'pdf']) }}"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+            >
+                <x-ri-printer-line class="size-4 shrink-0" />
+                {{ __('Print PDF') }}
+            </a>
         </div>
 
         {{-- Print-only header --}}
@@ -61,7 +71,14 @@
                         @endif
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm font-bold text-zinc-900">{{ $participantResult->bib }}</td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-zinc-900">{{ $participantResult->name }}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-zinc-900">
+                        {{ $participantResult->name }}
+                        @if ($race->isNationalOrInternational() && $participantResult->participant?->isOutOfZone())
+                            <span class="ml-1 inline-flex items-center rounded-md bg-pink-50 px-1.5 py-0.5 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">
+                                {{ filled($participantResult->participant->region) ? __('OZ :region', ['region' => $participantResult->participant->region_and_nationality]) : __('OZ') }}
+                            </span>
+                        @endif
+                    </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $participantResult->category }}</td>
                     @if ($runResult->run_type->isRace())
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-900">{{ $participantResult->total_race_time }}</td>

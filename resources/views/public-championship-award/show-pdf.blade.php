@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Penalty Sheet</title>
+    <title>Award</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; font-size: 12px; margin: 0; padding: 0; }

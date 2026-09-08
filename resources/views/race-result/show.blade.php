@@ -8,33 +8,43 @@
 
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
 
-        <div class="mb-4">
-            <div class="flex items-center gap-3">
-                <h3 class="text-lg font-bold">{{ $runResult->title }}</h3>
-                @if ($runResult->isPublished())
-                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">{{ __('Published') }}</span>
-                @else
-                    <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800">{{ __('Draft') }}</span>
-                @endif
-            </div>
-            <p class="text-sm text-zinc-500">{{ $runResult->run_type->localizedName() }}</p>
-
-            @can('update', $race)
-                <div class="flex items-center gap-4 mt-2">
-                    <x-secondary-button-link href="{{ route('results.edit', $runResult) }}">{{ __('Edit result') }}</x-secondary-button-link>
-                    @livewire('assign-points-button', ['race' => $race, 'runResult' => $runResult])
-                    <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
-                        @csrf
-                        <x-secondary-button type="submit" >
-                            {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
-                        </x-secondary-button>
-                    </form>
-                    <form action="{{ route('results.link-participants', $runResult) }}" method="post">
-                        @csrf
-                        <x-secondary-button type="submit" >{{ __('Link participants') }}</x-secondary-button>
-                    </form>
+        <div class="mb-4 flex items-start justify-between">
+            <div>
+                <div class="flex items-center gap-3">
+                    <h3 class="text-lg font-bold">{{ $runResult->title }}</h3>
+                    @if ($runResult->isPublished())
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">{{ __('Published') }}</span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800">{{ __('Draft') }}</span>
+                    @endif
                 </div>
-            @endcan
+                <p class="text-sm text-zinc-500">{{ $runResult->run_type->localizedName() }}</p>
+
+                @can('update', $race)
+                    <div class="flex items-center gap-4 mt-2">
+                        <x-secondary-button-link href="{{ route('results.edit', $runResult) }}">{{ __('Edit result') }}</x-secondary-button-link>
+                        @livewire('assign-points-button', ['race' => $race, 'runResult' => $runResult])
+                        <form action="{{ route('results.toggle-publish', $runResult) }}" method="post">
+                            @csrf
+                            <x-secondary-button type="submit" >
+                                {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
+                            </x-secondary-button>
+                        </form>
+                        <form action="{{ route('results.link-participants', $runResult) }}" method="post">
+                            @csrf
+                            <x-secondary-button type="submit" >{{ __('Link participants') }}</x-secondary-button>
+                        </form>
+                    </div>
+                @endcan
+            </div>
+
+            <a
+                href="{{ route('results.show', ['result' => $runResult, 'format' => 'pdf']) }}"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+            >
+                <x-ri-printer-line class="size-4 shrink-0" />
+                {{ __('Print PDF') }}
+            </a>
         </div>
 
         <div class="overflow-x-auto">

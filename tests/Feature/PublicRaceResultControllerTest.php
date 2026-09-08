@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Participant;
 use App\Models\ParticipantResult;
 use App\Models\Race;
+use App\Models\RaceType;
 use App\Models\RunResult;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
@@ -73,6 +75,72 @@ class PublicRaceResultControllerTest extends TestCase
 
         $participantResults = $response->viewData('participantResults');
         $this->assertEquals(5, $participantResults->count());
+    }
+
+    public function test_out_of_zone_indication_is_shown_for_national_race(): void
+    {
+        $race = Race::factory()->create([
+            'type' => RaceType::NATIONAL,
+        ]);
+
+        $runResult = RunResult::factory()->published()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $participant = Participant::factory()->create([
+            'race_id' => $race->getKey(),
+        ])->fresh();
+        $participant->markOutOfZone();
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'participant_id' => $participant->getKey(),
+        ]);
+
+        $response = $this->get(route('public.results.show', $runResult));
+
+        $response->assertSuccessful();
+        $response->assertSee(__('OZ'));
+    }
+
+    public function test_out_of_zone_indication_is_not_shown_for_local_race(): void
+    {
+        $race = Race::factory()->create([
+            'type' => RaceType::LOCAL,
+        ]);
+
+        $runResult = RunResult::factory()->published()->create([
+            'race_id' => $race->getKey(),
+        ]);
+
+        $participant = Participant::factory()->create([
+            'race_id' => $race->getKey(),
+        ])->fresh();
+        $participant->markOutOfZone();
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'participant_id' => $participant->getKey(),
+        ]);
+
+        $response = $this->get(route('public.results.show', $runResult));
+
+        $response->assertSuccessful();
+        $response->assertDontSee(__('OZ'));
+    }
+
+    public function test_can_download_pdf_of_published_result(): void
+    {
+        $runResult = RunResult::factory()->published()->create();
+
+        ParticipantResult::factory()->count(5)->create([
+            'run_result_id' => $runResult->getKey(),
+        ]);
+
+        $response = $this->get(route('public.results.show', ['result' => $runResult, 'format' => 'pdf']));
+
+        $response->assertSuccessful();
+        $response->assertHeader('content-type', 'application/pdf');
     }
 
     public function test_cannot_view_unpublished_result(): void

@@ -18,6 +18,7 @@
             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Name') }}</th>
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Type') }}</th>
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Ranking mode') }}</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Visibility') }}</th>
             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                 <span class="sr-only">{{ __('Actions') }}</span>
             </th>
@@ -32,25 +33,36 @@
                     {{ $item->type->localizedName() }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                    @if($item->isCategoryAward())
-                        {{ $item->ranking_mode->localizedName() }}
-                        @if($item->ranking_mode === \App\Models\AwardRankingMode::BestN)
-                            ({{ $item->best_n }})
-                        @endif
+                    {{ $item->ranking_mode->localizedName() }}
+                    @if($item->ranking_mode === \App\Models\AwardRankingMode::BestN)
+                        ({{ $item->best_n }})
+                    @endif
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    @if($item->isPublished())
+                        <span class="text-green-600">{{ __('Public') }}</span>
                     @else
-                        —
+                        <span class="text-zinc-400">{{ __('Private') }}</span>
                     @endif
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-4">
-                    <a href="{{ route('public.awards.show', $item) }}" class="text-zinc-500 hover:text-zinc-700">{{ __('Public page') }}</a>
+                    @if($item->isPublished())
+                        <a href="{{ route('public.awards.show', $item) }}" class="text-zinc-500 hover:text-zinc-700">{{ __('Public page') }}</a>
+                    @endif
                     @can('update', $item)
+                        <form class="inline" action="{{ route('awards.toggle-publish', $item) }}" method="post">
+                            @csrf
+                            <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">
+                                {{ $item->isPublished() ? __('Unpublish') : __('Publish') }}
+                            </button>
+                        </form>
                         <a href="{{ route('awards.edit', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Edit') }}</a>
                     @endcan
                 </td>
             </tr>
         @empty
             <tr>
-                <td colspan="4" class="px-3 py-4 space-y-2 text-center">
+                <td colspan="5" class="px-3 py-4 space-y-2 text-center">
                     <p>{{ __('No awards configured.') }}</p>
                     @can('create', \App\Models\ChampionshipAward::class)
                         <p>

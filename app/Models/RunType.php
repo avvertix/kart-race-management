@@ -41,17 +41,17 @@ enum RunType: int
 
     public function isPractice(): bool
     {
-        return $this === static::WARM_UP;
+        return $this === self::WARM_UP;
     }
 
     public function isQualify(): bool
     {
-        return $this === static::QUALIFY;
+        return $this === self::QUALIFY;
     }
 
     public function isRace(): bool
     {
-        return in_array($this, [static::RACE_1, static::RACE_2]);
+        return in_array($this, [self::RACE_1, self::RACE_2]);
     }
 
     public function localizedName(): string

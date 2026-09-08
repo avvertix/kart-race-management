@@ -79,14 +79,20 @@ class ChampionshipAwardController extends Controller
      */
     public function show(ChampionshipAward $award)
     {
+        $award->load(['category', 'categories', 'races']);
+
         $ranking = app(CalculateAwardRanking::class)($award, publishedOnly: false);
         $championship = $award->championship;
 
+        $races = $award->ranking_mode === AwardRankingMode::SpecificRaces
+            ? $award->races->sortBy('event_start_at')->values()
+            : $championship->races()->orderBy('event_start_at')->get();
+
         return view('award.show', [
             'championship' => $championship,
-            'award' => $award->load(['category', 'categories', 'races']),
+            'award' => $award,
             'ranking' => $ranking,
-            'races' => $championship->races()->orderBy('event_start_at')->get(),
+            'races' => $races,
         ]);
     }
 
@@ -137,6 +143,24 @@ class ChampionshipAwardController extends Controller
     }
 
     /**
+     * Toggle the publish status of the specified award.
+     */
+    public function togglePublish(ChampionshipAward $award)
+    {
+        $this->authorize('update', $award);
+
+        $award->update([
+            'published_at' => $award->isPublished() ? null : now(),
+        ]);
+
+        $message = $award->isPublished()
+            ? __('Award published.')
+            : __('Award unpublished.');
+
+        return redirect()->back()->with('flash.banner', $message);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(ChampionshipAward $award)
@@ -158,7 +182,7 @@ class ChampionshipAwardController extends Controller
             'type' => ['required', Rule::in(array_column(AwardType::cases(), 'value'))],
             'name' => ['required', 'string', 'max:250'],
             'category_id' => ['required_if:type,category', 'nullable', 'exists:categories,id'],
-            'ranking_mode' => ['required_if:type,category', 'nullable', Rule::in(array_column(AwardRankingMode::cases(), 'value'))],
+            'ranking_mode' => ['nullable', Rule::in(array_column(AwardRankingMode::cases(), 'value'))],
             'best_n' => ['required_if:ranking_mode,best_n', 'nullable', 'integer', 'min:1'],
             'wildcard_filter' => ['nullable', Rule::in(array_column(WildcardFilter::cases(), 'value'))],
             'race_ids' => ['required_if:ranking_mode,specific', 'nullable', 'array'],

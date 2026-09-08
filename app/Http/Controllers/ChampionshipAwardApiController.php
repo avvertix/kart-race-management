@@ -15,7 +15,7 @@ class ChampionshipAwardApiController extends Controller
      */
     public function __invoke(Championship $championship): AnonymousResourceCollection
     {
-        $awards = $championship->awards()->orderBy('name')->get();
+        $awards = $championship->awards()->whereNotNull('published_at')->orderBy('name')->get();
 
         return AwardResource::collection($awards);
     }

@@ -200,6 +200,35 @@ class ChampionshipAwardControllerTest extends TestCase
         $this->assertCount(2, $award->categories);
     }
 
+    public function test_overall_award_created_with_specific_races(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $cat1 = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $cat2 = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.awards.create', $championship))
+            ->post(route('championships.awards.store', $championship), [
+                'type' => 'overall',
+                'name' => 'Overall Championship',
+                'category_ids' => [$cat1->getKey(), $cat2->getKey()],
+                'ranking_mode' => 'specific',
+                'race_ids' => [$race1->getKey(), $race2->getKey()],
+                'wildcard_filter' => 'all',
+            ]);
+
+        $response->assertRedirectToRoute('championships.awards.index', $championship);
+
+        $award = ChampionshipAward::first();
+        $this->assertEquals(AwardType::Overall, $award->type);
+        $this->assertEquals(AwardRankingMode::SpecificRaces, $award->ranking_mode);
+        $this->assertCount(2, $award->races);
+    }
+
     public function test_overall_award_requires_categories(): void
     {
         $user = User::factory()->organizer()->create();
@@ -236,6 +265,91 @@ class ChampionshipAwardControllerTest extends TestCase
         $response->assertViewIs('award.show');
         $response->assertViewHas('award');
         $response->assertViewHas('ranking');
+    }
+
+    public function test_award_show_page_only_lists_selected_races_for_specific_races_mode(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->specificRaces()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $award->races()->sync([$race1->getKey()]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('awards.show', $award));
+
+        $response->assertSuccessful();
+        $races = $response->viewData('races');
+        $this->assertCount(1, $races);
+        $this->assertTrue($races->contains('id', $race1->getKey()));
+        $this->assertFalse($races->contains('id', $race2->getKey()));
+    }
+
+    public function test_award_is_private_by_default(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $this->assertFalse($award->isPublished());
+    }
+
+    public function test_organizer_can_toggle_award_publish_status(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('awards.show', $award))
+            ->post(route('awards.toggle-publish', $award));
+
+        $response->assertRedirect(route('awards.show', $award));
+        $this->assertTrue($award->fresh()->isPublished());
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('awards.show', $award))
+            ->post(route('awards.toggle-publish', $award));
+
+        $this->assertFalse($award->fresh()->isPublished());
+    }
+
+    public function test_racemanager_cannot_toggle_award_publish_status(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $award = ChampionshipAward::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('awards.toggle-publish', $award));
+
+        $response->assertForbidden();
+        $this->assertFalse($award->fresh()->isPublished());
     }
 
     public function test_award_edit_form_shown(): void

@@ -20,7 +20,7 @@ class ChampionshipAwardApiControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        ChampionshipAward::factory()->categoryAward($category)->create([
+        ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Trophy A',
         ]);
@@ -43,7 +43,7 @@ class ChampionshipAwardApiControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        $award = ChampionshipAward::factory()->categoryAward($category)->create([
+        $award = ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
         ]);
 
@@ -67,12 +67,12 @@ class ChampionshipAwardApiControllerTest extends TestCase
         $championship = Championship::factory()->create();
         $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
 
-        ChampionshipAward::factory()->categoryAward($category)->create([
+        ChampionshipAward::factory()->categoryAward($category)->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Zebra Trophy',
         ]);
 
-        ChampionshipAward::factory()->overallAward()->create([
+        ChampionshipAward::factory()->overallAward()->published()->create([
             'championship_id' => $championship->getKey(),
             'name' => 'Alpha Trophy',
         ]);
@@ -91,6 +91,21 @@ class ChampionshipAwardApiControllerTest extends TestCase
 
         ChampionshipAward::factory()->categoryAward($category)->create([
             'championship_id' => $otherChampionship->getKey(),
+        ]);
+
+        $response = $this->getJson(route('api.championship.awards', $championship));
+
+        $response->assertJsonCount(0, 'data');
+    }
+
+    public function test_excludes_private_awards(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        ChampionshipAward::factory()->categoryAward($category)->create([
+            'championship_id' => $championship->getKey(),
+            'name' => 'Private Trophy',
         ]);
 
         $response = $this->getJson(route('api.championship.awards', $championship));

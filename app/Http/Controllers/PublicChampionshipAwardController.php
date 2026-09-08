@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\CalculateAwardRanking;
+use App\Models\AwardRankingMode;
 use App\Models\Championship;
 use App\Models\ChampionshipAward;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,6 +19,7 @@ class PublicChampionshipAwardController extends Controller
     public function index(Championship $championship)
     {
         $awards = $championship->awards()
+            ->whereNotNull('published_at')
             ->with(['category'])
             ->orderBy('name')
             ->get();
@@ -35,10 +37,14 @@ class PublicChampionshipAwardController extends Controller
      */
     public function show(Request $request, ChampionshipAward $award, CalculateAwardRanking $calculateRanking)
     {
+        abort_unless($award->isPublished(), 404);
+
         $award->load(['championship', 'category', 'categories', 'races']);
 
         $championship = $award->championship;
-        $races = $championship->races()->orderBy('event_start_at')->get();
+        $races = $award->ranking_mode === AwardRankingMode::SpecificRaces
+            ? $award->races->sortBy('event_start_at')->values()
+            : $championship->races()->orderBy('event_start_at')->get();
 
         $ranking = $calculateRanking($award);
 

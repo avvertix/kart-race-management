@@ -35,29 +35,29 @@ enum ResultStatus: int
     public function unfinishedOrPenalty(): bool
     {
         return match ($this) {
-            static::DID_NOT_START, static::DID_NOT_FINISH, static::DISQUALIFIED => true,
+            self::DID_NOT_START, self::DID_NOT_FINISH, self::DISQUALIFIED => true,
             default => false,
         };
     }
 
     public function finished(): bool
     {
-        return $this === static::FINISHED;
+        return $this === self::FINISHED;
     }
 
     public function disqualified(): bool
     {
-        return $this === static::DISQUALIFIED;
+        return $this === self::DISQUALIFIED;
     }
 
     public function didNotFinish(): bool
     {
-        return $this === static::DID_NOT_FINISH;
+        return $this === self::DID_NOT_FINISH;
     }
 
     public function didNotStart(): bool
     {
-        return $this === static::DID_NOT_START;
+        return $this === self::DID_NOT_START;
     }
 
     public function localizedName(): string

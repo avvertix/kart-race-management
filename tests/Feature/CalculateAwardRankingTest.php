@@ -417,6 +417,51 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertEquals(35.0, $ranking[0]['total_points']);
     }
 
+    public function test_overall_award_specific_races_mode_filters_to_selected_races(): void
+    {
+        $championship = Championship::factory()->create();
+        $cat1 = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $cat2 = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $race1 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+        $race2 = Race::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $runResult1 = RunResult::factory()->published()->create(['race_id' => $race1->getKey()]);
+        $runResult2 = RunResult::factory()->published()->create(['race_id' => $race2->getKey()]);
+
+        $participant = Participant::factory()->create([
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race1->getKey(),
+            'bib' => 10,
+        ]);
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult1->getKey(),
+            'participant_id' => $participant->getKey(),
+            'category_id' => $cat1->getKey(),
+            'points' => 25,
+        ]);
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult2->getKey(),
+            'participant_id' => $participant->getKey(),
+            'category_id' => $cat2->getKey(),
+            'points' => 18,
+        ]);
+
+        $award = ChampionshipAward::factory()->overallAward()->specificRaces()->create([
+            'championship_id' => $championship->getKey(),
+        ]);
+
+        $award->categories()->sync([$cat1->getKey(), $cat2->getKey()]);
+        $award->races()->sync([$race1->getKey()]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertCount(1, $ranking);
+        $this->assertEquals(25.0, $ranking[0]['total_points']); // race2 excluded
+    }
+
     public function test_unpublished_run_results_included_when_published_only_false(): void
     {
         $championship = Championship::factory()->create();

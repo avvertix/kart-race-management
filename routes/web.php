@@ -151,6 +151,8 @@ Route::middleware([
 
         Route::resource('championships.awards', ChampionshipAwardController::class)->shallow();
 
+        Route::post('awards/{award}/toggle-publish', [ChampionshipAwardController::class, 'togglePublish'])->name('awards.toggle-publish');
+
         Route::resource('championships.bib-reservations', BibReservationController::class)->shallow();
 
         Route::get('championships/{championship}/bib-reservations/import', [BibReservationImportController::class, 'create'])->name('championships.bib-reservations.import.create');

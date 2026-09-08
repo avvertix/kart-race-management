@@ -103,7 +103,12 @@
                             <span class="inline-block font-mono font-normal mr-2 w-7 text-zinc-900">{{ $entry['bib'] }}</span>{{ $entry['first_name'] }} {{ $entry['last_name'] }}
                         </a>
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-900 text-right font-semibold">{{ $entry['total_points'] }}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-900 text-right font-semibold">
+                        {{ $entry['total_points'] }}
+                        @if($award->ranking_mode === \App\Models\AwardRankingMode::BestN)
+                            <span class="block text-xs font-normal text-zinc-400">{{ trans_choice(':value race|:value races', count($entry['points_per_race']), ['value' => count($entry['points_per_race'])]) }}</span>
+                        @endif
+                    </td>
                     @foreach($races as $race)
                         @php
                             $racePoints = $entry['points_per_race'][$race->getKey()] ?? null;

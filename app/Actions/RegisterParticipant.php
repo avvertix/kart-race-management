@@ -48,6 +48,10 @@ class RegisterParticipant
             ]);
         }
 
+        if (($forcedBib = $this->getForcedBib($race, $input['driver_licence_number'] ?? null)) !== null) {
+            $input['bib'] = $forcedBib;
+        }
+
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
             ...$this->getCategoryValidationRules((int) $race->championship_id),            ...$this->getDriverValidationRules($race),
@@ -82,7 +86,7 @@ class RegisterParticipant
                         'driver_last_name' => $validatedInput['driver_last_name'],
                         'bib' => $validatedInput['bib'],
                         'driver_licence_number' => $licenceHash,
-                    ], $race, $user);
+                    ], $race, $user, $validatedInput['driver_licence_number']);
 
                     $participant = $race->participants()->create([
                         'bib' => $validatedInput['bib'],

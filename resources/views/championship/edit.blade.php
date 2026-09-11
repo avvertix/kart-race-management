@@ -275,6 +275,20 @@
                         <x-input-error for="allow_different_bibs" class="mt-2" />
                     </div>
 
+                    <div class="mt-4">
+                        <x-label for="shared_bib" value="{{ __('Shared BIB') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('The BIB always assigned to the driver licences listed below, regardless of the BIB submitted at registration or used in previous races. These drivers may still not share a BIB with anyone else within the same race.') }}</p>
+                        <x-input id="shared_bib" type="number" min="1" max="5000" class="block mt-1 w-full" name="shared_bib" :value="old('shared_bib', $championship->registration_settings->shared_bib)" />
+                        <x-input-error for="shared_bib" class="mt-2" />
+                    </div>
+
+                    <div class="mt-4">
+                        <x-label for="shared_bib_licences" value="{{ __('Shared BIB driver licences') }}" />
+                        <p class="text-zinc-600 text-sm">{{ __('One driver licence number per line (or comma separated). Leave empty to disable this behaviour.') }}</p>
+                        <textarea name="shared_bib_licences" id="shared_bib_licences" rows="4" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('shared_bib_licences', implode("\n", $championship->registration_settings->shared_bib_licences)) }}</textarea>
+                        <x-input-error for="shared_bib_licences" class="mt-2" />
+                    </div>
+
                     <div class="flex items-center justify-end mt-4">
                         <x-button class="ml-4" type="submit">
                             {{ __('Save') }}

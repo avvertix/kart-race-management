@@ -15,9 +15,19 @@ class UpdateChampionshipBibSettingsController extends Controller
 
         $validated = $this->validate($request, [
             'allow_different_bibs' => ['nullable', 'in:true,false'],
+            'shared_bib' => ['nullable', 'integer', 'min:1', 'max:5000', 'required_with:shared_bib_licences'],
+            'shared_bib_licences' => ['nullable', 'string'],
         ]);
 
+        $sharedBibLicences = collect(preg_split('/[\r\n,]+/', $validated['shared_bib_licences'] ?? '', -1, PREG_SPLIT_NO_EMPTY))
+            ->map(fn ($licence) => mb_trim($licence))
+            ->filter()
+            ->values()
+            ->all();
+
         $championship->registration_settings->allow_different_bibs = ($validated['allow_different_bibs'] ?? 'false') === 'true';
+        $championship->registration_settings->shared_bib_licences = $sharedBibLicences;
+        $championship->registration_settings->shared_bib = empty($sharedBibLicences) ? null : (int) $validated['shared_bib'];
 
         $championship->save();
 

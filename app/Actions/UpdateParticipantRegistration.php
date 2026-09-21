@@ -33,6 +33,10 @@ class UpdateParticipantRegistration
      */
     public function __invoke(Race $race, Participant $participant, array $input, ?User $user = null): Participant
     {
+        if (($forcedBib = $this->getForcedBib($race, $input['driver_licence_number'] ?? null)) !== null) {
+            $input['bib'] = $forcedBib;
+        }
+
         $validatedInput = Validator::make($input, [
             ...$this->getBibValidationRules(),
             ...$this->getCategoryValidationRules((int) $race->championship_id),
@@ -50,17 +54,28 @@ class UpdateParticipantRegistration
 
             $licenceHash = hash('sha512', $validatedInput['driver_licence_number']);
 
-            $updatedParticipant = Cache::lock("participant:{$validatedInput['bib']}", 10)->block(5, function () use ($race, $validatedInput, $participant, $category, $licenceHash) {
+            $hasForcedBib = $this->getForcedBib($race, $validatedInput['driver_licence_number']) !== null;
+
+            $updatedParticipant = Cache::lock("participant:{$validatedInput['bib']}", 10)->block(5, function () use ($race, $validatedInput, $participant, $category, $licenceHash, $hasForcedBib) {
+
+                // Bib must always be unique within the race itself: two karts cannot share a race
+                // number on track at the same time, so this rule applies even to forced-bib licences.
+                $bibRules = [
+                    Rule::unique('participants', 'bib')->ignore($participant)->where(fn ($query) => $query->where('race_id', $participant->race->getKey())),
+                ];
+
+                if (! $hasForcedBib) {
+                    // Forced-bib licences intentionally share their bib with each other across
+                    // the championship, so this cross-driver uniqueness rule is skipped for them.
+                    $bibRules[] = Rule::unique('participants', 'bib')
+                        ->ignore($participant)
+                        ->where(fn ($query) => $query
+                            ->where('championship_id', $participant->race->championship_id)
+                            ->where('driver_licence', '!=', $licenceHash));
+                }
 
                 $validatedBib = Validator::make($validatedInput, [
-                    'bib' => [
-                        Rule::unique('participants', 'bib')->ignore($participant)->where(fn ($query) => $query->where('race_id', $participant->race->getKey())),
-                        Rule::unique('participants', 'bib')
-                            ->ignore($participant)
-                            ->where(fn ($query) => $query
-                                ->where('championship_id', $participant->race->championship_id)
-                                ->where('driver_licence', '!=', $licenceHash)),
-                    ],
+                    'bib' => $bibRules,
                 ])
                     ->after(function ($validator) use ($participant, $validatedInput, $licenceHash) {
                         $validated = $validator->validated();

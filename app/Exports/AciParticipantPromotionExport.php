@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
+use PhpOffice\PhpSpreadsheet\Worksheet\BaseDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class AciParticipantPromotionExport implements FromView, WithDrawings
@@ -27,7 +28,7 @@ class AciParticipantPromotionExport implements FromView, WithDrawings
             ->get();
     }
 
-    public function drawings()
+    public function drawings(): BaseDrawing|array
     {
         $drawing = new Drawing();
         $drawing->setName('Karting - Coppa Italia di Zona');

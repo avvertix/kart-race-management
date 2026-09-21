@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Actions\RegisterParticipant;
 use App\Enums\ItalianRegion;
 use App\Models\Category;
+use App\Models\DriverLicence;
 use App\Models\ItalianPostalCode;
 use App\Models\Race;
 use App\Models\RaceType;
@@ -31,7 +32,10 @@ class DetermineParticipantZoneTest extends TestCase
         config(['races.registration.form' => 'complete']);
         Notification::fake();
 
-        $race = Race::factory()->create(['type' => RaceType::NATIONAL->value]);
+        $race = Race::factory()->create([
+            'type' => RaceType::NATIONAL->value,
+            'zone_regions' => [ItalianRegion::LOMBARDIA->value],
+        ]);
         $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
@@ -55,7 +59,10 @@ class DetermineParticipantZoneTest extends TestCase
         config(['races.registration.form' => 'complete']);
         Notification::fake();
 
-        $race = Race::factory()->create(['type' => RaceType::NATIONAL->value]);
+        $race = Race::factory()->create([
+            'type' => RaceType::NATIONAL->value,
+            'zone_regions' => [ItalianRegion::LOMBARDIA->value],
+        ]);
         $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
@@ -79,7 +86,10 @@ class DetermineParticipantZoneTest extends TestCase
         config(['races.registration.form' => 'complete']);
         Notification::fake();
 
-        $race = Race::factory()->create(['type' => RaceType::NATIONAL->value]);
+        $race = Race::factory()->create([
+            'type' => RaceType::NATIONAL->value,
+            'zone_regions' => [ItalianRegion::LOMBARDIA->value],
+        ]);
         $category = Category::factory()->recycle($race->championship)->create();
 
         $this->travelTo($race->registration_closes_at->subHour());
@@ -293,5 +303,34 @@ class DetermineParticipantZoneTest extends TestCase
         $fresh = $participant->fresh();
         $this->assertSame(ItalianRegion::LAZIO, $fresh->region);
         $this->assertTrue($fresh->properties['out_of_zone']);
+    }
+
+    public function test_out_of_zone_when_licence_set_to_foreign(): void
+    {
+        config(['races.registration.form' => 'complete']);
+        Notification::fake();
+
+        $race = Race::factory()->create([
+            'type' => RaceType::NATIONAL->value,
+            'zone_regions' => [ItalianRegion::LOMBARDIA->value],
+        ]);
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        // Unknown province + unknown CAP → cannot determine region → defaults to out-of-zone
+        $participant = app(RegisterParticipant::class)($race, [
+            'bib' => 1,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(['driver_residence_province' => '', 'driver_licence_type' => DriverLicence::FOREIGN->value,]),
+            'driver_residence_province' => 'MI',
+            'driver_licence_type' => DriverLicence::FOREIGN->value,
+            ...$this->generateValidVehicle(),
+            'consent_privacy' => true,
+        ]);
+
+        $this->travelBack();
+
+        $this->assertTrue($participant->fresh()->properties['out_of_zone']);
     }
 }

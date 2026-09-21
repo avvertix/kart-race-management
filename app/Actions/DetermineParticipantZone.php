@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Enums\ItalianRegion;
 use App\Events\ParticipantRegistered;
 use App\Events\ParticipantUpdated;
+use App\Models\DriverLicence;
 use App\Models\ItalianPostalCode;
 use Closure;
 
@@ -27,6 +28,10 @@ class DetermineParticipantZone
             return $next($event);
         }
 
+        if (! $event->race->hasZoneConfigured()) {
+            return $next($event);
+        }
+
         $participant = $event->participant;
         $race = $event->race;
 
@@ -42,12 +47,12 @@ class DetermineParticipantZone
 
         $participant->region = $region;
 
-        if ($race->hasZoneConfigured()) {
-            $properties = $participant->properties;
-            $properties['out_of_zone'] = $region === null
-                || ! in_array($region->value, $race->zone_regions?->toArray() ?? [], true);
-            $participant->properties = $properties;
-        }
+        $properties = $participant->properties;
+        
+        $properties['out_of_zone'] = $region === null
+            || ! in_array($region->value, $race->zone_regions?->toArray() ?? [], true) 
+            || $participant->licence_type === DriverLicence::FOREIGN;
+        $participant->properties = $properties;
 
         $participant->save();
 

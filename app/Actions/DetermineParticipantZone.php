@@ -48,9 +48,9 @@ class DetermineParticipantZone
         $participant->region = $region;
 
         $properties = $participant->properties;
-        
+
         $properties['out_of_zone'] = $region === null
-            || ! in_array($region->value, $race->zone_regions?->toArray() ?? [], true) 
+            || ! in_array($region->value, $race->zone_regions?->toArray() ?? [], true)
             || $participant->licence_type === DriverLicence::FOREIGN;
         $participant->properties = $properties;
 

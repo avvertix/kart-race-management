@@ -322,7 +322,7 @@ class DetermineParticipantZoneTest extends TestCase
         $participant = app(RegisterParticipant::class)($race, [
             'bib' => 1,
             'category' => $category->ulid,
-            ...$this->generateValidDriver(['driver_residence_province' => '', 'driver_licence_type' => DriverLicence::FOREIGN->value,]),
+            ...$this->generateValidDriver(['driver_residence_province' => '', 'driver_licence_type' => DriverLicence::FOREIGN->value]),
             'driver_residence_province' => 'MI',
             'driver_licence_type' => DriverLicence::FOREIGN->value,
             ...$this->generateValidVehicle(),

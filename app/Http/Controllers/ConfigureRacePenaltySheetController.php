@@ -27,10 +27,23 @@ class ConfigureRacePenaltySheetController extends Controller
             ->whereIn('id', $confirmedCategoryIds)
             ->values();
 
+        $wildcardEnabled = $race->championship->wildcard?->enabled ?? false;
+
+        $wildcardCategoryIds = $wildcardEnabled
+            ? $race->participants()
+                ->confirmed()
+                ->where('wildcard', true)
+                ->whereNotNull('category_id')
+                ->pluck('category_id')
+                ->unique()
+            : collect();
+
         return view('race.penalty-sheet-configure', [
             'race' => $race,
             'championship' => $race->championship,
             'categories' => $categories,
+            'wildcardEnabled' => $wildcardEnabled,
+            'wildcardCategories' => $categories->whereIn('id', $wildcardCategoryIds)->values(),
         ]);
     }
 }

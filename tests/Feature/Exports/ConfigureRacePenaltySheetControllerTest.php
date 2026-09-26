@@ -92,4 +92,54 @@ class ConfigureRacePenaltySheetControllerTest extends TestCase
         $response->assertOk();
         $response->assertSee(__('No confirmed participants found for this race.'));
     }
+
+    public function test_configure_page_shows_wildcard_switch_when_championship_has_wildcards(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $categoryA = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+        $categoryB = Category::factory()->recycle($race->championship)->create(['name' => 'KZ2']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryA->getKey(),
+            'wildcard' => true,
+        ]);
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryB->getKey(),
+            'wildcard' => false,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('races.penalty-sheet.configure', $race));
+
+        $response->assertOk();
+        $response->assertSee(__('Treat wildcards as separate categories'));
+        $response->assertViewHas('wildcardEnabled', true);
+        $response->assertViewHas('wildcardCategories', fn ($categories) => $categories->pluck('ulid')->all() === [$categoryA->ulid]);
+    }
+
+    public function test_configure_page_hides_wildcard_switch_when_championship_has_no_wildcards(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+            'wildcard' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('races.penalty-sheet.configure', $race));
+
+        $response->assertOk();
+        $response->assertDontSee(__('Treat wildcards as separate categories'));
+        $response->assertViewHas('wildcardEnabled', false);
+        $response->assertViewHas('wildcardCategories', fn ($categories) => $categories->isEmpty());
+    }
 }

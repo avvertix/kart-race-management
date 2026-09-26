@@ -161,4 +161,261 @@ class PrintRacePenaltySheetControllerTest extends TestCase
         $this->assertCount(2, $groups[0]['participants']);
         $this->assertTrue($groups[0]['showCategory']);
     }
+
+    public function test_wildcards_separated_when_requested_and_enabled(): void
+    {
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $categoryA = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+        $categoryB = Category::factory()->recycle($race->championship)->create(['name' => 'Senior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryA->getKey(),
+            'wildcard' => false,
+        ]);
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryA->getKey(),
+            'wildcard' => true,
+        ]);
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryB->getKey(),
+            'wildcard' => false,
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, [], true);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(3, $groups);
+        $this->assertSame('Mini Junior', $groups[0]['title']);
+        $this->assertSame('Mini Junior - Wildcard', $groups[1]['title']);
+        $this->assertSame('Senior', $groups[2]['title']);
+        $this->assertFalse($groups[0]['participants']->first()->wildcard);
+        $this->assertTrue($groups[1]['participants']->first()->wildcard);
+        $this->assertCount(1, $groups[2]['participants']);
+    }
+
+    public function test_wildcard_categories_can_be_grouped_freely(): void
+    {
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $categoryA = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+        $categoryB = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Senior']);
+
+        $regularA = Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryA->getKey(),
+            'wildcard' => false,
+            'bib' => 10,
+        ]);
+        $wildcardA = Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryA->getKey(),
+            'wildcard' => true,
+            'bib' => 11,
+        ]);
+        $regularB = Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryB->getKey(),
+            'wildcard' => false,
+            'bib' => 20,
+        ]);
+        $wildcardB = Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $categoryB->getKey(),
+            'wildcard' => true,
+            'bib' => 21,
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, [
+            [$categoryA->ulid, $categoryB->ulid],
+            [$categoryA->ulid.PrintRacePenaltySheet::WILDCARD_SUFFIX, $categoryB->ulid.PrintRacePenaltySheet::WILDCARD_SUFFIX],
+        ], true);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(2, $groups);
+        $this->assertSame('Mini Junior / Mini Senior', $groups[0]['title']);
+        $this->assertSame([$regularA->getKey(), $regularB->getKey()], $groups[0]['participants']->map->getKey()->all());
+        $this->assertSame('Mini Junior - Wildcard / Mini Senior - Wildcard', $groups[1]['title']);
+        $this->assertSame([$wildcardA->getKey(), $wildcardB->getKey()], $groups[1]['participants']->map->getKey()->all());
+        $this->assertTrue($groups[1]['showCategory']);
+    }
+
+    public function test_wildcard_category_can_be_grouped_with_its_regular_category(): void
+    {
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(2)->sequence(
+            ['wildcard' => false],
+            ['wildcard' => true],
+        )->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, [
+            [$category->ulid, $category->ulid.PrintRacePenaltySheet::WILDCARD_SUFFIX],
+        ], true);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(1, $groups);
+        $this->assertSame('Mini Junior / Mini Junior - Wildcard', $groups[0]['title']);
+        $this->assertCount(2, $groups[0]['participants']);
+        $this->assertFalse($groups[0]['participants'][0]->wildcard);
+        $this->assertTrue($groups[0]['participants'][1]->wildcard);
+    }
+
+    public function test_wildcard_keys_ignored_when_not_separating_wildcards(): void
+    {
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(2)->sequence(
+            ['wildcard' => false],
+            ['wildcard' => true],
+        )->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, [
+            [$category->ulid],
+            [$category->ulid.PrintRacePenaltySheet::WILDCARD_SUFFIX],
+        ]);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(1, $groups);
+        $this->assertSame('Mini Junior', $groups[0]['title']);
+        $this->assertCount(2, $groups[0]['participants']);
+    }
+
+    public function test_print_with_separate_wildcards_returns_a_pdf(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $category = Category::factory()->recycle($race->championship)->create();
+
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+            'wildcard' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('races.penalty-sheet.print', [
+            'race' => $race,
+            'separate_wildcards' => 1,
+            'groups' => [[$category->ulid.PrintRacePenaltySheet::WILDCARD_SUFFIX]],
+        ]));
+
+        $response->assertOk();
+        $this->assertTrue(str($response->getContent())->substr(0, 4)->is('%PDF'));
+    }
+
+    public function test_wildcards_not_separated_when_championship_has_wildcard_disabled(): void
+    {
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(2)->sequence(
+            ['wildcard' => false],
+            ['wildcard' => true],
+        )->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, [], true);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(1, $groups);
+        $this->assertCount(2, $groups[0]['participants']);
+    }
+
+    public function test_wildcards_not_separated_when_not_requested(): void
+    {
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(2)->sequence(
+            ['wildcard' => false],
+            ['wildcard' => true],
+        )->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, []);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(1, $groups);
+        $this->assertCount(2, $groups[0]['participants']);
+    }
+
+    public function test_wildcard_participants_are_marked_in_print(): void
+    {
+        $race = Race::factory()->create();
+        $race->championship->wildcard->enabled = true;
+        $race->championship->save();
+
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(2)->sequence(
+            ['wildcard' => false],
+            ['wildcard' => true],
+        )->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, []);
+
+        $html = view('prints.penalty-sheet', (fn () => $this->viewData())->call($export))->render();
+
+        $this->assertSame(1, mb_substr_count($html, '<span class="wildcard-marker">W</span>'));
+    }
+
+    public function test_wildcard_participants_are_not_marked_when_championship_has_wildcard_disabled(): void
+    {
+        $race = Race::factory()->create();
+
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Mini Junior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+            'wildcard' => true,
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, []);
+
+        $html = view('prints.penalty-sheet', (fn () => $this->viewData())->call($export))->render();
+
+        $this->assertStringNotContainsString('<span class="wildcard-marker">W</span>', $html);
+    }
 }

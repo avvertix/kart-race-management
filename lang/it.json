@@ -651,6 +651,7 @@
     "Group": "Gruppo",
     "Add group": "Aggiungi gruppo",
     "Print PDF": "Stampa PDF",
+    "Treat wildcards as separate categories": "Considera le wildcard come categorie separate",
     "Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.": "Prima di continuare, potresti verificare il tuo indirizzo email cliccando sul link che ti abbiamo appena inviato? Se non hai ricevuto l'email, saremo felici di inviartene un'altra.",
     "A new verification link has been sent to the email address you provided in your profile settings.": "Un nuovo link di verifica è stato inviato all'indirizzo email indicato nelle impostazioni del tuo profilo.",
     "Password must be at least of 8 characters, and include special characters like !$? and a number": "La password deve essere di almeno 8 caratteri, contenere un carattere speciale come !$? e un numero.",

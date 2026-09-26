@@ -19,6 +19,10 @@ class PrintRacePenaltySheetController extends Controller
 
         $filename = Str::slug('penalty-sheet-'.$race->event_start_at->toDateString().'-'.$race->title);
 
-        return (new PrintRacePenaltySheet($race, $request->input('groups', [])))->stream("{$filename}.pdf");
+        return (new PrintRacePenaltySheet(
+            $race,
+            $request->input('groups', []),
+            $request->boolean('separate_wildcards'),
+        ))->stream("{$filename}.pdf");
     }
 }

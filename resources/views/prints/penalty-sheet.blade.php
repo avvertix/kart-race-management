@@ -35,6 +35,14 @@
         .col-name { width: 35%; }
         .col-category { width: 20%; }
         .col-session { width: 13%; text-align: center; }
+        .wildcard-marker {
+            display: inline-block;
+            margin-left: 4px;
+            padding: 0 4px;
+            border: 1px solid #222;
+            font-weight: bold;
+            font-size: 10px;
+        }
 
         .penalty-title {
             text-align: center;
@@ -91,7 +99,12 @@
                 <tr>
                     <td class="col-bib" style="text-align:center;font-weight:bold;">{{ $participant->bib }}</td>
                     <td class="col-name">{{ $participant->full_name }}</td>
-                    <td class="col-category">{{ $participant->racingCategory?->short_name ?? $participant->racingCategory?->name }}</td>
+                    <td class="col-category">
+                        {{ $participant->racingCategory?->short_name ?? $participant->racingCategory?->name }}
+                        @if ($markWildcards && $participant->wildcard)
+                            <span class="wildcard-marker">W</span>
+                        @endif
+                    </td>
                     <td class="col-session"></td>
                     <td class="col-session"></td>
                     <td class="col-session"></td>

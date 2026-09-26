@@ -15,40 +15,82 @@
         @else
 
             <script>
-                function penaltySheetConfigurator(categories, storageKey) {
+                function penaltySheetConfigurator(categories, wildcardCategories, wildcardEnabled, storageKey) {
+                    const wildcardSuffix = '{{ \App\Exports\PrintRacePenaltySheet::WILDCARD_SUFFIX }}';
+                    const wildcardLabel = {{ Js::from(__('Wildcard')) }};
+
+                    const wildcardItem = (category) => ({
+                        ulid: category.ulid + wildcardSuffix,
+                        name: category.name + ' - ' + wildcardLabel,
+                        wildcard: true,
+                    });
+
                     return {
                         groups: [],
                         nextId: 2,
+                        separateWildcards: false,
                         dragging: null,
                         dragOverGroupId: null,
 
                         init() {
-                            this.loadFromStorage(categories);
+                            this.loadFromStorage();
                             this.$watch('groups', () => this.saveToStorage(), { deep: true });
+                            this.$watch('separateWildcards', (value) => {
+                                value ? this.addWildcardItems() : this.removeWildcardItems();
+                                this.saveToStorage();
+                            });
                         },
 
-                        loadFromStorage(categories) {
+                        expectedItems(separateWildcards) {
+                            if (! separateWildcards) {
+                                return categories;
+                            }
+                            return categories.flatMap(category => {
+                                const hasWildcards = wildcardCategories.some(c => c.ulid === category.ulid);
+                                return hasWildcards ? [category, wildcardItem(category)] : [category];
+                            });
+                        },
+
+                        loadFromStorage() {
                             const stored = localStorage.getItem(storageKey);
                             if (stored) {
                                 try {
                                     const parsed = JSON.parse(stored);
+                                    const separateWildcards = wildcardEnabled && (parsed.separateWildcards ?? false);
                                     const storedUlids = parsed.groups.flatMap(g => g.categories.map(c => c.ulid));
-                                    const currentUlids = categories.map(c => c.ulid);
+                                    const currentUlids = this.expectedItems(separateWildcards).map(c => c.ulid);
                                     const allPresent = currentUlids.every(u => storedUlids.includes(u));
                                     const noExtra = storedUlids.every(u => currentUlids.includes(u));
                                     if (allPresent && noExtra) {
+                                        this.separateWildcards = separateWildcards;
                                         this.groups = parsed.groups;
                                         this.nextId = parsed.nextId ?? (parsed.groups.length + 1);
                                         return;
                                     }
                                 } catch (e) {}
                             }
-                            this.groups = [{ id: 1, categories: categories }];
+                            this.separateWildcards = false;
+                            this.groups = [{ id: 1, categories: [...categories] }];
                             this.nextId = 2;
                         },
 
+                        addWildcardItems() {
+                            this.groups.forEach(group => {
+                                group.categories = group.categories.flatMap(category => {
+                                    const hasWildcards = wildcardCategories.some(c => c.ulid === category.ulid);
+                                    return hasWildcards ? [category, wildcardItem(category)] : [category];
+                                });
+                            });
+                        },
+
+                        removeWildcardItems() {
+                            this.groups.forEach(group => {
+                                group.categories = group.categories.filter(category => ! category.ulid.endsWith(wildcardSuffix));
+                            });
+                        },
+
                         saveToStorage() {
-                            localStorage.setItem(storageKey, JSON.stringify({ groups: this.groups, nextId: this.nextId }));
+                            localStorage.setItem(storageKey, JSON.stringify({ groups: this.groups, nextId: this.nextId, separateWildcards: this.separateWildcards }));
                         },
 
                         addGroup() {
@@ -109,6 +151,9 @@
                                         params.append('groups[' + i + '][]', cat.ulid);
                                     });
                                 });
+                            if (this.separateWildcards) {
+                                params.append('separate_wildcards', '1');
+                            }
                             const qs = params.toString();
                             return qs ? base + '?' + qs : base;
                         },
@@ -117,7 +162,7 @@
             </script>
 
             <div
-                x-data="penaltySheetConfigurator({{ Js::from($categories->map(fn ($c) => ['ulid' => $c->ulid, 'name' => $c->name])->values()) }}, 'penalty-sheet-groups-{{ $race->ulid }}')"
+                x-data="penaltySheetConfigurator({{ Js::from($categories->map(fn ($c) => ['ulid' => $c->ulid, 'name' => $c->name])->values()) }}, {{ Js::from($wildcardCategories->map(fn ($c) => ['ulid' => $c->ulid])->values()) }}, {{ Js::from($wildcardEnabled) }}, 'penalty-sheet-groups-{{ $race->ulid }}')"
                 class="space-y-6"
             >
                 <div>
@@ -125,11 +170,30 @@
                     <p class="mt-1 text-sm text-zinc-500">{{ __('Each group will be printed on a separate page. Drag categories between groups or use the arrows. Your arrangement is saved automatically.') }}</p>
                 </div>
 
+                @if ($wildcardEnabled)
+                    <div class="flex items-center gap-3">
+                        <button
+                            type="button"
+                            role="switch"
+                            :aria-checked="separateWildcards.toString()"
+                            @click="separateWildcards = ! separateWildcards"
+                            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                            :class="separateWildcards ? 'bg-orange-600' : 'bg-zinc-300'"
+                        >
+                            <span
+                                class="pointer-events-none inline-block size-5 rounded-full bg-white shadow transition-transform"
+                                :class="separateWildcards ? 'translate-x-5' : 'translate-x-0'"
+                            ></span>
+                        </button>
+                        <span class="text-sm text-zinc-700">{{ __('Treat wildcards as separate categories') }}</span>
+                    </div>
+                @endif
+
                 <div class="flex flex-wrap gap-4 items-start">
 
                     <template x-for="(group, gIdx) in groups" :key="group.id">
                         <div
-                            class="bg-white rounded-lg border shadow-sm p-4 w-52 transition-colors"
+                            class="bg-white rounded-lg border shadow-sm p-4 w-64 transition-colors"
                             :class="dragOverGroupId === group.id ? 'border-orange-400 bg-orange-50' : 'border-zinc-200'"
                             @dragover="onDragOver(group.id, $event)"
                             @dragleave="onDragLeave(group.id)"
@@ -143,8 +207,11 @@
                             <div class="space-y-2 min-h-10">
                                 <template x-for="cat in group.categories" :key="cat.ulid">
                                     <div
-                                        class="flex items-center justify-between gap-1 bg-orange-50 border border-orange-200 rounded px-2 py-1.5 cursor-grab active:cursor-grabbing"
-                                        :class="dragging && dragging.catUlid === cat.ulid ? 'opacity-40' : ''"
+                                        class="flex items-center justify-between gap-1 border rounded px-2 py-1.5 cursor-grab active:cursor-grabbing"
+                                        :class="[
+                                            dragging && dragging.catUlid === cat.ulid ? 'opacity-40' : '',
+                                            cat.wildcard ? 'bg-sky-50 border-sky-200' : 'bg-orange-50 border-orange-200',
+                                        ]"
                                         draggable="true"
                                         @dragstart="onDragStart(cat.ulid, group.id, $event)"
                                         @dragend="onDragEnd()"

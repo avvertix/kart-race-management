@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\Fortify;
 
+use App\Enums\Role;
 use App\Models\User;
+use App\Rules\ValidRole;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
-use Laravel\Jetstream\Jetstream;
-use Laravel\Jetstream\Rules\Role;
 
 class CreateNewUserWithRole implements CreatesNewUsers
 {
@@ -26,8 +26,7 @@ class CreateNewUserWithRole implements CreatesNewUsers
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
-            'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-            'role' => ['nullable', 'string', new Role],
+            'role' => ['nullable', 'string', new ValidRole],
             'website' => ['prohibited'], // Honeypot field
         ])->validate();
 
@@ -35,7 +34,7 @@ class CreateNewUserWithRole implements CreatesNewUsers
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'role' => $input['role'] ?? 'driver',
+            'role' => $input['role'] ?? Role::Driver->value,
         ]);
     }
 }

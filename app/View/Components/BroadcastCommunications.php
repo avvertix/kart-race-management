@@ -45,6 +45,6 @@ class BroadcastCommunications extends Component
             return null;
         }
 
-        return $user->userRole()?->key;
+        return $user->userRole()?->value;
     }
 }

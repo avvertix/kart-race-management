@@ -32,10 +32,10 @@
             <span class="ml-2 text-sm text-zinc-600">{{ __('Participants') }}</span>
         </label>
 
-        @foreach (\Laravel\Jetstream\Jetstream::$roles as $key => $role)
+        @foreach (\App\Enums\Role::options() as $key => $label)
             <label class="flex items-center">
                 <x-checkbox name="target_user_role[]" id="target_user_role-{{ $key }}" value="{{ $key }}" :checked="$oldTargetUser->contains($key)" />
-                <span class="ml-2 text-sm text-zinc-600">{{ $role->name }}</span>
+                <span class="ml-2 text-sm text-zinc-600">{{ $label }}</span>
             </label>
         @endforeach
     </div>

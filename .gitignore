@@ -4,6 +4,7 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/**/lsp-*.php
 /vendor
 .env
 /deploy/.env

@@ -18,7 +18,7 @@
             @if($isCategory)
                 <div x-data="{ categoryName: '{{ old('name', optional($currentAward)->name ?? '') }}' }">
                     <x-label for="category_id" value="{{ __('Category') }}*" />
-                    <select id="category_id" name="category_id" class="mt-1 block w-full border-zinc-300 rounded-md shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
+                    <select id="category_id" name="category_id" class="mt-1 block w-full border-zinc-300 rounded-md shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
                         x-on:change="if(categoryName === '' || categoryName === $event.target.options[$event.target.selectedIndex - 1]?.text) { categoryName = $event.target.options[$event.target.selectedIndex].text; $refs.nameInput.value = categoryName; }">
                         <option value="">—</option>
                         @foreach($categories as $category)
@@ -46,7 +46,7 @@
                         @foreach($categories as $category)
                             <label class="flex items-center">
                                 <input type="checkbox" name="category_ids[]" value="{{ $category->getKey() }}"
-                                    class="rounded border-zinc-300 text-orange-600 shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
+                                    class="rounded-sm border-zinc-300 text-orange-600 shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
                                     @checked(in_array($category->getKey(), old('category_ids', $currentAward?->categories?->pluck('id')->all() ?? [])))
                                 >
                                 <span class="ml-2 text-sm text-zinc-600">{{ $category->name }}</span>
@@ -75,7 +75,7 @@
                 @foreach(\App\Models\AwardRankingMode::cases() as $mode)
                     <label class="flex items-center">
                         <input type="radio" name="ranking_mode" value="{{ $mode->value }}" x-model="rankingMode"
-                            class="border-zinc-300 text-orange-600 shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
+                            class="border-zinc-300 text-orange-600 shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
                         >
                         <span class="ml-2 text-sm text-zinc-600">{{ $mode->localizedName() }}</span>
                     </label>
@@ -95,7 +95,7 @@
                     @foreach($races as $race)
                         <label class="flex items-center">
                             <input type="checkbox" name="race_ids[]" value="{{ $race->getKey() }}"
-                                class="rounded border-zinc-300 text-orange-600 shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
+                                class="rounded-sm border-zinc-300 text-orange-600 shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
                                 @checked(in_array($race->getKey(), old('race_ids', $currentAward?->races?->pluck('id')->all() ?? [])))
                             >
                             <span class="ml-2 text-sm text-zinc-600">{{ $race->title }}</span>
@@ -121,7 +121,7 @@
             @foreach(\App\Models\WildcardFilter::cases() as $filter)
                 <label class="flex items-center">
                     <input type="radio" name="wildcard_filter" value="{{ $filter->value }}"
-                        class="border-zinc-300 text-orange-600 shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
+                        class="border-zinc-300 text-orange-600 shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
                         @checked(old('wildcard_filter', optional($currentAward)?->wildcard_filter?->value ?? 'all') === $filter->value)
                     >
                     <span class="ml-2 text-sm text-zinc-600">{{ $filter->localizedName() }}</span>

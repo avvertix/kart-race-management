@@ -1,5 +1,5 @@
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 mb-6">
-    <div class="bg-white shadow ring-1 ring-black ring-opacity-5 md:rounded-lg p-4">
+    <div class="bg-white shadow-sm ring-1 ring-black/5 md:rounded-lg p-4">
         <h3 class="text-lg font-semibold text-zinc-900 mb-4">
             {{ __('First available race numbers') }}
         </h3>
@@ -14,7 +14,7 @@
             <p class="text-zinc-500 text-sm">{{ __('No race numbers available within 1 and 999') }}</p>
         @endif
     </div>
-    <div class="bg-white shadow ring-1 ring-black ring-opacity-5 md:rounded-lg p-4">
+    <div class="bg-white shadow-sm ring-1 ring-black/5 md:rounded-lg p-4">
 
         <h3 class="text-lg font-semibold text-zinc-900 mb-4">
             {{ __('Check a race number') }}
@@ -26,7 +26,7 @@
                     type="number"
                     wire:model="checkNumber"
                     placeholder="{{ __('Enter a race number') }}"
-                    class="block w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm"
+                    class="block w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs"
                     min="1"
                     step="1"
                 />

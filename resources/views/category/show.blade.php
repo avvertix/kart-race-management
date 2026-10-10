@@ -14,7 +14,7 @@
     <div class="pb-12">
         <div class="px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-4">
 
-            <div class="p-4 bg-white shadow-xl rounded space-y-2">
+            <div class="p-4 bg-white shadow-xl rounded-sm space-y-2">
                 <p>
                     @if ($category->enabled)
                         <span class="inline-block px-2 py-1 text-sm rounded-full bg-lime-100 text-lime-800">{{ __('active') }}</span>

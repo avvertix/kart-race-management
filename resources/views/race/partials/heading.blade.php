@@ -28,14 +28,14 @@
                         <x-slot name="content">
                             <div class="flex flex-col">
                                 @can('update', $race)
-                                    <a href="{{ route('races.export.participants', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                    <a href="{{ route('races.export.participants', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-file-excel-line class="size-5 shrink-0" />
                                             {{ __('Export participants') }}
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Export all registered participants') }}</span>
                                     </a>
-                                    <a href="{{ route('races.export.signature', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                    <a href="{{ route('races.export.signature', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-sketching class="size-5 shrink-0" />
                                             {{ __('Export briefing signature module') }}
@@ -43,14 +43,14 @@
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Export form for signing the attendence of the briefing') }}</span>
                                     </a>
                                     <div class="border-t border-zinc-100"></div>
-                                    <a href="{{ route('races.participants.print', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                    <a href="{{ route('races.participants.print', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-printer-line class="size-5 shrink-0" />
                                             {{ __('Print participants') }}
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Print all participants registrations') }}</span>
                                     </a>
-                                    <a href="{{ route('races.participant-receipts.print', $race) }}" target="_blank" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                    <a href="{{ route('races.participant-receipts.print', $race) }}" target="_blank" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-receipt-line class="size-5 shrink-0" />
                                             {{ __('Print receipts') }}
@@ -62,7 +62,7 @@
 
                                 @can('create', \App\Model\Transponder::class)
                                     @if ($race->isNationalOrInternational())
-                                        <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                        <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                                             <span class="inline-flex gap-1">
                                                 <x-ri-table-2 class="size-5 shrink-0" />
                                                 {{ __('Export for ACI Italian Cup') }}
@@ -71,14 +71,14 @@
                                         </a>
                                         <div class="border-t border-zinc-100"></div>
                                     @endif
-                                    <a href="{{ route('races.export.transponders', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                    <a href="{{ route('races.export.transponders', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-steering-2-line class="size-5 shrink-0" />
                                             {{ __('Export transponders') }}
                                         </span>
                                         <span class="block ml-6 text-xs text-zinc-600">{{ __('Export drivers and transponder for MyLaps Orbits') }}</span>
                                     </a>
-                                    <a href="{{ route('races.penalty-sheet.configure', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                                    <a href="{{ route('races.penalty-sheet.configure', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                                         <span class="inline-flex gap-1">
                                             <x-ri-scales-3-line class="size-5 shrink-0" />
                                             {{ __('Print check sheet') }}

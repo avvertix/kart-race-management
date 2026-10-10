@@ -80,7 +80,7 @@
                                 {{ __('Payment is only accepted by credit card or cash at the race track.') }}
                             </p>
                         @else
-                            <p class="bg-white p-2 shadow border border-zinc-200 rounded ">{{ $bank->bank_holder }}
+                            <p class="bg-white p-2 shadow-sm border border-zinc-200 rounded-sm ">{{ $bank->bank_holder }}
                                 <br>{{ $bank->bank_name }}
                                 <br>
                                 <span x-data="{ copied: false }" class="inline-flex items-center gap-2">
@@ -108,7 +108,7 @@
 
                             <p>{{ __('Use the following text as the bank transfer reason:') }}</p>
                             @php $transferReason = $participant->id . ' ' . $participant->full_name . ' iscrizione gara' @endphp
-                            <div x-data="{ copied: false }" class="not-prose flex items-center gap-2 bg-white shadow border border-zinc-200 rounded px-3 py-2 font-mono text-sm">
+                            <div x-data="{ copied: false }" class="not-prose flex items-center gap-2 bg-white shadow-sm border border-zinc-200 rounded-sm px-3 py-2 font-mono text-sm">
                                 <span class="flex-1 select-all">{{ $transferReason }}</span>
                                 <button
                                     type="button"
@@ -201,7 +201,7 @@
 
                 <div class="lg:w-2/3">
                     <h3 class="text-3xl font-bold flex items-center gap-2">
-                        <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
+                        <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                         <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                     </h3>
                     <p class="mb-1 text-xl">{{ $participant->racingCategory?->name }} / {{ $participant->engine }}</p>

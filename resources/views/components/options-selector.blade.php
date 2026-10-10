@@ -2,9 +2,9 @@
 
 @php $items = is_string($options) ? $options::cases() : $options; @endphp
 
-<div {{ $attributes->merge(['class' => 'flex flex-wrap flex-shrink-0 gap-2']) }}>
+<div {{ $attributes->merge(['class' => 'flex flex-wrap shrink-0 gap-2']) }}>
     @foreach ($items as $item)
-        <label class="relative flex grow cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none focus:ring-2 focus-within:ring-2 focus-within:ring-orange-300 focus:ring-orange-300">
+        <label class="relative flex grow cursor-pointer rounded-lg border bg-white p-4 shadow-xs focus:outline-hidden focus:ring-2 focus-within:ring-2 focus-within:ring-orange-300 focus:ring-orange-300">
             <input type="radio" name="{{ $id }}" value="{{ $item->value }}" @checked($item->value === (int)$value) class="peer sr-only" aria-labelledby="{{ $id }}-{{ $item->value }}-label" aria-describedby="{{ $id }}-{{ $item->value }}-description">
             
             <span class="flex flex-1">

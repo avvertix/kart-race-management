@@ -3,14 +3,14 @@
 
     <div class="-mx-2 sm:mx-0 space-y-3">
         @forelse ($races as $race)
-            <article class="p-2 md:p-4 bg-white rounded group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 space-y-1">
+            <article class="p-2 md:p-4 bg-white rounded-sm group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 space-y-1">
 
                 @if ($race->isCancelled())
                     <p class="col-span-2 md:col-span-3"><x-race-status :value="$race->status" /></p>
                 @endif
 
                 <a href="{{ route( $canView ? 'races.show' : 'races.registration.create', $race) }}"
-                    class="col-span-2 md:col-span-3 font-bold group-hover:text-orange-900 focus:text-orange-900 focus:outline-none">
+                    class="col-span-2 md:col-span-3 font-bold group-hover:text-orange-900 focus:text-orange-900 focus:outline-hidden">
                     <span class="z-10 absolute inset-0"></span>{{ $race->title }}
                 </a>
 
@@ -29,7 +29,7 @@
 
             </article>
         @empty
-            <div class="p-2 md:p-4 bg-white rounded relative space-y-1">
+            <div class="p-2 md:p-4 bg-white rounded-sm relative space-y-1">
                 <p class="font-medium">{{ __('No race in sight') }}</p>
                 <p class="text-zinc-700">{{ __('There are no races scheduled yet. Get back soon!') }}</p>
                 <x-ri-steering-fill class="h-full w-auto text-zinc-200 absolute right-0 top-0" />

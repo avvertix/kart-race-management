@@ -19,15 +19,15 @@
 
     @if ($this->participants)
 
-        <div class="z-10 max-h-96 overflow-y-scroll absolute p-2 w-full bg-white border border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm space-y-2 mt-1">
+        <div class="z-10 max-h-96 overflow-y-scroll absolute p-2 w-full bg-white border border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs space-y-2 mt-1">
             @forelse ($this->participants as $item)
 
                 <button
                     type="button"
                     wire:click="selectParticipant('{{ $item->uuid }}')"
-                    class="-mx-2 p-2 grid grid-cols-5 items-start hover:bg-orange-300 focus:bg-orange-300 active:bg-orange-400 w-full text-left rounded"
+                    class="-mx-2 p-2 grid grid-cols-5 items-start hover:bg-orange-300 focus:bg-orange-300 active:bg-orange-400 w-full text-left rounded-sm"
                 >
-                    <span class="font-mono text-sm block shrink-0 bg-gray-100 px-2 py-1 rounded mr-2">
+                    <span class="font-mono text-sm block shrink-0 bg-gray-100 px-2 py-1 rounded-sm mr-2">
                         {{ $item->driver['licence_number'] }}
                     </span>
                     <span class="col-span-2">

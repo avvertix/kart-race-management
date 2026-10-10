@@ -9,7 +9,7 @@
     <div class="px-4 sm:px-6 lg:px-8 py-6">
 
         @if ($categories->isEmpty())
-            <div class="bg-white rounded-lg shadow p-8 text-center text-zinc-500">
+            <div class="bg-white rounded-lg shadow-sm p-8 text-center text-zinc-500">
                 {{ __('No confirmed participants found for this race.') }}
             </div>
         @else
@@ -177,11 +177,11 @@
                             role="switch"
                             :aria-checked="separateWildcards.toString()"
                             @click="separateWildcards = ! separateWildcards"
-                            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                             :class="separateWildcards ? 'bg-orange-600' : 'bg-zinc-300'"
                         >
                             <span
-                                class="pointer-events-none inline-block size-5 rounded-full bg-white shadow transition-transform"
+                                class="pointer-events-none inline-block size-5 rounded-full bg-white shadow-sm transition-transform"
                                 :class="separateWildcards ? 'translate-x-5' : 'translate-x-0'"
                             ></span>
                         </button>
@@ -193,7 +193,7 @@
 
                     <template x-for="(group, gIdx) in groups" :key="group.id">
                         <div
-                            class="bg-white rounded-lg border shadow-sm p-4 w-64 transition-colors"
+                            class="bg-white rounded-lg border shadow-xs p-4 w-64 transition-colors"
                             :class="dragOverGroupId === group.id ? 'border-orange-400 bg-orange-50' : 'border-zinc-200'"
                             @dragover="onDragOver(group.id, $event)"
                             @dragleave="onDragLeave(group.id)"
@@ -207,7 +207,7 @@
                             <div class="space-y-2 min-h-10">
                                 <template x-for="cat in group.categories" :key="cat.ulid">
                                     <div
-                                        class="flex items-center justify-between gap-1 border rounded px-2 py-1.5 cursor-grab active:cursor-grabbing"
+                                        class="flex items-center justify-between gap-1 border rounded-sm px-2 py-1.5 cursor-grab active:cursor-grabbing"
                                         :class="[
                                             dragging && dragging.catUlid === cat.ulid ? 'opacity-40' : '',
                                             cat.wildcard ? 'bg-sky-50 border-sky-200' : 'bg-orange-50 border-orange-200',
@@ -225,7 +225,7 @@
                                                 type="button"
                                                 x-show="gIdx > 0"
                                                 @click="moveCategory(cat.ulid, group.id, groups[gIdx - 1].id)"
-                                                class="p-0.5 rounded text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+                                                class="p-0.5 rounded-sm text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
                                                 title="{{ __('Move to previous group') }}"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -236,7 +236,7 @@
                                                 type="button"
                                                 x-show="gIdx < groups.length - 1"
                                                 @click="moveCategory(cat.ulid, group.id, groups[gIdx + 1].id)"
-                                                class="p-0.5 rounded text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+                                                class="p-0.5 rounded-sm text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
                                                 title="{{ __('Move to next group') }}"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -280,7 +280,7 @@
                     <a
                         :href="printUrl"
                         target="_blank"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
                     >
                         <x-ri-printer-line class="size-4 shrink-0" />
                         {{ __('Print PDF') }}

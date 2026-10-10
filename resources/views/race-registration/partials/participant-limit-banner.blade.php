@@ -1,6 +1,6 @@
 @if ($race->hasTotalParticipantLimit())
         
-    <div class="max-w-screen-xl mx-auto py-2 px-4 sm:px-6 lg:px-8 shadow-md rounded-md bg-indigo-800 mb-6 flex items-start gap-2 md:gap-4">
+    <div class="max-w-(--breakpoint-xl) mx-auto py-2 px-4 sm:px-6 lg:px-8 shadow-md rounded-md bg-indigo-800 mb-6 flex items-start gap-2 md:gap-4">
         
         <div class="pt-1">
             

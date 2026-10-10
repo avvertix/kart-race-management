@@ -13,7 +13,7 @@
 
             <div class="space-y-2">
                 @foreach ($pointSchemes as $scheme)
-                    <label class="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-zinc-50 has-[:checked]:border-orange-400 has-[:checked]:bg-orange-50">
+                    <label class="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-zinc-50 has-checked:border-orange-400 has-checked:bg-orange-50">
                         <input type="radio" wire:model="selectedPointScheme" value="{{ $scheme['id'] }}" class="text-orange-500 focus:ring-orange-500">
                         <span class="font-medium">{{ $scheme['name'] }}</span>
                     </label>

@@ -9,7 +9,7 @@
 
     @forelse ($championships as $championship)
         <article @class([
-            'p-2 md:p-4 bg-white rounded group relative ring-0 space-y-1',
+            'p-2 md:p-4 bg-white rounded-sm group relative ring-0 space-y-1',
             'hover:ring-2 focus-within:ring-2 ring-orange-500' => $canView,
         ])>
 
@@ -17,7 +17,7 @@
 
             @if ($canView)
                 <a href="{{ route('championships.show', $championship) }}"
-                    class=" font-bold  group-hover:text-orange-900 focus:text-orange-900 focus:outline-none">
+                    class=" font-bold  group-hover:text-orange-900 focus:text-orange-900 focus:outline-hidden">
                     <span class="z-10 absolute inset-0"></span>{{ $championship->title }}
                 </a>
             @else
@@ -36,7 +36,7 @@
 
         </article>
     @empty
-        <div class="p-2 md:p-4 gap-3 bg-white rounded relative space-y-1">
+        <div class="p-2 md:p-4 gap-3 bg-white rounded-sm relative space-y-1">
             <p class="font-medium">{{ __('No championships.') }}</p>
             <p class="text-zinc-700">{{ __('No championships scheduled yet.') }}</p>
             <x-ri-steering-fill class="h-full w-auto text-zinc-200 absolute right-0 top-0" />

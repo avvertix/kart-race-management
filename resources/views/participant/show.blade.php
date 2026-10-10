@@ -6,7 +6,7 @@
         <div class="relative border-b-2 border-zinc-200 pb-5 sm:pb-0">
             <div class="md:flex md:items-center md:justify-between">
                 <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
-                    <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700">{{ $participant->bib }}</span>
+                    <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700">{{ $participant->bib }}</span>
                     {{ $participant->first_name }} {{ $participant->last_name }}
                     <p class="text-base font-light mt-1">
                         <a href="{{ route('races.participants.index', $participant->race) }}" class="hover:underline">{{ $participant->race->title }}</a>
@@ -68,7 +68,7 @@
             {{-- Category, bib & payment --}}
             <div class="grid md:grid-cols-3 gap-4">
 
-                <div class="md:col-span-2 bg-white shadow rounded-lg p-4 space-y-3">
+                <div class="md:col-span-2 bg-white shadow-sm rounded-lg p-4 space-y-3">
                     <h3 class="font-semibold text-zinc-700 text-sm uppercase tracking-wide">{{ __('Race') }}</h3>
                     <div>
                         <span class="block text-xs text-zinc-500">{{ __('Number') }}</span>
@@ -91,7 +91,7 @@
                 </div>
 
                 @if(auth()->user()->hasPermission('payment:view'))
-                <div class="bg-white shadow rounded-lg p-4 space-y-3">
+                <div class="bg-white shadow-sm rounded-lg p-4 space-y-3">
                     <h3 class="font-semibold text-zinc-700 text-sm uppercase tracking-wide">{{ __('Payment') }}</h3>
                     <div>
                         <span class="block text-xs text-zinc-500">{{ __('Price') }}</span>
@@ -134,7 +134,7 @@
             @if ($participant->tires->isNotEmpty() || $participant->transponders->isNotEmpty())
             <div class="grid md:grid-cols-2 gap-4">
                 @if ($participant->tires->isNotEmpty())
-                <div class="bg-white shadow rounded-lg p-4">
+                <div class="bg-white shadow-sm rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-semibold text-zinc-700 text-sm uppercase tracking-wide">{{ __('Tires') }}</h3>
                         @can('viewAny', \App\Model\Tire::class)
@@ -150,7 +150,7 @@
                 @endif
 
                 @if ($participant->transponders->isNotEmpty())
-                <div class="bg-white shadow rounded-lg p-4">
+                <div class="bg-white shadow-sm rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-semibold text-zinc-700 text-sm uppercase tracking-wide">{{ __('Transponders') }}</h3>
                         @can('viewAny', \App\Model\Transponder::class)
@@ -168,7 +168,7 @@
             @endif
 
             {{-- Driver --}}
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-4 py-3 border-b border-zinc-200">
                     <h3 class="font-semibold text-zinc-700">{{ __('Driver') }}</h3>
                 </div>
@@ -233,7 +233,7 @@
 
             {{-- Competitor --}}
             @if ($participant->competitor)
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-4 py-3 border-b border-zinc-200">
                     <h3 class="font-semibold text-zinc-700">{{ __('Competitor') }}</h3>
                 </div>
@@ -289,7 +289,7 @@
 
             {{-- Mechanic --}}
             @if ($participant->mechanic)
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-4 py-3 border-b border-zinc-200">
                     <h3 class="font-semibold text-zinc-700">{{ __('Mechanic') }}</h3>
                 </div>
@@ -308,7 +308,7 @@
 
             {{-- Vehicles --}}
             @if ($participant->vehicles->isNotEmpty())
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-4 py-3 border-b border-zinc-200">
                     <h3 class="font-semibold text-zinc-700">{{ __('Vehicle') }}</h3>
                 </div>
@@ -377,7 +377,7 @@
 
             {{-- Activity log --}}
             @can('update', $participant)
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-4 py-3 border-b border-zinc-200 flex items-center justify-between">
                     <h3 class="font-semibold text-zinc-700">{{ __('Activity') }}</h3>
                     <span class="text-xs text-zinc-500">{{ __('id') }}&nbsp;<span class="font-mono">{{ $participant->getKey() }}</span></span>

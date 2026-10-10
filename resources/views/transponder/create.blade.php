@@ -10,7 +10,7 @@
         </h2>
         <div class="mt-6 bg-white text-xl p-2 space-y-2">
             <p>
-                <span class="inline-block font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100 mr-2">{{ $participant->bib }}</span>
+                <span class="inline-block font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100 mr-2">{{ $participant->bib }}</span>
                 {{ $participant->first_name }} {{ $participant->last_name }}
             </p>
             

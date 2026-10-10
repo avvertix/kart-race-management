@@ -28,7 +28,7 @@
                 <div class="mt-4">
                     <x-label for="bonus_mode" value="{{ __('Bonus mode') }}" />
                     <p class="text-zinc-600 text-sm">{{ __('Select how bonuses should be managed for this championship.') }}</p>
-                    <select name="bonus_mode" id="bonus_mode" x-model="mode" class="block mt-1 border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                    <select name="bonus_mode" id="bonus_mode" x-model="mode" class="block mt-1 border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs">
                         @foreach (\App\Models\BonusMode::cases() as $mode)
                             <option value="{{ $mode->value }}" @selected(old('bonus_mode', optional($championship ?? null)->bonuses->bonus_mode) === $mode)>
                                 {{ $mode->localizedName() }}

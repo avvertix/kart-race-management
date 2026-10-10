@@ -63,12 +63,12 @@
                             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                                 @php $selectedRegions = old('zone_regions', optional($race ?? null)->zone_regions?->toArray() ?? []); @endphp
                                 @foreach (\App\Enums\ItalianRegion::cases() as $region)
-                                    <label class="flex items-center gap-2 cursor-pointer rounded border border-zinc-200 px-3 py-2 hover:bg-zinc-50 has-[:checked]:border-orange-400 has-[:checked]:bg-orange-50">
+                                    <label class="flex items-center gap-2 cursor-pointer rounded-sm border border-zinc-200 px-3 py-2 hover:bg-zinc-50 has-checked:border-orange-400 has-checked:bg-orange-50">
                                         <input type="checkbox"
                                                name="zone_regions[]"
                                                value="{{ $region->value }}"
                                                @checked(in_array($region->value, $selectedRegions))
-                                               class="rounded border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                               class="rounded-sm border-zinc-300 text-orange-600 focus:ring-orange-300">
                                         <span class="text-sm text-zinc-700">{{ $region->label() }}</span>
                                     </label>
                                 @endforeach
@@ -114,7 +114,7 @@
                     <div class="col-span-6 sm:col-span-4">
                         <x-label for="registration_form" value="{{ __('Registration form') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Select the registration form to use for this race. Leave blank to use the championship setting or the default.') }}</p>
-                        <select name="registration_form" id="registration_form" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                        <select name="registration_form" id="registration_form" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs">
                             <option value="" @selected(old('registration_form', optional($race ?? null)->registration_form) === null)>{{ __('Use championship / default') }}</option>
                             @foreach (\App\Models\RegistrationForm::cases() as $form)
                                 <option value="{{ $form->value }}" @selected(old('registration_form', optional($race ?? null)->registration_form?->value) === $form->value)>{{ ucfirst($form->value) }}</option>
@@ -125,7 +125,7 @@
                     <div class="col-span-6 sm:col-span-4">
                         <x-label for="bonus_enabled" value="{{ __('Bonus') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Control bonus usage for this race. Leave blank to use the championship setting or the default.') }}</p>
-                        <select name="bonus_enabled" id="bonus_enabled" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                        <select name="bonus_enabled" id="bonus_enabled" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs">
                             <option value="" @selected(blank(old('bonus_enabled', optional($race ?? null)->bonus_enabled)))>{{ __('Use championship / default') }}</option>
                             <option value="true" @selected(old('bonus_enabled', optional($race ?? null)->bonus_enabled) === true)>{{ __('Enabled') }}</option>
                             <option value="false" @selected(old('bonus_enabled', optional($race ?? null)->bonus_enabled) === false)>{{ __('Disabled') }}</option>

@@ -38,7 +38,7 @@
                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-zinc-900 sm:pl-6">
 
                         <p><a href="{{ route('bib-reservations.show', $item) }}" class=" hover:text-orange-900">
-                            <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $item->bib }}</span>
+                            <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $item->bib }}</span>
                             {{ $item->driver }}
                         </a></p>
                         <p><span class="font-mono">{{ $item->driver_licence }}</span> <span class="text-zinc-600">{{ $item->contact_email }}</span></p>

@@ -19,7 +19,7 @@
             <x-slot name="content">
                 <div class="flex flex-col">
                     @can('update', $championship)
-                        <a href="{{ route('championships.export.participants', $championship) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 transition">
+                        <a href="{{ route('championships.export.participants', $championship) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
                             <span class="inline-flex gap-1">
                                 <x-ri-file-excel-line class="size-5 shrink-0" />
                                 {{ __('Export participants') }}
@@ -37,7 +37,7 @@
     <p class="mb-6">{{ $uniqueParticipantsCount }} {{ __('participants') }}</p>
 
 
-    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+    <div class="overflow-hidden shadow-sm ring-1 ring-black/5 md:rounded-lg">
         <div class="min-w-full divide-y divide-zinc-300 bg-white">
 
             <div class="grid grid-cols-12 bg-zinc-50">
@@ -53,7 +53,7 @@
 
                     <div class="flex flex-row gap-1">
                         <div>
-                            <p class="min-w-10 text-right font-mono text-lg bg-gray-100 group-hover:bg-orange-200 px-2 py-0.5 rounded">
+                            <p class="min-w-10 text-right font-mono text-lg bg-gray-100 group-hover:bg-orange-200 px-2 py-0.5 rounded-sm">
                                 {{ $participant->bib }}
                             </p>
                         </div>
@@ -75,7 +75,7 @@
 
                     <div class="grid-cols-subgrid px-2 py-3 text-sm text-zinc-500 flex gap-4 overflow-x-auto col-span-8">
                         @foreach ($participant->participationHistory as $item)
-                            <div class=" flex-shrink-0 w-72 p-2 rounded {{ $item->full_name !== $participant->full_name || $item->bib !== $participant->bib  ? 'border border-red-500 bg-red-50' : '' }}">
+                            <div class=" shrink-0 w-72 p-2 rounded-sm {{ $item->full_name !== $participant->full_name || $item->bib !== $participant->bib  ? 'border border-red-500 bg-red-50' : '' }}">
                                 <p class="flex flex-col">
                                     <span class="block text-sm">{{ $item->race->period }}</span>
                                     <a class="font-bold underline" href="{{ route('participants.show', $item) }}" target="_blank">{{ $item->race->title }}</a>

@@ -13,7 +13,7 @@
         <div class="px-4 sm:px-6 lg:px-8">
     
 
-        <div class="p-4 bg-white rounded">
+        <div class="p-4 bg-white rounded-sm">
 
             <h3 class="mb-4">{{ __('Upload a backup') }}</h3>
 

@@ -153,7 +153,7 @@
                     <div class="mt-4">
                         <x-label for="bonus_mode" value="{{ __('Bonus mode') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Select how bonuses should be managed for this championship.') }}</p>
-                        <select name="bonus_mode" id="bonus_mode" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <select name="bonus_mode" id="bonus_mode" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
                             @foreach (\App\Models\BonusMode::cases() as $mode)
                                 <option value="{{ $mode->value }}" @selected(old('bonus_mode', optional($championship ?? null)->bonuses->bonus_mode) === $mode)>
                                     {{ $mode->localizedName() }}
@@ -194,7 +194,7 @@
                     <div class="mt-4">
                         <x-label for="bonus_enabled_championship" value="{{ __('Bonus enabled') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Control bonus usage for races in this championship. Individual races can override this setting.') }}</p>
-                        <select name="bonus_enabled" id="bonus_enabled_championship" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <select name="bonus_enabled" id="bonus_enabled_championship" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
                             <option value="" @selected(blank(old('bonus_enabled', $championship->bonus_enabled)))>{{ __('Use default (enabled)') }}</option>
                             <option value="true" @selected(old('bonus_enabled', $championship->bonus_enabled) === true)>{{ __('Enabled') }}</option>
                             <option value="false" @selected(old('bonus_enabled', $championship->bonus_enabled) === false)>{{ __('Disabled') }}</option>
@@ -232,7 +232,7 @@
 
                     <div class="mt-4">
                         <x-label for="registration_form" value="{{ __('Registration form') }}" />
-                        <select name="registration_form" id="registration_form" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <select name="registration_form" id="registration_form" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
                             <option value="" @selected(old('registration_form', $championship->registration_form) === null)>{{ __('Use default') }}</option>
                             @foreach (\App\Models\RegistrationForm::cases() as $form)
                                 <option value="{{ $form->value }}" @selected(old('registration_form', $championship->registration_form?->value) === $form->value)>{{ ucfirst($form->value) }}</option>
@@ -268,7 +268,7 @@
                     <div class="mt-4">
                         <x-label for="allow_different_bibs" value="{{ __('Allow different BIBs for the same driver') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('When enabled, a driver is allowed to register with a different BIB than the one already used elsewhere in the championship. When disabled, a driver must keep using the same BIB across all races of the championship.') }}</p>
-                        <select name="allow_different_bibs" id="allow_different_bibs" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <select name="allow_different_bibs" id="allow_different_bibs" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
                             <option value="false" @selected(old('allow_different_bibs', $championship->registration_settings->allow_different_bibs) == false)>{{ __('Disabled, all drivers must use the same BIB') }}</option>
                             <option value="true" @selected(old('allow_different_bibs', $championship->registration_settings->allow_different_bibs) == true)>{{ __('Enabled, different BIBs allowed') }}</option>
                         </select>
@@ -285,7 +285,7 @@
                     <div class="mt-4">
                         <x-label for="shared_bib_licences" value="{{ __('Shared BIB driver licences') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('One driver licence number per line (or comma separated). Leave empty to disable this behaviour.') }}</p>
-                        <textarea name="shared_bib_licences" id="shared_bib_licences" rows="4" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('shared_bib_licences', implode("\n", $championship->registration_settings->shared_bib_licences)) }}</textarea>
+                        <textarea name="shared_bib_licences" id="shared_bib_licences" rows="4" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">{{ old('shared_bib_licences', implode("\n", $championship->registration_settings->shared_bib_licences)) }}</textarea>
                         <x-input-error for="shared_bib_licences" class="mt-2" />
                     </div>
 

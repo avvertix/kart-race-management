@@ -5,8 +5,8 @@
             <x-slot name="trigger">
 
                 <span class="inline-flex rounded-md">
-                    <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-zinc-500 bg-white hover:text-zinc-700 focus:outline-none transition">
-                        <span class="inline-block font-mono bg-gray-100 shadow-sm p-1 -my-1">{{ $currentLanguage }}</span>
+                    <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-zinc-500 bg-white hover:text-zinc-700 focus:outline-hidden transition">
+                        <span class="inline-block font-mono bg-gray-100 shadow-xs p-1 -my-1">{{ $currentLanguage }}</span>
                         
                         <span class="hidden lg:inline-block ml-2">{{ __('Language') }}</span>
 

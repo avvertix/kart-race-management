@@ -24,7 +24,7 @@
             <form action="{{ route('awards.destroy', $award) }}" method="post">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 transition">
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-hidden focus:border-red-700 focus:ring-3 focus:ring-red-200 transition">
                     {{ __('Delete') }}
                 </button>
             </form>

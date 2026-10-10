@@ -77,8 +77,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', ListRacesWithOpenRegistrationController::class)->name('welcome');
 
 Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
+    'auth',
+    'auth.session',
     'verified',
     DenyAgentMiddleware::class,
 ])->group(function () {
@@ -90,8 +90,8 @@ Route::middleware([
 // Championships and Races management
 
 Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
+    'auth',
+    'auth.session',
     'verified',
     DenyAgentMiddleware::class,
 ])

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Fortify\CreateNewUserWithRole;
+use App\Enums\Role;
 use App\Models\User;
+use App\Rules\ValidRole;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Laravel\Jetstream\Jetstream;
-use Laravel\Jetstream\Rules\Role;
 
 class UserController extends Controller
 {
@@ -81,7 +81,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'role' => ['required', 'string', new Role],
+            'role' => ['required', 'string', new ValidRole],
         ]);
 
         $user->update([
@@ -105,7 +105,7 @@ class UserController extends Controller
                 ->with('flash.bannerStyle', 'danger');
         }
 
-        if ($user->isAdmin() && User::where('role', 'admin')->count() <= 1) {
+        if ($user->isAdmin() && User::where('role', Role::Admin->value)->count() <= 1) {
             return redirect()->route('users.edit', $user)
                 ->with('flash.banner', __('You cannot delete the last administrator.'))
                 ->with('flash.bannerStyle', 'danger');
@@ -124,8 +124,6 @@ class UserController extends Controller
      */
     protected function availableRoles(): array
     {
-        return collect(Jetstream::$roles)
-            ->mapWithKeys(fn ($role) => [$role->key => $role->name])
-            ->all();
+        return Role::options();
     }
 }

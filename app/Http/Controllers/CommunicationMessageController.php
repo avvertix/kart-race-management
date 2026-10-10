@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Models\CommunicationMessage;
 use Illuminate\Http\Request;
-use Laravel\Jetstream\Jetstream;
+use Illuminate\Validation\Rule;
 
 class CommunicationMessageController extends Controller
 {
@@ -39,7 +40,7 @@ class CommunicationMessageController extends Controller
             'theme' => ['required', 'string', 'in:info'],
             'target_path' => ['sometimes', 'nullable', 'string'],
             'target_user_role' => ['sometimes', 'nullable', 'array', 'max:6'],
-            'target_user_role.*' => ['required', 'string', 'in:'.collect(['anonim' => 'anonim', ...Jetstream::$roles])->keys()->join(',')],
+            'target_user_role.*' => ['required', 'string', Rule::in(['anonim', ...array_column(Role::cases(), 'value')])],
             'starts_at' => ['required', 'date', 'after_or_equal:today'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ]);
@@ -77,7 +78,7 @@ class CommunicationMessageController extends Controller
             'theme' => ['required', 'string', 'in:info'],
             'target_path' => ['sometimes', 'nullable', 'string'],
             'target_user_role' => ['sometimes', 'nullable', 'array', 'max:6'],
-            'target_user_role.*' => ['required', 'string', 'in:'.collect(['anonim' => 'anonim', ...Jetstream::$roles])->keys()->join(',')],
+            'target_user_role.*' => ['required', 'string', Rule::in(['anonim', ...array_column(Role::cases(), 'value')])],
             'starts_at' => ['required', 'date', 'after_or_equal:today'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ]);

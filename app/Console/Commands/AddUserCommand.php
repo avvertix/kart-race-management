@@ -7,7 +7,6 @@ namespace App\Console\Commands;
 use App\Actions\Fortify\CreateNewUserWithRole;
 use Illuminate\Console\Command;
 use Illuminate\Validation\ValidationException;
-use Laravel\Jetstream\Jetstream;
 
 class AddUserCommand extends Command
 {
@@ -53,7 +52,6 @@ class AddUserCommand extends Command
                 'email' => $email,
                 'password' => $password,
                 'password_confirmation' => $password,
-                'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
                 'role' => $role,
             ]);
 

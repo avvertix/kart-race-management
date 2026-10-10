@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-use Laravel\Jetstream\Jetstream;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
@@ -28,7 +27,6 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => '!password1',
             'password_confirmation' => '!password1',
-            'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
         ]);
 
         $this->assertAuthenticated();
@@ -48,7 +46,6 @@ class RegistrationTest extends TestCase
                 'email' => 'bot@example.com',
                 'password' => '!password1',
                 'password_confirmation' => '!password1',
-                'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
                 'website' => 'https://spam-site.com',
             ]);
 

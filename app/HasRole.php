@@ -4,61 +4,49 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Enums\Role;
 use Illuminate\Support\Str;
-use Laravel\Jetstream\Jetstream;
 
 trait HasRole
 {
     /**
      * Get the user's role.
-     *
-     * @return \Laravel\Jetstream\Role|null
      */
-    public function userRole()
+    public function userRole(): ?Role
     {
-        $role = $this->role;
-
-        return $role ? Jetstream::findRole($role) : null;
+        return $this->role ? Role::tryFrom($this->role) : null;
     }
 
     /**
      * Determine if the user has the given role.
-     *
-     * @return bool
      */
-    public function hasRole(string $role)
+    public function hasRole(Role|string $role): bool
     {
-        return optional($this->userRole())->key === $role;
+        $role = $role instanceof Role ? $role : Role::tryFrom($role);
+
+        return $role !== null && $this->userRole() === $role;
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return optional($this->userRole())->key === 'admin';
+        return $this->userRole() === Role::Admin;
     }
 
     /**
      * Get the user's permissions for the given role.
      *
-     * @return array
+     * @return list<string>
      */
-    public function permissions()
+    public function permissions(): array
     {
-        return (array) optional($this->userRole())->permissions;
+        return $this->userRole()?->permissions() ?? [];
     }
 
     /**
      * Determine if the user has the given permission.
-     *
-     * @return bool
      */
-    public function hasPermission(string $permission)
+    public function hasPermission(string $permission): bool
     {
-        if (in_array(HasApiTokens::class, class_uses_recursive($this)) &&
-            ! $this->tokenCan($permission) &&
-            $this->currentAccessToken() !== null) {
-            return false;
-        }
-
         $permissions = $this->permissions();
 
         return in_array($permission, $permissions) ||

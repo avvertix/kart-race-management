@@ -71,7 +71,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 border-b">
-                                {{ $user->userRole()?->name ?? $user->role }}
+                                {{ $user->userRole()?->label() ?? $user->role }}
                             </td>
                             <td class="px-4 py-3 border-b">
                                 @can('update', $user)

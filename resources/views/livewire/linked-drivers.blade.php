@@ -14,7 +14,7 @@
 
 <div class="pb-12">
     <div class="px-4 sm:px-6 lg:px-8 space-y-8">
-        <div class="p-4 bg-white rounded border border-zinc-200 space-y-3">
+        <div class="p-4 bg-white rounded-sm border border-zinc-200 space-y-3">
             <h2>{{ __('Link race registrations to your account') }}</h2>
             <p class="text-sm text-zinc-600">
                 {{ __('Find your past races using your licence number. Connect the participation to your account. Use your connected registrations to speed-up future registrations.') }}
@@ -66,10 +66,10 @@
                 @php
                             $isLinked = $participant->claimed_by === auth()->id() || $participant->added_by === auth()->id() || in_array($participant->uuid, $linkedUuids);
                         @endphp
-                        <div class="flex items-center justify-between p-3 bg-zinc-50 rounded border border-zinc-200">
+                        <div class="flex items-center justify-between p-3 bg-zinc-50 rounded-sm border border-zinc-200">
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-mono  px-2 py-0.5 rounded bg-orange-100 text-orange-700 shrink-0">{{ $participant->bib }}</span>
+                                    <span class="font-mono  px-2 py-0.5 rounded-sm bg-orange-100 text-orange-700 shrink-0">{{ $participant->bib }}</span>
                                     <span class="font-medium truncate">{{ $participant->first_name }} {{ $participant->last_name }}</span>
                                 </div>
                                 <p class=" text-zinc-500 mt-0.5 truncate">
@@ -133,7 +133,7 @@
                 @foreach ($linkedParticipants as $participant)
                     <tr>
                         <td class="whitespace-nowrap px-3 py-4 text-sm ">
-                            <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
+                            <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                             {{ $participant->first_name }} {{ $participant->last_name }}
                             <span class="font-mono block">{{ $participant->driver_licence_number }}</span>
                         </td>

@@ -12,7 +12,7 @@
 
     <div class="grid md:grid-cols-2 gap-4">
 
-        <div class="p-4 bg-white shadow-xl rounded">
+        <div class="p-4 bg-white shadow-xl rounded-sm">
             <p>{{ $tire->name }}</p>
             <p class="text-2xl font-bold">
                 {{ $tire->formattedPrice() }}

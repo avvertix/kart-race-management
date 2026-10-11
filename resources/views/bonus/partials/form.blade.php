@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="bonus_type" value="{{ __('Bonus type') }}" />
-                    <select name="bonus_type" id="bonus_type" class="block mt-1 border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                    <select name="bonus_type" id="bonus_type" class="block mt-1 border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs">
                         <option value="" disabled>{{ __('Select the type of bonus') }}</option>
                         @foreach (\App\Models\BonusType::cases() as $bonusType)
                             <option value="{{ $bonusType->value }}" @selected(old('bonus_type', optional($bonus ?? null)->bonus_type) === $bonusType) >{{ $bonusType->localizedName() }}</option>

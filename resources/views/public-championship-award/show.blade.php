@@ -16,7 +16,7 @@
             <div>
                 <a
                     href="{{ route('public.awards.show', ['award' => $award, 'format' => 'pdf']) }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-md hover:bg-orange-700 focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
                 >
                     <x-ri-printer-line class="size-4 shrink-0" />
                     {{ __('Print PDF') }}

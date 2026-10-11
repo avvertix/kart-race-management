@@ -14,7 +14,7 @@
 
                     <div class="flex items-center gap-2">
                         <x-label for="sort" class="sr-only md:not-sr-only shrink-0">{{ __('Sort by') }}</x-label>
-                        <select onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <select onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="bib" @selected(blank($sort) || $sort === 'bib')>{{ __('Race number') }}</option>
                             <option value="registration" @selected($sort === 'registration')>{{ __('Registration date') }}</option>
                         </select>
@@ -61,7 +61,7 @@
                             <div class="col-span-2 space-y-1 mb-3">
                                 
                                 <h3 class="text-3xl font-bold flex items-center gap-2">
-                                    <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
+                                    <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $participant->bib }}</span>
                                     <span>{{ $participant->first_name }} {{ $participant->last_name }}</span>
                                 </h3>
                                 <p class="text-xl">{{ $participant->racingCategory?->name ?? __('no category') }} / {{ $participant->engine }}</p>
@@ -85,7 +85,7 @@
                                     <x-price class="font-mono">{{ $participant->price()->last() }}</x-price>
 
                                     @if ($participant->use_bonus)
-                                        <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{{ __('Bonus')}}</span>
+                                        <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded-sm">{{ __('Bonus')}}</span>
                                     @endif
 
                                     {{ $participant->payment_channel?->localizedName() }}

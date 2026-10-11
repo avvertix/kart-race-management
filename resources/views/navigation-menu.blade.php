@@ -56,7 +56,7 @@
                     @if (Route::has('login'))
                     <a
                             href="{{ route('login') }}"
-                            class="inline-block px-4 py-2  rounded-md font-semibold text-sm text-zinc-800 border border-transparent  leading-normal hover:bg-zinc-200 active:bg-zinc-200 focus:outline-none focus:border-zinc-900 focus:ring focus:ring-zinc-300"
+                            class="inline-block px-4 py-2  rounded-md font-semibold text-sm text-zinc-800 border border-transparent  leading-normal hover:bg-zinc-200 active:bg-zinc-200 focus:outline-hidden focus:border-zinc-900 focus:ring-3 focus:ring-zinc-300"
                         >
                             {{ __('Sign in') }}
                         </a>
@@ -76,12 +76,12 @@
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
                                 @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                                    <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-zinc-300 transition">
+                                    <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-hidden focus:border-zinc-300 transition">
                                         <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                                     </button>
                                 @else
                                     <span class="inline-flex rounded-md">
-                                        <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-zinc-500 bg-white hover:text-zinc-700 focus:outline-none transition">
+                                        <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-zinc-500 bg-white hover:text-zinc-700 focus:outline-hidden transition">
                                             {{ Auth::user()->name }}
 
                                             <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -121,7 +121,7 @@
 
             {{-- Hamburger --}}
             <div class="-mr-2 flex items-center sm:hidden print:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 focus:outline-none focus:bg-zinc-100 focus:text-zinc-500 transition">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 focus:text-zinc-500 transition">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

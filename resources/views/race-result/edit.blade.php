@@ -31,7 +31,7 @@
         }
     }" x-on:participant-selected.window="if (activeRow !== null) { setParticipant(activeRow, $event.detail[0].id, $event.detail[0].first_name + ' ' + $event.detail[0].last_name) }">
 
-        <div class="p-4 bg-white rounded max-w-6xl">
+        <div class="p-4 bg-white rounded-sm max-w-6xl">
 
             <form action="{{ route('results.update', $runResult) }}" method="POST">
                 @csrf
@@ -48,7 +48,7 @@
 
                     <div>
                         <x-label for="run_type" value="{{ __('Session') }}" />
-                        <select id="run_type" name="run_type" class="mt-1 block w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm" required>
+                        <select id="run_type" name="run_type" class="mt-1 block w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs" required>
                             @foreach ($runTypes as $type)
                                 <option value="{{ $type->value }}" @selected(old('run_type', $runResult->run_type->value) == $type->value)>{{ $type->localizedName() }}</option>
                             @endforeach
@@ -88,15 +88,15 @@
                                         </td>
                                         <td class="px-2 py-2 border-b">
                                             <input type="hidden" name="participant_results[{{ $index }}][id]" value="{{ $participantResult->getKey() }}">
-                                            <input type="number" name="participant_results[{{ $index }}][bib]" value="{{ old("participant_results.{$index}.bib", $participantResult->bib) }}" class="w-20 border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm text-sm" required>
+                                            <input type="number" name="participant_results[{{ $index }}][bib]" value="{{ old("participant_results.{$index}.bib", $participantResult->bib) }}" class="w-20 border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs text-sm" required>
                                             <x-input-error for="participant_results.{{ $index }}.bib" class="mt-1" />
                                         </td>
                                         <td class="px-2 py-2 border-b">
-                                            <input type="text" name="participant_results[{{ $index }}][name]" value="{{ old("participant_results.{$index}.name", $participantResult->name) }}" class="w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm text-sm" required>
+                                            <input type="text" name="participant_results[{{ $index }}][name]" value="{{ old("participant_results.{$index}.name", $participantResult->name) }}" class="w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs text-sm" required>
                                             <x-input-error for="participant_results.{{ $index }}.name" class="mt-1" />
                                         </td>
                                         <td class="px-2 py-2 border-b">
-                                            <input type="text" name="participant_results[{{ $index }}][category]" value="{{ old("participant_results.{$index}.category", $participantResult->category) }}" class="w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm text-sm" required>
+                                            <input type="text" name="participant_results[{{ $index }}][category]" value="{{ old("participant_results.{$index}.category", $participantResult->category) }}" class="w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs text-sm" required>
                                             <x-input-error for="participant_results.{{ $index }}.category" class="mt-1" />
                                         </td>
                                         <td class="px-2 py-2 border-b">

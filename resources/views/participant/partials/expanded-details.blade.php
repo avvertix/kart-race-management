@@ -3,7 +3,7 @@
         <button type="button" class="text-3xl font-bold flex items-center gap-2"
             wire:click.prevent="select(null)"
             >
-            <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $item->bib }}</span>
+            <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $item->bib }}</span>
             <span>{{ $item->first_name }} {{ $item->last_name }}</span>
         </button>
         <div class="flex items-center mt-2 gap-4 mb-1">
@@ -95,7 +95,7 @@
 
 @can('update', $item)
     @if ($race->isNationalOrInternational())
-        <div class="{{ $item->wasProcessedForOutOfZone() ? '' : 'bg-yellow-200' }} !mb-6 flex gap-2 flex-col -mx-2 px-2 py-2">
+        <div class="{{ $item->wasProcessedForOutOfZone() ? '' : 'bg-yellow-200' }} mb-6! flex gap-2 flex-col -mx-2 px-2 py-2">
             <p><strong>{{ __('Out of zone') }}</strong></p>
             <p>{{ __('Please check if the participant is out of zone and mark it accordingly.') }}</p>
 
@@ -115,7 +115,7 @@
                         <label for="region-{{ $item->getKey() }}" class="text-sm font-medium text-zinc-700">{{ __('Region') }}:</label>
                         <select
                             id="region-{{ $item->getKey() }}"
-                            class="text-sm border-zinc-300 focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                            class="text-sm border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs"
                             @change="$wire.setRegion({{ $item->getKey() }}, $event.target.value)"
                         >
                             <option value="" @selected($item->region === null)>{{ __('— not identified —') }}</option>
@@ -169,7 +169,7 @@
                 <x-price class="font-mono">{{ $item->price()->last() }}</x-price>
 
                 @if ($item->use_bonus)
-                    <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{{ __('Bonus')}}</span>
+                    <span class="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded-sm">{{ __('Bonus')}}</span>
                 @endif
 
                 <livewire:change-participant-payment-channel :participant="$item" :key="$item->getKey()" />
@@ -342,7 +342,7 @@
                 {{ __('Remove participant') }}
             </x-danger-button>
 
-            <div class="absolute px-4 py-2 bottom-0 right-0 min-w-96 border border-red-300 ring-0 ring-red-300 shadow-md rounded bg-white" @click.outside="confirm = !confirm" x-show="confirm" x-transition x-cloak x-trap="confirm">
+            <div class="absolute px-4 py-2 bottom-0 right-0 min-w-96 border border-red-300 ring-0 ring-red-300 shadow-md rounded-sm bg-white" @click.outside="confirm = !confirm" x-show="confirm" x-transition x-cloak x-trap="confirm">
             
                 <form class="" action="{{ route('participants.destroy', $item) }}" method="POST">
                     @method('DELETE')

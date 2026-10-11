@@ -114,7 +114,7 @@
                         id="wildcard_points_mode"
                         name="points_config[wildcard_points_mode]"
                         x-model="wildcardMode"
-                        class="mt-1 border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm text-sm">
+                        class="mt-1 border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs text-sm">
                         <option value="as_other_drivers">{{ __('Same as other drivers') }}</option>
                         <option value="fixed_points">{{ __('Assign fixed points') }}</option>
                         <option value="ranked_from_first">{{ __('Ranked from first in category') }}</option>
@@ -176,7 +176,7 @@
                                         x-model.number="positions[index]"
                                         min="0"
                                         step="any"
-                                        class="border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm w-24">
+                                        class="border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs w-24">
                                     <button type="button" @click="removePosition(index)" class="text-red-500 hover:text-red-700 text-sm">
                                         {{ __('Remove') }}
                                     </button>
@@ -216,7 +216,7 @@
                                             <select
                                                 name="points_config[{{ $runType->value }}][statuses][{{ $status->value }}][mode]"
                                                 x-model="statusModes['{{ $status->value }}']"
-                                                class="border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm text-sm">
+                                                class="border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs text-sm">
                                                 <option value="fixed">{{ __('Fixed points') }}</option>
                                                 <option value="ranked">{{ __('Points as ranked') }}</option>
                                             </select>

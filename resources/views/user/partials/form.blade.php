@@ -12,7 +12,7 @@
 
 <div class="mt-4">
     <x-label for="role" value="{{ __('Role') }}" />
-    <select name="role" id="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select name="role" id="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs" required>
         @foreach ($roles as $key => $name)
             <option value="{{ $key }}" @selected(old('role', optional($user ?? null)->role) === $key)>
                 {{ $name }}

@@ -11,7 +11,7 @@
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
 
             {{-- Totals box --}}
-            <div class="p-4 bg-white shadow rounded">
+            <div class="p-4 bg-white shadow-sm rounded-sm">
 
                 <p class="font-medium">{{ $totals['completed_participants'] }} / {{ $totals['total_participants'] }} {{ __('confirmed participants') }}</p>
                 <p class="font-medium">{{ $totals['confirmed_participants'] }} {{ __('payment confirmed') }}</p>
@@ -23,7 +23,7 @@
 
             {{-- Per-channel boxes --}}
             @foreach ($summary as $item)
-                <div class="p-4 bg-white shadow rounded">
+                <div class="p-4 bg-white shadow-sm rounded-sm">
                     <p class="text-2xl font-black">
                         {{ $item['count'] }}
                     </p>
@@ -50,7 +50,7 @@
             />
 
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                <select name="channel" class="border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                <select name="channel" class="border-gray-300 rounded-md shadow-xs focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
                     <option value="">{{ __('All payment channels') }}</option>
                     @foreach(\App\Models\PaymentChannelType::cases() as $channel)
                         <option value="{{ $channel->value }}" @selected($filterChannel === (string) $channel->value)>{{ $channel->localizedName() }}</option>
@@ -58,7 +58,7 @@
                     <option value="none" @selected($filterChannel === 'none')>{{ __('Not set') }}</option>
                 </select>
 
-                <select name="confirmed" class="border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                <select name="confirmed" class="border-gray-300 rounded-md shadow-xs focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
                     <option value="">{{ __('All participants') }}</option>
                     <option value="confirmed" @selected($filterConfirmed === 'confirmed')>{{ __('Payment confirmed') }}</option>
                     <option value="unconfirmed" @selected($filterConfirmed === 'unconfirmed')>{{ __('Payment not confirmed') }}</option>
@@ -88,7 +88,7 @@
                 <tr class="relative {{ $item->payment_confirmed_at ? 'bg-green-50' : '' }}">
                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-zinc-900 sm:pl-6 font-medium">
                         <a href="{{ route('races.participants.index', ['race' => $race, 'pid' => $item->id]) }}">
-                        <span class="font-mono text-lg inline-block bg-gray-100 px-2 py-1 rounded mr-2">{{ $item->bib }}</span>
+                        <span class="font-mono text-lg inline-block bg-gray-100 px-2 py-1 rounded-sm mr-2">{{ $item->bib }}</span>
                         {{ $item->first_name }} {{ $item->last_name }}
                         </a>
                     </td>

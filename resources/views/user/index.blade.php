@@ -9,7 +9,7 @@
                 {{ __('Users') }}
             </h2>
             @can('create', \App\Models\User::class)
-                <a href="{{ route('users.create') }}" class="inline-flex items-center px-4 py-2 bg-zinc-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-zinc-700 focus:bg-zinc-700 active:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <a href="{{ route('users.create') }}" class="inline-flex items-center px-4 py-2 bg-zinc-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-zinc-700 focus:bg-zinc-700 active:bg-zinc-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     {{ __('Create a user') }}
                 </a>
             @endcan
@@ -19,7 +19,7 @@
     <div class="pb-12">
         <div class="px-4 sm:px-6 lg:px-8">
 
-            <div class="p-4 bg-white rounded mb-6">
+            <div class="p-4 bg-white rounded-sm mb-6">
                 <form action="{{ route('users.index') }}" method="GET" class="flex gap-3 items-end">
                     <div class="flex-1">
                         <x-label for="search" value="{{ __('Search') }}" />
@@ -32,7 +32,7 @@
                     </div>
                     @if ($search)
                         <div>
-                            <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                            <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-xs hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
                                 {{ __('Clear') }}
                             </a>
                         </div>
@@ -40,7 +40,7 @@
                 </form>
             </div>
 
-            <table class="w-full text-sm bg-white rounded">
+            <table class="w-full text-sm bg-white rounded-sm">
                 <thead>
                     <tr>
                         <td class="px-4 py-3 border-b text-xs font-medium text-zinc-500 uppercase tracking-wider">{{ __('Name') }}</td>

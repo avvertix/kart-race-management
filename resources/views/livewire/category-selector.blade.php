@@ -4,7 +4,7 @@
 
     <div class="flex flex-col gap-2 h-96 max-h-96 overflow-y-scroll">    
         @forelse ($categories as $category)
-            <label class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none focus:ring-2 focus-within:ring-2 focus-within:ring-orange-300 focus:ring-orange-300">
+            <label class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-xs focus:outline-hidden focus:ring-2 focus-within:ring-2 focus-within:ring-orange-300 focus:ring-orange-300">
                 <input type="radio" name="{{ $name }}" value="{{ $category->ulid }}" @checked($category->ulid === $value) class="peer sr-only" aria-labelledby="{{ $name }}-{{ $category->ulid }}-label" aria-describedby="{{ $name }}-{{ $category->ulid }}-description">
                 
                 <span class="flex flex-1">

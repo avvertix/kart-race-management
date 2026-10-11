@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="pt-3 pb-6 px-4 sm:px-6 lg:px-8">
-        <div class="p-4 bg-white rounded max-w-xl">
+        <div class="p-4 bg-white rounded-sm max-w-xl">
 
             <h3 class="mb-4">{{ __('Upload result files') }}</h3>
 

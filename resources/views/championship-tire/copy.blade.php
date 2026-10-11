@@ -26,7 +26,7 @@
                     </div>
 
                     <div class="mt-5 md:mt-0 md:col-span-2">
-                        <div class="shadow sm:rounded-md sm:overflow-hidden">
+                        <div class="shadow-sm sm:rounded-md sm:overflow-hidden">
                             <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
 
                                 @if($sourceChampionships->isEmpty())
@@ -45,7 +45,7 @@
                                 @else
                                     <div>
                                         <x-label for="source_championship" value="{{ __('Championship') }}" />
-                                        <select id="source_championship" name="source_championship" class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-orange-500 focus:ring-orange-500" required>
+                                        <select id="source_championship" name="source_championship" class="mt-1 block w-full rounded-md border-zinc-300 shadow-xs focus:border-orange-500 focus:ring-orange-500" required>
                                             <option value="">{{ __('Select a championship') }}</option>
                                             @foreach($sourceChampionships as $sourceChampionship)
                                                 <option value="{{ $sourceChampionship->id }}" {{ old('source_championship') == $sourceChampionship->id ? 'selected' : '' }}>

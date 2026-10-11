@@ -12,9 +12,9 @@
 
         <div class="grid md:grid-cols-2 gap-4">
 
-            <div class="p-4 bg-white shadow-xl rounded space-y-2">
+            <div class="p-4 bg-white shadow-xl rounded-sm space-y-2">
                 <p class="text-2xl font-bold">
-                    <span class="font-mono px-2 py-1 rounded bg-orange-100 text-orange-700 print:bg-orange-100">{{ $reservation->bib }}</span> {{ $reservation->driver }}
+                    <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $reservation->bib }}</span> {{ $reservation->driver }}
                 </p>
                 <p>
                     <span class="block text-zinc-500">{{ __('Contact email')}}</span>
@@ -24,7 +24,7 @@
                     <span class="block text-zinc-500">{{ __('Driver licence')}}</span>
 
                     @unless ($reservation->driver_licence)
-                        <span class="block p-2 bg-yellow-300 rounded">
+                        <span class="block p-2 bg-yellow-300 rounded-sm">
                             {{ __('Driver licence not specified. The reservation might not be enforced.') }}
                         </span>
                     @endunless

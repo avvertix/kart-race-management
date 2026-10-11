@@ -12,7 +12,7 @@
 
             <div class="grid grid-flow-col-dense gap-4">
                 {{-- @foreach ($tires as $item)
-                    <div class="text-lg p-4 bg-white shadow rounded">
+                    <div class="text-lg p-4 bg-white shadow-sm rounded-sm">
                         <p>{{ $item['name'] }}</p>
                         <p class="text-3xl font-black">{{ $item['total'] }}</p>
                     </div>
@@ -37,7 +37,7 @@
             <tr class="relative">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-zinc-900 sm:pl-6 font-medium">
 
-                    <span class="font-mono text-lg inline-block bg-gray-100 group-hover:bg-orange-200 px-2 py-1 rounded mr-2">{{ $item->bib }}</span>
+                    <span class="font-mono text-lg inline-block bg-gray-100 group-hover:bg-orange-200 px-2 py-1 rounded-sm mr-2">{{ $item->bib }}</span>
                     {{ $item->first_name }} {{ $item->last_name }}
 
                 </td>

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
 
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
@@ -6,6 +7,9 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../vendor/laravel/jetstream/**/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,

@@ -84,7 +84,7 @@ Route::middleware([
 ])->group(function () {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
 
-    Route::get('drivers', LinkedDrivers::class)->name('drivers.index');
+    Route::livewire('drivers', LinkedDrivers::class)->name('drivers.index');
 });
 
 // Championships and Races management

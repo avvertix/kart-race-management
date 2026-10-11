@@ -66,5 +66,6 @@
         @stack('modals')
 
         @livewireScripts
+        @fluxScripts
     </body>
 </html>

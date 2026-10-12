@@ -66,7 +66,7 @@ When executing tests and output shows error of missing table, remove `storage/ap
 ### Artisan Commands
 ```bash
 # Add a new user
-php artisan user:add --email user@example.com --role admin|user
+php artisan user:add --email user@example.com --role admin|organizer|racemanager|tireagent|timekeeper|driver
 
 # Synchronize race time
 php artisan race:sync-time
@@ -166,10 +166,15 @@ Located in `app/Livewire/`:
 
 ### Authentication & Authorization
 
-- Uses Laravel Jetstream with Fortify for authentication
-- Role-based access control via `HasRole` trait
-- Roles: `admin` and regular `user`
-- Two-factor authentication support
+- Based on the official Livewire starter kit (Livewire 4 + Flux free) with Laravel Fortify as the authentication backend; Jetstream and Sanctum are no longer used
+- Auth pages are Fortify views in `resources/views/livewire/auth/` (bound in `FortifyServiceProvider`), using the `layouts/auth` layout
+- Account settings are Livewire components in `app/Livewire/Settings/` (`Profile`, `Security`, `Appearance`, `DeleteUserForm`), routes in `routes/settings.php`
+- Shared validation rules in `app/Concerns/` (`PasswordValidationRules`, `ProfileValidationRules`)
+- Feature toggles in `config/fortify.php`: registration via `APP_REGISTRATION`, passkeys via `APP_PASSKEYS` (both off by default); two-factor authentication and email verification always on
+- User deletion goes through `App\Actions\DeleteUser`, which detaches the user's participants (`added_by`/`claimed_by`)
+- Role-based access control via `HasRole` trait and the `App\Enums\Role` enum (labels and permissions per role); validate roles with `App\Rules\ValidRole`
+- Roles: `admin`, `organizer`, `racemanager`, `tireagent`, `timekeeper`, `driver` (default for self-registered users)
+- Policies call `$user->hasPermission('resource:action')`; `admin` has the `*` wildcard
 
 ### Activity Logging
 

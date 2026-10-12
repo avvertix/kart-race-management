@@ -35,3 +35,43 @@
     cursor: pointer;
   }
 }
+
+/*
+  Align Flux form controls focus state with the `x-input` component.
+  Unlayered to override Flux border utilities; invalid controls keep the red border.
+*/
+input[data-flux-control]:focus:not([data-invalid]),
+textarea[data-flux-control]:focus:not([data-invalid]),
+select[data-flux-control]:focus:not([data-invalid]) {
+  @apply border-orange-300 ring-3 ring-orange-200/50 outline-hidden;
+}
+
+input[data-flux-control][data-invalid]:focus,
+textarea[data-flux-control][data-invalid]:focus,
+select[data-flux-control][data-invalid]:focus {
+  @apply ring-3 ring-red-200/50 outline-hidden;
+}
+
+/*
+  Align Flux checkboxes with the `x-checkbox` component: orange when checked,
+  small radius and the same focus ring. The accent is scoped to checkboxes only.
+*/
+ui-checkbox[data-flux-checkbox] {
+  --color-accent: var(--color-orange-600);
+  --color-accent-foreground: var(--color-white);
+
+  @apply rounded-sm outline-hidden;
+}
+
+ui-checkbox[data-flux-checkbox] > [data-flux-checkbox-indicator] {
+  @apply rounded-sm border-zinc-300;
+}
+
+ui-checkbox[data-flux-checkbox][data-checked] > [data-flux-checkbox-indicator],
+ui-checkbox[data-flux-checkbox][data-indeterminate] > [data-flux-checkbox-indicator] {
+  @apply border-transparent;
+}
+
+ui-checkbox[data-flux-checkbox]:focus-visible > [data-flux-checkbox-indicator] {
+  @apply border-orange-300 ring-3 ring-orange-200/50;
+}

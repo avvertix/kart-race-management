@@ -64,7 +64,7 @@
                 <flux:checkbox name="terms" id="terms" required />
                 <flux:label for="terms">
                     {!! __('I agree to the :privacy_policy', [
-                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline">'.__('Privacy Policy').'</a>',
+                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="ml-1 underline">'.__('Privacy Policy').'</a>',
                     ]) !!}
                 </flux:label>
             </flux:field>

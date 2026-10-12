@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\DeleteUser;
 use App\Actions\Fortify\CreateNewUserWithRole;
 use App\Enums\Role;
 use App\Models\User;
@@ -97,7 +98,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(User $user, DeleteUser $deleteUser)
     {
         if ($user->getKey() === auth()->id()) {
             return redirect()->route('users.edit', $user)
@@ -111,7 +112,7 @@ class UserController extends Controller
                 ->with('flash.bannerStyle', 'danger');
         }
 
-        $user->delete();
+        $deleteUser($user);
 
         return redirect()->route('users.index')
             ->with('flash.banner', __(':name deleted.', ['name' => $user->name]));

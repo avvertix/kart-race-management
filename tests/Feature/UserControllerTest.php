@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Participant;
 use App\Models\User;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
@@ -285,6 +286,28 @@ class UserControllerTest extends TestCase
         $this->assertDatabaseMissing('users', [
             'id' => $user->id,
         ]);
+    }
+
+    public function test_deleting_user_detaches_their_participants(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $user = User::factory()->create();
+        $participant = Participant::factory()->create([
+            'added_by' => $user->id,
+            'claimed_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->from(route('users.edit', $user))
+            ->delete(route('users.destroy', $user));
+
+        $response->assertRedirectToRoute('users.index');
+
+        $this->assertNull($user->fresh());
+
+        $participant->refresh();
+        $this->assertNull($participant->added_by);
+        $this->assertNull($participant->claimed_by);
     }
 
     public function test_admin_cannot_delete_themselves(): void

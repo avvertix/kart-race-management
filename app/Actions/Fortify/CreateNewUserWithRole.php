@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Fortify;
 
+use App\Concerns\PasswordValidationRules;
 use App\Enums\Role;
 use App\Models\User;
 use App\Rules\ValidRole;

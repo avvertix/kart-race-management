@@ -6,16 +6,13 @@ namespace App\Actions;
 
 use App\Models\Participant;
 use App\Models\User;
-use Laravel\Jetstream\Contracts\DeletesUsers;
 
-class DeleteUser implements DeletesUsers
+class DeleteUser
 {
     /**
-     * Delete the given user.
-     *
-     * @param  User  $user
+     * Delete the given user, detaching the participants they added or claimed.
      */
-    public function delete($user): void
+    public function __invoke(User $user): void
     {
         Participant::where('added_by', $user->id)->update(['added_by' => null]);
         Participant::where('claimed_by', $user->id)->update(['claimed_by' => null]);

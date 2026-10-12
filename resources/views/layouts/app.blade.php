@@ -17,7 +17,7 @@
         
 
         <div class="min-h-screen bg-zinc-100 print:bg-white">
-            @livewire('navigation-menu')
+            @include('navigation-menu')
             
             <x-banner />
 
@@ -64,6 +64,12 @@
         </div>
 
         @stack('modals')
+
+        @persist('toast')
+            <flux:toast.group>
+                <flux:toast />
+            </flux:toast.group>
+        @endpersist
 
         @livewireScripts
         @fluxScripts

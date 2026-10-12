@@ -267,3 +267,5 @@ Route::get('tires-verification/{registration}', [ParticipantTireVerificationCont
 Route::get('/privacy-policy', [PrivacyPolicyController::class, 'show'])->name('policy.show');
 
 Route::get('/swtich-language', SwitchLanguageController::class)->name('language.change');
+
+require __DIR__.'/settings.php';

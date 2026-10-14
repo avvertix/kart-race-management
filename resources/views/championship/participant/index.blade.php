@@ -5,31 +5,24 @@
 
 
     <x-slot name="actions">
-        <x-dropdown align="right" width="96">
-            <x-slot name="trigger">
-                <x-button >
-                    {{ __('Export') }}
+        <flux:dropdown position="bottom" align="end">
+            <x-button type="button">
+                {{ __('Export') }}
 
-                    <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </x-button>
-            </x-slot>
+                <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </x-button>
 
-            <x-slot name="content">
-                <div class="flex flex-col">
-                    @can('update', $championship)
-                        <a href="{{ route('championships.export.participants', $championship) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                            <span class="inline-flex gap-1">
-                                <x-ri-file-excel-line class="size-5 shrink-0" />
-                                {{ __('Export participants') }}
-                            </span>
-                            <span class="block ml-6 text-xs text-zinc-600">{{ __('Export all championship participants') }}</span>
-                        </a>
-                    @endcan
-                </div>
-            </x-slot>
-        </x-dropdown>
+            <flux:menu class="md:w-96">
+                @can('update', $championship)
+                    <x-menu-item :href="route('championships.export.participants', $championship)" :description="__('Export all championship participants')">
+                        <x-slot:icon><x-ri-file-excel-line /></x-slot:icon>
+                        {{ __('Export participants') }}
+                    </x-menu-item>
+                @endcan
+            </flux:menu>
+        </flux:dropdown>
     </x-slot>
     
     <livewire:free-race-numbers :championship="$championship" />

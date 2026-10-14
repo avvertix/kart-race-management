@@ -14,82 +14,63 @@
                         </x-button-link>
                     @endcan
 
-                    <x-dropdown align="right" width="96">
-                        <x-slot name="trigger">
-                            <x-button >
-                                {{ __('Export or print') }}
+                    <flux:dropdown position="bottom" align="end">
+                        <x-button type="button">
+                            {{ __('Export or print') }}
 
-                                <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </x-button>
-                        </x-slot>
+                            <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </x-button>
 
-                        <x-slot name="content">
-                            <div class="flex flex-col">
+                        <flux:menu class="md:w-96">
+                            @can('update', $race)
+                                <x-menu-item :href="route('races.export.participants', $race)" :description="__('Export all registered participants')">
+                                    <x-slot:icon><x-ri-file-excel-line /></x-slot:icon>
+                                    {{ __('Export participants') }}
+                                </x-menu-item>
+                                <x-menu-item :href="route('races.export.signature', $race)" :description="__('Export form for signing the attendence of the briefing')">
+                                    <x-slot:icon><x-ri-sketching /></x-slot:icon>
+                                    {{ __('Export briefing signature module') }}
+                                </x-menu-item>
+
+                                <flux:menu.separator />
+
+                                <x-menu-item :href="route('races.participants.print', $race)" :description="__('Print all participants registrations')">
+                                    <x-slot:icon><x-ri-printer-line /></x-slot:icon>
+                                    {{ __('Print participants') }}
+                                </x-menu-item>
+                                <x-menu-item :href="route('races.participant-receipts.print', $race)" target="_blank" :description="__('Print receipts for all participants')">
+                                    <x-slot:icon><x-ri-receipt-line /></x-slot:icon>
+                                    {{ __('Print receipts') }}
+                                </x-menu-item>
+                            @endcan
+
+                            @can('create', \App\Model\Transponder::class)
                                 @can('update', $race)
-                                    <a href="{{ route('races.export.participants', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                                        <span class="inline-flex gap-1">
-                                            <x-ri-file-excel-line class="size-5 shrink-0" />
-                                            {{ __('Export participants') }}
-                                        </span>
-                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Export all registered participants') }}</span>
-                                    </a>
-                                    <a href="{{ route('races.export.signature', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                                        <span class="inline-flex gap-1">
-                                            <x-ri-sketching class="size-5 shrink-0" />
-                                            {{ __('Export briefing signature module') }}
-                                        </span>
-                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Export form for signing the attendence of the briefing') }}</span>
-                                    </a>
-                                    <div class="border-t border-zinc-100"></div>
-                                    <a href="{{ route('races.participants.print', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                                        <span class="inline-flex gap-1">
-                                            <x-ri-printer-line class="size-5 shrink-0" />
-                                            {{ __('Print participants') }}
-                                        </span>
-                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Print all participants registrations') }}</span>
-                                    </a>
-                                    <a href="{{ route('races.participant-receipts.print', $race) }}" target="_blank" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                                        <span class="inline-flex gap-1">
-                                            <x-ri-receipt-line class="size-5 shrink-0" />
-                                            {{ __('Print receipts') }}
-                                        </span>
-                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Print receipts for all participants') }}</span>
-                                    </a>
-                                    <div class="border-t border-zinc-100"></div>
+                                    <flux:menu.separator />
                                 @endcan
 
-                                @can('create', \App\Model\Transponder::class)
-                                    @if ($race->isNationalOrInternational())
-                                        <a href="{{ route('races.export.aci', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                                            <span class="inline-flex gap-1">
-                                                <x-ri-table-2 class="size-5 shrink-0" />
-                                                {{ __('Export for ACI Italian Cup') }}
-                                            </span>
-                                            <span class="block ml-6 text-xs text-zinc-600">{{ __('Export confirmed participants as requested by ACI Karting') }}</span>
-                                        </a>
-                                        <div class="border-t border-zinc-100"></div>
-                                    @endif
-                                    <a href="{{ route('races.export.transponders', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                                        <span class="inline-flex gap-1">
-                                            <x-ri-steering-2-line class="size-5 shrink-0" />
-                                            {{ __('Export transponders') }}
-                                        </span>
-                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Export drivers and transponder for MyLaps Orbits') }}</span>
-                                    </a>
-                                    <a href="{{ route('races.penalty-sheet.configure', $race) }}" class="px-4 py-2 text-sm leading-5 text-zinc-700 hover:bg-zinc-100 focus:outline-hidden focus:bg-zinc-100 transition">
-                                        <span class="inline-flex gap-1">
-                                            <x-ri-scales-3-line class="size-5 shrink-0" />
-                                            {{ __('Print check sheet') }}
-                                        </span>
-                                        <span class="block ml-6 text-xs text-zinc-600">{{ __('Print weight and pre-grid check sheet') }}</span>
-                                    </a>
-                                    <div class="border-t border-zinc-100"></div>
-                                @endcan
-                            </div>
-                        </x-slot>
-                    </x-dropdown>
+                                @if ($race->isNationalOrInternational())
+                                    <x-menu-item :href="route('races.export.aci', $race)" :description="__('Export confirmed participants as requested by ACI Karting')">
+                                        <x-slot:icon><x-ri-table-2 /></x-slot:icon>
+                                        {{ __('Export for ACI Italian Cup') }}
+                                    </x-menu-item>
+
+                                    <flux:menu.separator />
+                                @endif
+
+                                <x-menu-item :href="route('races.export.transponders', $race)" :description="__('Export drivers and transponder for MyLaps Orbits')">
+                                    <x-slot:icon><x-ri-steering-2-line /></x-slot:icon>
+                                    {{ __('Export transponders') }}
+                                </x-menu-item>
+                                <x-menu-item :href="route('races.penalty-sheet.configure', $race)" :description="__('Print weight and pre-grid check sheet')">
+                                    <x-slot:icon><x-ri-scales-3-line /></x-slot:icon>
+                                    {{ __('Print check sheet') }}
+                                </x-menu-item>
+                            @endcan
+                        </flux:menu>
+                    </flux:dropdown>
 
                     
                     @can('update', $race)

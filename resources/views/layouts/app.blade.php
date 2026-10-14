@@ -24,23 +24,24 @@
 
             @auth
                 <flux:dropdown position="bottom" align="end">
-                    <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
+                    <flux:profile circle :initials="auth()->user()->initials()" :chevron="false" />
 
-                    <flux:menu>
-                        <div class="px-2 py-1.5 text-start text-sm">
-                            <flux:heading class="truncate">{{ auth()->user()->name }}</flux:heading>
-                            <flux:text class="truncate">{{ auth()->user()->email }}</flux:text>
+                    <flux:menu class="w-64">
+                        <div class="flex items-center gap-3 px-3 py-2">
+                            <flux:avatar :name="auth()->user()->name" :initials="auth()->user()->initials()" />
+                            <div class="grid min-w-0 flex-1 text-start text-sm leading-tight">
+                                <flux:heading class="truncate">{{ auth()->user()->name }}</flux:heading>
+                                <flux:text class="truncate">{{ auth()->user()->email }}</flux:text>
+                            </div>
                         </div>
 
                         <flux:menu.separator />
 
-                        <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Settings') }}</flux:menu.item>
-
-                        <flux:menu.separator />
+                        <flux:menu.item :href="route('profile.edit')" icon="cog-6-tooth" icon:variant="outline">{{ __('Settings') }}</flux:menu.item>
 
                         <form method="POST" action="{{ route('logout') }}" class="w-full">
                             @csrf
-                            <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                            <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" icon:variant="outline" class="w-full">
                                 {{ __('Log Out') }}
                             </flux:menu.item>
                         </form>

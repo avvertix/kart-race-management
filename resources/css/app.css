@@ -75,3 +75,68 @@ ui-checkbox[data-flux-checkbox][data-indeterminate] > [data-flux-checkbox-indica
 ui-checkbox[data-flux-checkbox]:focus-visible > [data-flux-checkbox-indicator] {
   @apply border-orange-300 ring-3 ring-orange-200/50;
 }
+
+/*
+  Align Flux buttons with the `x-button` components: focus ring and a darker
+  background while pressed. The pressed state uses an overlay so it works for every variant.
+*/
+[data-flux-button]:focus {
+  @apply ring-3 ring-zinc-300 outline-hidden;
+}
+
+[data-flux-button].bg-red-500:focus {
+  @apply ring-red-200;
+}
+
+[data-flux-button]:active:not(:disabled) {
+  background-image: linear-gradient(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.12));
+}
+
+/*
+  Dropdown menus: fade and scale in/out like the `x-dropdown` component,
+  with roomier items and a stronger shadow.
+*/
+ui-menu[popover] {
+  opacity: 0;
+  scale: 0.95;
+  transform-origin: top left;
+  transition:
+    opacity 75ms ease-in,
+    scale 75ms ease-in,
+    display 75ms allow-discrete,
+    overlay 75ms allow-discrete;
+}
+
+ui-dropdown[position$="end"] > ui-menu[popover] {
+  transform-origin: top right;
+}
+
+ui-menu[popover]:popover-open {
+  opacity: 1;
+  scale: 1;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+}
+
+@starting-style {
+  ui-menu[popover]:popover-open {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
+
+[data-flux-menu] {
+  @apply rounded-md p-1.5 shadow-lg;
+}
+
+[data-flux-menu-item] {
+  @apply px-3 py-2;
+}
+
+[data-flux-menu-item][data-active] {
+  @apply bg-zinc-100;
+}
+
+[data-flux-menu-separator] {
+  @apply -mx-1.5 my-1.5;
+}

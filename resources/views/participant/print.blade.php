@@ -23,11 +23,11 @@
                     <div class="flex gap-2 items-center">
                         <div class="contents">
                             <x-label for="from" class="shrink-0">{{ __('Registered from') }}</x-label>
-                            <x-input type="date" name="from" id="from" class="block w-full text-sm" :value="old('from', $from ?? $race->registration_opens_at?->toDateString())" />
+                            <x-input type="date" name="from" id="from" class="block w-full" size="sm" :value="old('from', $from ?? $race->registration_opens_at?->toDateString())" />
                         </div>
                         <div class="contents">
                             <x-label for="to"  class="shrink-0">{{ __('Registered to') }}</x-label>
-                            <x-input type="date" name="to" id="to" class="block w-full text-sm" :value="old('to', $to)" />
+                            <x-input type="date" name="to" id="to" class="block w-full" size="sm" :value="old('to', $to)" />
                         </div>
                         <div class="shrink-0">
                             <x-secondary-button type="submit" class="">

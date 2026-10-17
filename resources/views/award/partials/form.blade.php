@@ -85,7 +85,7 @@
 
             <div x-show="rankingMode === 'best_n'" x-cloak class="mt-4">
                 <x-label for="best_n" value="{{ __('Best N races') }}" />
-                <x-input id="best_n" type="number" name="best_n" :value="old('best_n', optional($currentAward)->best_n)" class="mt-1 block w-32" min="1" />
+                <x-input id="best_n" type="number" name="best_n" :value="old('best_n', optional($currentAward)->best_n)" class="mt-1 block w-32!" min="1" />
                 <x-input-error for="best_n" class="mt-2" />
             </div>
 

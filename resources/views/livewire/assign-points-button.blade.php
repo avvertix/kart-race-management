@@ -3,13 +3,12 @@
         {{ __('Assign points') }}
     </x-secondary-button>
 
-    <x-dialog-modal wire:model.live="showModal">
-        <x-slot name="title">
-            {{ __('Select point scheme') }}
-        </x-slot>
-
-        <x-slot name="content">
-            <p class="text-sm text-zinc-600 mb-4">{{ __('Multiple point schemes are available. Select which one to use for assigning points.') }}</p>
+    <flux:modal wire:model.self="showModal" class="md:w-lg">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Select point scheme') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('Multiple point schemes are available. Select which one to use for assigning points.') }}</flux:text>
+            </div>
 
             <div class="space-y-2">
                 @foreach ($pointSchemes as $scheme)
@@ -19,16 +18,18 @@
                     </label>
                 @endforeach
             </div>
-        </x-slot>
 
-        <x-slot name="footer">
-            <x-secondary-button wire:click="$set('showModal', false)">
-                {{ __('Cancel') }}
-            </x-secondary-button>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <x-secondary-button>
+                        {{ __('Cancel') }}
+                    </x-secondary-button>
+                </flux:modal.close>
 
-            <x-button class="ml-3" wire:click="assignPoints">
-                {{ __('Assign points') }}
-            </x-button>
-        </x-slot>
-    </x-dialog-modal>
+                <x-button type="button" wire:click="assignPoints">
+                    {{ __('Assign points') }}
+                </x-button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

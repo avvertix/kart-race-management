@@ -17,29 +17,29 @@
             <!-- Filters row - stacked on mobile, inline on desktop -->
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 ">
                 <!-- Category filter -->
-                <select wire:model.live="filter_category" class="border-gray-300 rounded-md shadow-xs focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                <flux:select size="sm" wire:model.live="filter_category" class="w-full sm:w-auto">
                     <option value="">{{ __('All categories') }}</option>
                     @foreach ($this->categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
-                </select>
+                </flux:select>
 
                 <!-- Status filter (combined confirmation + transponder) -->
-                <select wire:model.live="filter_status" class="border-gray-300 rounded-md shadow-xs focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                <flux:select size="sm" wire:model.live="filter_status" class="w-full sm:w-auto">
                     <option value="">{{ __('All participants') }}</option>
                     <option value="confirmed">{{ __('Confirmed') }}</option>
                     <option value="unconfirmed">{{ __('Unconfirmed') }}</option>
                     <option value="with-transponder">{{ __('With transponder') }}</option>
                     <option value="without-transponder">{{ __('Without transponder') }}</option>
-                </select>
+                </flux:select>
 
                 <!-- Sort dropdown -->
-                <select wire:model.live="sort" class="border-gray-300 rounded-md shadow-xs focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                <flux:select size="sm" wire:model.live="sort" class="w-full sm:w-auto">
                     <option value="bib">{{ __('Sort by: Race number') }}</option>
                     <option value="registration-date">{{ __('Sort by: Registration date') }}</option>
                     <option value="confirmed-date">{{ __('Sort by: Confirmation date') }}</option>
                     <option value="completed-date">{{ __('Sort by: Completion date') }}</option>
-                </select>
+                </flux:select>
             </div>
         </div>
     </div>

@@ -15,12 +15,8 @@
                     @endcan
 
                     <flux:dropdown position="bottom" align="end">
-                        <x-button type="button">
+                        <x-button type="button" icon:trailing="chevron-down">
                             {{ __('Export or print') }}
-
-                            <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
                         </x-button>
 
                         <flux:menu class="md:w-96">
@@ -99,10 +95,9 @@
                     </p>
                 @endif
             </div>
-            <div class="mt-6  print:hidden">
-                    
-                <div class="hidden sm:block">
-                    <nav class="-mb-0.5 flex space-x-8">
+            <div class="mt-3 print:hidden">
+                <div>
+                    <flux:navbar scrollable class="-mb-0.5 [--color-accent-content:var(--color-orange-600)]">
 
                         <x-tab-link href="{{ route('races.show', $race) }}" :active="request()->routeIs('races.show', $race)">{{ __('Summary') }}</x-tab-link>
                         
@@ -122,7 +117,7 @@
                             <x-tab-link href="{{ route('races.communications.index', $race) }}" :active="request()->routeIs('races.communications.index', $race)">{{ __('Communications') }}</x-tab-link>
                         @endcan
                         
-                    </nav>
+                    </flux:navbar>
                 </div>
             </div>
         </div>

@@ -94,7 +94,7 @@
             </flux:sidebar.nav>
         </flux:sidebar>
 
-        <x-banner />
+        <x-banner class="px-4 pt-4 sm:px-6 lg:px-8 print:hidden" />
 
         {{-- Page Heading --}}
         @if (isset($header))
@@ -136,8 +136,6 @@
                 <p>{{ __('Powered by') }}&nbsp;<a href="https://github.com/avvertix/kart-race-management" target="_blank" rel="noopener">Kart Race Management</a></p>
             </div>
         </footer>
-
-        @stack('modals')
 
         @persist('toast')
             <flux:toast.group>

@@ -14,20 +14,20 @@
 
                     <div class="flex items-center gap-2">
                         <x-label for="sort" class="sr-only md:not-sr-only shrink-0">{{ __('Sort by') }}</x-label>
-                        <select onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <flux:select size="sm" onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full">
                             <option value="bib" @selected(blank($sort) || $sort === 'bib')>{{ __('Race number') }}</option>
                             <option value="registration" @selected($sort === 'registration')>{{ __('Registration date') }}</option>
-                        </select>
+                        </flux:select>
                     </div>
                     
                     <div class="flex gap-2 items-center">
                         <div class="contents">
                             <x-label for="from" class="shrink-0">{{ __('Registered from') }}</x-label>
-                            <x-input type="date" name="from" id="from" class="block w-full text-sm" :value="old('from', $from ?? $race->registration_opens_at?->toDateString())" />
+                            <x-input type="date" name="from" id="from" class="block w-full" size="sm" :value="old('from', $from ?? $race->registration_opens_at?->toDateString())" />
                         </div>
                         <div class="contents">
                             <x-label for="to"  class="shrink-0">{{ __('Registered to') }}</x-label>
-                            <x-input type="date" name="to" id="to" class="block w-full text-sm" :value="old('to', $to)" />
+                            <x-input type="date" name="to" id="to" class="block w-full" size="sm" :value="old('to', $to)" />
                         </div>
                         <div class="shrink-0">
                             <x-secondary-button type="submit" class="">

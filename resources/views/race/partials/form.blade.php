@@ -114,22 +114,22 @@
                     <div class="col-span-6 sm:col-span-4">
                         <x-label for="registration_form" value="{{ __('Registration form') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Select the registration form to use for this race. Leave blank to use the championship setting or the default.') }}</p>
-                        <select name="registration_form" id="registration_form" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs">
+                        <flux:select name="registration_form" id="registration_form" class="mt-1 block w-full">
                             <option value="" @selected(old('registration_form', optional($race ?? null)->registration_form) === null)>{{ __('Use championship / default') }}</option>
                             @foreach (\App\Models\RegistrationForm::cases() as $form)
                                 <option value="{{ $form->value }}" @selected(old('registration_form', optional($race ?? null)->registration_form?->value) === $form->value)>{{ ucfirst($form->value) }}</option>
                             @endforeach
-                        </select>
+                        </flux:select>
                         <x-input-error for="registration_form" class="mt-2" />
                     </div>
                     <div class="col-span-6 sm:col-span-4">
                         <x-label for="bonus_enabled" value="{{ __('Bonus') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Control bonus usage for this race. Leave blank to use the championship setting or the default.') }}</p>
-                        <select name="bonus_enabled" id="bonus_enabled" class="mt-1 block w-full border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs">
+                        <flux:select name="bonus_enabled" id="bonus_enabled" class="mt-1 block w-full">
                             <option value="" @selected(blank(old('bonus_enabled', optional($race ?? null)->bonus_enabled)))>{{ __('Use championship / default') }}</option>
                             <option value="true" @selected(old('bonus_enabled', optional($race ?? null)->bonus_enabled) === true)>{{ __('Enabled') }}</option>
                             <option value="false" @selected(old('bonus_enabled', optional($race ?? null)->bonus_enabled) === false)>{{ __('Disabled') }}</option>
-                        </select>
+                        </flux:select>
                         <x-input-error for="bonus_enabled" class="mt-2" />
                     </div>
                 </div>

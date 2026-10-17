@@ -16,7 +16,7 @@
 
                 <div>
                     <x-label for="files" value="{{ __('XML result files') }}" />
-                    <input id="files" type="file" name="files[]" multiple accept=".xml" class="mt-1 block w-full" />
+                    <flux:input id="files" type="file" name="files[]" multiple accept=".xml" class="mt-1 block w-full" />
                     <x-input-error for="files" class="mt-2" />
                     <x-input-error for="files.*" class="mt-2" />
                 </div>

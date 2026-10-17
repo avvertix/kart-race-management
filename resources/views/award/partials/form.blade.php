@@ -18,13 +18,13 @@
             @if($isCategory)
                 <div x-data="{ categoryName: '{{ old('name', optional($currentAward)->name ?? '') }}' }">
                     <x-label for="category_id" value="{{ __('Category') }}*" />
-                    <select id="category_id" name="category_id" class="mt-1 block w-full border-zinc-300 rounded-md shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
+                    <flux:select id="category_id" name="category_id" class="mt-1 block w-full"
                         x-on:change="if(categoryName === '' || categoryName === $event.target.options[$event.target.selectedIndex - 1]?.text) { categoryName = $event.target.options[$event.target.selectedIndex].text; $refs.nameInput.value = categoryName; }">
                         <option value="">—</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->getKey() }}" @selected(old('category_id', optional($currentAward)->category_id) == $category->getKey())>{{ $category->name }}</option>
                         @endforeach
-                    </select>
+                    </flux:select>
                     <x-input-error for="category_id" class="mt-2" />
 
                     <div class="mt-4">
@@ -85,7 +85,7 @@
 
             <div x-show="rankingMode === 'best_n'" x-cloak class="mt-4">
                 <x-label for="best_n" value="{{ __('Best N races') }}" />
-                <x-input id="best_n" type="number" name="best_n" :value="old('best_n', optional($currentAward)->best_n)" class="mt-1 block w-32" min="1" />
+                <x-input id="best_n" type="number" name="best_n" :value="old('best_n', optional($currentAward)->best_n)" class="mt-1 block w-32!" min="1" />
                 <x-input-error for="best_n" class="mt-2" />
             </div>
 

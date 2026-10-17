@@ -7,7 +7,7 @@
         </span>
     </p>
     <div class="relative mt-1">
-        <x-input id="driver_search" wire:model.live.debounce.750ms="search" type="text" placeholder="{{ __('Search by name, surname or licence number') }}" name="driver_search" class="block w-full pr-10" />
+        <x-input id="driver_search" wire:model.live.debounce.750ms="search" type="text" placeholder="{{ __('Search by name, surname or licence number') }}" name="driver_search" class="block w-full" class:input="pe-10!" />
         @if($search)
             <button type="button" wire:click="clearSearch" class="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-zinc-600">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

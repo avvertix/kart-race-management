@@ -254,6 +254,31 @@ class BibReservationControllerTest extends TestCase
         $response->assertSessionHasErrors('bib');
     }
 
+    public function test_reservation_not_created_when_bib_above_maximum(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $championship = Championship::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.bib-reservations.create', $championship))
+            ->post(route('championships.bib-reservations.store', $championship), [
+                'bib' => '1000',
+                'driver' => 'Driver name',
+                'contact_email' => 'driver@local.host',
+                'driver_licence_number' => 'LN1',
+                'driver_licence_type' => DriverLicence::LOCAL_NATIONAL->value,
+                'reservation_expiration_date' => null,
+            ]);
+
+        $response->assertRedirectToRoute('championships.bib-reservations.create', $championship);
+
+        $response->assertSessionHasErrors('bib');
+
+        $this->assertEquals(0, $championship->reservations()->count());
+    }
+
     public function test_reservation_not_created_when_bib_already_used_in_championship(): void
     {
         $user = User::factory()->organizer()->create();
@@ -471,6 +496,35 @@ class BibReservationControllerTest extends TestCase
         $this->assertEquals('LN1', $updatedReservation->driver_licence);
         $this->assertEquals(hash('sha512', 'LN1'), $updatedReservation->driver_licence_hash);
         $this->assertNull($updatedReservation->reservation_expires_at);
+    }
+
+    public function test_bib_not_changed_when_above_maximum(): void
+    {
+        $user = User::factory()->organizer()->create();
+
+        $reservation = BibReservation::factory()
+            ->create([
+                'bib' => '100',
+                'driver' => 'Driver name',
+            ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('bib-reservations.edit', $reservation))
+            ->put(route('bib-reservations.update', $reservation), [
+                'bib' => '1000',
+                'driver' => 'Driver name',
+                'contact_email' => 'driver@local.host',
+                'driver_licence_number' => 'LN1',
+                'driver_licence_type' => DriverLicence::LOCAL_NATIONAL->value,
+                'reservation_expiration_date' => null,
+            ]);
+
+        $response->assertRedirectToRoute('bib-reservations.edit', $reservation);
+
+        $response->assertSessionHasErrors('bib');
+
+        $this->assertEquals(100, $reservation->fresh()->bib);
     }
 
     public function test_bib_not_changed_when_reservation_already_used_using_licence(): void

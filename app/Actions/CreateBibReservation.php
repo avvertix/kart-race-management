@@ -22,7 +22,8 @@ class CreateBibReservation
             'bib' => [
                 'required',
                 'integer',
-                'min:1',
+                'min:'.BibReservation::MIN_BIB,
+                'max:'.BibReservation::MAX_BIB,
                 Rule::unique((new BibReservation())->getTable(), 'bib')->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());
                 }),

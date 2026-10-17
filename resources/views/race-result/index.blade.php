@@ -18,7 +18,7 @@
                     @if ($runResults->isNotEmpty())
                         <form action="{{ route('races.results.link-participants', $race) }}" method="post">
                             @csrf
-                            <x-secondary-button type="submit" class="inline-flex items-center px-4 py-2 bg-white border border-zinc-300 rounded-md font-semibold text-xs text-zinc-700 uppercase tracking-widest shadow-xs hover:bg-zinc-50 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <x-secondary-button type="submit" class="">
                                 {{ __('Link all participants') }}
                             </x-secondary-button>
                         </form>

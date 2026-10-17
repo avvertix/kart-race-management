@@ -19,7 +19,7 @@
                 @include('communication.partials.form')
 
                 <div class="mt-4">
-                    <x-button class="button-dark truncate text-center block" type="submit">
+                    <x-button type="submit">
                         {{ __('Update message') }}
                     </x-button>
                 </div>

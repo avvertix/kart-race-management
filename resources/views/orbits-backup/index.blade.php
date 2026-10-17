@@ -23,7 +23,7 @@
                 @include('orbits-backup.partials.form')
 
                 <div class="mt-4">
-                    <x-button class="button-dark truncate text-center block" type="submit">
+                    <x-button type="submit">
                         {{ __('Upload backup') }}
                     </x-button>
                 </div>

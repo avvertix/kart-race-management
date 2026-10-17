@@ -26,9 +26,9 @@
                 </div>
                 {{ __('Period') }} {{ $championship->period }}
             </div>
-            <div class="mt-6">
+            <div class="mt-3">
 
-                <nav class="-mb-0.5 flex space-x-8">
+                <flux:navbar scrollable class="-mb-0.5 [--color-accent-content:var(--color-orange-600)]">
                     
                     <x-tab-link href="{{ route('championships.show', $championship) }}" :active="request()->routeIs('championships.show', $championship)">{{ __('Races') }}</x-tab-link>
                     
@@ -50,7 +50,7 @@
                         <x-tab-link href="{{ route('championships.penalties.index', $championship) }}" :active="request()->routeIs('championships.penalties.*') || request()->routeIs('penalties.*')">{{ __('Saved Penalties') }}</x-tab-link>
                     @endcan
 
-                </nav>
+                </flux:navbar>
             </div>       
         </div>
 

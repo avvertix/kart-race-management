@@ -67,7 +67,7 @@
                 <x-button type="submit">{{ __('Apply filter') }}</x-button>
 
                 @if ($search || $filterChannel || $filterConfirmed)
-                    <x-secondary-button-link href="{{ route('races.payments', $race) }}" class="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-800">{{ __('Clear all filters') }}</x-secondary-button-link>
+                    <x-secondary-button-link href="{{ route('races.payments', $race) }}" variant="ghost">{{ __('Clear all filters') }}</x-secondary-button-link>
                 @endif
             </div>
         </form>

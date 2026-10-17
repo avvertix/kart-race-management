@@ -153,13 +153,13 @@
                     <div class="mt-4">
                         <x-label for="bonus_mode" value="{{ __('Bonus mode') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Select how bonuses should be managed for this championship.') }}</p>
-                        <select name="bonus_mode" id="bonus_mode" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
+                        <flux:select name="bonus_mode" id="bonus_mode" class="block mt-1 w-full">
                             @foreach (\App\Models\BonusMode::cases() as $mode)
                                 <option value="{{ $mode->value }}" @selected(old('bonus_mode', optional($championship ?? null)->bonuses->bonus_mode) === $mode)>
                                     {{ $mode->localizedName() }}
                                 </option>
                             @endforeach
-                        </select>
+                        </flux:select>
                         <p class="text-zinc-600 text-sm mt-2">
                             @foreach (\App\Models\BonusMode::cases() as $mode)
                                 <span x-show="$el.closest('form').querySelector('#bonus_mode').value == '{{ $mode->value }}'">
@@ -194,11 +194,11 @@
                     <div class="mt-4">
                         <x-label for="bonus_enabled_championship" value="{{ __('Bonus enabled') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('Control bonus usage for races in this championship. Individual races can override this setting.') }}</p>
-                        <select name="bonus_enabled" id="bonus_enabled_championship" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
+                        <flux:select name="bonus_enabled" id="bonus_enabled_championship" class="block mt-1 w-full">
                             <option value="" @selected(blank(old('bonus_enabled', $championship->bonus_enabled)))>{{ __('Use default (enabled)') }}</option>
                             <option value="true" @selected(old('bonus_enabled', $championship->bonus_enabled) === true)>{{ __('Enabled') }}</option>
                             <option value="false" @selected(old('bonus_enabled', $championship->bonus_enabled) === false)>{{ __('Disabled') }}</option>
-                        </select>
+                        </flux:select>
                         <x-input-error for="bonus_enabled" class="mt-2" />
                     </div>
 
@@ -232,12 +232,12 @@
 
                     <div class="mt-4">
                         <x-label for="registration_form" value="{{ __('Registration form') }}" />
-                        <select name="registration_form" id="registration_form" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
+                        <flux:select name="registration_form" id="registration_form" class="block mt-1 w-full">
                             <option value="" @selected(old('registration_form', $championship->registration_form) === null)>{{ __('Use default') }}</option>
                             @foreach (\App\Models\RegistrationForm::cases() as $form)
                                 <option value="{{ $form->value }}" @selected(old('registration_form', $championship->registration_form?->value) === $form->value)>{{ ucfirst($form->value) }}</option>
                             @endforeach
-                        </select>
+                        </flux:select>
                         <x-input-error for="registration_form" class="mt-2" />
                     </div>
 
@@ -268,10 +268,10 @@
                     <div class="mt-4">
                         <x-label for="allow_different_bibs" value="{{ __('Allow different BIBs for the same driver') }}" />
                         <p class="text-zinc-600 text-sm">{{ __('When enabled, a driver is allowed to register with a different BIB than the one already used elsewhere in the championship. When disabled, a driver must keep using the same BIB across all races of the championship.') }}</p>
-                        <select name="allow_different_bibs" id="allow_different_bibs" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs">
+                        <flux:select name="allow_different_bibs" id="allow_different_bibs" class="block mt-1 w-full">
                             <option value="false" @selected(old('allow_different_bibs', $championship->registration_settings->allow_different_bibs) == false)>{{ __('Disabled, all drivers must use the same BIB') }}</option>
                             <option value="true" @selected(old('allow_different_bibs', $championship->registration_settings->allow_different_bibs) == true)>{{ __('Enabled, different BIBs allowed') }}</option>
-                        </select>
+                        </flux:select>
                         <x-input-error for="allow_different_bibs" class="mt-2" />
                     </div>
 

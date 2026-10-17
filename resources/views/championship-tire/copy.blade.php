@@ -45,14 +45,14 @@
                                 @else
                                     <div>
                                         <x-label for="source_championship" value="{{ __('Championship') }}" />
-                                        <select id="source_championship" name="source_championship" class="mt-1 block w-full rounded-md border-zinc-300 shadow-xs focus:border-orange-500 focus:ring-orange-500" required>
+                                        <flux:select id="source_championship" name="source_championship" class="mt-1 block w-full" required>
                                             <option value="">{{ __('Select a championship') }}</option>
                                             @foreach($sourceChampionships as $sourceChampionship)
                                                 <option value="{{ $sourceChampionship->id }}" {{ old('source_championship') == $sourceChampionship->id ? 'selected' : '' }}>
                                                     {{ $sourceChampionship->title }} ({{ $sourceChampionship->tires_count }} {{ trans_choice('tire|tires', $sourceChampionship->tires_count) }})
                                                 </option>
                                             @endforeach
-                                        </select>
+                                        </flux:select>
                                         <x-input-error for="source_championship" class="mt-2" />
                                     </div>
                                 @endif

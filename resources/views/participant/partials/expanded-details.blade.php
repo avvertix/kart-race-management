@@ -113,16 +113,17 @@
                 <div class="flex  items-center gap-4 shrink-0">
                     <div class="flex items-center gap-2">
                         <label for="region-{{ $item->getKey() }}" class="text-sm font-medium text-zinc-700">{{ __('Region') }}:</label>
-                        <select
+                        <flux:select
+                            size="sm"
                             id="region-{{ $item->getKey() }}"
-                            class="text-sm border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs"
+                            class="w-auto"
                             @change="$wire.setRegion({{ $item->getKey() }}, $event.target.value)"
                         >
                             <option value="" @selected($item->region === null)>{{ __('— not identified —') }}</option>
                             @foreach (\App\Enums\ItalianRegion::cases() as $region)
                                 <option value="{{ $region->value }}" @selected($item->region === $region)>{{ $region->label() }}</option>
                             @endforeach
-                        </select>
+                        </flux:select>
                     </div>
 
                     <div class="flex items-center gap-2">

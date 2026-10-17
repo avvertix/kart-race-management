@@ -14,10 +14,10 @@
 
                     <div class="flex items-center gap-2">
                         <x-label for="sort" class="sr-only md:not-sr-only shrink-0">{{ __('Sort by') }}</x-label>
-                        <select onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <flux:select size="sm" onchange="window.print_filter.submit()" name="sort" id="sort" class="block w-full">
                             <option value="bib" @selected(blank($sort) || $sort === 'bib')>{{ __('Race number') }}</option>
                             <option value="registration" @selected($sort === 'registration')>{{ __('Registration date') }}</option>
-                        </select>
+                        </flux:select>
                     </div>
                     
                     <div class="flex gap-2 items-center">

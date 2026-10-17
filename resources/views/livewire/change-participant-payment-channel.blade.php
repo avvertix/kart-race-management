@@ -1,11 +1,11 @@
 <div class="inline-flex gap-2 items-center">
     <x-label for="paymentChannel" class="sr-only">{{ __('Payment Channel') }}</x-label>
-    <select wire:model.live="paymentChannel" class="text-sm border-zinc-300 focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 rounded-md shadow-xs">
+    <flux:select size="sm" wire:model.live="paymentChannel" class="w-auto">
         <option value="">{{ __('Select a channel...') }}</option>
         @foreach(\App\Models\PaymentChannelType::cases() as $channel)
             <option value="{{ $channel->value }}">{{ $channel->localizedName() }}</option>
         @endforeach
-    </select>
+    </flux:select>
 
     <x-input-error for="paymentChannel" />
 

@@ -22,12 +22,12 @@
             <div class="col-span-6 sm:col-span-4">
                 <x-label for="wildcard_strategy" value="{{ __('Wildcard strategy') }}" />
                 <x-input-error for="wildcard_strategy" class="mb-2" />
-                <select name="wildcard_strategy" id="wildcard_strategy" class="mt-1 block w-full" wire:model="wildcardForm.strategy">
+                <flux:select name="wildcard_strategy" id="wildcard_strategy" class="mt-1 block w-full" wire:model="wildcardForm.strategy">
                     <option value="">{{ __('Select a strategy') }}</option>
                 @foreach ($this->strategies as $item)
                     <option value="{{ $item->value }}">{{ $item->localizedName() }}</option>
                 @endforeach
-                </select>
+                </flux:select>
             </div>
 
             <div class="col-span-6 sm:col-span-4">

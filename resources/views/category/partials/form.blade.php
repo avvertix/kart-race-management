@@ -27,12 +27,12 @@
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="tire" value="{{ __('Allowed tires') }}" />
                     <p class="text-zinc-600 text-sm">{{ __('The tires that are allowed in this category. Leave empty for allowing all tires.') }}</p>
-                    <select name="tire" id="tire">
+                    <flux:select name="tire" id="tire">
                             <option value="" @selected(is_null(old('tire', optional($category ?? null)->tire))) >{{ __('No tire required') }}</option>
                         @foreach ($tires as $tire)
                             <option value="{{ $tire->getKey() }}" @selected(old('tire', optional($category ?? null)->tire?->getKey()) === $tire->getKey()) >{{ $tire->name }}</option>
                         @endforeach
-                    </select>
+                    </flux:select>
                     <x-input-error for="tire" class="mt-2" />
                 </div>
                 <div class="col-span-6 sm:col-span-4">

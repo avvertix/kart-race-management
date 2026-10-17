@@ -48,11 +48,11 @@
 
                     <div>
                         <x-label for="run_type" value="{{ __('Session') }}" />
-                        <select id="run_type" name="run_type" class="mt-1 block w-full border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs" required>
+                        <flux:select id="run_type" name="run_type" class="mt-1 block w-full" required>
                             @foreach ($runTypes as $type)
                                 <option value="{{ $type->value }}" @selected(old('run_type', $runResult->run_type->value) == $type->value)>{{ $type->localizedName() }}</option>
                             @endforeach
-                        </select>
+                        </flux:select>
                         <x-input-error for="run_type" class="mt-2" />
                     </div>
                 </div>

@@ -50,19 +50,19 @@
             />
 
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                <select name="channel" class="border-gray-300 rounded-md shadow-xs focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                <flux:select size="sm" name="channel" class="w-full sm:w-auto">
                     <option value="">{{ __('All payment channels') }}</option>
                     @foreach(\App\Models\PaymentChannelType::cases() as $channel)
                         <option value="{{ $channel->value }}" @selected($filterChannel === (string) $channel->value)>{{ $channel->localizedName() }}</option>
                     @endforeach
                     <option value="none" @selected($filterChannel === 'none')>{{ __('Not set') }}</option>
-                </select>
+                </flux:select>
 
-                <select name="confirmed" class="border-gray-300 rounded-md shadow-xs focus:ring-orange-500 focus:border-orange-500 text-sm w-full sm:w-auto">
+                <flux:select size="sm" name="confirmed" class="w-full sm:w-auto">
                     <option value="">{{ __('All participants') }}</option>
                     <option value="confirmed" @selected($filterConfirmed === 'confirmed')>{{ __('Payment confirmed') }}</option>
                     <option value="unconfirmed" @selected($filterConfirmed === 'unconfirmed')>{{ __('Payment not confirmed') }}</option>
-                </select>
+                </flux:select>
 
                 <x-button type="submit">{{ __('Apply filter') }}</x-button>
 

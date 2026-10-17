@@ -110,15 +110,15 @@
                 <div class="col-span-6 sm:col-span-4" x-data="{ wildcardMode: @js($existingConfig['wildcard_points_mode'] ?? 'as_other_drivers') }">
                     <x-label for="wildcard_points_mode" value="{{ __('Wildcard points mode') }}" />
                     <p class="text-sm text-zinc-500">{{ __('How points are assigned to wildcard participants.') }}</p>
-                    <select
+                    <flux:select size="sm"
                         id="wildcard_points_mode"
                         name="points_config[wildcard_points_mode]"
                         x-model="wildcardMode"
-                        class="mt-1 border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs text-sm">
+                        class="mt-1">
                         <option value="as_other_drivers">{{ __('Same as other drivers') }}</option>
                         <option value="fixed_points">{{ __('Assign fixed points') }}</option>
                         <option value="ranked_from_first">{{ __('Ranked from first in category') }}</option>
-                    </select>
+                    </flux:select>
                     <div x-show="wildcardMode === 'fixed_points'" class="mt-2 flex items-center gap-2">
                         <x-input
                             id="wildcard_fixed_points"
@@ -213,13 +213,14 @@
                                     <div>
                                         <x-label class="mb-1" value="{{ $statusLabels[$status->value] }}" />
                                         <div class="flex items-center gap-3">
-                                            <select
+                                            <flux:select
                                                 name="points_config[{{ $runType->value }}][statuses][{{ $status->value }}][mode]"
                                                 x-model="statusModes['{{ $status->value }}']"
-                                                class="border-zinc-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-xs text-sm">
+                                                size="sm"
+                                                class="w-auto">
                                                 <option value="fixed">{{ __('Fixed points') }}</option>
                                                 <option value="ranked">{{ __('Points as ranked') }}</option>
-                                            </select>
+                                            </flux:select>
                                             <div x-show="statusModes['{{ $status->value }}'] === 'fixed'">
                                                 <x-input
                                                     id="status_{{ $runType->value }}_{{ $status->value }}"

@@ -94,7 +94,7 @@
             </flux:sidebar.nav>
         </flux:sidebar>
 
-        <x-banner />
+        <x-banner class="px-4 pt-4 sm:px-6 lg:px-8 print:hidden" />
 
         {{-- Page Heading --}}
         @if (isset($header))

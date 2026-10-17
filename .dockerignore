@@ -4,6 +4,8 @@ bower.json
 phpspec.yml
 .php_cs
 phpunit.xml
+phpstan.neon
+phpstan-baseline.neon
 node_modules/
 vendor/
 tests/*
@@ -36,3 +38,4 @@ public/storage
 public/build
 .claude
 .github
+dump

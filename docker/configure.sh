@@ -10,8 +10,8 @@ APP_DEBUG=${APP_DEBUG:-false}
 ## Queue connection for job processing
 QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
 
-## Cache driver
-CACHE_DRIVER=${CACHE_DRIVER:-file}
+## Cache store (CACHE_DRIVER accepted for backward compatibility)
+CACHE_STORE=${CACHE_STORE:-${CACHE_DRIVER:-database}}
 
 ## Session Driver
 SESSION_DRIVER=${SESSION_DRIVER:-database}
@@ -83,7 +83,7 @@ function write_config() {
 		DB_HOST=${DB_HOST}
 		DB_USERNAME=${DB_USERNAME}
 		DB_PASSWORD=${DB_PASSWORD}
-        CACHE_DRIVER=${CACHE_DRIVER}
+        CACHE_STORE=${CACHE_STORE}
         QUEUE_CONNECTION=${QUEUE_CONNECTION}
         SESSION_DRIVER=${SESSION_DRIVER}
         REDIS_HOST=${REDIS_HOST}

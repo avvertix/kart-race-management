@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Actions\UpdateParticipantRegistration;
 use App\Models\BibReservation;
 use App\Models\Category;
+use App\Models\Championship;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Notifications\ConfirmParticipantRegistration;
@@ -266,6 +267,94 @@ class UpdateParticipantRegistrationTest extends TestCase
             ], $th->errors());
         }
 
+    }
+
+    public function test_organizer_can_change_bib_of_shared_bib_participant()
+    {
+        Notification::fake();
+
+        $championship = Championship::factory()->create(['registration_settings' => [
+            'shared_bib_licences' => ['D0001', 'D0002'],
+            'shared_bib' => 15,
+        ]]);
+
+        $race = Race::factory()->for($championship)->create();
+
+        $category = Category::factory()->recycle($championship)->create();
+
+        $existingParticipant = Participant::factory()->category($category)->create([
+            'bib' => 15,
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ],
+            'locale' => 'en',
+            'use_bonus' => false,
+        ]);
+
+        $updateParticipant = app()->make(UpdateParticipantRegistration::class);
+
+        $participant = $updateParticipant($race, $existingParticipant, [
+            'bib' => 42,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            ...$this->generateValidMechanic(),
+            ...$this->generateValidVehicle(),
+        ]);
+
+        $this->assertEquals(42, $participant->bib);
+    }
+
+    public function test_shared_bib_participant_can_be_updated_when_other_shared_bib_participant_in_race()
+    {
+        Notification::fake();
+
+        $championship = Championship::factory()->create(['registration_settings' => [
+            'shared_bib_licences' => ['D0001', 'D0002'],
+            'shared_bib' => 15,
+        ]]);
+
+        $race = Race::factory()->for($championship)->create();
+
+        $category = Category::factory()->recycle($championship)->create();
+
+        Participant::factory()->category($category)->create([
+            'bib' => 15,
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0002'),
+            'driver' => [
+                'licence_number' => 'D0002',
+            ],
+        ]);
+
+        $existingParticipant = Participant::factory()->category($category)->create([
+            'bib' => 15,
+            'championship_id' => $championship->getKey(),
+            'race_id' => $race->getKey(),
+            'driver_licence' => hash('sha512', 'D0001'),
+            'driver' => [
+                'licence_number' => 'D0001',
+            ],
+            'locale' => 'en',
+            'use_bonus' => false,
+        ]);
+
+        $updateParticipant = app()->make(UpdateParticipantRegistration::class);
+
+        $participant = $updateParticipant($race, $existingParticipant, [
+            'bib' => 15,
+            'category' => $category->ulid,
+            ...$this->generateValidDriver(),
+            ...$this->generateValidCompetitor(),
+            ...$this->generateValidMechanic(),
+            ...$this->generateValidVehicle(),
+        ]);
+
+        $this->assertEquals(15, $participant->bib);
     }
 
     public function test_cost_updated_when_category_changed_to_different_registration_price()

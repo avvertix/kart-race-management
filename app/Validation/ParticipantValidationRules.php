@@ -46,6 +46,19 @@ trait ParticipantValidationRules
         return $settings->shared_bib;
     }
 
+    /**
+     * Whether the given driver licence is one of the championship's $shared_bib_licences and is
+     * using the shared BIB. Such a registration is exempt from BIB uniqueness, previous-race
+     * consistency and reservation checks. A different BIB assigned by an organizer follows the
+     * standard rules.
+     */
+    protected function usesSharedBib(Race $race, ?string $driverLicenceNumber, mixed $bib): bool
+    {
+        $sharedBib = $this->getForcedBib($race, $driverLicenceNumber);
+
+        return $sharedBib !== null && $sharedBib === (int) $bib;
+    }
+
     protected function processAddressInput($input, $fieldPrefix)
     {
         return [
@@ -246,24 +259,21 @@ trait ParticipantValidationRules
 
         $draftStatus = ParticipantStatus::Draft->value;
 
-        $hasForcedBib = $this->getForcedBib($race, $rawDriverLicenceNumber) !== null;
+        $hasSharedBib = $this->usesSharedBib($race, $rawDriverLicenceNumber, $input['bib']);
 
-        // Bib must always be unique within the race itself: two karts cannot share a race number
-        // on track at the same time, so this rule applies even to forced-bib licences.
-        $bibRules = [
-            Rule::unique('participants', 'bib')->where(fn ($query) => $query
-                ->where('race_id', $race->getKey())
-                ->where('status', '!=', $draftStatus)),
-        ];
+        $bibRules = [];
 
-        if (! $hasForcedBib) {
-            // Forced-bib licences intentionally share their bib with each other across the
-            // championship, so this cross-driver uniqueness rule is skipped for them.
-            $bibRules[] = Rule::unique('participants', 'bib')
-                ->where(fn ($query) => $query
-                    ->where('championship_id', $race->championship_id)
-                    ->where('driver_licence', '!=', $input['driver_licence_number'])
-                    ->where('status', '!=', $draftStatus));
+        if (! $hasSharedBib) {
+            $bibRules = [
+                Rule::unique('participants', 'bib')->where(fn ($query) => $query
+                    ->where('race_id', $race->getKey())
+                    ->where('status', '!=', $draftStatus)),
+                Rule::unique('participants', 'bib')
+                    ->where(fn ($query) => $query
+                        ->where('championship_id', $race->championship_id)
+                        ->where('driver_licence', '!=', $input['driver_licence_number'])
+                        ->where('status', '!=', $draftStatus)),
+            ];
         }
 
         $validator = Validator::make($input, [
@@ -275,11 +285,15 @@ trait ParticipantValidationRules
                         ->where('status', '!=', $draftStatus)),
             ],
         ])
-            ->after(function ($validator) use ($race, $input, $hasForcedBib) {
+            ->after(function ($validator) use ($race, $input, $hasSharedBib) {
+
+                if ($hasSharedBib) {
+                    return;
+                }
 
                 $validated = $validator->validated();
 
-                if (! $hasForcedBib && ! $race->championship->registration_settings->allow_different_bibs) {
+                if (! $race->championship->registration_settings->allow_different_bibs) {
                     $bibs = collect(Participant::query()
                         ->where('championship_id', $race->championship_id)
                         ->registered()

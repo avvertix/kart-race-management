@@ -15,11 +15,11 @@ class RegistrationSettingsData extends Data
         public bool $allow_different_bibs = false,
 
         /**
-         * Driver licence numbers that always register with $shared_bib in this championship,
-         * regardless of the BIB submitted at registration or the BIB used in previous races.
-         * Drivers listed here are exempt from the championship-wide rule that a BIB can only
-         * belong to a single driver, but not from the rule that a BIB must be unique within a
-         * single race.
+         * Driver licence numbers that register with $shared_bib in this championship, regardless
+         * of the BIB submitted at registration or the BIB used in previous races. While using
+         * $shared_bib they are exempt from BIB uniqueness (within the race and the championship),
+         * previous-race consistency and BIB reservation checks. An organizer can later assign a
+         * different BIB, which is then validated with the standard rules.
          *
          * @var list<string>
          */

@@ -137,8 +137,6 @@
             </div>
         </footer>
 
-        @stack('modals')
-
         @persist('toast')
             <flux:toast.group>
                 <flux:toast />

@@ -44,7 +44,7 @@ class NationalityInputTest extends TestCase
 
     public function test_renders_input_with_datalist(): void
     {
-        $view = $this->blade(
+        $view = $this->withViewErrors([])->blade(
             '<x-nationality-input id="driver_nationality" name="driver_nationality" />',
         );
 
@@ -56,7 +56,7 @@ class NationalityInputTest extends TestCase
 
     public function test_renders_with_selected_value(): void
     {
-        $view = $this->blade(
+        $view = $this->withViewErrors([])->blade(
             '<x-nationality-input id="driver_nationality" name="driver_nationality" value="Italy" />',
         );
 

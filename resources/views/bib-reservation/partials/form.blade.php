@@ -11,7 +11,7 @@
                 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="bib" value="{{ __('Race Number') }}*" />
-                    <x-input id="bib" type="number" name="bib" :value="old('bib', optional($reservation ?? null)->bib)" class="mt-1 block w-full" required autocomplete="bib" />
+                    <x-input id="bib" type="number" min="{{ \App\Models\BibReservation::MIN_BIB }}" max="{{ \App\Models\BibReservation::MAX_BIB }}" name="bib" :value="old('bib', optional($reservation ?? null)->bib)" class="mt-1 block w-full" required autocomplete="bib" />
                     <x-input-error for="bib" class="mt-2" />
                 </div>
                 

@@ -19,6 +19,7 @@ use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfigureRacePenaltySheetController;
 use App\Http\Controllers\ConfirmParticipantController;
 use App\Http\Controllers\ConfirmParticipantPaymentController;
+use App\Http\Controllers\CopyChampionshipBibReservationsController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
 use App\Http\Controllers\CopyChampionshipTiresController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
@@ -159,6 +160,9 @@ Route::middleware([
 
         Route::get('championships/{championship}/bib-reservations/import', [BibReservationImportController::class, 'create'])->name('championships.bib-reservations.import.create');
         Route::post('championships/{championship}/bib-reservations/import', [BibReservationImportController::class, 'store'])->name('championships.bib-reservations.import.store');
+
+        Route::get('championships/{championship}/bib-reservations/copy', [CopyChampionshipBibReservationsController::class, 'create'])->name('championships.bib-reservations.copy');
+        Route::post('championships/{championship}/bib-reservations/copy', [CopyChampionshipBibReservationsController::class, 'store'])->name('championships.bib-reservations.store-copy');
 
         Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 

@@ -12,6 +12,16 @@ class BibReservation extends Model
     use HasFactory;
 
     /**
+     * The lowest race number that can be reserved.
+     */
+    public const MIN_BIB = 1;
+
+    /**
+     * The highest race number that can be reserved.
+     */
+    public const MAX_BIB = 999;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var string[]

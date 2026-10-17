@@ -51,7 +51,7 @@ class BibReservationImportController extends Controller
         $validator = Validator::make(
             ['reservations' => $data->toArray()],
             [
-                'reservations.*.bib' => 'required|integer|min:1',
+                'reservations.*.bib' => 'required|integer|min:'.BibReservation::MIN_BIB.'|max:'.BibReservation::MAX_BIB,
                 'reservations.*.driver' => 'required|string|max:250',
                 'reservations.*.driver_licence_number' => ['required', 'string', 'max:250'],
                 'reservations.*.contact_email' => 'nullable|string|email',

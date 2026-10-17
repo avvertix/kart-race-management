@@ -3,12 +3,15 @@
         {{ __('Race Number Reservations') }} - {{ $championship->title }}
     </x-slot>
     <x-slot name="actions">
-        @can('create', \App\Model\ChampionshipTire::class)
+        @can('create', \App\Models\BibReservation::class)
             <x-button-link href="{{ route('championships.bib-reservations.create', $championship) }}">
                 {{ __('Reserve a race number') }}
             </x-button-link>
             <x-button-link href="{{ route('championships.bib-reservations.import.create', $championship) }}">
                 {{ __('Import reservations') }}
+            </x-button-link>
+            <x-button-link href="{{ route('championships.bib-reservations.copy', $championship) }}">
+                {{ __('Copy from championship') }}
             </x-button-link>
         @endcan
     </x-slot>
@@ -72,7 +75,7 @@
                 <tr>
                     <td colspan="5" class="px-3 py-4 space-y-2 text-center">
                         <p>{{ __('No race numbers reserved at the moment.') }}</p>
-                        @can('create', \App\Model\ChampionshipTire::class)
+                        @can('create', \App\Models\BibReservation::class)
                             <p>
                                 <x-button-link href="{{ route('championships.bib-reservations.create', $championship) }}">
                                     {{ __('Reserve a race number') }}

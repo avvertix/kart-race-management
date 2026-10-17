@@ -118,6 +118,21 @@ class BibReservationImportControllerTest extends TestCase
         $this->assertDatabaseCount('bib_reservations', 0);
     }
 
+    public function test_import_fails_when_bib_above_maximum(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('championships.bib-reservations.import.store', $championship), [
+                'reservations' => '1000;Mario Rossi;DRV-0001;;',
+            ]);
+
+        $response->assertSessionHasErrors('reservations');
+        $this->assertDatabaseCount('bib_reservations', 0);
+    }
+
     public function test_import_fails_when_driver_name_missing(): void
     {
         $user = User::factory()->organizer()->create();

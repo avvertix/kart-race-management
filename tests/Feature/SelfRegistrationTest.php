@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\BibReservation;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\DriverLicence;
@@ -517,7 +518,7 @@ class SelfRegistrationTest extends TestCase
         $this->assertEquals(15, $secondRace->participants()->first()->bib);
     }
 
-    public function test_two_forced_bib_licences_cannot_both_hold_the_bib_in_the_same_race()
+    public function test_two_forced_bib_licences_can_both_hold_the_bib_in_the_same_race()
     {
         Notification::fake();
 
@@ -548,9 +549,6 @@ class SelfRegistrationTest extends TestCase
 
         $this->assertEquals(15, $race->participants()->first()->bib);
 
-        // Second forced-bib licence, a different driver, tries to register for the very same
-        // race. Two karts cannot share a race number on track at the same time, so this must
-        // still fail even though both licences are forced to bib 15.
         $response = $this
             ->from(route('races.registration.create', $race))
             ->post(route('races.registration.store', $race), [
@@ -568,9 +566,55 @@ class SelfRegistrationTest extends TestCase
 
         $this->travelBack();
 
-        $response->assertSessionHasErrors('bib');
+        $response->assertSessionDoesntHaveErrors('bib');
 
-        $this->assertEquals(1, $race->participants()->count());
+        $this->assertEquals([15, 15], $race->participants()->pluck('bib')->all());
+    }
+
+    public function test_forced_bib_licence_can_register_when_shared_bib_is_reserved_to_other_forced_bib_licence()
+    {
+        Notification::fake();
+
+        $championship = Championship::factory()->create(['registration_settings' => [
+            'shared_bib_licences' => ['497339', '498963'],
+            'shared_bib' => 15,
+        ]]);
+
+        $race = Race::factory()->for($championship)->create();
+
+        $category = Category::factory()->recycle($championship)->create();
+
+        BibReservation::factory()
+            ->recycle($championship)
+            ->withLicence()
+            ->create([
+                'bib' => 15,
+                'driver' => 'John Racer',
+                'driver_licence' => '497339',
+                'driver_licence_hash' => hash('sha512', '497339'),
+            ]);
+
+        $this->travelTo($race->registration_closes_at->subHour());
+
+        $response = $this
+            ->from(route('races.registration.create', $race))
+            ->post(route('races.registration.store', $race), [
+                'bib' => 2,
+                'category' => $category->ulid,
+                ...$this->generateValidDriver(),
+                'driver_licence_number' => '498963',
+                ...$this->generateValidCompetitor(),
+                ...$this->generateValidMechanic(),
+                ...$this->generateValidVehicle(),
+                'consent_privacy' => true,
+                'use_bonus' => 'false',
+            ]);
+
+        $this->travelBack();
+
+        $response->assertSessionDoesntHaveErrors('bib');
+
+        $this->assertEquals(15, $race->participants()->first()->bib);
     }
 
     public function test_last_participant_can_self_register()

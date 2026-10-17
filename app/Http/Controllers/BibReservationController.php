@@ -93,7 +93,8 @@ class BibReservationController extends Controller
             'bib' => [
                 'required',
                 'integer',
-                'min:1',
+                'min:'.BibReservation::MIN_BIB,
+                'max:'.BibReservation::MAX_BIB,
                 // TODO: can I change the bib number?
                 Rule::unique((new BibReservation())->getTable(), 'bib')->ignore($bibReservation)->where(function ($query) use ($championship) {
                     return $query->where('championship_id', $championship->getKey());

@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Spatie\Activitylog\Models\Activity;
 use ValueError;
 
 class RaceParticipantController extends Controller
@@ -236,7 +237,17 @@ class RaceParticipantController extends Controller
             ? Category::whereIn('id', $categoryIds)->pluck('name', 'id')
             : collect();
 
-        return $rawActivities->map(function ($activity) use ($categoriesById) {
+        $mergedInto = Participant::query()
+            ->with('race')
+            ->whereIn('uuid', $rawActivities->where('event', 'merged')->map(fn ($activity) => $activity->getProperty('merged_into'))->filter()->unique())
+            ->get()
+            ->keyBy(fn (Participant $participant) => (string) $participant->uuid);
+
+        return $rawActivities->map(function ($activity) use ($categoriesById, $mergedInto) {
+            if ($activity->event === 'merged') {
+                return $this->buildMergedActivity($activity, $mergedInto);
+            }
+
             $attrs = $activity->changedAttributes();
             $old = $activity->changedOldAttributes();
 
@@ -251,15 +262,15 @@ class RaceParticipantController extends Controller
                     if ($field === 'driver' && is_array($newValue) && array_key_exists('email', $newValue)) {
                         return [[
                             'field' => __('Driver email'),
-                            'old' => $this->decryptActivityEmail($old['driver']['email'] ?? null),
-                            'new' => $this->decryptActivityEmail($newValue['email']),
+                            'old' => $this->decryptActivityValue($old['driver']['email'] ?? null),
+                            'new' => $this->decryptActivityValue($newValue['email']),
                         ]];
                     }
                     if ($field === 'competitor' && is_array($newValue) && array_key_exists('email', $newValue)) {
                         return [[
                             'field' => __('Competitor email'),
-                            'old' => $this->decryptActivityEmail($old['competitor']['email'] ?? null),
-                            'new' => $this->decryptActivityEmail($newValue['email']),
+                            'old' => $this->decryptActivityValue($old['competitor']['email'] ?? null),
+                            'new' => $this->decryptActivityValue($newValue['email']),
                         ]];
                     }
 
@@ -274,9 +285,41 @@ class RaceParticipantController extends Controller
                 'event' => $activity->event,
                 'date' => $activity->created_at,
                 'causer' => $activity->causer?->name,
+                'note' => null,
                 'changes' => $changes,
             ];
         })->sortBy(fn ($activity) => $activity['event'] === 'created' ? 1 : 0)->values();
+    }
+
+    /**
+     * Describe the driver merge using the activity properties, as the changed licence is stored hashed on the participant.
+     *
+     * @param  \Illuminate\Support\Collection<string, Participant>  $mergedInto
+     */
+    private function buildMergedActivity(Activity $activity, $mergedInto): array
+    {
+        $canonical = $mergedInto->get($activity->getProperty('merged_into'));
+
+        return [
+            'event' => $activity->event,
+            'date' => $activity->created_at,
+            'causer' => $activity->causer?->name,
+            'note' => $canonical
+                ? __('Licence taken from :race (bib :bib)', ['race' => $canonical->race->title, 'bib' => $canonical->bib])
+                : null,
+            'changes' => collect([
+                [
+                    'field' => __('Licence number'),
+                    'old' => $this->decryptActivityValue($activity->getProperty('previous_licence_number')),
+                    'new' => $this->decryptActivityValue($activity->getProperty('licence_number')),
+                ],
+                [
+                    'field' => __('Racer hash'),
+                    'old' => $activity->getProperty('previous_racer_hash') ?? '—',
+                    'new' => $activity->getProperty('racer_hash') ?? '—',
+                ],
+            ]),
+        ];
     }
 
     private function participantFieldLabel(string $field): string
@@ -295,7 +338,7 @@ class RaceParticipantController extends Controller
         };
     }
 
-    private function decryptActivityEmail(?string $value): string
+    private function decryptActivityValue(?string $value): string
     {
         if (is_null($value)) {
             return '—';

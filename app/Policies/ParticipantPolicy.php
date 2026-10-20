@@ -63,6 +63,16 @@ class ParticipantPolicy
     }
 
     /**
+     * Determine whether the user can review and merge participations of the same driver.
+     *
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function merge(User $user)
+    {
+        return $user->hasPermission('participant:merge');
+    }
+
+    /**
      * Determine whether the user can restore the model.
      *
      * @return \Illuminate\Auth\Access\Response|bool

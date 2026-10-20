@@ -46,6 +46,10 @@
 
                     <x-tab-link href="{{ route('championships.awards.index', $championship) }}" :active="request()->routeIs('championships.awards.*') || request()->routeIs('awards.*')">{{ __('Awards') }}</x-tab-link>
 
+                    @can('merge', \App\Models\Participant::class)
+                        <x-tab-link href="{{ route('championships.duplicate-drivers.index', $championship) }}" :active="request()->routeIs('championships.duplicate-drivers.*')">{{ __('Duplicate drivers') }}</x-tab-link>
+                    @endcan
+
                     @can('viewAny', \App\Models\ChampionshipPenalty::class)
                         <x-tab-link href="{{ route('championships.penalties.index', $championship) }}" :active="request()->routeIs('championships.penalties.*') || request()->routeIs('penalties.*')">{{ __('Saved Penalties') }}</x-tab-link>
                     @endcan

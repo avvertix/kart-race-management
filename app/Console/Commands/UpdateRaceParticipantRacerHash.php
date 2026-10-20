@@ -42,7 +42,7 @@ class UpdateRaceParticipantRacerHash extends Command
             $this->line("Dry run — {$count} participant(s) would be updated:");
             $this->newLine();
 
-            $headers = ['ULID', 'Name', 'Driver Licence', 'Current Racer Hash', 'New Racer Hash'];
+            $headers = ['ULID', 'Name', 'Driver Licence', 'Current Racer Hash', 'New Racer Hash', 'Will change?'];
             $rows = [];
 
             $query->chunk(100, function ($participants) use (&$rows) {
@@ -51,9 +51,10 @@ class UpdateRaceParticipantRacerHash extends Command
                     $rows[] = [
                         $participant->uuid,
                         "{$participant->first_name} {$participant->last_name}",
-                        $participant->driver_licence,
+                        mb_substr($participant->driver_licence, 0, 12),
                         $participant->racer_hash ?? '(empty)',
                         $newHash,
+                        $participant->racer_hash !== $newHash ? 'Yes' : '',
                     ];
                 }
             });

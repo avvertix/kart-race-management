@@ -61,7 +61,7 @@ RUN apt-get update -yqq && \
         pcntl \
         pdo_mysql \
         opcache \
-        redis \
+        # redis \
         zip \
         xsl \
     && docker-php-source delete \

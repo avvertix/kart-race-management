@@ -380,7 +380,11 @@
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-4 py-3 border-b border-zinc-200 flex items-center justify-between">
                     <h3 class="font-semibold text-zinc-700">{{ __('Activity') }}</h3>
-                    <span class="text-xs text-zinc-500">{{ __('id') }}&nbsp;<span class="font-mono">{{ $participant->getKey() }}</span></span>
+                    <div>
+                        <span class="text-zinc-500">{{ __('id') }}&nbsp;<span class="font-mono">{{ $participant->getKey() }}</span></span>
+                        <span class="text-zinc-300">&middot;</span>
+                        <span class="text-zinc-500">{{ __('Racer Hash') }}&nbsp;<span class="font-mono">{{ $participant->racer_hash }}</span></span>
+                    </div>
                 </div>
 
                 @forelse ($activities as $activity)
@@ -395,6 +399,8 @@
                                 <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ __('registered') }}</span>
                             @elseif ($activity['event'] === 'updated')
                                 <span class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">{{ __('updated') }}</span>
+                            @elseif ($activity['event'] === 'merged')
+                                <span class="inline-flex items-center rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-600/20">{{ __('driver merged') }}</span>
                             @else
                                 <span class="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">{{ $activity['event'] }}</span>
                             @endif
@@ -405,6 +411,10 @@
                             @endif
                             <x-time class="text-zinc-400" :value="$activity['date']" />
                         </div>
+
+                        @if ($activity['note'])
+                            <p class="mb-2 text-sm text-zinc-600">{{ $activity['note'] }}</p>
+                        @endif
 
                         {{-- Changes --}}
                         @if ($activity['changes']->isNotEmpty())

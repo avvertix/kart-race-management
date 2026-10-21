@@ -10,6 +10,7 @@ use App\Http\Controllers\ChampionshipBonusController;
 use App\Http\Controllers\ChampionshipBonusImportController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
+use App\Http\Controllers\ChampionshipDuplicateDriverController;
 use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ChampionshipPenaltyController;
 use App\Http\Controllers\ChampionshipPenaltyImportController;
@@ -134,6 +135,9 @@ Route::middleware([
         Route::resource('championships.participants', ChampionshipParticipantController::class)->shallow()->only(['index']);
 
         Route::get('championships/{championship}/export-participants', ExportChampionshipParticipantsController::class)->name('championships.export.participants');
+
+        Route::get('championships/{championship}/duplicate-drivers', [ChampionshipDuplicateDriverController::class, 'index'])->name('championships.duplicate-drivers.index');
+        Route::post('championships/{championship}/duplicate-drivers', [ChampionshipDuplicateDriverController::class, 'store'])->name('championships.duplicate-drivers.store');
 
         Route::resource('championships.bonuses', ChampionshipBonusController::class)->shallow()->except(['destroy']);
 

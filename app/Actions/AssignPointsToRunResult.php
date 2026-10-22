@@ -45,13 +45,17 @@ class AssignPointsToRunResult
 
             $categoryCount = $categoryCounts->get($participantResult->category, 0);
 
+            $modifierPercentage = 0;
+
             if ($categoryCount < $config->smallCategoryThreshold && $categoryCount > 0) {
-                $points = $points * (1 + ($config->smallCategoryPercentage / 100));
+                $modifierPercentage += $config->smallCategoryPercentage;
             }
 
             if ($race->rain) {
-                $points = $points * (1 - ($config->rainPercentage / 100));
+                $modifierPercentage += $config->rainPercentage;
             }
+
+            $points = max(0, $points * (1 + ($modifierPercentage / 100)));
 
             if ($race->red_flag) {
                 $points = $points * (1 - ($config->redFlagPercentage / 100));

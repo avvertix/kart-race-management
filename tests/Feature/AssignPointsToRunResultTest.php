@@ -15,12 +15,41 @@ use App\Models\ResultStatus;
 use App\Models\RunResult;
 use App\Models\RunType;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class AssignPointsToRunResultTest extends TestCase
 {
     use FastRefreshDatabase;
+
+    /**
+     * @return array<string, array{float, float, float, float}>
+     */
+    public static function zero_percentage_modifiers(): array
+    {
+        return [
+            'all modifiers at 0%' => [0, 0, 0, 25],
+            'rain at 0%' => [0, -50, 50, 6.25],
+            'small category at 0%' => [50, 0, 50, 18.75],
+            'red flag at 0%' => [50, -50, 0, 25],
+            'rain and small category at 0%' => [0, 0, 50, 12.5],
+        ];
+    }
+
+    /**
+     * @return array<string, array{float, float, float, float}>
+     */
+    public static function full_reduction_modifiers(): array
+    {
+        return [
+            'small category at -100%' => [0, -100, 0, 0],
+            'rain at -100%' => [-100, 0, 0, 0],
+            'rain and small category below -100% are floored at zero' => [-50, -100, 0, 0],
+            'red flag at 100%' => [50, -50, 100, 0],
+            'rain offsets small category at -100%' => [100, -100, 50, 12.5],
+        ];
+    }
 
     public function test_assigns_points_based_on_position_in_category(): void
     {
@@ -115,8 +144,8 @@ class AssignPointsToRunResultTest extends TestCase
         $action($runResult, $pointScheme);
 
         $participants[0]->refresh();
-        // 25 * (1 - 50/100) = 12.5
-        $this->assertEquals(12.5, $participants[0]->points);
+        // 25 * (1 + 50/100) = 37.5
+        $this->assertEquals(37.5, $participants[0]->points);
     }
 
     public function test_applies_red_flag_modifier(): void
@@ -219,6 +248,220 @@ class AssignPointsToRunResultTest extends TestCase
 
         $first->refresh();
         // 25 * (1 + (-50/100)) = 25 * 0.5 = 12.5
+        $this->assertEquals(12.5, $first->points);
+    }
+
+    public function test_applies_small_category_and_rain_modifier(): void
+    {
+        $race = Race::factory()->create([
+            'rain' => true,
+        ]);
+
+        $pointScheme = ChampionshipPointScheme::factory()->create([
+            'championship_id' => $race->championship_id,
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => RunType::RACE_1,
+        ]);
+
+        // Only 2 participants in category (below default threshold of 3)
+        $first = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '1',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        $second = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '2',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        $action = new AssignPointsToRunResult;
+        $action($runResult, $pointScheme);
+
+        $first->refresh();
+        // Rain modifier (+50%): 25 + (25 * (1 - 50/100)) = 37.5
+        // Small category modifier (-50%): 37.5 - (25 * (1 - 50/100)) = 25
+        $this->assertEquals(25, $first->points);
+    }
+
+    public function test_applies_small_category_and_rain_modifier_with_point_multiplier(): void
+    {
+        $race = Race::factory()->create([
+            'point_multiplier' => 2.0,
+            'rain' => true,
+        ]);
+
+        $pointScheme = ChampionshipPointScheme::factory()->create([
+            'championship_id' => $race->championship_id,
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => RunType::RACE_1,
+        ]);
+
+        // Only 2 participants in category (below default threshold of 3)
+        $first = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '1',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        $second = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '2',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        $action = new AssignPointsToRunResult;
+        $action($runResult, $pointScheme);
+
+        $first->refresh();
+        // Rain modifier (+50%): 25 + (25 * (1 - 50/100)) = 37.5
+        // Small category modifier (-50%): 37.5 - (25 * (1 - 50/100)) = 25
+        $this->assertEquals(25 * 2, $first->points);
+    }
+
+    public function test_sums_small_category_and_rain_modifiers_with_custom_percentages(): void
+    {
+        $race = Race::factory()->create([
+            'rain' => true,
+        ]);
+
+        $baseConfig = ChampionshipPointScheme::factory()->make()->points_config;
+        $config = new PointsConfigData(
+            rainPercentage: 50,
+            redFlagPercentage: $baseConfig->redFlagPercentage,
+            smallCategoryPercentage: -25,
+            smallCategoryThreshold: $baseConfig->smallCategoryThreshold,
+            runTypes: $baseConfig->runTypes,
+        );
+
+        $pointScheme = ChampionshipPointScheme::factory()->create([
+            'championship_id' => $race->championship_id,
+            'points_config' => $config,
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => RunType::RACE_1,
+        ]);
+
+        // Only 2 participants in category (below default threshold of 3)
+        $first = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '1',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '2',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        (new AssignPointsToRunResult)($runResult, $pointScheme);
+
+        $first->refresh();
+        // Rain (+50%) and small category (-25%): 25 * (1 + 0.5 - 0.25) = 31.25
+        $this->assertEquals(31.25, $first->points);
+    }
+
+    #[DataProvider('zero_percentage_modifiers')]
+    #[DataProvider('full_reduction_modifiers')]
+    public function test_edge_case_modifier_percentages(float $rainPercentage, float $smallCategoryPercentage, float $redFlagPercentage, float $expectedPoints): void
+    {
+        $race = Race::factory()->create([
+            'rain' => true,
+            'red_flag' => true,
+        ]);
+
+        $baseConfig = ChampionshipPointScheme::factory()->make()->points_config;
+        $config = new PointsConfigData(
+            rainPercentage: $rainPercentage,
+            redFlagPercentage: $redFlagPercentage,
+            smallCategoryPercentage: $smallCategoryPercentage,
+            smallCategoryThreshold: $baseConfig->smallCategoryThreshold,
+            runTypes: $baseConfig->runTypes,
+        );
+
+        $pointScheme = ChampionshipPointScheme::factory()->create([
+            'championship_id' => $race->championship_id,
+            'points_config' => $config,
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => RunType::RACE_1,
+        ]);
+
+        // Only 2 participants in category (below default threshold of 3)
+        $first = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '1',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '2',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        (new AssignPointsToRunResult)($runResult, $pointScheme);
+
+        $first->refresh();
+        $this->assertEquals($expectedPoints, $first->points);
+    }
+
+    public function test_applies_red_flag_modifier_after_small_category_and_rain_modifier(): void
+    {
+        $race = Race::factory()->create([
+            'rain' => true,
+            'red_flag' => true,
+        ]);
+
+        $pointScheme = ChampionshipPointScheme::factory()->create([
+            'championship_id' => $race->championship_id,
+        ]);
+
+        $runResult = RunResult::factory()->create([
+            'race_id' => $race->getKey(),
+            'run_type' => RunType::RACE_1,
+        ]);
+
+        // Only 2 participants in category (below default threshold of 3)
+        $first = ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '1',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        ParticipantResult::factory()->create([
+            'run_result_id' => $runResult->getKey(),
+            'position_in_category' => '2',
+            'category' => 'SmallCat',
+            'status' => ResultStatus::FINISHED,
+        ]);
+
+        (new AssignPointsToRunResult)($runResult, $pointScheme);
+
+        $first->refresh();
+        // Rain (+50%) and small category (-50%): 25 * (1 + 0.5 - 0.5) = 25
+        // Red flag (-50%) applied afterwards: 25 * (1 - 0.5) = 12.5
         $this->assertEquals(12.5, $first->points);
     }
 

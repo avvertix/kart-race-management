@@ -49,7 +49,7 @@
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="rain_percentage" value="{{ __('Rain race modifier') }}" />
-                    <p class="text-sm text-zinc-500">{{ __('Percentage applied to points when the race is classified as a rain race.') }}</p>
+                    <p class="text-sm text-zinc-500">{{ __('Percentage added to points when the race is classified as a rain race. Use a negative value to remove points.') }}</p>
                     <div class="mt-1 flex items-center gap-2">
                         <x-input
                             id="rain_percentage"
@@ -65,7 +65,7 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="red_flag_percentage" value="{{ __('Red flag modifier') }}" />
-                    <p class="text-sm text-zinc-500">{{ __('Percentage applied to points when the race has a red flag.') }}</p>
+                    <p class="text-sm text-zinc-500">{{ __('Percentage deducted from points when the race has a red flag. Applied after the rain and small category modifiers.') }}</p>
                     <div class="mt-1 flex items-center gap-2">
                         <x-input
                             id="red_flag_percentage"
@@ -81,7 +81,7 @@
 
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="small_category_percentage" value="{{ __('Small category modifier') }}" />
-                    <p class="text-sm text-zinc-500">{{ __('Percentage applied to points when a category has fewer participants than the threshold.') }}</p>
+                    <p class="text-sm text-zinc-500">{{ __('Percentage added to points when a category has fewer participants than the threshold. Use a negative value to remove points.') }}</p>
                     <div class="mt-1 flex items-center gap-2">
                         <span class="text-sm text-zinc-600">{{ __('Less than') }}</span>
                         <x-input

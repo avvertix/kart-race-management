@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KRM flow wireframes</title>
+<!--
+  PROTOTYPE: throwaway low-definition wireframes.
+  Question: what do the licence request, enrollment and promo code flows look like, step by step?
+  Screens with a design question have variants: switch them with the bottom bar or the ← → keys.
+  Behaviour is described in docs/ and .scratch/design/implementation-plan.md.
+-->
+<style>
+  :root { --ink:#27272a; --muted:#71717a; --line:#a1a1aa; --soft:#f4f4f5; --paper:#fff; --bg:#e4e4e7; --warn:#b45309; --ok:#15803d; --info:#1d4ed8; }
+  * { box-sizing: border-box; }
+  body { margin:0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:var(--bg); }
+  a { color:inherit; }
+  .layout { display:grid; grid-template-columns: 270px 1fr; min-height:100vh; }
+  nav.side { background:#18181b; color:#e4e4e7; padding:16px; position:sticky; top:0; height:100vh; overflow:auto; }
+  nav.side h1 { font-size:15px; margin:0 0 4px; }
+  nav.side .sub { color:#a1a1aa; font-size:12px; margin-bottom:16px; }
+  nav.side .flow { margin:16px 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#a1a1aa; }
+  nav.side a { display:block; padding:5px 8px; border-radius:4px; text-decoration:none; font-size:13px; }
+  nav.side a:hover { background:#27272a; }
+  nav.side a.current { background:#3f3f46; color:#fff; }
+  nav.side .v { color:#a1a1aa; font-size:11px; }
+  main { padding:0 0 110px; min-width:0; }
+  .proto-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; background:#fde047; padding:8px 16px; font-size:13px; border-bottom:2px solid #ca8a04; }
+  .proto-bar a { text-decoration:none; font-weight:600; }
+  .proto-bar .disabled { opacity:.35; pointer-events:none; }
+
+  /* fake app chrome */
+  .app-header { display:flex; align-items:center; gap:20px; background:var(--paper); border-bottom:1px solid #d4d4d8; padding:10px 24px; }
+  .logo { width:30px; height:30px; border:2px solid var(--ink); border-radius:6px; display:grid; place-items:center; font-weight:800; font-size:11px; }
+  .app-header .nav { display:flex; gap:16px; color:var(--muted); }
+  .app-header .nav .on { color:var(--ink); font-weight:600; border-bottom:2px solid var(--ink); }
+  .app-header .avatar { margin-left:auto; width:30px; height:30px; border-radius:50%; border:2px solid var(--line); display:grid; place-items:center; font-size:11px; }
+  .page { max-width:1120px; margin:0 auto; padding:20px 24px; }
+  .page-title { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+  h2 { font-size:20px; margin:0; } h3 { font-size:15px; margin:0 0 8px; } h4 { font-size:13px; margin:0 0 6px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+
+  /* wireframe primitives */
+  .box { background:var(--paper); border:2px dashed var(--line); border-radius:6px; padding:16px; }
+  .box.solid { border-style:solid; border-width:1px; }
+  .box.focus { border-color:var(--ink); border-style:solid; }
+  .stack > * + * { margin-top:12px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .between { justify-content:space-between; }
+  .grid2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px; }
+  .grid3 { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; }
+  .split { display:grid; grid-template-columns: 260px 1fr; gap:16px; align-items:start; }
+  .split-r { display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:start; }
+  .muted { color:var(--muted); font-size:13px; }
+  .btn { display:inline-block; border:2px solid var(--ink); border-radius:4px; padding:5px 12px; font-size:13px; background:var(--paper); cursor:default; white-space:nowrap; }
+  .btn.primary { background:var(--ink); color:#fff; }
+  .btn.ghost { border-color:transparent; text-decoration:underline; }
+  .btn.danger { border-color:#b91c1c; color:#b91c1c; }
+  .btn.off { opacity:.35; }
+  .field { display:flex; flex-direction:column; gap:3px; min-width:180px; flex:1; }
+  .field label { font-size:12px; font-weight:600; }
+  .input { border:1px solid var(--line); border-radius:4px; padding:6px 8px; background:#fafafa; color:#a1a1aa; min-height:32px; }
+  .input.filled { color:var(--ink); background:#fff; }
+  .input.locked { background:var(--soft); color:var(--muted); }
+  .pill { display:inline-block; border:1px solid var(--muted); border-radius:999px; padding:0 8px; font-size:12px; white-space:nowrap; }
+  .pill.warn { border-color:#d97706; color:var(--warn); background:#fffbeb; }
+  .pill.ok { border-color:#16a34a; color:var(--ok); background:#f0fdf4; }
+  .pill.info { border-color:#2563eb; color:var(--info); background:#eff6ff; }
+  .note { background:#fef9c3; border:1px solid #facc15; border-radius:4px; padding:8px 10px; font-size:12.5px; }
+  .note::before { content:"✎ "; }
+  .flag { background:#fff7ed; border:1px solid #fb923c; border-radius:4px; padding:8px 10px; }
+  .placeholder { background:repeating-linear-gradient(45deg, #f4f4f5, #f4f4f5 10px, #e4e4e7 10px, #e4e4e7 20px); border:1px solid #d4d4d8; border-radius:4px; display:grid; place-items:center; color:var(--muted); font-size:12px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; font-size:12px; color:var(--muted); font-weight:600; border-bottom:2px solid #d4d4d8; padding:6px 8px; }
+  td { border-bottom:1px solid #e4e4e7; padding:7px 8px; vertical-align:middle; }
+  .check { display:inline-block; width:14px; height:14px; border:2px solid var(--ink); border-radius:3px; vertical-align:-2px; margin-right:4px; }
+  .check.on { background:var(--ink); }
+  .radio { display:inline-block; width:14px; height:14px; border:2px solid var(--ink); border-radius:50%; vertical-align:-2px; margin-right:4px; }
+  .radio.on { background: radial-gradient(var(--ink) 40%, transparent 45%); }
+  .steps { display:flex; gap:0; margin-bottom:16px; flex-wrap:wrap; }
+  .steps .s { flex:1; min-width:110px; border-top:4px solid #d4d4d8; padding:6px 4px; font-size:12px; color:var(--muted); }
+  .steps .s.done { border-color:var(--ok); color:var(--ink); }
+  .steps .s.now { border-color:var(--ink); color:var(--ink); font-weight:700; }
+  .checklist li { list-style:none; padding:6px 8px; border-radius:4px; }
+  .checklist { padding:0; margin:0; }
+  .checklist li.now { background:var(--soft); font-weight:600; }
+  .timeline { border-left:3px solid #d4d4d8; margin-left:8px; padding-left:16px; }
+  .timeline .t { position:relative; padding:4px 0 12px; }
+  .timeline .t::before { content:""; position:absolute; left:-24px; top:7px; width:11px; height:11px; border-radius:50%; background:#d4d4d8; border:2px solid var(--paper); }
+  .timeline .t.done::before { background:var(--ok); }
+  .timeline .t.now::before { background:#f97316; }
+  .tabs { display:flex; gap:4px; border-bottom:2px solid #d4d4d8; margin-bottom:12px; flex-wrap:wrap; }
+  .tabs span { padding:6px 10px; font-size:13px; color:var(--muted); }
+  .tabs span.on { color:var(--ink); font-weight:700; border-bottom:3px solid var(--ink); margin-bottom:-2px; }
+  .bibgrid { display:grid; gap:2px; }
+  .bib { font-size:10px; text-align:center; border:1px solid #d4d4d8; border-radius:2px; padding:3px 0; background:#fff; }
+  .bib.reserved { background:#d4d4d8; color:#71717a; text-decoration:line-through; }
+  .bib.used { background:#52525b; color:#e4e4e7; }
+  .bib.pick { background:#2563eb; color:#fff; border-color:#1d4ed8; font-weight:700; }
+  .legend .bib { display:inline-block; width:28px; margin-right:4px; }
+  .bar { height:10px; background:#d4d4d8; border-radius:3px; overflow:hidden; }
+  .bar > span { display:block; height:100%; background:var(--ink); }
+  .money td:last-child { text-align:right; font-variant-numeric:tabular-nums; }
+  .sticky-actions { position:sticky; bottom:70px; background:var(--paper); border:2px solid var(--ink); border-radius:6px; padding:10px 14px; }
+  .modal { border:2px solid var(--ink); border-radius:8px; background:var(--paper); padding:16px; box-shadow:0 10px 0 rgba(0,0,0,.08); }
+  .big-code { font: 700 28px/1.2 ui-monospace, Consolas, monospace; letter-spacing:.08em; }
+
+  /* variant switcher */
+  .switcher { position:fixed; left:calc(50% + 135px); transform:translateX(-50%); bottom:18px; display:flex; align-items:center; gap:4px; background:#18181b; color:#fff; border-radius:999px; padding:6px; box-shadow:0 6px 20px rgba(0,0,0,.35); font-size:13px; z-index:10; }
+  .switcher button { background:#3f3f46; color:#fff; border:0; border-radius:999px; width:32px; height:32px; font-size:16px; cursor:pointer; }
+  .switcher .label { padding:0 12px; min-width:260px; text-align:center; }
+  .switcher .label b { color:#fde047; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns:1fr; } nav.side { position:static; height:auto; }
+    .split, .split-r { grid-template-columns:1fr; } .switcher { left:50%; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="side" id="side"></nav>
+  <main>
+    <div class="proto-bar" id="protoBar"></div>
+    <div id="screen"></div>
+  </main>
+</div>
+<div class="switcher" id="switcher" hidden>
+  <button type="button" id="prevVariant" aria-label="Previous variant">←</button>
+  <div class="label" id="variantLabel"></div>
+  <button type="button" id="nextVariant" aria-label="Next variant">→</button>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const field = (label, value = '', cls = '') => `<div class="field"><label>${label}</label><div class="input ${value ? 'filled' : ''} ${cls}">${value || '&nbsp;'}</div></div>`;
+const pill = (text, cls = '') => `<span class="pill ${cls}">${text}</span>`;
+const note = text => `<div class="note">${text}</div>`;
+const btn = (text, cls = '') => `<span class="btn ${cls}">${text}</span>`;
+const chrome = (active, body, title, actions = '') => `
+  <div class="app-header">
+    <div class="logo">KRM</div>
+    <div class="nav">${['Races', 'Championships', 'Licences', 'Drivers and competitors'].map(n => `<span class="${n === active ? 'on' : ''}">${n}</span>`).join('')}</div>
+    <div class="avatar">MR</div>
+  </div>
+  <div class="page">
+    <div class="page-title"><h2>${title}</h2><div class="row">${actions}</div></div>
+    ${body}
+  </div>`;
+const organizerChrome = (active, body, title, actions = '') => `
+  <div class="app-header">
+    <div class="logo">KRM</div>
+    <div class="nav">${['Dashboard', 'Championships', 'Licence requests', 'Licence types', 'Products'].map(n => `<span class="${n === active ? 'on' : ''}">${n}</span>`).join('')}</div>
+    <div class="avatar">ORG</div>
+  </div>
+  <div class="page">
+    <div class="page-title"><h2>${title}</h2><div class="row">${actions}</div></div>
+    ${body}
+  </div>`;
+const requestSections = ['Licence type', 'Holder', 'Parents', 'Documents', 'Forms to sign', 'Payment', 'Review and submit'];
+
+/* deterministic fake availability for 1-999 */
+const bibState = n => {
+  if (n === 77) return 'pick';
+  if ([1, 7, 10, 11, 23, 27, 44, 46, 99, 111, 777].includes(n)) return 'reserved';
+  if ((n * 37) % 11 === 0 && n < 400) return 'reserved';
+  if ((n * 13) % 17 === 0 && n < 600) return 'used';
+  return 'free';
+};
+const bibCells = (from, to, cols) => `<div class="bibgrid" style="grid-template-columns:repeat(${cols}, 1fr)">${Array.from({ length: to - from + 1 }, (_, i) => from + i).map(n => `<div class="bib ${bibState(n)}" title="${n}: ${bibState(n)}">${n}</div>`).join('')}</div>`;
+const bibLegend = `<div class="row legend muted"><span><span class="bib">12</span>free</span><span><span class="bib reserved">13</span>reserved</span><span><span class="bib used">14</span>already used</span><span><span class="bib pick">77</span>your pick</span></div>`;
+
+/* ---------- screens ---------- */
+const screens = [
+  { id: 'overview', flow: 'Start here', title: 'Flow map', render: () => `
+    <div class="page">
+      <div class="page-title"><h2>Flow map</h2></div>
+      <div class="grid3">
+        <div class="box stack"><h3>A. Licence request</h3>
+          <div class="muted">Driver: My licences → fill in request (3 variants) → track request / fix changes. Or declare an existing licence.</div>
+          <div class="muted">Organizer: queue → review (2 variants) → forward → emit. Licence types, documents and prices.</div></div>
+        <div class="box stack"><h3>B. Enrollment</h3>
+          <div class="muted">Organizer: new championship settings.</div>
+          <div class="muted">Driver: pick licence → competitor (underage) → race number (3 picker variants) → pay → submit.</div>
+          <div class="muted">Organizer: confirm in submission order.</div></div>
+        <div class="box stack"><h3>C. Promo codes</h3>
+          <div class="muted">Organizer: issue codes. Driver: open link → claim for a licence. Race registration: applied automatically (logged in) or typed (guest).</div></div>
+      </div>
+      <div class="box solid stack" style="margin-top:16px">
+        <h3>How to read these</h3>
+        <div class="muted">Dashed boxes are areas, grey fields are inputs, yellow notes explain decisions taken in the design session. Use the yellow bar on top to walk through screens in order, and the black bar at the bottom (or ← →) to switch variants where a screen has more than one.</div>
+      </div>
+    </div>` },
+
+  /* ---- A. driver ---- */
+  { id: 'licences', flow: 'A. Licence request · driver', title: 'My licences', render: () => chrome('Licences', `
+    <div class="stack">
+      ${note('One account manages licences for several people: here the parent (Luca) manages his own competitor licence and his son Mario\'s driver licence. Each licence is a separate request.')}
+      <div class="box stack">
+        <h3>Licences</h3>
+        <table>
+          <tr><th>Holder</th><th>Licence</th><th>Year</th><th>Status</th><th></th></tr>
+          <tr><td>Mario Rossi <span class="muted">(14 y.o.)</span></td><td>ACI · Driver · National Junior</td><td>2026</td><td>${pill('Emitted', 'ok')}</td><td>${btn('Download temporary licence', 'ghost')}</td></tr>
+          <tr><td>Luca Rossi</td><td>ACI · Competitor · Individual</td><td>2026</td><td>${pill('Declared, not verified', 'warn')}</td><td>${btn('Edit', 'ghost')}</td></tr>
+        </table>
+      </div>
+      <div class="box stack">
+        <h3>Requests</h3>
+        <table>
+          <tr><th>Holder</th><th>Requested licence</th><th>Status</th><th>Last change</th><th></th></tr>
+          <tr><td>Mario Rossi</td><td>ACI · Driver · National Junior · 2027</td><td>${pill('Changes requested', 'warn')}</td><td>2 days ago</td><td>${btn('Open')}</td></tr>
+          <tr><td>Luca Rossi</td><td>ACI · Mechanic · 2027</td><td>${pill('Draft')}</td><td>saved 5 days ago</td><td>${btn('Continue')}</td></tr>
+        </table>
+      </div>
+    </div>`, 'Licences', btn('Add a licence I already have') + btn('Request a licence', 'primary')) },
+
+  { id: 'licence-request', flow: 'A. Licence request · driver', title: 'Fill in a licence request',
+    variants: { A: 'Step-by-step wizard', B: 'Single page with checklist', C: 'Section hub' },
+    render: v => {
+      const documents = `
+        <table>
+          <tr><th>Document</th><th>For</th><th>File</th><th></th></tr>
+          <tr><td>Identity card</td><td>Mario (holder)</td><td>id-front.jpg ${pill('uploaded', 'ok')}</td><td>${btn('Replace', 'ghost')}</td></tr>
+          <tr><td>Fiscal code</td><td>Mario (holder)</td><td>${pill('missing', 'warn')}</td><td>${btn('Upload')}</td></tr>
+          <tr><td>Karting competitive medical certificate</td><td>Mario (holder)</td><td>${pill('missing', 'warn')}</td><td>${btn('Upload')}</td></tr>
+          <tr><td>Identity card and fiscal code</td><td>Parent 1 · Luca</td><td>luca-id.pdf ${pill('uploaded', 'ok')}</td><td>${btn('Replace', 'ghost')}</td></tr>
+          <tr><td>Identity card and fiscal code</td><td>Parent 2 · Anna</td><td>${pill('missing', 'warn')}</td><td>${btn('Upload')}</td></tr>
+        </table>
+        <div class="muted">Underage holder: parents' documents are added automatically. JPG, PNG or PDF.</div>`;
+      if (v === 'A') return chrome('Licences', `
+        <div class="steps">${requestSections.map((s, i) => `<div class="s ${i < 3 ? 'done' : i === 3 ? 'now' : ''}">${i + 1}. ${s}</div>`).join('')}</div>
+        <div class="box focus stack">
+          <h3>4. Documents</h3>
+          ${documents}
+        </div>
+        <div class="row between" style="margin-top:16px">${btn('← Back')}<div class="row">${btn('Save draft and exit', 'ghost')}${btn('Next: forms to sign →', 'primary')}</div></div>
+        ${note('Wizard: one section at a time, draft saved at every step. Simple on phones, but the user only sees what is missing at the end.')}`,
+        'Driver licence · ACI National Junior · 2027', pill('Draft · saved 1 min ago'));
+      if (v === 'B') return chrome('Licences', `
+        <div class="split">
+          <div class="box stack" style="position:sticky; top:12px">
+            <h4>Checklist</h4>
+            <ul class="checklist">${requestSections.map((s, i) => `<li class="${i === 3 ? 'now' : ''}">${i < 3 ? '✔' : i === 3 ? '◐' : '○'} ${s}</li>`).join('')}</ul>
+            <div class="muted">3 of 7 complete</div>
+            ${btn('Submit request', 'primary off')}
+          </div>
+          <div class="stack">
+            <div class="box solid row between"><div><b>1. Licence type</b> <span class="muted">ACI · Driver · National Junior · €120</span></div>${btn('Change', 'ghost')}</div>
+            <div class="box solid row between"><div><b>2. Holder</b> <span class="muted">Mario Rossi · 12/03/2012 · Brescia</span></div>${btn('Change', 'ghost')}</div>
+            <div class="box solid row between"><div><b>3. Parents</b> <span class="muted">Luca Rossi, Anna Bianchi</span></div>${btn('Change', 'ghost')}</div>
+            <div class="box focus stack"><h3>4. Documents</h3>${documents}</div>
+            <div class="box stack"><h3>5. Forms to sign</h3><div class="muted">Delegation, privacy (both parents), parental authorisation: download pre-filled, sign, upload.</div></div>
+            <div class="box stack"><h3>6. Payment</h3><div class="muted">Bank transfer details and payment proof upload.</div></div>
+          </div>
+        </div>
+        ${note('Single page: everything visible, completed sections collapse to a summary. Easy to see what is missing; long on phones.')}`,
+        'Driver licence · ACI National Junior · 2027', pill('Draft · saved 1 min ago'));
+      return chrome('Licences', `
+        <div class="box solid stack" style="margin-bottom:16px">
+          <div class="row between"><b>3 of 7 sections complete</b><span class="muted">You can come back any time: the draft never expires.</span></div>
+          <div class="bar"><span style="width:43%"></span></div>
+        </div>
+        <div class="grid3">
+          ${requestSections.map((s, i) => `
+            <div class="box ${i === 3 ? 'focus' : ''} stack">
+              <div class="row between"><b>${i + 1}. ${s}</b>${i < 3 ? pill('done', 'ok') : i === 3 ? pill('2 missing', 'warn') : i === 6 ? pill('locked') : pill('to do')}</div>
+              <div class="muted">${['ACI · Driver · National Junior', 'Mario Rossi, 12/03/2012', 'Luca Rossi, Anna Bianchi', 'Fiscal code, medical certificate, parent 2 ID missing', '3 forms to download, sign and upload', 'Bank transfer · €120', 'Available when all sections are complete'][i]}</div>
+              ${i === 6 ? btn('Review and submit', 'primary off') : btn(i < 3 ? 'Edit' : 'Open')}
+            </div>`).join('')}
+        </div>
+        ${note('Hub: each section opens on its own page or modal and can be done in any order, e.g. upload the medical certificate a week later. It is also how change requests come back: only the flagged cards turn orange.')}`,
+        'Driver licence · ACI National Junior · 2027', pill('Draft'));
+    } },
+
+  { id: 'licence-request-status', flow: 'A. Licence request · driver', title: 'Track a request (changes requested)', render: () => chrome('Licences', `
+    <div class="split-r">
+      <div class="stack">
+        <div class="flag stack">
+          <b>The organizer asked for changes</b>
+          <div class="row between"><div><b>Identity card (Mario)</b>: “The photo is unreadable, please upload a scan.”</div>${btn('Upload again')}</div>
+          <div class="row between"><div><b>Holder</b>: “The residence postal code does not match the city.”</div>${btn('Fix')}</div>
+        </div>
+        <div class="box stack">
+          <h3>Request summary</h3>
+          <div class="muted">Sections not flagged are read-only. Only the flagged parts can be changed.</div>
+          <table>
+            <tr><td>Licence</td><td>ACI · Driver · National Junior · 2027</td></tr>
+            <tr><td>Holder</td><td>Mario Rossi</td></tr>
+            <tr><td>Documents</td><td>7 uploaded · 1 flagged</td></tr>
+            <tr><td>Payment</td><td>€120 · bank transfer · ${pill('confirmed', 'ok')}</td></tr>
+          </table>
+        </div>
+        <div class="row">${btn('Submit again', 'primary')}<span class="muted">The organizer is notified.</span></div>
+      </div>
+      <div class="box stack">
+        <h4>Progress</h4>
+        <div class="timeline">
+          <div class="t done">Draft</div>
+          <div class="t done">Submitted <div class="muted">03/12 · email “request received”</div></div>
+          <div class="t done">In review</div>
+          <div class="t now"><b>Changes requested</b><div class="muted">05/12 · email sent</div></div>
+          <div class="t">Forwarded to ACI</div>
+          <div class="t">Emitted <div class="muted">temporary licence to download</div></div>
+        </div>
+      </div>
+    </div>`, 'Request · Mario Rossi · Driver 2027', pill('Changes requested', 'warn')) },
+
+  { id: 'licence-declare', flow: 'A. Licence request · driver', title: 'Add a licence I already have', render: () => chrome('Licences', `
+    <div class="box stack" style="max-width:760px">
+      ${note('For licences obtained elsewhere (renewed directly with ACI/ASI, or foreign). Usable right away for enrollment; the organizer may verify it.')}
+      <h3>Licence</h3>
+      <div class="row">${field('Provider', 'ACI')}${field('Licence type', 'Driver · National Senior')}</div>
+      <div class="row">${field('Licence number', '')}${field('Valid for year', '2027')}</div>
+      <div class="row">${field('Copy of the licence (optional)', 'Choose file…')}</div>
+      <h3>Holder</h3>
+      <div class="row">${field('First name')}${field('Last name')}${field('Birth date')}</div>
+      <div class="row">${field('Birth place')}${field('Nationality', 'Italian')}${field('Fiscal code', '', '')}</div>
+      <div class="row">${field('Residence address')}${field('City')}${field('Postal code')}</div>
+      <div class="row">${field('Email')}${field('Phone')}</div>
+      <div class="row">${btn('Cancel', 'ghost')}${btn('Save licence', 'primary')}</div>
+    </div>`, 'Add a licence I already have') },
+
+  /* ---- A. organizer ---- */
+  { id: 'organizer-licence-requests', flow: 'A. Licence request · organizer', title: 'Licence request queue', render: () => organizerChrome('Licence requests', `
+    <div class="tabs"><span>Draft (12)</span><span class="on">Submitted (5)</span><span>In review (3)</span><span>Changes requested (2)</span><span>Forwarded (9)</span><span>Emitted (140)</span><span>Rejected (1)</span></div>
+    <div class="box">
+      <table>
+        <tr><th>Submitted ↑</th><th>Holder</th><th>Licence</th><th></th><th>Payment</th><th>Documents</th><th></th></tr>
+        <tr><td>01/12 09:14</td><td>Giulia Verdi</td><td>ACI · Driver · National Senior</td><td></td><td>${pill('proof uploaded', 'info')}</td><td>5/5</td><td>${btn('Review')}</td></tr>
+        <tr><td>01/12 18:40</td><td>Mario Rossi</td><td>ACI · Driver · National Junior</td><td>${pill('underage')}</td><td>${pill('confirmed', 'ok')}</td><td>8/8</td><td>${btn('Review')}</td></tr>
+        <tr><td>02/12 10:02</td><td>Paolo Neri</td><td>ACI · Mechanic</td><td></td><td>${pill('proof uploaded', 'info')}</td><td>3/3</td><td>${btn('Review')}</td></tr>
+        <tr><td>03/12 21:30</td><td>Team Speed Srl</td><td>ASI · Competitor</td><td></td><td>${pill('no proof', 'warn')}</td><td>2/4</td><td>${btn('Review')}</td></tr>
+      </table>
+    </div>
+    ${note('Oldest first. You get an email for each new request and each resubmission. Drafts are listed only to help answer “I started a request” emails.')}`, 'Licence requests') },
+
+  { id: 'organizer-licence-request-review', flow: 'A. Licence request · organizer', title: 'Review a request',
+    variants: { A: 'Split view with document viewer', B: 'Section checklist' },
+    render: v => {
+      const actions = btn('Download as single PDF') + btn('Request changes (2)') + btn('Mark as forwarded', 'primary') + btn('Reject', 'danger');
+      const emit = `
+        <div class="modal stack" style="margin-top:16px">
+          <h3>Emit licence <span class="muted">(after the provider replies)</span></h3>
+          <div class="row">${field('Temporary licence PDF', 'Choose file…')}${field('Licence number')}${field('Valid for year', '2027')}</div>
+          <div class="muted">Year pre-filled: submitted in December → next year.</div>
+          <div class="row">${btn('Emit and notify the applicant', 'primary')}</div>
+        </div>`;
+      if (v === 'A') return organizerChrome('Licence requests', `
+        <div class="split">
+          <div class="box stack">
+            <h4>Sections</h4>
+            <ul class="checklist">
+              <li>✔ Licence type</li><li>⚑ Holder <span class="muted">postal code</span></li><li>✔ Parents</li>
+              <li class="now">Documents</li>
+              <li style="padding-left:20px">✔ ID card · Mario</li><li style="padding-left:20px" class="now">⚑ Fiscal code · Mario</li>
+              <li style="padding-left:20px">○ Medical certificate</li><li style="padding-left:20px">○ ID · Luca</li><li style="padding-left:20px">○ ID · Anna</li>
+              <li>○ Signed forms (3)</li><li>✔ Payment ${pill('confirmed', 'ok')}</li>
+            </ul>
+          </div>
+          <div class="stack">
+            <div class="row between"><b>Fiscal code · Mario Rossi</b><div class="row">${btn('Accept')}${btn('Flag…')}</div></div>
+            <div class="placeholder" style="height:380px">document viewer (image / PDF)</div>
+            <div class="flag">⚑ Flag note: “The photo is unreadable, please upload a scan.”</div>
+          </div>
+        </div>
+        ${emit}
+        ${note('Split view: go through documents one by one with the file always on screen. Fast for long lists, needs a wide screen.')}`,
+        'Mario Rossi · ACI Driver National Junior · 2027', actions);
+      return organizerChrome('Licence requests', `
+        <div class="stack">
+          ${['Licence type: ACI · Driver · National Junior', 'Holder: Mario Rossi · 12/03/2012 · Brescia · RSSMRA12C12B157X', 'Parents: Luca Rossi, Anna Bianchi'].map((s, i) => `
+            <div class="box solid row between"><div>${s}</div><div class="row">${i === 1 ? '<span class="pill warn">flagged</span>' : '<span class="pill ok">accepted</span>'}${btn('Accept', 'ghost')}${btn('Flag…', 'ghost')}</div></div>`).join('')}
+          <div class="flag">⚑ Holder: “The residence postal code does not match the city.”</div>
+          <div class="box stack">
+            <h3>Documents</h3>
+            <div class="grid3">
+              ${['ID card · Mario', 'Fiscal code · Mario', 'Medical certificate', 'ID · Luca', 'ID · Anna', 'Delegation (signed)', 'Privacy (signed)', 'Parental authorisation'].map((d, i) => `
+                <div class="box solid stack"><div class="placeholder" style="height:90px">thumbnail · opens full size</div>
+                <div class="row between"><b style="font-size:12px">${d}</b>${i === 1 ? pill('flagged', 'warn') : i === 0 ? pill('accepted', 'ok') : pill('to check')}</div>
+                <div class="row">${btn('Accept', 'ghost')}${btn('Flag…', 'ghost')}</div></div>`).join('')}
+            </div>
+          </div>
+          <div class="box solid row between"><div>Payment: €120 · bank transfer · proof.pdf</div><div class="row">${pill('confirmed', 'ok')}</div></div>
+        </div>
+        ${emit}
+        ${note('Checklist: the whole request on one scrolling page, documents as thumbnails. Works on a laptop, more scrolling for many documents.')}`,
+        'Mario Rossi · ACI Driver National Junior · 2027', actions);
+    } },
+
+  { id: 'organizer-licence-types', flow: 'A. Licence request · organizer', title: 'Licence types, documents and prices', render: () => organizerChrome('Licence types', `
+    <div class="tabs"><span class="on">ACI</span><span>ASI</span></div>
+    <div class="split">
+      <div class="box stack">
+        <h4>Licence types</h4>
+        <ul class="checklist">
+          <li class="now">Driver · National Junior</li><li>Driver · National Senior</li><li>Driver · International</li><li>Competitor · Individual</li><li>Competitor · Company</li><li>Mechanic</li>
+        </ul>
+        ${btn('Add licence type')}
+      </div>
+      <div class="stack">
+        <div class="box stack">
+          <div class="row">${field('Name', 'Driver · National Junior')}${field('Role', 'Driver')}${field('Counts in race registration as', 'National (LOCAL_NATIONAL)')}</div>
+          ${note('The mapping keeps race registration, validation and exports unchanged: they still see the existing licence categories.')}
+        </div>
+        <div class="box stack">
+          <h3>Required documents</h3>
+          <table>
+            <tr><th>Document</th><th>Kind</th><th>Underage only</th><th>Required</th></tr>
+            <tr><td>Identity card and fiscal code</td><td>Upload</td><td><span class="check"></span></td><td><span class="check on"></span></td></tr>
+            <tr><td>Karting competitive medical certificate</td><td>Upload</td><td><span class="check"></span></td><td><span class="check on"></span></td></tr>
+            <tr><td>Parents' identity cards and fiscal codes</td><td>Upload</td><td><span class="check on"></span></td><td><span class="check on"></span></td></tr>
+            <tr><td>Delegation</td><td>Signed form (pre-filled)</td><td><span class="check"></span></td><td><span class="check on"></span></td></tr>
+            <tr><td>Privacy, signed by both parents</td><td>Signed form (pre-filled)</td><td><span class="check on"></span></td><td><span class="check on"></span></td></tr>
+            <tr><td>Parental authorisation</td><td>Signed form (pre-filled)</td><td><span class="check on"></span></td><td><span class="check on"></span></td></tr>
+          </table>
+          ${btn('Add document')}
+        </div>
+        <div class="box stack">
+          <h3>Product and prices</h3>
+          <table class="money">
+            <tr><th>Product</th><th>Valid</th><th>Price</th></tr>
+            <tr><td>Junior driver licence 2027 · early bird</td><td>01/11 – 30/11</td><td>€100</td></tr>
+            <tr><td>Junior driver licence 2027</td><td>from 01/12</td><td>€120</td></tr>
+            <tr><td>Package: junior licence + 2 race fees + race number</td><td>01/11 – 31/01</td><td>€380</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>`, 'Licence types') },
+
+  /* ---- B. enrollment ---- */
+  { id: 'organizer-championship-settings', flow: 'B. Enrollment', title: 'New championship settings (organizer)', render: () => organizerChrome('Championships', `
+    ${note('Chosen when creating the championship. Every setting defaults to today\'s behaviour, so running championships are unaffected.')}
+    <div class="grid2" style="margin-top:12px">
+      <div class="box stack"><h3>Licences</h3>
+        <div class="row"><span><span class="radio on"></span>ACI</span><span><span class="radio"></span>ASI</span></div>
+        <div class="muted">Accepted driver / competitor licences: all</div></div>
+      <div class="box stack"><h3>Registration form</h3>
+        <div class="row"><span><span class="radio on"></span>Complete (kart: vehicle, mechanic)</span><span><span class="radio"></span>Standard</span><span><span class="radio"></span>Minimal</span></div>
+        <div class="muted">Moto: standard or minimal.</div></div>
+      <div class="box stack"><h3>Enrollment</h3>
+        <div><span class="check on"></span>Drivers can enroll</div>
+        <div class="row">${field('Opens', '01/11/2026')}${field('Closes', '28/02/2027')}</div>
+        <div class="row">${field('Product', 'Enrollment 2027 · €50 (empty = free)')}</div>
+        <div><span class="check on"></span>Enrollment grants a race number reservation (1–999)</div>
+        <div><span class="check on"></span>Competitor required when the driver is underage</div></div>
+      <div class="box stack"><h3>Wildcards</h3>
+        <div><span class="check on"></span>Wildcards enabled</div>
+        <div class="row">${field('Rule', 'Based on enrollment')}</div>
+        <div class="muted">Not enrolled → wildcard, no points.</div></div>
+      <div class="box stack"><h3>Race fee discounts</h3>
+        <div><span class="radio"></span>Bonuses (legacy)</div>
+        <div><span class="radio on"></span>Entitlements: promo codes and packages</div>
+        <div class="muted">Each race can override: allowed / not allowed.</div></div>
+    </div>`, 'New championship · 2027') },
+
+  { id: 'championship-enroll', flow: 'B. Enrollment', title: 'Enroll and pick a race number (driver)',
+    variants: { A: 'Full 1-999 grid', B: 'Type a number, get suggestions', C: 'Hundreds overview, zoom in' },
+    render: v => {
+      let picker;
+      if (v === 'A') picker = `
+        <div class="row between"><h3>Race number</h3>${bibLegend}</div>
+        ${bibCells(1, 999, 37)}
+        ${note('Full grid: the “theatre seats” idea, all 999 at once. Good overview of what is taken, small targets on phones.')}`;
+      else if (v === 'B') picker = `
+        <h3>Race number</h3>
+        <div class="row">${field('Number you would like', '7', '')}${btn('Check')}</div>
+        <div class="flag">7 is already reserved.</div>
+        <div class="stack">
+          <div><b>Free and close to 7</b></div>
+          <div class="row">${[3, 5, 8, 12, 17].map(n => btn(n)).join('')}</div>
+          <div><b>Free with your digits</b></div>
+          <div class="row">${[70, 77, 707, 770, 717].map(n => btn(n, n === 77 ? 'primary' : '')).join('')}</div>
+        </div>
+        ${note('Search first: the user types what they want and gets alternatives. Fast and phone-friendly, no overview of the whole range.')}`;
+      else picker = `
+        <div class="row between"><h3>Race number</h3>${bibLegend}</div>
+        <div class="grid3">
+          ${Array.from({ length: 10 }, (_, h) => {
+            const from = h === 0 ? 1 : h * 100, to = h * 100 + 99;
+            let free = 0; for (let n = from; n <= to; n++) if (bibState(n) === 'free') free++;
+            return `<div class="box ${h === 0 ? 'focus' : 'solid'} stack" style="padding:10px"><div class="row between"><b>${from}–${to}</b><span class="muted">${free} free</span></div><div class="bar"><span style="width:${100 - free}%"></span></div></div>`;
+          }).join('')}
+        </div>
+        <div class="box solid stack"><b>1–99</b>${bibCells(1, 99, 20)}</div>
+        <div class="row">${field('Or type a number', '')}</div>
+        ${note('Overview then zoom: blocks of 100 show how busy each range is; pick a block to see its numbers. Big targets, two taps.')}`;
+      return chrome('Championships', `
+        <div class="split">
+          <div class="box stack">
+            <h4>Enrollment</h4>
+            <ul class="checklist"><li>✔ Licence</li><li>✔ Competitor</li><li class="now">◐ Race number</li><li>○ Payment</li><li>○ Submit</li></ul>
+          </div>
+          <div class="stack">
+            <div class="box solid stack">
+              <div class="row">${field('Licence', 'Mario Rossi · ACI Driver National Junior · 2027', 'filled')}${field('Competitor (required: driver is underage)', 'Luca Rossi · ACI Competitor 2027', 'filled')}</div>
+              <div class="flag">The 2027 licence request for Mario is still being processed: you can enroll now, the enrollment waits for the licence.</div>
+            </div>
+            <div class="box focus stack">${picker}
+              <div class="row between"><div>Your pick: <b>77</b> · held for you until the organizer confirms it</div>${btn('Next: payment →', 'primary')}</div>
+            </div>
+          </div>
+        </div>`, 'Enroll · Championship 2027', pill('Enrollment open until 28/02'));
+    } },
+
+  { id: 'organizer-enrollments', flow: 'B. Enrollment', title: 'Confirm enrollments (organizer)', render: () => organizerChrome('Championships', `
+    <div class="row" style="margin-bottom:12px">${pill('214 confirmed', 'ok')} ${pill('37 submitted', 'info')} ${pill('6 waiting for licence', 'warn')}</div>
+    <div class="box">
+      <table>
+        <tr><th>Submitted ↑</th><th>Driver</th><th>Licence</th><th>Competitor</th><th>Number</th><th>Payment</th><th></th></tr>
+        <tr><td>01/11 08:01</td><td>Giulia Verdi</td><td>${pill('valid 2027', 'ok')}</td><td>—</td><td>12 ${pill('pending')}</td><td>${pill('confirmed', 'ok')}</td><td class="row">${btn('Confirm', 'primary')}${btn('Reject', 'ghost')}</td></tr>
+        <tr><td>01/11 08:03</td><td>Mario Rossi ${pill('underage')}</td><td>${pill('request in progress', 'warn')}</td><td>Luca Rossi</td><td>77 ${pill('pending')}</td><td>${pill('proof uploaded', 'info')}</td><td class="row">${btn('Confirm', 'off')}${btn('Reject', 'ghost')}</td></tr>
+        <tr><td>01/11 09:40</td><td>Paolo Neri</td><td>${pill('declared, not verified', 'warn')}</td><td>—</td><td>5 ${pill('pending')}</td><td>${pill('no proof', 'warn')}</td><td class="row">${btn('Verify licence')}${btn('Reject', 'ghost')}</td></tr>
+      </table>
+    </div>
+    ${note('Confirm in submission order: race numbers are first confirmed, first served. Confirming re-evaluates wildcard status for races without results. Rejecting releases the number.')}
+    <div class="row" style="margin-top:12px">${btn('Race number map')}${btn('Release a number')}</div>`, 'Enrollments · Championship 2027') },
+
+  /* ---- C. promo codes ---- */
+  { id: 'organizer-promo-codes', flow: 'C. Promo codes', title: 'Issue promo codes (organizer)', render: () => organizerChrome('Championships', `
+    <div class="split-r">
+      <div class="box">
+        <table>
+          <tr><th>Code</th><th>Label</th><th>Gives</th><th>Claimed for</th><th>Used</th><th></th></tr>
+          <tr><td><code>KRM-7F3Q-2M</code></td><td>2026 award · 1st Mini</td><td>2 race fees</td><td>licence ••••4821</td><td>1 / 2</td><td>${btn('Copy link', 'ghost')}</td></tr>
+          <tr><td><code>KRM-9A1C-X4</code></td><td>2026 award · 2nd Mini</td><td>1 race fee</td><td>${pill('not claimed')}</td><td>0 / 1</td><td>${btn('Copy link', 'ghost')}</td></tr>
+          <tr><td><code>KRM-B22K-PL</code></td><td>Sponsor promo</td><td>€80 balance</td><td>licence ••••0937 ${pill('guest')}</td><td>€40 / €80</td><td>${btn('Copy link', 'ghost')}</td></tr>
+        </table>
+      </div>
+      <div class="box stack">
+        <h3>New codes</h3>
+        ${field('Championship', 'Championship 2027', 'filled')}
+        <div><span class="radio on"></span>Race fees (credits) <span class="radio"></span>Amount (balance)</div>
+        <div class="row">${field('How many race fees', '2')}${field('Codes to generate', '1')}</div>
+        ${field('Label', 'e.g. 2026 award · 1st Mini')}
+        ${btn('Generate', 'primary')}
+        <div class="muted">Race fee only, not tyres. One code per race registration.</div>
+      </div>
+    </div>`, 'Promo codes · Championship 2027') },
+
+  { id: 'promo-code', flow: 'C. Promo codes', title: 'Promo code link and claim (driver)', render: () => chrome('Races', `
+    <div class="grid2" style="max-width:860px">
+      <div class="box stack" style="text-align:center">
+        <div class="placeholder" style="height:180px; width:180px; margin:0 auto">QR code</div>
+        <div class="big-code">KRM-7F3Q-2M</div>
+        <div>2 race fees · Championship 2027</div>
+        <div class="muted">Used 0 of 2</div>
+        ${btn('Copy code')}
+      </div>
+      <div class="box focus stack">
+        <h3>Claim this code</h3>
+        <div class="muted">Once claimed, it belongs to that licence and nobody else can claim it.</div>
+        <div><span class="radio on"></span>Mario Rossi · ACI Driver · 2027</div>
+        <div><span class="radio"></span>Luca Rossi · ACI Competitor · 2027</div>
+        ${btn('Claim for Mario Rossi', 'primary')}
+        <hr>
+        <div class="muted"><b>No account?</b> Type the code in the race registration form: it is claimed for the licence number you enter.</div>
+      </div>
+    </div>`, 'Promo code') },
+
+  { id: 'race-registration', flow: 'C. Promo codes', title: 'Register for a race',
+    variants: { A: 'Logged in, licence picked', B: 'Guest, typed promo code' },
+    render: v => {
+      const cost = (discountRow) => `
+        <div class="box stack"><h3>Cost</h3>
+          <table class="money">
+            <tr><td>Race fee · Mini</td><td>€150</td></tr>
+            ${discountRow}
+            <tr><td>Tyres · MG Red (not discounted)</td><td>€200</td></tr>
+            <tr><td><b>Total</b></td><td><b>€200</b></td></tr>
+          </table></div>`;
+      if (v === 'A') return chrome('Races', `
+        <div class="split-r">
+          <div class="stack">
+            <div class="box focus stack">
+              <h3>Who is racing?</h3>
+              <div><span class="radio on"></span>Mario Rossi · ACI Driver National Junior · 2027 ${pill('enrolled', 'ok')}</div>
+              <div><span class="radio"></span>Someone else (fill in the form)</div>
+            </div>
+            <div class="box stack">
+              <h3>Driver <span class="muted">from the licence</span></h3>
+              <div class="row">${field('Name', 'Mario Rossi', 'locked')}${field('Licence', 'National · ••••4821', 'locked')}${field('Race number', '77 · reserved', 'locked')}</div>
+              <div class="row">${field('Category', 'Mini', 'filled')}</div>
+              <h3>Competitor <span class="muted">from the previous race</span></h3>
+              <div class="row">${field('Competitor', 'Luca Rossi · ACI Competitor', 'filled')}${btn('Change', 'ghost')}</div>
+              <h3>Vehicle and mechanic</h3>
+              <div class="row">${field('Chassis')}${field('Engine')}${field('Mechanic')}</div>
+            </div>
+          </div>
+          <div class="stack">
+            ${cost('<tr><td>Promo code KRM-7F3Q-2M <span class="muted">(1 left after this)</span></td><td>−€150</td></tr>')}
+            ${note('Logged in: the licence\'s promo code applies automatically if the race allows promo codes. No opt-out.')}
+            ${btn('Register', 'primary')}
+          </div>
+        </div>`, 'Race 3 · Franciacorta · 12/04/2027');
+      return chrome('Races', `
+        <div class="split-r">
+          <div class="box stack">
+            <h3>Driver</h3>
+            <div class="row">${field('First name')}${field('Last name')}${field('Licence number', '')}</div>
+            <div class="row">${field('Race number')}${field('Category')}</div>
+            <div class="muted">… rest of today's form unchanged …</div>
+          </div>
+          <div class="stack">
+            <div class="box focus stack">
+              <h3>Promo code</h3>
+              <div class="row">${field('Code', 'KRM-9A1C-X4', 'filled')}${btn('Apply')}</div>
+              <div class="flag">Valid: 1 race fee. It will be claimed for the licence number you entered, and nobody else can use it.</div>
+            </div>
+            ${cost('<tr><td>Promo code KRM-9A1C-X4</td><td>−€150</td></tr>')}
+            ${note('Guest: the code replaces the old “match by licence number” bonus lookup that failed when licences were renewed elsewhere.')}
+            ${btn('Register', 'primary')}
+          </div>
+        </div>`, 'Race 3 · Franciacorta · 12/04/2027');
+    } },
+];
+
+/* ---------- router ---------- */
+const state = () => {
+  const p = new URLSearchParams(location.hash.slice(1));
+  const s = screens.find(x => x.id === p.get('screen')) || screens[0];
+  const keys = s.variants ? Object.keys(s.variants) : [];
+  const v = keys.includes((p.get('variant') || '').toUpperCase()) ? p.get('variant').toUpperCase() : keys[0];
+  return { s, v, keys };
+};
+const go = (id, v) => { location.hash = `screen=${id}` + (v ? `&variant=${v}` : ''); };
+
+function render() {
+  const { s, v, keys } = state();
+  const i = screens.indexOf(s);
+  let flow = '';
+  document.getElementById('side').innerHTML = `<h1>KRM flow wireframes</h1><div class="sub">Prototype · throwaway</div>` + screens.map(x => {
+    const head = x.flow !== flow ? `<div class="flow">${(flow = x.flow)}</div>` : '';
+    const vs = x.variants ? ` <span class="v">${Object.keys(x.variants).length} variants</span>` : '';
+    return head + `<a href="#screen=${x.id}" class="${x === s ? 'current' : ''}">${x.title}${vs}</a>`;
+  }).join('');
+  const prev = screens[i - 1], next = screens[i + 1];
+  document.getElementById('protoBar').innerHTML = `
+    <a href="${prev ? '#screen=' + prev.id : '#'}" class="${prev ? '' : 'disabled'}">← ${prev ? prev.title : ''}</a>
+    <span>PROTOTYPE · ${s.flow} · <b>${s.title}</b> · ${i + 1}/${screens.length}</span>
+    <a href="${next ? '#screen=' + next.id : '#'}" class="${next ? '' : 'disabled'}">${next ? next.title : ''} →</a>`;
+  document.getElementById('screen').innerHTML = s.render(v);
+  const sw = document.getElementById('switcher');
+  sw.hidden = keys.length < 2;
+  if (keys.length) document.getElementById('variantLabel').innerHTML = `Variant <b>${v}</b> · ${s.variants[v]} <span style="color:#a1a1aa">(${keys.indexOf(v) + 1}/${keys.length})</span>`;
+  window.scrollTo(0, 0);
+}
+const cycle = step => {
+  const { s, v, keys } = state();
+  if (keys.length < 2) return;
+  go(s.id, keys[(keys.indexOf(v) + step + keys.length) % keys.length]);
+};
+document.getElementById('prevVariant').onclick = () => cycle(-1);
+document.getElementById('nextVariant').onclick = () => cycle(1);
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input, textarea, [contenteditable]')) return;
+  if (e.key === 'ArrowLeft') cycle(-1);
+  if (e.key === 'ArrowRight') cycle(1);
+});
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>

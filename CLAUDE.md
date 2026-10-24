@@ -47,10 +47,18 @@ vendor/bin/phpunit
 vendor/bin/phpunit --filter TestClassName
 
 # Format code using Laravel Pint
-composer format
-# OR
-vendor/bin/pint
+composer lint
+# Check formatting without changing files
+composer lint:check
+
+# Static analysis (Larastan, level 7, existing errors in phpstan-baseline.neon)
+composer types:check
+
+# Tail application logs
+php artisan pail
 ```
+
+Dates are immutable: `Date::use(CarbonImmutable::class)` in `AppServiceProvider`, so `now()`, `today()` and model date casts return `CarbonImmutable`. Always assign the result of `add*`/`sub*`/`startOf*` calls. Destructive database commands (`migrate:fresh`, `migrate:rollback`, `db:wipe`, …) are blocked in production.
 
 ### Database & Migrations
 ```bash
@@ -191,7 +199,6 @@ All primary models (Championship, Race, Participant, Category, etc.) use ULIDs i
 ### Testing
 
 - PHPUnit-based feature and unit tests in `tests/`
-- Uses `CreatesApplication` trait
 - Helper traits for creating test data: `CreateCompetitor`, `CreateDriver`, `CreateMechanic`, `CreateVehicle`
 - Database: Uses `plannr/laravel-fast-refresh-database` for faster test database refreshing
 
@@ -199,7 +206,10 @@ All primary models (Championship, Race, Participant, Category, etc.) use ULIDs i
 
 - `config/races.php` - Race-specific configuration (timezone, etc.)
 - Routes defined in `routes/web.php` (main application routes)
-- `routes/api.php` - API routes (if applicable)
+- `routes/api.php` - API routes (calendar feeds, championship awards; `api` prefix and throttle)
+- `bootstrap/app.php` - Laravel 11+ application configuration: routing, middleware (`Locale` and `TraceAgentMiddleware` appended to `web`, trusted proxy headers), exception rendering for signed-link errors
+- `bootstrap/providers.php` - application service providers (`AppServiceProvider`, `FortifyServiceProvider`)
+- Event discovery is disabled: `app/Listeners` also contains participant pipeline stages (`handle($event, Closure $next)`), so real listeners are registered in `AppServiceProvider::configureEvents()`. Policies are auto-discovered.
 
 ## Important Implementation Notes
 

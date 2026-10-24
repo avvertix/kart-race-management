@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Listeners\LogNotification;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
@@ -12,10 +13,18 @@ use App\Models\Race;
 use App\Models\RegistrationForm;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Nightwatch\Records\Request;
@@ -39,6 +48,14 @@ class AppServiceProvider extends ServiceProvider
         Nightwatch::redactRequests(function (Request $request) {
             $request->ip = '***';
         });
+
+        Date::use(CarbonImmutable::class);
+
+        DB::prohibitDestructiveCommands($this->app->isProduction());
+
+        $this->configureAuthorization();
+        $this->configureEvents();
+        $this->configureRateLimiting();
 
         Relation::enforceMorphMap([
             'participant' => Participant::class,
@@ -85,6 +102,36 @@ class AppServiceProvider extends ServiceProvider
             $normalizedValue = Date::normalizeToDateString($value);
 
             return Carbon::parse($normalizedValue)->format($format);
+        });
+    }
+
+    /**
+     * Configure the driver gates. Policies are auto-discovered from App\Policies.
+     */
+    private function configureAuthorization(): void
+    {
+        Gate::define('drivers:view', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:view'));
+        Gate::define('drivers:create', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:create'));
+        Gate::define('drivers:update', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:update'));
+        Gate::define('drivers:delete', fn (User $user) => ! $user->isAdmin() && $user->hasPermission('drivers:delete'));
+    }
+
+    /**
+     * Register event listeners. Event discovery is disabled because
+     * App\Listeners also holds participant pipeline stages, not listeners.
+     */
+    private function configureEvents(): void
+    {
+        Event::listen(NotificationSent::class, LogNotification::class);
+    }
+
+    /**
+     * Configure the rate limiters for the application.
+     */
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('api', function (HttpRequest $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
     }
 }

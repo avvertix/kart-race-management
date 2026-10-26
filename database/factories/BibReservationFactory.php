@@ -6,7 +6,7 @@ namespace Database\Factories;
 
 use App\Models\Championship;
 use App\Models\DriverLicence;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -43,7 +43,7 @@ class BibReservationFactory extends Factory
         });
     }
 
-    public function expired(?Carbon $expirationTime = null): Factory
+    public function expired(?CarbonInterface $expirationTime = null): Factory
     {
         return $this->state(function (array $attributes) use ($expirationTime) {
             return [

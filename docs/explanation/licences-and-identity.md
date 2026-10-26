@@ -12,10 +12,12 @@ Each Licence stores its holder's personal details (name, birth date and place, f
 
 ## What a Licence is
 
-A Licence is issued by a **Licence Provider** (ACI or ASI) and has a number, a **Licence Type** (e.g. driver, competitor, mechanic and their sub-types) and a validity year. Licences reach the platform in two ways:
+A Licence is issued by a **Licence Provider** (ACI or ASI) and has a number, a **Licence Type** (e.g. ACI driver, competitor or mechanic), a **Licence Grade** (e.g. C Junior; for ACI within the national or international level) and a validity year. Licences reach the platform in two ways:
 
 - **Emitted**: the organizer processed a **Licence Request** made on the platform. The temporary licence PDF returned by the provider is attached to it.
-- **Declared**: the User entered a licence they obtained elsewhere, e.g. renewed directly with the provider or issued abroad. The organizer can mark it verified.
+- **Declared**: the User entered an ACI or ASI licence they obtained elsewhere, e.g. renewed directly with the provider. The organizer can mark it verified, and must before confirming an enrollment with it. The same licence number can be declared only once per year.
+
+Foreign licences are not added to the platform: foreign drivers type them into the race registration form, as today.
 
 A Licence is usually valid for the calendar year. Requests arriving in December are usually processed in January so the licence covers the full next year. The organizer sets the validity year when emitting, pre-filled by that rule.
 

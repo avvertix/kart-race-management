@@ -5,11 +5,12 @@ You can register with or without an account.
 ## With an account
 
 1. Sign in and open the race.
-2. Pick the licence of the driver who races. The form is pre-filled with the driver's details from the licence.
+2. Pick the licence of the driver who races. The form is pre-filled with the driver's details from the licence. Only licences valid in the race's year are listed.
 3. Choose the category, which can differ from previous races.
-4. Check the Competitor: the one from the previous race is pre-filled. Change it if needed.
-5. Fill in vehicle and mechanic, if the race asks for them.
-6. Submit. Your reserved race number and any promo code discount are applied automatically.
+4. Check the Competitor: the one from the previous race is pre-filled. Pick another of your competitor licences or change it by hand if needed.
+5. Fill in vehicle and mechanic, if the race asks for them. You can pick the mechanic from your mechanic licences.
+6. Type a promo code, if you have a new one: it is claimed for the picked licence.
+7. Submit. Your reserved race number and any promo code discount are applied automatically.
 
 ## Without an account
 

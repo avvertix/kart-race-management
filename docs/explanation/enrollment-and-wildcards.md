@@ -21,4 +21,4 @@ An Enrollment can name a Competitor, and must name one when the Driver is undera
 
 ## When the licence is not valid yet
 
-A Driver can enroll before their licence for the championship year exists, e.g. while a renewal is being processed. The Enrollment then waits for the licence. Any race number they picked stays held for them, but it is not confirmed until the licence is valid and the organizer confirms the Enrollment.
+A Driver can enroll while their Licence Request for the championship year is being processed on the platform. The Enrollment then waits for the licence and moves to it once emitted. A licence renewed elsewhere must be declared before enrolling. A Declared Licence is verified by the organizer before the Enrollment is confirmed. Any race number they picked stays held for them, but it is not confirmed until the licence is valid and the organizer confirms the Enrollment.

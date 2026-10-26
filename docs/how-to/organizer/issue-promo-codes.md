@@ -2,11 +2,13 @@
 
 Use promo codes for discounts on race fees, e.g. prizes for last season's results or a promotion. They work in championships with Entitlements turned on.
 
-1. **Create a code** for the target championship. It can be a current one or a future one.
+1. **Create one or more codes** for the target championship. It can be a current one or a future one. Codes are random; when creating a single code you can type your own instead.
 2. **Choose what it gives:**
    - a number of race fees (credits), or
    - an amount of money to spend on race fees (balance).
-3. **Send the code's link to the winner or customer.** The link shows the code, a QR code and how many times it has been used.
+3. **Send the code's link to the winner or customer.** Anyone with the link sees the code, a QR code, the championship, what it gives and how much has been used. It shows no personal data.
+
+Codes don't expire: each one is usable only in its championship. You can revoke a code that hasn't been claimed yet.
 
 ## What happens next
 

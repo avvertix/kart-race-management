@@ -32,14 +32,18 @@ _Avoid_: Permit, card
 A Licence obtained through a Licence Request processed by the organizer.
 
 **Declared Licence**:
-A Licence the User entered themselves, obtained outside the platform; the organizer may mark it verified.
+A Licence the User entered themselves, obtained from a Licence Provider outside the platform; the organizer may mark it verified. Foreign licences are never declared: foreign Drivers only type them into the race registration form.
 
 **Licence Provider**:
 The sporting body that issues a Licence, e.g. ACI or ASI. A championship accepts licences from exactly one Licence Provider, plus foreign licences.
 _Avoid_: Federation, issuer
 
 **Licence Type**:
-A provider-specific kind of Licence, e.g. driver, competitor or mechanic, and their sub-types.
+A provider-specific kind of Licence by role, e.g. ACI driver, ACI competitor or ASI mechanic. It decides which documents a Licence Request needs. ACI licences also have a level, national or international.
+
+**Licence Grade**:
+The specific licence within a Licence Type and level, e.g. C Junior or International B. Organizers list the common ones; any other is written by the applicant.
+_Avoid_: Licence type (for this meaning), category, class
 
 **Licence Request**:
 An application submitted through the platform to have a Licence emitted or renewed by the organizer on behalf of a Licence Provider.
@@ -78,7 +82,7 @@ A race number of 1000 or above, used for Participants of special categories that
 Something the organizer sells, such as a licence emission, a championship enrollment or a race fee.
 
 **Price**:
-The amount charged for a Product in a given context, e.g. a category's race fee.
+The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a licence's cost depends on its Licence Grade.
 
 **Order**:
 A request by a User to buy one or more Products. It is paid by uploading a payment proof that the organizer confirms.

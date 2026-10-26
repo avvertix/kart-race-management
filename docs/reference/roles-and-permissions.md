@@ -9,11 +9,13 @@ Only the permissions added for licences, enrollment, orders and promo codes are 
 | Declare and manage own Licences | ✓ | ✓ | ✓ |
 | Verify a declared Licence | ✓ | ✓ | |
 | Enroll own Licences in a championship | ✓ | ✓ | ✓ |
+| Withdraw own submitted Enrollments | ✓ | ✓ | ✓ |
 | Confirm, reject or withdraw Enrollments | ✓ | ✓ | |
-| Confirm or release race number reservations | ✓ | ✓ | |
+| Confirm, change or release race number reservations; copy reservations from a past championship | ✓ | ✓ | |
+| Enroll any Licence, also outside the enrollment period | ✓ | ✓ | |
 | Configure Licence Types, required documents, Products and Prices | ✓ | ✓ | |
-| Confirm Order payments | ✓ | ✓ | |
-| Issue Promo Codes | ✓ | ✓ | |
+| Set the final price of range-priced Orders, confirm Order payments | ✓ | ✓ | |
+| Issue and revoke Promo Codes | ✓ | ✓ | |
 | Claim a Promo Code for an own Licence | ✓ | ✓ | ✓ |
 
 A User acts only on the Licences, requests and enrollments they manage, unless they are an admin or organizer.

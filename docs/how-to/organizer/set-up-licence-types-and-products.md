@@ -14,7 +14,7 @@ Each Licence Provider has its own list of Licence Types, e.g. the ACI driver, co
 
 ## Products and Prices
 
-A **Product** is anything sold: a licence emission or renewal, a championship enrollment, or a **Promotional Package**. Active Products are listed publicly, with their current Price; ordering one requires a signed-in User with a verified email.
+A **Product** is anything sold: a licence emission or renewal, a championship enrollment, or a **Promotional Package**. Active Products are listed publicly, with their current Price. Each Product has its own public page showing what is included, the price and, for licences, the documents needed. Share its link in your announcements. Ordering requires a signed-in User with a verified email, and the page explains why.
 
 1. Create the Product and choose its kind. Link it to a Licence Type (licence products) or a championship (enrollment products).
 2. Add a **Price** with the dates it applies to and either:

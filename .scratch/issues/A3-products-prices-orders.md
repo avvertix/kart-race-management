@@ -24,7 +24,8 @@ The organizer sells things at fixed or ranged prices; Users place Orders, upload
   - `ConfirmOrderPayment` and `RejectOrderPayment` (back to `AwaitingPayment`). Confirm fires `OrderPaid`.
   - `CancelOrder`.
 - Organizer pages: Products with their Prices (CRUD), orders list filterable by status, order detail with set price, proof preview, confirm or reject.
-- Public licences page lists active Products with their current Price ("€180" or "from €230 to €310, final price after review").
+- Public licences page lists active Products with their current Price ("€180" or "from €230 to €310, final price after review"), each linking to its Product page.
+- Public **Product page** (`/products/{product}`, ulid, no sign-in needed): title, description, what is included (for a Package, each grant: licence, enrollment and race number, race fees), current Price, and for licence Products the documents the request will need. It explains why an account is needed (requests are saved as drafts, progress and price updates are emailed to the account, licences and race numbers stay available for future registrations), with "Sign in to order" and "Create an account" buttons that return to the page after sign-in or email verification. A verified User sees "Order" instead, which starts the Licence Request (A5) or the Enrollment (B3). Inactive or out-of-period Products show as unavailable.
 
 ## Out of scope
 
@@ -34,6 +35,7 @@ Package grants (C4), refunds (settled by email), online payment.
 
 - An Order placed during an early-bird Price keeps it after the Price period ends.
 - A guest or a User with an unverified email cannot place an Order.
+- A guest can open a Product page, sees why an account is needed, and after signing up and verifying their email lands back on the same Product page.
 - A ranged Order cannot receive a proof until the organizer sets its price; the reason is required only outside the range.
 - The price cannot change after a proof is uploaded.
 - Existing participant payments keep working; the existing payment tests pass.

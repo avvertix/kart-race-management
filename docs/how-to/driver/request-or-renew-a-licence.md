@@ -2,7 +2,7 @@
 
 You need an account. One account can hold requests for several people, e.g. you and your child, or the drivers of your team. Each licence is a separate request.
 
-1. **Open the licences page** and read what each licence and package needs and costs. The page is public.
+1. **Open the licences page**, or the link to an offer you received, and read what each licence and package includes, costs and needs. These pages are public.
 2. **Sign in or create an account**, and confirm your email address. You need a verified account to place an order: notifications about your request are sent to it.
 3. **Choose what you are buying**: a licence on its own, or a promotional package, e.g. a licence with the first race fee and the right to reserve your race number. Your order is created now, at today's price; you can pay later. Some licences show a price range: the organizer tells you the final price after checking your request, and only then can you pay.
 4. **Choose the licence.** For ACI, choose national or international, then the licence type from the list. If yours isn't listed, choose *Other* and write it. ASI licences have no national or international level.

@@ -85,9 +85,35 @@ Rules for every phase:
 
 ### Open decisions for Phase A
 
-1. **Encryption at rest for uploaded documents.** Either encrypt file contents with `Crypt` before storing (simple, but large files are held in memory), or rely on disk/volume encryption at the deployment level.
-2. **PDF merge dependency**, for the single PDF (A6).
-3. **Organizer recipient:** `races.organizer.email` or every user with the organizer role.
+1. ~~Encryption at rest~~ **Decided:** private disk plus volume encryption at deployment, documented in the deploy notes. No `Crypt` on file contents.
+2. **PDF merge dependency**, for the single PDF (A6): still open, decided inside the A6 issue. `setasign/fpdi`'s free parser can't read PDF 1.5+ files with compressed xref streams; alternatives are `qpdf`/`ghostscript` in the Docker image, or a ZIP fallback.
+3. ~~Organizer recipient~~ **Decided:** `races.organizer.email`.
+
+### Decisions from review (2026-10-26)
+
+- An Order is created as soon as the User picks the Product, locks the current Price, and can be paid later.
+- A Licence Request's payment section lists the plain emission Product and every Package that includes its Licence Type. Package grants that need a Licence (Entitlement, BIB right) are applied when the Order is Paid **and** the Licence is Emitted, whichever comes last.
+- Licence Request: `InReview` is set on the organizer's first action. Drafts can be deleted (their Order is cancelled). Rejection is allowed from `Submitted`, `InReview` and `Forwarded`. Orders get a `Cancelled` status.
+- `HolderData` mirrors the existing Participant competitor fields (first/last name, fiscal code, nationality, email, phone, birth date and place, residence address). Parents use the same DTO. It's a DTO so company holders (VAT, no fiscal code or birth date) can extend it later.
+- `LicenceProvider` stays `Aci | Asi`. Foreign licences are never declared or emitted; they only appear in race registrations, as today.
+- Declared Licences: same number and validity year can't be declared by two Users. Enrollment confirmation requires verification. Anonymous promo claims move only to emitted or verified Licences.
+- Enrollments reference a Licence **or** an open Licence Request of the same User, and relink on emission. Drivers can withdraw while `Submitted`.
+- Promo Codes are claimable only for a Licence valid in the championship year (year of the championship start). Guest claims happen in the registration transaction; invalid codes are a validation error.
+- A Licence Request starts by picking a Product (plain emission or Package); the Order is created then. Switching Product in a Draft cancels the Order and creates a new one. Submit doesn't require a payment proof; Forward requires a Paid Order.
+- ACI requests ask national/international plus a type from an organizer-configured list with "Other, specify"; ASI requests have no level. Prices per type are not modelled: offers are Products.
+- `HolderData` includes sex. Underage: one parent or guardian required, a second optional; identity documents are required per parent entered. A self-declaration document is always required.
+- A Package's BIB right is used through an Enrollment; the race number can already be picked during the licence order (see round 3).
+- Enrollment payment lists the enrollment Product plus Packages that include it. Organizers can enroll on behalf at any time.
+- Promo codes: created one or N at a time, random 8 chars or custom for a single code, no expiry, unclaimed codes can be revoked. The public page shows code, QR, championship, the Entitlement and usage; no personal data. Wallet passes stay in Later.
+- Issues: one Markdown file per slice in `.scratch/issues/`.
+- **Licence Grade**: a Licence Type is provider + role and holds the documents. ACI types have a level (national | international) mapping to the race licence category, plus an organizer list of common Grades per level. Requests and Licences (emitted and declared) store level + grade (from the list or free text). Each licence Product names one Licence Type.
+- Packages can include "enrollment in championship X". Picking one adds a Race number section to the request. Submit creates a Submitted Enrollment waiting for the request, with a Pending BIB Reservation. Rejecting the request rejects the Enrollment and releases the number.
+- **Public catalogue, account to order.** Active Products and their current Price are listed on a public licences page. Placing an Order requires a signed-in User with a verified email (Fortify's `verified` middleware); every applicant notification goes to that account email. No one-time code for holder or parent emails; nothing is sent to them.
+- **Slices and cut line.** A1–A8, B1–B7, C1–C4 as written in `.scratch/issues/`. A1–A7 ship before renewals open in December; A8 can follow (nothing is pruned before 2028). B then C target the start of the 2027 season, with C4 (Package grants) last. Until C4, packages are sold as plain fixed/ranged Products and their extras applied by hand. A ranged Price pre-fills the final amount with its lower bound.
+- **Prices are fixed or ranged.** `prices` gets `amount` (fixed) or `amount_min`/`amount_max` (range). A ranged Order starts in `AwaitingPrice` and locks the Price valid at placement. The organizer sets the final amount during review, pre-filled from the locked Price; an amount outside the range needs a reason shown to the applicant. The amount is editable until a proof is uploaded. Proof upload is enabled only from `AwaitingPayment`. New notification `OrderPriceSet` to the applicant.
+- Previous race numbers: the picker shows "Numbers you used before" from Participants the User claimed or added (suggestion only). The organizer gets a "Previous numbers" panel per Enrollment (match by licence hash, by name + birth date, or by claiming User; confirm or change). ACI-only action "Copy reservations from championship X" creates confirmed reservations by licence hash.
+- Race registration for logged-in users: driver, competitor and mechanic Licence pickers, filtered by role and by validity in the race's year. The promo code field is shown to everyone; when logged in it claims for the picked Licence.
+- Entitlement selection: oldest first, credits before balance; a credit covers the full category fee, a balance covers up to what is left. Usage is released on participant deletion, race cancellation or fee change.
 
 ## Phase B: Enrollment and race number picker (outline)
 
@@ -123,9 +149,9 @@ Low-definition wireframes in one static file: `.scratch/wireframes/index.html` (
 
 | Screen | Variants | Verdict |
 |---|---|---|
-| Fill in a licence request | A wizard · B single page with checklist · C section hub | _to pick_ |
-| Review a request (organizer) | A split view with document viewer · B section checklist | _to pick_ |
-| Race number picker | A full 1–999 grid · B type a number, get suggestions · C hundreds overview, zoom in | _to pick_ |
+| Fill in a licence request | A wizard · B single page with checklist · C section hub | **Accordion stepper** (from `.scratch/wireframes/licence-request-form.html`, variant 1): one page, one section open at a time, "Save and continue" opens the next incomplete one, closed sections show status and a one-line summary, flagged sections open first after a change request and accepted ones are read-only. Rejected: step screens (overview hidden behind a sheet), long form with autosave (overwhelming on a first visit by a parent on a phone), section hub (too much navigation). |
+| Review a request (organizer) | A split view with document viewer · B section checklist | **A** |
+| Race number picker | A full 1–999 grid · B type a number, get suggestions · C hundreds overview, zoom in | **C** |
 | Register for a race | A logged in · B guest (states, not alternatives) | — |
 
 Once picked, record the verdicts here and fold them into A5/A6/B.

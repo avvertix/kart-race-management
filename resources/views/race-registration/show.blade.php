@@ -48,14 +48,47 @@
             @else
 
                 <p class="prose prose-zinc">{{ __('Your identity is confirmed using the email :driver_email.', ['driver_email' => $participant->email]) }}</p>
-                
+
             @endunless
 
         </div>
 
+        @php $requiresFederationAuthorization = $participant->licence_type === \App\Models\DriverLicence::FOREIGN; @endphp
+
+        @if ($requiresFederationAuthorization)
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold flex gap-2 items-center">
+                    2. {{ __('Federation authorization') }}
+                </h3>
+
+                <div class="prose prose-zinc">
+                    <p>{{ __('As a driver with a foreign licence you should have the authorization of your National Sporting Federation to participate to italian races.') }}</p>
+                    <p>{{ __('Let us know about the authorization as issued by your National Sporting Federation by uploading it and bring it with you to the race track.') }}</p>
+                </div>
+
+                @if (session('status') == 'federation-authorization-uploaded')
+                    <div class="mb-4 font-medium text-sm text-green-700 border border-green-400">
+                        {{ __('Thanks for uploading the federation authorization.') }}
+                    </div>
+                @endif
+
+                @if ($participant->federationAuthorizations->isEmpty())
+                    @include('race-registration.partials.federation-authorization-upload-form')
+                @else
+                    <div class="prose prose-zinc">
+                        <ul>
+                            @foreach ($participant->federationAuthorizations as $authorization)
+                                <li><a href="{{ $authorization->downloadUrl }}" target="_blank">{{ __('Authorization uploaded on') }} <x-time :value="$authorization->created_at" /></a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         <div class="space-y-2">
             <h3 class="text-xl font-bold flex gap-2 items-center">
-                2. {{ __('Payment') }}
+                {{ $requiresFederationAuthorization ? 3 : 2 }}. {{ __('Payment') }}
             </h3>
 
             <div class="max-w-7xl ">
@@ -180,7 +213,7 @@
             
         <div class="space-y-2">
             <h3 class="text-xl font-bold flex gap-2 items-center">
-                3. {{ __('Transponder and/or Tires') }}
+                {{ $requiresFederationAuthorization ? 4 : 3 }}. {{ __('Transponder and/or Tires') }}
             </h3>
             <p class="prose prose-zinc">{{ __('Go to the race secretary and pick transponder and/or tires.') }}</p>
         </div>

@@ -64,6 +64,12 @@ return [
             'prefix' => 'payments',
         ],
 
+        'federation-authorizations' => [
+            'driver' => 'scoped',
+            'disk' => 'local',
+            'prefix' => 'federation-authorizations',
+        ],
+
         'championship-banners' => [
             'driver' => 'scoped',
             'disk' => 'local',

@@ -132,7 +132,7 @@ class RaceRegistrationController extends Controller
         throw_if(filled($user) && ($registration->added_by !== $user->id && $registration->claimed_by !== $user->id), InvalidParticipantSignatureException::class);
 
         $registration
-            ->load(['race', 'championship', 'signatures', 'payments']);
+            ->load(['race', 'championship', 'signatures', 'payments', 'federationAuthorizations']);
 
         $bank = new PaymentSettingsData(
             bank_name: $registration->championship->payment->bank_name ?? config('races.organizer.bank'),

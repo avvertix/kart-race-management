@@ -207,6 +207,17 @@
         {{ $item->licence_type?->localizedName() }}
         <span class="font-mono font-bold">{{ $item->driver['licence_number'] }}</span>
     </p>
+    @can('update', $item)
+        @if ($item->licence_type === \App\Models\DriverLicence::FOREIGN)
+            <p>
+                @forelse ($item->federationAuthorizations as $authorization)
+                    <a class="text-orange-600 hover:text-orange-900" href="{{ $authorization->downloadUrl }}" target="_blank">{{ __('Authorization uploaded on') }} <x-time :value="$authorization->created_at" /></a>
+                @empty
+                    <span class="text-amber-700">{{ __('Federation authorization not uploaded') }}</span>
+                @endforelse
+            </p>
+        @endif
+    @endcan
     <p>
         {{ $item->driver['email'] }}
         {{ $item->driver['phone'] }}

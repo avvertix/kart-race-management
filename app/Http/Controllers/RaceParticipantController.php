@@ -128,6 +128,7 @@ class RaceParticipantController extends Controller
             'tires',
             'transponders',
             'payments',
+            'federationAuthorizations',
             'bonuses',
         ])->loadCount('tires', 'transponders');
 

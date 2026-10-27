@@ -30,6 +30,7 @@ use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\OrbitsBackupController;
+use App\Http\Controllers\ParticipantFederationAuthorizationController;
 use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
@@ -240,14 +241,22 @@ Route::middleware(DenyAgentMiddleware::class)->resource('races.registration', Ra
 
 Route::post('registration-verification', [ParticipantSignatureNotificationController::class, 'store'])
     ->name('registration-verification.send')
-    ->middleware(['signed', 'throttle:3,10']);
+    ->middleware(['signed', 'throttle:60,1']);
 
 Route::post('payment-verification', [ParticipantPaymentController::class, 'store'])
     ->name('payment-verification.store')
-    ->middleware(['signed', 'throttle:3,10']);
+    ->middleware(['signed', 'throttle:60,1']);
 
 Route::get('payment-verification/{payment}', [ParticipantPaymentController::class, 'show'])
     ->name('payment-verification.show')
+    ->middleware(['signed']);
+
+Route::post('federation-authorization', [ParticipantFederationAuthorizationController::class, 'store'])
+    ->name('federation-authorization.store')
+    ->middleware(['signed', 'throttle:60,1']);
+
+Route::get('federation-authorization/{authorization}', [ParticipantFederationAuthorizationController::class, 'show'])
+    ->name('federation-authorization.show')
     ->middleware(['signed']);
 
 // Signature for registration

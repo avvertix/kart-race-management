@@ -8,6 +8,7 @@ use App\Listeners\LogNotification;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
+use App\Models\Order;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\RegistrationForm;
@@ -64,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
             'category' => Category::class,
             'championship' => Championship::class,
             'race' => Race::class,
+            'order' => Order::class,
         ]);
 
         Blade::if('useStandardRegistrationForm', function (?Race $race = null): bool {

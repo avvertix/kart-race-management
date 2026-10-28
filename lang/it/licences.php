@@ -25,4 +25,20 @@ return [
         'FOREIGN' => 'Estera',
     ],
 
+    'provider' => [
+        'aci' => 'ACI Sport',
+        'asi' => 'ASI',
+    ],
+
+    'role' => [
+        'driver' => 'Conduttore',
+        'competitor' => 'Concorrente',
+        'mechanic' => 'Meccanico',
+    ],
+
+    'level' => [
+        'national' => 'Nazionale',
+        'international' => 'Internazionale',
+    ],
+
 ];

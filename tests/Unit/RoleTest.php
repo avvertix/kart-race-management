@@ -41,4 +41,79 @@ class RoleTest extends TestCase
     {
         $this->assertEquals(['*'], Role::Admin->permissions());
     }
+
+    public function test_organizer_manages_licences_products_orders_enrollments_and_promo_codes(): void
+    {
+        $this->assertEquals([
+            'licence-type:list',
+            'licence-type:view',
+            'licence-type:create',
+            'licence-type:update',
+            'licence-type:delete',
+            'product:list',
+            'product:view',
+            'product:create',
+            'product:update',
+            'product:delete',
+            'licence-request:list',
+            'licence-request:view',
+            'licence-request:update',
+            'licence:list',
+            'licence:view',
+            'licence:update',
+            'order:list',
+            'order:view',
+            'order:update',
+            'enrollment:list',
+            'enrollment:view',
+            'enrollment:create',
+            'enrollment:update',
+            'enrollment:delete',
+            'promo-code:list',
+            'promo-code:view',
+            'promo-code:create',
+            'promo-code:update',
+            'promo-code:delete',
+            'promo-code:claim',
+        ], $this->licencePermissions(Role::Organizer));
+    }
+
+    public function test_driver_handles_own_licences_enrollments_orders_and_promo_codes(): void
+    {
+        $this->assertEquals([
+            'licence-request:create',
+            'licence-request:view',
+            'licence-request:update',
+            'licence:create',
+            'licence:view',
+            'licence:update',
+            'enrollment:create',
+            'enrollment:view',
+            'enrollment:update',
+            'order:view',
+            'promo-code:claim',
+        ], $this->licencePermissions(Role::Driver));
+    }
+
+    public function test_other_roles_have_no_licence_permissions(): void
+    {
+        foreach ([Role::RaceManager, Role::TireAgent, Role::Timekeeper] as $role) {
+            $this->assertEmpty($this->licencePermissions($role), "{$role->value} has licence permissions");
+        }
+    }
+
+    /**
+     * The permissions of the role on licence types, products, licence requests, licences, orders, enrollments and promo codes.
+     *
+     * @return list<string>
+     */
+    private function licencePermissions(Role $role): array
+    {
+        $resources = ['licence-type', 'product', 'licence-request', 'licence', 'order', 'enrollment', 'promo-code'];
+
+        return array_values(array_filter(
+            $role->permissions(),
+            fn (string $permission) => in_array(explode(':', $permission)[0], $resources),
+        ));
+    }
 }

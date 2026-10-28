@@ -28,6 +28,10 @@ For drivers, parents and team managers:
 - [Use a promo code](how-to/driver/use-a-promo-code.md)
 - [Register for a race](how-to/driver/register-for-a-race.md)
 
+For maintainers:
+
+- [Add licence providers and platform configuration](how-to/maintainer/add-licence-providers-and-configuration.md)
+
 ## Reference
 
 - [Championship settings](reference/championship-settings.md)

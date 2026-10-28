@@ -59,4 +59,9 @@ return [
         'self_declaration' => 'Autocertificazione',
     ],
 
+    'source' => [
+        'emitted' => 'Emessa',
+        'declared' => 'Dichiarata',
+    ],
+
 ];

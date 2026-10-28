@@ -59,4 +59,9 @@ return [
         'self_declaration' => 'Self-declaration',
     ],
 
+    'source' => [
+        'emitted' => 'Emitted',
+        'declared' => 'Declared',
+    ],
+
 ];

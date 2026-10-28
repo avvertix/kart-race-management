@@ -29,6 +29,18 @@
         </x-dynamic-component>
     @endcan
 
+    @can('viewAny', \App\Models\Product::class)
+        <x-dynamic-component :component="$item" :href="route('products.index')" :current="request()->routeIs('products.*')">
+            {{ __('Products') }}
+        </x-dynamic-component>
+    @endcan
+
+    @can('viewAny', \App\Models\Order::class)
+        <x-dynamic-component :component="$item" :href="route('orders.index')" :current="request()->routeIs('orders.*')">
+            {{ __('Orders') }}
+        </x-dynamic-component>
+    @endcan
+
     @can('viewAny', \App\Models\CommunicationMessage::class)
         <x-dynamic-component :component="$item" :href="route('communications.index')" :current="request()->routeIs('communications.*')">
             {{ __('Communications') }}

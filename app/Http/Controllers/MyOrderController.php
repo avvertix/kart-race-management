@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Actions\Orders\SubmitOrderPayment;
+use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class MyOrderController extends Controller
+{
+    /**
+     * The order of the signed-in user, with what to pay and the payment proof upload.
+     */
+    public function show(Order $order): View
+    {
+        $this->authorize('view', $order);
+
+        $order->load(['lines.price', 'latestPayment']);
+
+        return view('my-order.show', [
+            'order' => $order,
+        ]);
+    }
+
+    /**
+     * Upload the payment proof.
+     */
+    public function pay(Request $request, Order $order, SubmitOrderPayment $submitOrderPayment): RedirectResponse
+    {
+        $this->authorize('pay', $order);
+
+        $request->validate([
+            'proof' => 'required|file',
+        ]);
+
+        $submitOrderPayment($order, $request->file('proof'));
+
+        return redirect()->route('my-orders.show', $order)
+            ->with('flash.banner', __('Payment proof uploaded. The organizer will confirm it.'));
+    }
+}

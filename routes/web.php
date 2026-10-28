@@ -32,8 +32,10 @@ use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ExportRacePrefinaleGridController;
 use App\Http\Controllers\LicenceTypeController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\MyOrderController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantFederationAuthorizationController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
@@ -43,7 +45,9 @@ use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PublicChampionshipAwardController;
+use App\Http\Controllers\PublicProductController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceCombinedResultController;
 use App\Http\Controllers\RaceCommunicationImportController;
@@ -238,7 +242,41 @@ Route::middleware([
 
         Route::resource('licence-types', LicenceTypeController::class)->except(['show', 'destroy']);
 
+        Route::resource('products', ProductController::class)->except(['show', 'destroy']);
+
+        Route::resource('orders', OrderController::class)->only(['index', 'show']);
+        Route::put('orders/{order}/price', [OrderController::class, 'price'])->name('orders.price');
+        Route::post('orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
+        Route::post('orders/{order}/reject-payment', [OrderController::class, 'rejectPayment'])->name('orders.reject-payment');
+
     });
+
+// Products, open to everyone, and the orders of the signed-in user
+
+Route::get('products', [PublicProductController::class, 'index'])->name('public.products.index');
+
+Route::get('products/{product}', [PublicProductController::class, 'show'])->name('public.products.show');
+
+Route::get('products/{product}/register', [PublicProductController::class, 'register'])
+    ->middleware('guest')
+    ->name('public.products.register');
+
+Route::middleware([
+    'auth',
+    'auth.session',
+    'verified',
+    DenyAgentMiddleware::class,
+])->group(function () {
+    Route::get('products/{product}/continue', [PublicProductController::class, 'continue'])->name('public.products.continue');
+
+    Route::post('products/{product}/order', [PublicProductController::class, 'order'])->name('public.products.order');
+
+    Route::get('orders/{order}', [MyOrderController::class, 'show'])->name('my-orders.show');
+
+    Route::post('orders/{order}/payment', [MyOrderController::class, 'pay'])
+        ->middleware('throttle:10,10')
+        ->name('my-orders.payment.store');
+});
 
 // Public race results
 

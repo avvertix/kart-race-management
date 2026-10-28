@@ -37,6 +37,16 @@ class Payment extends Model
         return $this->belongsTo(Participant::class);
     }
 
+    /**
+     * What the payment is for, e.g. an Order. Race participant payments use participant instead.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Model, $this>
+     */
+    public function payable(): \Illuminate\Database\Eloquent\Relations\MorphTo
+    {
+        return $this->morphTo();
+    }
+
     protected function downloadUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function ($value = null) {

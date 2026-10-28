@@ -30,6 +30,7 @@ use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ExportRacePrefinaleGridController;
+use App\Http\Controllers\LicenceTypeController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantFederationAuthorizationController;
@@ -234,6 +235,8 @@ Route::middleware([
         Route::post('races/{race}/communications/import', [RaceCommunicationImportController::class, 'store'])->name('races.communications.import.store');
 
         Route::resource('users', UserController::class)->except(['show']);
+
+        Route::resource('licence-types', LicenceTypeController::class)->except(['show', 'destroy']);
 
     });
 

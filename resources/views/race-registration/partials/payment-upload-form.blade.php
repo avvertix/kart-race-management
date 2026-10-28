@@ -5,7 +5,8 @@
 
     <x-input-error for="proof" class="mb-2" />
 
-    <input type="file" class="block mb-1" name="proof" id="proof" accept="image/png,image/jpeg,application/pdf">
+    <flux:input type="file" class="block mb-1" name="proof" id="proof" accept="image/png,image/jpeg,application/pdf" />
+    
     <p class="text-sm" class="mb-2">{{ __('Accept pdf file or png/jpg images (maximum size 10 MB)') }}</p>
 
     <p class="">

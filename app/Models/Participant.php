@@ -152,6 +152,14 @@ class Participant extends Model implements HasLocalePreference
     }
 
     /**
+     * Get the federation authorizations linked to the participation
+     */
+    public function federationAuthorizations()
+    {
+        return $this->hasMany(FederationAuthorization::class);
+    }
+
+    /**
      * Get the tires assigned to the participant
      */
     public function tires()

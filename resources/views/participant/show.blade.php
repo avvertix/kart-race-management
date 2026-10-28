@@ -184,6 +184,15 @@
                     <div>
                         <span class="block text-xs text-zinc-500">{{ __('Licence Type') }}</span>
                         <span>{{ $participant->licence_type?->localizedName() ?? '—' }}</span>
+                        @if ($participant->licence_type === \App\Models\DriverLicence::FOREIGN)
+                            @forelse ($participant->federationAuthorizations as $authorization)
+                                <a class="text-orange-600 hover:text-orange-900 text-sm block" href="{{ $authorization->downloadUrl }}" target="_blank">
+                                    {{ __('Authorization uploaded on') }} <x-time :value="$authorization->created_at" />
+                                </a>
+                            @empty
+                                <span class="block text-sm text-amber-700">{{ __('Federation authorization not uploaded') }}</span>
+                            @endforelse
+                        @endif
                     </div>
                     <div>
                         <span class="block text-xs text-zinc-500">{{ __('Licence Number') }}</span>

@@ -64,4 +64,29 @@ return [
         'declared' => 'Declared',
     ],
 
+    'request_status' => [
+        'draft' => 'Draft',
+        'submitted' => 'Submitted',
+        'in_review' => 'In review',
+        'changes_requested' => 'Changes requested',
+        'forwarded' => 'Forwarded to the provider',
+        'emitted' => 'Emitted',
+        'rejected' => 'Rejected',
+    ],
+
+    'request_section' => [
+        'licence' => 'Licence',
+        'holder' => 'Holder',
+        'parents' => 'Parents or guardians',
+        'documents' => 'Documents',
+        'forms' => 'Forms to sign',
+        'payment' => 'Payment',
+    ],
+
+    'request_document_status' => [
+        'pending' => 'To review',
+        'accepted' => 'Accepted',
+        'flagged' => 'Needs changes',
+    ],
+
 ];

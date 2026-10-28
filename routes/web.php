@@ -31,6 +31,7 @@ use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ExportRacePrefinaleGridController;
 use App\Http\Controllers\LicenceController;
+use App\Http\Controllers\LicenceRequestController;
 use App\Http\Controllers\LicenceTypeController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\MyLicenceController;
@@ -73,6 +74,7 @@ use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use App\Http\Controllers\UpdateChampionshipRegistrationFormController;
 use App\Http\Controllers\UpdateRaceScoringController;
 use App\Http\Controllers\UserController;
+use App\Livewire\LicenceRequestForm;
 use App\Livewire\LinkedDrivers;
 use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\DenyAgentMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -279,6 +281,12 @@ Route::middleware([
     Route::get('orders/{order}', [MyOrderController::class, 'show'])->name('my-orders.show');
 
     Route::resource('licences', MyLicenceController::class)->names('my-licences');
+
+    Route::get('licence-requests/{licenceRequest}', [LicenceRequestController::class, 'show'])->name('licence-requests.show');
+    Route::livewire('licence-requests/{licenceRequest}/edit', LicenceRequestForm::class)->name('licence-requests.edit');
+    Route::delete('licence-requests/{licenceRequest}', [LicenceRequestController::class, 'destroy'])->name('licence-requests.destroy');
+    Route::get('licence-requests/{licenceRequest}/documents/{document}', [LicenceRequestController::class, 'document'])->name('licence-requests.documents.show');
+    Route::get('licence-requests/{licenceRequest}/forms/{document}', [LicenceRequestController::class, 'form'])->name('licence-requests.forms.show');
 
     Route::get('licences/{licence}/temporary-licence', [MyLicenceController::class, 'temporaryLicence'])
         ->middleware('signed')

@@ -109,6 +109,18 @@ class Order extends Model
     }
 
     /**
+     * The amount to pay, or the locked price range until the organizer sets it.
+     */
+    public function amountLabel(): ?string
+    {
+        if ($this->total !== null) {
+            return $this->currency->format($this->total);
+        }
+
+        return $this->lines->first()?->price->label();
+    }
+
+    /**
      * Whether the organizer can still set the amount: no payment proof was ever uploaded, not even a rejected one.
      */
     public function canBePriced(): bool

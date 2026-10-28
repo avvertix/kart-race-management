@@ -54,6 +54,38 @@ Pending reservations don't expire. Reservations created by the organizer may hav
 
 An Order is created as soon as the User picks the Product to buy, and locks the Price valid at that moment, fixed or range. It can be paid later. When setting the final amount, the organizer starts from the locked Price; an amount outside its range needs a reason, shown to the User. The amount can change until a payment proof is uploaded.
 
+The diagram shows the Order with what moves it: the User picking a Product, the organizer's actions on price and payment, the Licence Request and Enrollment that cancel it, and what a paid Order unlocks.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    state "Awaiting price" as AwaitingPrice
+    state "Awaiting payment" as AwaitingPayment
+    state "Payment submitted" as PaymentSubmitted
+
+    [*] --> AwaitingPrice: User picks a Product with a ranged Price
+    [*] --> AwaitingPayment: User picks a Product with a fixed Price
+
+    AwaitingPrice --> AwaitingPayment: organizer sets the final amount
+    AwaitingPayment --> AwaitingPayment: organizer changes the amount (no proof yet)
+    AwaitingPayment --> PaymentSubmitted: User uploads a payment proof
+    PaymentSubmitted --> AwaitingPayment: organizer rejects the proof
+    PaymentSubmitted --> Paid: organizer confirms the payment
+
+    AwaitingPrice --> Cancelled: Draft Licence Request deleted, Product switched, Enrollment withdrawn or rejected
+    AwaitingPayment --> Cancelled: Draft Licence Request deleted, Product switched, Enrollment withdrawn or rejected
+
+    Paid --> [*]
+    Cancelled --> [*]
+
+    note right of Paid
+        Licence Request can be forwarded.
+        Enrollment can be confirmed.
+        Package grants apply once the Licence is emitted.
+    end note
+```
+
 ## Promo Code
 
 | Status | Meaning |

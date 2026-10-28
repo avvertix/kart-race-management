@@ -88,6 +88,7 @@ Rules for every phase:
 1. ~~Encryption at rest~~ **Decided:** private disk plus volume encryption at deployment, documented in the deploy notes. No `Crypt` on file contents.
 2. **PDF merge dependency**, for the single PDF (A6): still open, decided inside the A6 issue. `setasign/fpdi`'s free parser can't read PDF 1.5+ files with compressed xref streams; alternatives are `qpdf`/`ghostscript` in the Docker image, or a ZIP fallback.
 3. ~~Organizer recipient~~ **Decided:** `races.organizer.email`.
+4. **Reprice after a rejected proof**, to check at the end of Phase A. A3 refuses to change an Order's price once any proof was uploaded, rejected ones included (`Order::canBePriced()`), following "the price cannot change after a proof is uploaded". Allowing a new price after a rejection only needs `canBePriced()` to ignore rejected proofs.
 
 ### Decisions from review (2026-10-26)
 

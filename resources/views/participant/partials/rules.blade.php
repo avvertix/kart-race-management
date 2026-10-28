@@ -17,8 +17,9 @@
 
                         <ul>
                             <li>{{ __('that I\'m aware of the disciplinary sanctions in case of wrong declarations in this registration form') }}</li>
-                            <li>{{ __('to participate or read the Briefing') }}</li>
+                            <li>{{ __('to take part in the race director briefing and/or read the written briefing') }}</li>
                             @useCompleteRegistrationForm()
+                            <li>{{ __('to hold a valid licence, in addition to the federation’s starting permission, which permit participation in competitions in Italy, thereby relieving the organiser of any civil or criminal liability in sporting matters') }}</li>
                             <li>{{ __('to make use of the assistance of an :provider licenced mechanic', ['provider' => config('races.licence.provider')]) }}</li>
                             <li>{{ __('to have read and accepted the :provider Karting regulations', ['provider' => config('races.licence.provider')]) }}</li>
                             @enduseCompleteRegistrationForm

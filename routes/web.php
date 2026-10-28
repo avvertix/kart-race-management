@@ -30,8 +30,10 @@ use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ExportRacePrefinaleGridController;
+use App\Http\Controllers\LicenceController;
 use App\Http\Controllers\LicenceTypeController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\MyLicenceController;
 use App\Http\Controllers\MyOrderController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantFederationAuthorizationController;
@@ -244,6 +246,9 @@ Route::middleware([
 
         Route::resource('products', ProductController::class)->except(['show', 'destroy']);
 
+        Route::resource('licences', LicenceController::class)->only(['index', 'show']);
+        Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');
+
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
         Route::put('orders/{order}/price', [OrderController::class, 'price'])->name('orders.price');
         Route::post('orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
@@ -272,6 +277,12 @@ Route::middleware([
     Route::post('products/{product}/order', [PublicProductController::class, 'order'])->name('public.products.order');
 
     Route::get('orders/{order}', [MyOrderController::class, 'show'])->name('my-orders.show');
+
+    Route::resource('licences', MyLicenceController::class)->names('my-licences');
+
+    Route::get('licences/{licence}/temporary-licence', [MyLicenceController::class, 'temporaryLicence'])
+        ->middleware('signed')
+        ->name('my-licences.temporary-licence');
 
     Route::post('orders/{order}/payment', [MyOrderController::class, 'pay'])
         ->middleware('throttle:10,10')

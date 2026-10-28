@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRole;
 use Illuminate\Database\Eloquent\Builder;
@@ -88,6 +89,28 @@ class LicenceType extends Model
     public function scopeActive(Builder $query): void
     {
         $query->where('active', true);
+    }
+
+    /**
+     * The types a Licence can be declared for: the active ones, plus the type the given Licence already has.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeOfferedFor(Builder $query, ?Licence $licence = null): void
+    {
+        $query->where(fn (Builder $query) => $query->where('active', true)->orWhere('id', $licence->licence_type_id ?? 0));
+    }
+
+    /**
+     * The licence category a driver licence of this type counts as in race registration: from the level for ACI, configured on the type for ASI. Null for other roles.
+     */
+    public function raceLicenceCategory(?LicenceLevel $level): ?DriverLicence
+    {
+        if ($this->role !== LicenceRole::Driver) {
+            return null;
+        }
+
+        return $level?->raceLicence() ?? $this->race_licence_category;
     }
 
     /**

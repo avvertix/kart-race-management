@@ -17,6 +17,12 @@
         </x-dynamic-component>
     @endcan
 
+    @can('create', \App\Models\Licence::class)
+        <x-dynamic-component :component="$item" :href="route('my-licences.index')" :current="request()->routeIs('my-licences.*')">
+            {{ __('My licences') }}
+        </x-dynamic-component>
+    @endcan
+
     @can('viewAny', \App\Models\Championship::class)
         <x-dynamic-component :component="$item" :href="route('championships.index')" :current="request()->routeIs('championships.*', 'categories.*', 'races.*', 'participants.*')">
             {{ __('Championships') }}
@@ -26,6 +32,12 @@
     @can('viewAny', \App\Models\LicenceType::class)
         <x-dynamic-component :component="$item" :href="route('licence-types.index')" :current="request()->routeIs('licence-types.*')">
             {{ __('Licence types') }}
+        </x-dynamic-component>
+    @endcan
+
+    @can('viewAny', \App\Models\Licence::class)
+        <x-dynamic-component :component="$item" :href="route('licences.index')" :current="request()->routeIs('licences.*')">
+            {{ __('All licences') }}
         </x-dynamic-component>
     @endcan
 

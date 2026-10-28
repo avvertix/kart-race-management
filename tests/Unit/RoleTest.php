@@ -87,6 +87,7 @@ class RoleTest extends TestCase
             'licence:create',
             'licence:view',
             'licence:update',
+            'licence:delete',
             'enrollment:create',
             'enrollment:view',
             'enrollment:update',

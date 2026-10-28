@@ -41,4 +41,22 @@ return [
         'international' => 'International',
     ],
 
+    'document_kind' => [
+        'upload' => 'Upload',
+        'signed_form' => 'Form to sign',
+    ],
+
+    'document_scope' => [
+        'holder' => 'Holder',
+        'each_parent' => 'Each parent or guardian',
+        'once' => 'Once per request',
+    ],
+
+    'form_template' => [
+        'delegation' => 'Delegation',
+        'privacy' => 'Privacy',
+        'parental_authorisation' => 'Parental authorisation',
+        'self_declaration' => 'Self-declaration',
+    ],
+
 ];

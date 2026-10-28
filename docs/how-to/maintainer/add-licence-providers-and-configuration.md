@@ -10,6 +10,7 @@ Organizers set up **Licence Types**, **Licence Grades**, required documents, **P
 | Licence roles (driver, competitor, mechanic) | `App\Enums\LicenceRole` | Maintainer |
 | ACI levels (national, international) and their race registration licence category | `App\Enums\LicenceLevel` | Maintainer |
 | Labels of providers, roles and levels | `lang/{en,it}/licences.php` | Maintainer |
+| Forms to sign (delegation, privacy, parental authorisation, self-declaration) | `App\Enums\LicenceFormTemplate` and `resources/views/licence-forms/` | Maintainer |
 | Permissions of each role | `App\Enums\Role::permissions()` | Maintainer |
 | Where uploaded licence documents are stored | `licence-documents` disk in `config/filesystems.php` | Maintainer |
 | Platform-wide licence provider and country, organizer email | `.env` | Whoever deploys |
@@ -39,6 +40,23 @@ Levels exist only for ACI. Each level maps to the driver licence category used i
 4. Update `tests/Feature/LicenceEnumsTest.php`.
 
 Grades (e.g. *C Junior*, *International B*) are not code: organizers list them per level in the application.
+
+## Add the ACI licence types
+
+On a new installation, add the ACI driver, competitor and mechanic Licence Types with their usual grades and documents:
+
+```bash
+php artisan db:seed --class=LicenceTypeSeeder
+```
+
+Names are written in the application language (`APP_LOCALE`). Types that already exist with the same provider, role and name are left untouched, so it is safe to run again. Organizers can then change everything from **Licence types**.
+
+## Add or change a form to sign
+
+Organizers pick the form of each signed document from a list; they cannot upload their own template.
+
+1. Add a case to `App\Enums\LicenceFormTemplate`, with a lowercase value that never changes, and its label under `form_template` in both `lang/*/licences.php` files.
+2. Write the Blade view under `resources/views/licence-forms/` and return its name from `LicenceFormTemplate::view()`. Until the real paperwork is available, every form uses `licence-forms.placeholder`.
 
 ## Give a role a new permission
 

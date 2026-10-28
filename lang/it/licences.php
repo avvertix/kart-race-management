@@ -41,4 +41,22 @@ return [
         'international' => 'Internazionale',
     ],
 
+    'document_kind' => [
+        'upload' => 'Caricamento',
+        'signed_form' => 'Modulo da firmare',
+    ],
+
+    'document_scope' => [
+        'holder' => 'Titolare',
+        'each_parent' => 'Ogni genitore o tutore',
+        'once' => 'Una volta per richiesta',
+    ],
+
+    'form_template' => [
+        'delegation' => 'Delega',
+        'privacy' => 'Privacy',
+        'parental_authorisation' => 'Autorizzazione dei genitori',
+        'self_declaration' => 'Autocertificazione',
+    ],
+
 ];

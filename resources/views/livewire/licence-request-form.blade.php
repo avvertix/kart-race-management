@@ -1,0 +1,263 @@
+@use('App\Enums\LicenceRequestSection')
+@use('App\Enums\LicenceRequestStatus')
+@use('App\Enums\OrderStatus')
+
+@php
+    $isChangesRequested = $licenceRequest->status === LicenceRequestStatus::ChangesRequested;
+    $openChangeRequests = $licenceRequest->changeRequests->whereNull('resolved_at');
+    $order = $licenceRequest->order;
+    $inputClass = 'mt-1 block w-full rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50';
+
+    $stateLabels = [
+        'done' => __('Complete'),
+        'todo' => __('To do'),
+        'later' => __('Pay later'),
+        'flagged' => __('Needs changes'),
+        'fixed' => __('Fixed'),
+        'accepted' => __('Accepted'),
+    ];
+
+    $stateClasses = [
+        'done' => 'bg-lime-100 text-lime-800',
+        'todo' => 'bg-zinc-100 text-zinc-700',
+        'later' => 'bg-amber-100 text-amber-800',
+        'flagged' => 'bg-red-100 text-red-800',
+        'fixed' => 'bg-lime-100 text-lime-800',
+        'accepted' => 'bg-zinc-100 text-zinc-700',
+    ];
+
+    $leads = [
+        'licence' => __('Choose what you are buying and the licence you need.'),
+        'holder' => __('The person the licence is for, as on their identity card.'),
+        'parents' => __('The holder is underage: at least one parent or guardian is required.'),
+        'documents' => __('Photos or PDFs. Files are only seen by the organizer.'),
+        'forms' => __('Download each form, already filled in with the details, sign it and upload it.'),
+        'payment' => __('You can submit now and pay later. The request is sent to the provider only once paid.'),
+    ];
+@endphp
+
+<x-slot name="header">
+    <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex flex-wrap gap-2">
+        <span><a href="{{ route('my-licences.index') }}">{{ __('My licences') }}</a></span>
+        <span>/</span>
+        <span><a href="{{ route('licence-requests.show', $licenceRequest) }}">{{ $licenceRequest->holder ? __('Licence request for :holder', ['holder' => $licenceRequest->holder->fullName()]) : __('Licence request') }}</a></span>
+    </h2>
+    <p class="text-sm text-zinc-500">
+        {{ $licenceRequest->status->label() }}
+        @if ($order)
+            &middot; {{ __('Order :order', ['order' => $order->ulid]) }}
+        @endif
+        &middot; {{ $isChangesRequested ? __('Fix the flagged parts, everything else is accepted.') : __('Each section is saved as a draft. Come back any time.') }}
+    </p>
+</x-slot>
+
+<div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8 max-w-3xl">
+
+    @if ($isChangesRequested)
+        <div class="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800" role="status">
+            @if ($licenceRequest->hasResolvedAllChanges())
+                {{ __('All requested changes are fixed. Send the request back to the organizer.') }}
+            @else
+                {{ __('The organizer asked for changes. Fix the flagged sections and documents, then send the request back.') }}
+            @endif
+        </div>
+    @endif
+
+    <ol class="space-y-3">
+        @foreach ($sections as $index => $section)
+            @php
+                $isOpen = $openSection === $section->value;
+                $state = $this->sectionState($section);
+                $canEdit = $licenceRequest->canEditSection($section);
+                $notes = $openChangeRequests->where('section', $section);
+            @endphp
+            <li wire:key="section-{{ $section->value }}" @class(['rounded-md border bg-white', 'border-red-300' => $state === 'flagged', 'border-zinc-200' => $state !== 'flagged'])>
+                <button type="button" wire:click="open('{{ $section->value }}')" class="flex w-full items-start gap-3 p-4 text-left" aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm font-semibold text-zinc-700">{{ $index + 1 }}</span>
+                    <span class="flex-1 min-w-0">
+                        <span class="block font-semibold text-zinc-900">{{ $section->label() }}</span>
+                        <span class="block text-sm text-zinc-600 truncate">
+                            @if ($isOpen)
+                                {{ $leads[$section->value] }}
+                            @else
+                                <span class="inline-block px-2 rounded-full text-xs {{ $stateClasses[$state] }}">{{ $stateLabels[$state] }}</span>
+                                {{ $this->sectionSummary($section) }}
+                            @endif
+                        </span>
+                    </span>
+                </button>
+
+                @if ($isOpen)
+                    <div class="border-t border-zinc-200 p-4 space-y-4">
+                        @foreach ($notes as $note)
+                            <p class="rounded-md bg-red-50 p-2 text-sm text-red-800" role="note"><span class="font-semibold">{{ __('Organizer') }}:</span> {{ $note->note }}</p>
+                        @endforeach
+
+                        @if (! $canEdit)
+                            <p class="text-sm text-zinc-600">{{ __('Accepted by the organizer. No changes needed.') }}</p>
+                            <p class="text-sm text-zinc-900">{{ $this->sectionSummary($section) }}</p>
+                        @elseif ($section === LicenceRequestSection::Licence)
+                            @if ($licenceRequest->status === LicenceRequestStatus::Draft)
+                                <fieldset>
+                                    <legend class="text-sm font-medium text-zinc-700">{{ __('What are you buying?') }}</legend>
+                                    <div class="mt-2 space-y-2">
+                                        @foreach ($licenceProducts as $item)
+                                            <label wire:key="product-{{ $item->ulid }}" class="flex items-start gap-3 rounded-md border border-zinc-200 p-3 has-checked:border-orange-400 has-checked:bg-orange-50">
+                                                <input type="radio" wire:model.live="product" value="{{ $item->ulid }}" class="mt-1 text-orange-600">
+                                                <span class="flex-1">
+                                                    <span class="block font-medium text-zinc-900">{{ $item->title }}</span>
+                                                    <span class="block text-sm text-zinc-600">{{ $item->kind->label() }}</span>
+                                                </span>
+                                                <span class="font-mono tabular-nums text-sm">{{ $item->orderablePrice()?->label() }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    <x-input-error for="product" class="mt-1" />
+                                    @if ($product !== $licenceRequest->product->ulid)
+                                        <p class="mt-2 text-sm text-amber-700">{{ __('Saving cancels the current order and places a new one at today\'s price.') }}</p>
+                                    @endif
+                                </fieldset>
+                            @else
+                                <p class="text-sm"><span class="text-zinc-600">{{ __('Product') }}:</span> {{ $licenceRequest->product->title }}</p>
+                            @endif
+
+                            @if ($selectedLicenceType)
+                                @if ($selectedLicenceType->provider === \App\Enums\LicenceProvider::Aci)
+                                    <fieldset>
+                                        <legend class="text-sm font-medium text-zinc-700">{{ __('ACI licence level') }}*</legend>
+                                        <div class="mt-2 flex flex-wrap gap-2">
+                                            @foreach (\App\Enums\LicenceLevel::options() as $value => $label)
+                                                <label class="flex items-center gap-2 rounded-md border border-zinc-200 px-3 py-2 text-sm has-checked:border-orange-400 has-checked:bg-orange-50">
+                                                    <input type="radio" wire:model.live="level" value="{{ $value }}" class="text-orange-600">
+                                                    {{ $label }}
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                        <x-input-error for="level" class="mt-1" />
+                                    </fieldset>
+                                @else
+                                    <p class="text-sm text-zinc-600">{{ __('ASI licences have no national or international level.') }}</p>
+                                @endif
+
+                                <div>
+                                    <x-label for="licenceGrade" value="{{ __('Licence type') }}*" />
+                                    <select id="licenceGrade" wire:model.live="licenceGrade" class="{{ $inputClass }}">
+                                        @foreach ($grades as $grade)
+                                            <option value="{{ $grade->getKey() }}">{{ $grade->name }}</option>
+                                        @endforeach
+                                        <option value="">{{ __('Other, specify') }}</option>
+                                    </select>
+                                    <p class="mt-1 text-sm text-zinc-500">{{ __('The most requested types. Not in the list? Choose "Other".') }}</p>
+                                    <x-input-error for="licenceGrade" class="mt-1" />
+                                </div>
+
+                                @if ($licenceGrade === '')
+                                    <div>
+                                        <x-label for="gradeOther" value="{{ __('Which licence type?') }}*" />
+                                        <x-input id="gradeOther" type="text" wire:model="gradeOther" class="mt-1 block w-full" />
+                                        <p class="mt-1 text-sm text-zinc-500">{{ __('As named by the provider, e.g. on last year\'s licence.') }}</p>
+                                        <x-input-error for="gradeOther" class="mt-1" />
+                                    </div>
+                                @endif
+                            @endif
+
+                            <x-button type="button" wire:click="saveLicence">{{ __('Save and continue') }}</x-button>
+                        @elseif ($section === LicenceRequestSection::Holder)
+                            @include('livewire.licence-request-form.person-fields', ['prefix' => 'holder'])
+
+                            <x-button type="button" wire:click="saveHolder">{{ __('Save and continue') }}</x-button>
+                        @elseif ($section === LicenceRequestSection::Parents)
+                            <x-input-error for="parents" />
+
+                            @foreach ($parents as $parentIndex => $parent)
+                                <div wire:key="parent-{{ $parentIndex }}" class="space-y-3">
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="flex-1 font-semibold text-zinc-800">
+                                            {{ __('Parent or guardian :number', ['number' => $parentIndex + 1]) }}
+                                            @if ($parentIndex > 0)
+                                                <span class="font-normal text-zinc-500">({{ __('optional') }})</span>
+                                            @endif
+                                        </h3>
+                                        @if ($parentIndex > 0)
+                                            <button type="button" wire:click="removeParent({{ $parentIndex }})" class="text-sm text-red-600 hover:text-red-900">{{ __('Remove') }}</button>
+                                        @endif
+                                    </div>
+                                    @include('livewire.licence-request-form.person-fields', ['prefix' => "parents.{$parentIndex}"])
+                                </div>
+                            @endforeach
+
+                            @if (count($parents) < 2)
+                                <x-secondary-button type="button" wire:click="addParent">
+                                    {{ count($parents) === 0 ? __('Add a parent or guardian') : __('Add a second parent or guardian') }}
+                                </x-secondary-button>
+                            @endif
+
+                            <div>
+                                <x-button type="button" wire:click="saveParents">{{ __('Save and continue') }}</x-button>
+                            </div>
+                        @elseif ($section === LicenceRequestSection::Documents)
+                            @include('livewire.licence-request-form.uploads', ['items' => $documents, 'isForm' => false])
+
+                            <x-button type="button" wire:click="continue('documents')">{{ __('Continue') }}</x-button>
+                        @elseif ($section === LicenceRequestSection::Forms)
+                            @include('livewire.licence-request-form.uploads', ['items' => $forms, 'isForm' => true])
+
+                            <x-button type="button" wire:click="continue('forms')">{{ __('Continue') }}</x-button>
+                        @elseif ($section === LicenceRequestSection::Payment)
+                            @include('livewire.licence-request-form.payment')
+
+                            <x-button type="button" wire:click="continue('payment')">
+                                {{ in_array($order?->status, [OrderStatus::PaymentSubmitted, OrderStatus::Paid], true) ? __('Continue') : __('Pay later, continue') }}
+                            </x-button>
+                        @endif
+                    </div>
+                @endif
+            </li>
+        @endforeach
+
+        <li wire:key="section-review" class="rounded-md border border-zinc-200 bg-white">
+            <button type="button" wire:click="open('review')" class="flex w-full items-start gap-3 p-4 text-left" aria-expanded="{{ $openSection === 'review' ? 'true' : 'false' }}">
+                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm font-semibold text-zinc-700">{{ count($sections) + 1 }}</span>
+                <span class="flex-1">
+                    <span class="block font-semibold text-zinc-900">{{ __('Review and submit') }}</span>
+                    <span class="block text-sm text-zinc-600">{{ $isChangesRequested ? __('Send the fixes back to the organizer.') : __('Check everything once more.') }}</span>
+                </span>
+            </button>
+
+            @if ($openSection === 'review')
+                @php
+                    $missing = $licenceRequest->missingSections();
+                @endphp
+                <div class="border-t border-zinc-200 p-4 space-y-4">
+                    @if ($missing !== [])
+                        <p class="rounded-md bg-zinc-50 p-2 text-sm text-zinc-700">
+                            {{ __('Still missing: :sections.', ['sections' => collect($missing)->map->label()->join(', ')]) }}
+                        </p>
+                    @endif
+
+                    @if ($order && ! in_array($order->status, [OrderStatus::PaymentSubmitted, OrderStatus::Paid], true))
+                        <p class="text-sm text-zinc-600">{{ __('Not paid yet. You can submit now; the organizer forwards the request to the provider once it is paid.') }}</p>
+                    @endif
+
+                    @if ($isChangesRequested)
+                        @unless ($licenceRequest->hasResolvedAllChanges())
+                            <p class="text-sm text-zinc-700">{{ __('Fix every flagged section and document before sending the request back.') }}</p>
+                        @endunless
+                    @else
+                        <label class="flex items-start gap-2 text-sm">
+                            <input type="checkbox" wire:model="declared" class="mt-0.5 rounded-sm border-zinc-300 text-orange-600">
+                            <span>{{ __('I declare that the details and documents are true and belong to the holder.') }}</span>
+                        </label>
+                        <x-input-error for="declared" />
+                    @endif
+
+                    <x-input-error for="request" />
+
+                    <x-button type="button" wire:click="submit" :disabled="$missing !== [] || ($isChangesRequested && ! $licenceRequest->hasResolvedAllChanges())">
+                        {{ $isChangesRequested ? __('Send back to the organizer') : __('Submit request') }}
+                    </x-button>
+                </div>
+            @endif
+        </li>
+    </ol>
+</div>

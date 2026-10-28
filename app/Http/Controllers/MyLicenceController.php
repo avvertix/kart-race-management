@@ -9,6 +9,7 @@ use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceSource;
 use App\Models\Licence;
+use App\Models\LicenceRequest;
 use App\Models\LicenceType;
 use App\Rules\LicenseNumberValidationRule;
 use Closure;
@@ -36,6 +37,12 @@ class MyLicenceController extends Controller
         $this->authorize('create', Licence::class);
 
         return view('my-licence.index', [
+            'licenceRequests' => LicenceRequest::query()
+                ->requestedBy($request->user())
+                ->open()
+                ->with(['product', 'order'])
+                ->latest()
+                ->get(),
             'licences' => Licence::query()
                 ->managedBy($request->user())
                 ->with(['licenceType', 'grade'])

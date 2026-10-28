@@ -102,6 +102,14 @@ class Product extends Model
     }
 
     /**
+     * Whether ordering it starts a Licence Request: a licence emission, or a Package including a licence.
+     */
+    public function sellsLicence(): bool
+    {
+        return $this->licence_type_id !== null;
+    }
+
+    /**
      * The Price an Order placed now would lock, null when the Product is inactive or has no current Price.
      */
     public function orderablePrice(): ?Price

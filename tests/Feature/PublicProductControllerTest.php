@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Actions\Orders\PlaceOrder;
 use App\Enums\OrderStatus;
+use App\Models\LicenceRequest;
 use App\Models\LicenceType;
 use App\Models\LicenceTypeDocument;
 use App\Models\Order;
@@ -138,12 +139,25 @@ class PublicProductControllerTest extends TestCase
         $this->assertDatabaseEmpty('orders');
     }
 
+    public function test_ordering_a_licence_product_starts_a_licence_request(): void
+    {
+        $user = User::factory()->create();
+        $product = Price::factory()->create(['amount' => 18000])->product;
+
+        $response = $this->actingAs($user)->post(route('public.products.order', $product));
+
+        $licenceRequest = LicenceRequest::sole();
+
+        $response->assertRedirect(route('licence-requests.edit', $licenceRequest));
+        $this->assertTrue($licenceRequest->order->is(Order::sole()));
+    }
+
     public function test_verified_user_orders_and_uploads_the_payment_proof(): void
     {
         Storage::fake('payments');
 
         $user = User::factory()->create();
-        $product = Price::factory()->create(['amount' => 18000])->product;
+        $product = Price::factory()->for(Product::factory()->enrollment())->create(['amount' => 18000])->product;
 
         $response = $this->actingAs($user)->post(route('public.products.order', $product));
 

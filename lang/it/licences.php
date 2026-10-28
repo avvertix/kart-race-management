@@ -64,4 +64,29 @@ return [
         'declared' => 'Dichiarata',
     ],
 
+    'request_status' => [
+        'draft' => 'Bozza',
+        'submitted' => 'Inviata',
+        'in_review' => 'In verifica',
+        'changes_requested' => 'Modifiche richieste',
+        'forwarded' => 'Inoltrata all\'ente',
+        'emitted' => 'Emessa',
+        'rejected' => 'Respinta',
+    ],
+
+    'request_section' => [
+        'licence' => 'Licenza',
+        'holder' => 'Titolare',
+        'parents' => 'Genitori o tutori',
+        'documents' => 'Documenti',
+        'forms' => 'Moduli da firmare',
+        'payment' => 'Pagamento',
+    ],
+
+    'request_document_status' => [
+        'pending' => 'Da verificare',
+        'accepted' => 'Accettato',
+        'flagged' => 'Da correggere',
+    ],
+
 ];

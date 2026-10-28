@@ -26,6 +26,23 @@
 
             <p class="text-sm text-zinc-600 max-w-prose">{{ __('The licences of the people you act for: yourself, your children or the drivers of your team. Each licence holds its holder\'s details.') }}</p>
 
+            @if ($licenceRequests->isNotEmpty())
+                <section class="space-y-2">
+                    <h3 class="font-semibold text-zinc-800">{{ __('Open requests') }}</h3>
+                    <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200 bg-white">
+                        @foreach ($licenceRequests as $licenceRequest)
+                            <li class="flex flex-wrap items-center gap-2 p-3">
+                                <div class="flex-1 min-w-48">
+                                    <p class="font-medium text-zinc-900">{{ $licenceRequest->holder?->fullName() ?? __('Holder not filled in yet') }}</p>
+                                    <p class="text-sm text-zinc-500">{{ $licenceRequest->product->title }} &middot; {{ $licenceRequest->status->label() }}</p>
+                                </div>
+                                <a href="{{ route('licence-requests.show', $licenceRequest) }}" class="text-sm font-medium text-orange-600 hover:text-orange-900">{{ __('Open') }}</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
             <x-table>
                 <x-slot name="head">
                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Holder') }}</th>

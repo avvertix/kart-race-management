@@ -411,6 +411,49 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
+     * Lock the request for an organizer's action, ensuring it is in one of the given statuses. The first action on a
+     * submitted request moves it to review and records who reviews it.
+     *
+     * @param  array<int, LicenceRequestStatus>  $statuses
+     *
+     * @throws ValidationException when the request is not in one of the statuses
+     */
+    public function lockForReview(array $statuses, User $organizer, string $message): self
+    {
+        $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
+
+        if (! in_array($locked->status, $statuses, true)) {
+            throw ValidationException::withMessages(['request' => $message]);
+        }
+
+        if ($locked->status === LicenceRequestStatus::Submitted) {
+            $locked->update([
+                'status' => LicenceRequestStatus::InReview,
+                'reviewed_by' => $organizer->getKey(),
+            ]);
+        }
+
+        return $locked;
+    }
+
+    /**
+     * The Licence with the same previous number managed by another User, if any: a hint the request may be for someone else's licence.
+     */
+    public function previousLicenceOfAnotherUser(): ?Licence
+    {
+        if ($this->previous_licence_number_hash === null) {
+            return null;
+        }
+
+        return Licence::query()
+            ->where('number_hash', $this->previous_licence_number_hash)
+            ->where('provider', $this->provider)
+            ->where('user_id', '!=', $this->user_id)
+            ->latest('validity_year')
+            ->first();
+    }
+
+    /**
      * Whether the requester can replace the uploaded file: any file of a draft; after a change request, missing files and
      * the flagged ones, also once replaced, as they keep the organizer's note until reviewed again.
      */
@@ -438,6 +481,15 @@ class LicenceRequest extends Model implements Payable
     public function needsPayment(): bool
     {
         return in_array($this->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true);
+    }
+
+    /**
+     * Whether the organizer can still set the amount: not covered by a package, and no payment proof ever uploaded.
+     */
+    public function canBePriced(): bool
+    {
+        return in_array($this->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true)
+            && $this->payments()->doesntExist();
     }
 
     /**
@@ -480,6 +532,16 @@ class LicenceRequest extends Model implements Payable
     public function scopeRequestedBy(Builder $query, User $user): void
     {
         $query->where('user_id', $user->getKey());
+    }
+
+    /**
+     * Only the requests the organizer lists by default, see LicenceRequestStatus::toProcess().
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeToProcess(Builder $query): void
+    {
+        $query->whereIn('status', LicenceRequestStatus::toProcess());
     }
 
     /**

@@ -31,6 +31,14 @@ class LicenceRequestPolicy
     }
 
     /**
+     * Determine whether the user can process requests as the organizer: review, price, forward, emit and reject them.
+     */
+    public function review(User $user, LicenceRequest $licenceRequest): bool
+    {
+        return $user->hasPermission('licence-request:list') && $user->hasPermission('licence-request:update');
+    }
+
+    /**
      * Determine whether the user can start licence requests.
      */
     public function create(User $user): bool

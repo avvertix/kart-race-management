@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\LicenceProvider;
 use App\Models\Licence;
+use App\Models\LicenceRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -28,6 +29,7 @@ class LicenceController extends Controller
 
         return view('licence.index', [
             'filters' => $filters,
+            'requestsToProcess' => LicenceRequest::query()->toProcess()->count(),
             'years' => Licence::query()->distinct()->orderByDesc('validity_year')->pluck('validity_year'),
             'licences' => Licence::query()
                 ->with('user')

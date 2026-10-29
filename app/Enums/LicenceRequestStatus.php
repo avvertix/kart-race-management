@@ -18,6 +18,46 @@ enum LicenceRequestStatus: string
     case Rejected = 'rejected';
 
     /**
+     * The statuses in which the organizer checks sections and documents and can forward the request.
+     *
+     * @return array<int, self>
+     */
+    public static function underReview(): array
+    {
+        return [self::Submitted, self::InReview];
+    }
+
+    /**
+     * The statuses in which the organizer can set the amount and review the payment proof, also while waiting for fixes.
+     *
+     * @return array<int, self>
+     */
+    public static function underPaymentReview(): array
+    {
+        return [...self::underReview(), self::ChangesRequested];
+    }
+
+    /**
+     * The statuses from which the organizer can reject the request.
+     *
+     * @return array<int, self>
+     */
+    public static function rejectable(): array
+    {
+        return [...self::underReview(), self::Forwarded];
+    }
+
+    /**
+     * The statuses listed for the organizer by default: the requests not closed nor still a draft.
+     *
+     * @return array<int, self>
+     */
+    public static function toProcess(): array
+    {
+        return [...self::underReview(), self::ChangesRequested, self::Forwarded];
+    }
+
+    /**
      * The human readable name of the status.
      */
     public function label(): string

@@ -114,6 +114,7 @@ These replace the 2026-10-26 decisions on Licence Grades, licence Products and s
 - Licence Requests are not Products or Orders. A request carries its own payment, or is covered by a paid Promotional Package Order (C4). Products are left for enrollments, race fees and special offers.
 - ACI licence numbers stay the same across years, ASI ones change: the emit form pre-fills the previous number for ACI only.
 - Declared Licences pick from the same lists, with no free text.
+- "Renew for <year>" appears on each holder's latest Licence only when it is older than the year renewals are for: the current year, or the next one from 1 December. A Licence of the current year can be renewed from December only.
 
 ### Decisions from review (2026-10-26)
 

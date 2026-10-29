@@ -82,7 +82,7 @@ A race number of 1000 or above, used for Participants of special categories that
 Something the organizer sells, such as a championship enrollment, a race fee or a Promotional Package. Licence renewals are not Products: a Licence Request is not bought through an Order.
 
 **Price**:
-The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a licence's cost depends on its Licence Type.
+The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a package's cost depends on what the buyer picks.
 
 **Order**:
 A request by a User to buy one or more Products. It is paid by uploading a payment proof that the organizer confirms.

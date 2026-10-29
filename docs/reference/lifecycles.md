@@ -4,13 +4,23 @@
 
 | Status | Meaning | Next |
 |---|---|---|
-| Draft | Being filled in; kept for as long as needed. The User can delete it, which cancels its Order | Submitted |
+| Draft | Being filled in; kept for as long as needed. The User can delete it | Submitted |
 | Submitted | Sent to the organizer, paid or not yet | In review, Rejected |
 | In review | Set on the organizer's first action (accepting or flagging a document, confirming the payment). The organizer checks documents and payment | Changes requested, Forwarded, Rejected |
 | Changes requested | The organizer flagged documents or sections to redo | Submitted |
-| Forwarded | Sent to the Licence Provider. Requires a paid Order | Emitted, Rejected |
+| Forwarded | Sent to the Licence Provider. Requires the payment to be paid or covered | Emitted, Rejected |
 | Emitted | The temporary licence PDF is uploaded and the Licence is created | — |
 | Rejected | Closed without a licence | — |
+
+A Licence Request is a renewal and is paid on its own, not through an Order:
+
+| Payment status | Meaning | Next |
+|---|---|---|
+| Awaiting the amount | The organizer sets the amount after checking the request. No payment proof can be uploaded yet | To pay |
+| To pay | The amount is set; no payment proof yet | Proof uploaded |
+| Proof uploaded | A payment proof is uploaded | Paid, To pay |
+| Paid | The organizer confirmed the payment | — |
+| Covered | A paid Promotional Package Order includes the renewal | — |
 
 ## Licence
 
@@ -50,11 +60,11 @@ Pending reservations don't expire. Reservations created by the organizer may hav
 | Awaiting payment | Created for a fixed-price Product, or priced by the organizer; no payment proof yet | Payment submitted, Cancelled |
 | Payment submitted | A payment proof is uploaded | Paid, Awaiting payment |
 | Paid | The organizer confirmed the payment; what was bought is granted. Grants that need a Licence wait until it is emitted | — |
-| Cancelled | Its Draft Licence Request was deleted, or its Enrollment was withdrawn or rejected before payment | — |
+| Cancelled | Its Enrollment was withdrawn or rejected before payment | — |
 
 An Order is created as soon as the User picks the Product to buy, and locks the Price valid at that moment, fixed or range. It can be paid later. When setting the final amount, the organizer starts from the locked Price; an amount outside its range needs a reason, shown to the User. The amount can change until a payment proof is uploaded.
 
-The diagram shows the Order with what moves it: the User picking a Product, the organizer's actions on price and payment, the Licence Request and Enrollment that cancel it, and what a paid Order unlocks.
+The diagram shows the Order with what moves it: the User picking a Product, the organizer's actions on price and payment, the Enrollment that cancels it, and what a paid Order unlocks.
 
 ```mermaid
 stateDiagram-v2
@@ -73,15 +83,15 @@ stateDiagram-v2
     PaymentSubmitted --> AwaitingPayment: organizer rejects the proof
     PaymentSubmitted --> Paid: organizer confirms the payment
 
-    AwaitingPrice --> Cancelled: Draft Licence Request deleted, Product switched, Enrollment withdrawn or rejected
-    AwaitingPayment --> Cancelled: Draft Licence Request deleted, Product switched, Enrollment withdrawn or rejected
+    AwaitingPrice --> Cancelled: Enrollment withdrawn or rejected
+    AwaitingPayment --> Cancelled: Enrollment withdrawn or rejected
 
     Paid --> [*]
     Cancelled --> [*]
 
     note right of Paid
-        Licence Request can be forwarded.
         Enrollment can be confirmed.
+        A licence renewal in a Package is covered.
         Package grants apply once the Licence is emitted.
     end note
 ```

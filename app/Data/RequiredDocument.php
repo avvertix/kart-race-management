@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Models\LicenceTypeDocument;
+use App\Enums\LicenceDocument;
 
 /**
- * A document a Licence Request asks for: a Licence Type document, for the holder, once, or for one of the parents entered.
+ * A document a Licence Request asks for: the holder's, or one of the parents entered.
  */
 final readonly class RequiredDocument
 {
     public function __construct(
-        public LicenceTypeDocument $document,
+        public LicenceDocument $document,
         public ?int $parentIndex = null,
     ) {}
 
     /**
-     * Identifies the document within the request, e.g. "12" or "12-1" for the second parent.
+     * Identifies the document within the request, e.g. "identity_document" or "identity_document-1" for the second parent.
      */
     public function key(): string
     {
         return $this->parentIndex === null
-            ? (string) $this->document->getKey()
-            : "{$this->document->getKey()}-{$this->parentIndex}";
+            ? $this->document->value
+            : "{$this->document->value}-{$this->parentIndex}";
     }
 }

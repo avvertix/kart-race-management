@@ -1,26 +1,58 @@
 # Add licence providers and platform configuration
 
-Organizers set up **Licence Types**, **Licence Grades**, required documents, **Products** and **Prices** from the application, see [Set up licence types, products and prices](../organizer/set-up-licence-types-and-products.md). What follows lives in the code or in the environment and needs a maintainer.
+Organizers set up **Products** and **Prices** from the application, see [Set up products and prices](../organizer/set-up-products-and-prices.md). The Licence Types, the documents a renewal asks for and everything below live in the code or in the environment and need a maintainer ([ADR 0004](../../adr/0004-licence-renewals-outside-products.md)).
 
 ## What lives where
 
 | What | Where | Who changes it |
 |---|---|---|
+| Licence Types of each provider, with their race registration licence category | `config/licences.php` | Maintainer |
 | Licence Providers (ACI, ASI) | `App\Enums\LicenceProvider` | Maintainer |
-| Licence roles (driver, competitor, mechanic) | `App\Enums\LicenceRole` | Maintainer |
-| ACI levels (national, international) and their race registration licence category | `App\Enums\LicenceLevel` | Maintainer |
-| Labels of providers, roles and levels | `lang/{en,it}/licences.php` | Maintainer |
-| Forms to sign (delegation, privacy, parental authorisation, self-declaration) | `App\Enums\LicenceFormTemplate` and `resources/views/licence-forms/` | Maintainer |
+| Licence roles (driver, mechanic) | `App\Enums\LicenceRole` | Maintainer |
+| Which providers allow the competitor licence | `App\Data\LicenceTypeData::allowsCompetitor()` | Maintainer |
+| Documents a renewal asks for, and the forms to sign | `App\Enums\LicenceDocument` and `resources/views/licence-forms/` | Maintainer |
+| Labels of providers, roles and documents | `lang/{en,it}/licences.php` | Maintainer |
 | Permissions of each role | `App\Enums\Role::permissions()` | Maintainer |
 | Where uploaded licence documents are stored | `licence-documents` disk in `config/filesystems.php` | Maintainer |
 | Platform-wide licence provider and country, organizer email | `.env` | Whoever deploys |
-| Licence Types, grades, required documents, Products, Prices | Application | Organizer |
+| Products, Prices | Application | Organizer |
+
+## Add or change a Licence Type
+
+A Licence Type is one licence a provider issues, e.g. ACI *NAZ E* or *Daily*. Drivers pick it when renewing or declaring a licence. Each provider's list is in `config/licences.php`, under `types`, keyed by the provider value (`aci`, `asi`) and then by the type's **code**:
+
+```php
+'aci' => [
+    'naz-e' => [
+        'name' => 'NAZ E',
+        'role' => LicenceRole::Driver,
+        'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
+    ],
+    'mechanic' => [
+        'name' => 'Mechanic',
+        'role' => LicenceRole::Mechanic,
+    ],
+],
+```
+
+To add one:
+
+1. Pick a **code**: short, lowercase, with dashes, e.g. `int-f`. It is stored with every Licence and Licence Request of that type, so never change it or reuse it for another licence later.
+2. Write the **name** as printed on the licence. It is shown as is, not translated.
+3. Set the **role**: `LicenceRole::Driver` or `LicenceRole::Mechanic`. There is no competitor-only type: an ACI driver licence can include the competitor licence, which drivers say with a checkbox. ASI driver licences never include it.
+4. For drivers, set **race_licence_category**: the `App\Models\DriverLicence` value the licence counts as in race registration and exports. National ACI licences are `LOCAL_NATIONAL`, international ones `LOCAL_INTERNATIONAL`, *Daily* is `DAILY` and *EasyRace* is `EASYRACE`. Mechanics have none. If no category fits, adding one changes race registration and exports too: treat it as a separate change.
+5. List the types in the order drivers should see them: the list keeps it.
+6. Run `php artisan test --compact tests/Feature/LicenceCatalogueTest.php` and, on a deployed instance, `php artisan config:cache` if the configuration is cached.
+
+To stop offering a type, set `'active' => false` instead of deleting it: Licences and requests that already have it keep showing its name, and a request or declared licence that already picked it can keep it. Changing the name or the race licence category affects new Licences only, as each Licence keeps the role and category it was saved with.
 
 ## Add a Licence Provider
 
 1. Add a case to `App\Enums\LicenceProvider`. The value is stored in the database, so pick a short lowercase value and never change it later.
 2. Add its label under `provider` in `lang/en/licences.php` and `lang/it/licences.php`.
-3. Update the tests in `tests/Feature/LicenceEnumsTest.php`, which pin the values and labels.
+3. Add its list of Licence Types in `config/licences.php`, keyed by the same value. A provider without types is not offered.
+4. If its driver licences can include the competitor licence, change `LicenceTypeData::allowsCompetitor()`.
+5. Update the tests in `tests/Feature/LicenceEnumsTest.php`, which pin the values and labels.
 
 Foreign licences are not a provider: they are never managed on the platform and stay in race registration only.
 
@@ -30,37 +62,21 @@ Foreign licences are not a provider: they are never managed on the platform and 
 2. Add its label under `role` in both `lang/*/licences.php` files.
 3. Update `tests/Feature/LicenceEnumsTest.php`.
 
-## Add an ACI level
+## Change the documents a renewal asks for
 
-Levels exist only for ACI. Each level maps to the driver licence category used in race registration (`App\Models\DriverLicence`), which keeps registration and exports working as they do today.
+The documents are the same for every Licence Type; organizers check that they fit the requested one. They are the cases of `App\Enums\LicenceDocument`:
 
-1. Add a case to `App\Enums\LicenceLevel`.
-2. Map it in `LicenceLevel::raceLicence()`. If no `DriverLicence` category fits, adding one changes race registration and exports too: treat it as a separate change.
-3. Add its label under `level` in both `lang/*/licences.php` files.
-4. Update `tests/Feature/LicenceEnumsTest.php`.
+- `kind()` says whether it is a file to upload or a form given pre-filled to sign;
+- `isUnderageOnly()` and `isAlsoForEachParent()` decide who it is asked for;
+- `description()` reads the hint under `document_description` in `lang/*/licences.php`.
 
-Grades (e.g. *C Junior*, *International B*) are not code: organizers list them per level in the application.
+To add a document, add a case with a lowercase value that never changes, its label under `document` in both `lang/*/licences.php` files, and update `tests/Feature/LicenceEnumsTest.php` and `tests/Feature/LicenceRequestActionsTest.php`.
 
-## Add the ACI licence types
-
-On a new installation, add the ACI driver, competitor and mechanic Licence Types with their usual grades and documents:
-
-```bash
-php artisan db:seed --class=LicenceTypeSeeder
-```
-
-Names are written in the application language (`APP_LOCALE`). Types that already exist with the same provider, role and name are left untouched, so it is safe to run again. Organizers can then change everything from **Licence types**.
-
-## Add or change a form to sign
-
-Organizers pick the form of each signed document from a list; they cannot upload their own template.
-
-1. Add a case to `App\Enums\LicenceFormTemplate`, with a lowercase value that never changes, and its label under `form_template` in both `lang/*/licences.php` files.
-2. Write the Blade view under `resources/views/licence-forms/` and return its name from `LicenceFormTemplate::view()`. Until the real paperwork is available, every form uses `licence-forms.placeholder`.
+Forms to sign are rendered by the Blade view returned by `LicenceDocument::formView()`. Until the real paperwork is available, every form uses `licence-forms.placeholder`, which prints the holder's and parents' details.
 
 ## Give a role a new permission
 
-Permissions are listed one by one in `App\Enums\Role::permissions()` as `resource:action`. Only `*` (everything), `*:create` and `*:update` are understood as wildcards, so `licence-type:*` grants nothing: list each action instead. Policies call `$user->hasPermission('resource:action')` and, for drivers, also check that the record's `user_id` is theirs.
+Permissions are listed one by one in `App\Enums\Role::permissions()` as `resource:action`. Only `*` (everything), `*:create` and `*:update` are understood as wildcards, so `licence:*` grants nothing: list each action instead. Policies call `$user->hasPermission('resource:action')` and, for drivers, also check that the record's `user_id` is theirs.
 
 Update `tests/Unit/RoleTest.php` with the new permission, and the [roles and permissions](../../reference/roles-and-permissions.md) table if the change is visible to users.
 
@@ -76,4 +92,4 @@ The files are not encrypted by the application. Put the storage volume on an enc
 |---|---|---|
 | `RACE_LICENCE_PROVIDER` | Provider named in race registration texts | `ACI Sport` |
 | `RACE_LICENCE_COUNTRY` | Country of the provider, as a two letter code | `it` |
-| `RACE_ORGANIZER_EMAIL` | Where organizer notifications are sent, e.g. a submitted Licence Request | — |
+| `RACE_ORGANIZER_EMAIL` | Where organizer notifications are sent, e.g. a submitted Licence Request; also shown to drivers asking for a first licence | — |

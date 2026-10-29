@@ -9,7 +9,7 @@ use App\Actions\Orders\ConfirmOrderPayment;
 use App\Actions\Orders\PlaceOrder;
 use App\Actions\Orders\RejectOrderPayment;
 use App\Actions\Orders\SetOrderPrice;
-use App\Actions\Orders\SubmitOrderPayment;
+use App\Actions\SubmitPaymentProof;
 use App\Enums\OrderStatus;
 use App\Events\OrderPaid;
 use App\Events\OrderPriced;
@@ -69,10 +69,10 @@ class OrderLifecycleTest extends TestCase
 
         $this->assertEquals(OrderStatus::AwaitingPrice, $order->fresh()->status);
 
-        (new SetOrderPrice)($order, $organizer, 35000, 'International grade with insurance');
+        (new SetOrderPrice)($order, $organizer, 35000, 'International licence with insurance');
 
         $this->assertEquals(35000, $order->fresh()->total);
-        $this->assertEquals('International grade with insurance', $order->fresh()->price_override_reason);
+        $this->assertEquals('International licence with insurance', $order->fresh()->price_override_reason);
     }
 
     public function test_ranged_order_cannot_receive_a_proof_before_its_price_is_set(): void
@@ -82,7 +82,7 @@ class OrderLifecycleTest extends TestCase
         $this->expectException(ValidationException::class);
 
         try {
-            (new SubmitOrderPayment)($order, $this->proof());
+            (new SubmitPaymentProof)($order, $this->proof());
         } finally {
             $this->assertEquals(OrderStatus::AwaitingPrice, $order->fresh()->status);
             $this->assertEmpty($order->payments()->get());
@@ -93,7 +93,7 @@ class OrderLifecycleTest extends TestCase
     {
         $order = $this->fixedOrder();
 
-        $payment = (new SubmitOrderPayment)($order, $this->proof());
+        $payment = (new SubmitPaymentProof)($order, $this->proof());
 
         $this->assertEquals(OrderStatus::PaymentSubmitted, $order->fresh()->status);
         $this->assertTrue($payment->payable->is($order));
@@ -107,7 +107,7 @@ class OrderLifecycleTest extends TestCase
         $organizer = User::factory()->organizer()->create();
         $order = $this->fixedOrder();
 
-        (new SubmitOrderPayment)($order, $this->proof());
+        (new SubmitPaymentProof)($order, $this->proof());
 
         $this->expectException(ValidationException::class);
 
@@ -125,7 +125,7 @@ class OrderLifecycleTest extends TestCase
         $organizer = User::factory()->organizer()->create();
         $order = $this->fixedOrder();
 
-        (new SubmitOrderPayment)($order, $this->proof());
+        (new SubmitPaymentProof)($order, $this->proof());
 
         (new ConfirmOrderPayment)($order, $organizer);
 
@@ -151,14 +151,14 @@ class OrderLifecycleTest extends TestCase
     {
         $order = $this->fixedOrder();
 
-        (new SubmitOrderPayment)($order, $this->proof());
+        (new SubmitPaymentProof)($order, $this->proof());
 
         (new RejectOrderPayment)($order);
 
         $this->assertEquals(OrderStatus::AwaitingPayment, $order->fresh()->status);
         $this->assertCount(1, $order->payments()->get());
 
-        (new SubmitOrderPayment)($order, $this->proof());
+        (new SubmitPaymentProof)($order, $this->proof());
 
         $this->assertCount(2, $order->payments()->get());
     }
@@ -168,7 +168,7 @@ class OrderLifecycleTest extends TestCase
         $organizer = User::factory()->organizer()->create();
         $order = $this->fixedOrder();
 
-        (new SubmitOrderPayment)($order, $this->proof());
+        (new SubmitPaymentProof)($order, $this->proof());
         (new RejectOrderPayment)($order);
 
         $this->expectException(ValidationException::class);
@@ -184,7 +184,7 @@ class OrderLifecycleTest extends TestCase
     {
         $order = $this->fixedOrder();
 
-        (new SubmitOrderPayment)($order, $this->proof());
+        (new SubmitPaymentProof)($order, $this->proof());
 
         $this->expectException(ValidationException::class);
 
@@ -208,7 +208,7 @@ class OrderLifecycleTest extends TestCase
     {
         $order = $this->fixedOrder();
 
-        (new SubmitOrderPayment)($order, $this->proof());
+        (new SubmitPaymentProof)($order, $this->proof());
         (new ConfirmOrderPayment)($order, User::factory()->organizer()->create());
 
         $this->expectException(ValidationException::class);

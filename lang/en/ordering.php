@@ -13,7 +13,6 @@ return [
     */
 
     'product_kind' => [
-        'licence_emission' => 'Licence emission or renewal',
         'enrollment' => 'Championship enrollment',
         'package' => 'Promotional package',
     ],

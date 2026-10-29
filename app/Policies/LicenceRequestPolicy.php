@@ -49,6 +49,16 @@ class LicenceRequestPolicy
     }
 
     /**
+     * Determine whether the user can upload a payment proof: their own requests, until emitted or rejected.
+     */
+    public function pay(User $user, LicenceRequest $licenceRequest): bool
+    {
+        return $user->hasPermission('licence-request:update')
+            && $this->isRequester($user, $licenceRequest)
+            && ! $licenceRequest->status->isClosed();
+    }
+
+    /**
      * Determine whether the user can delete the request: only their own drafts.
      */
     public function delete(User $user, LicenceRequest $licenceRequest): bool

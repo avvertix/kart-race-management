@@ -32,13 +32,7 @@ return [
 
     'role' => [
         'driver' => 'Conduttore',
-        'competitor' => 'Concorrente',
         'mechanic' => 'Meccanico',
-    ],
-
-    'level' => [
-        'national' => 'Nazionale',
-        'international' => 'Internazionale',
     ],
 
     'document_kind' => [
@@ -46,17 +40,18 @@ return [
         'signed_form' => 'Modulo da firmare',
     ],
 
-    'document_scope' => [
-        'holder' => 'Titolare',
-        'each_parent' => 'Ogni genitore o tutore',
-        'once' => 'Una volta per richiesta',
+    'document' => [
+        'identity_document' => 'Documento d\'identità',
+        'medical_certificate' => 'Certificato medico',
+        'privacy' => 'Informativa privacy',
+        'delegation' => 'Delega',
+        'parental_authorisation' => 'Autorizzazione dei genitori',
     ],
 
-    'form_template' => [
-        'delegation' => 'Delega',
-        'privacy' => 'Privacy',
-        'parental_authorisation' => 'Autorizzazione dei genitori',
-        'self_declaration' => 'Autocertificazione',
+    'document_description' => [
+        'identity_document' => 'Carta d\'identità o passaporto, con il codice fiscale.',
+        'medical_certificate' => 'Certificato medico agonistico, valido per tutto l\'anno della licenza.',
+        'privacy' => 'Firmata da entrambi i genitori quando il titolare è minorenne.',
     ],
 
     'source' => [
@@ -81,6 +76,14 @@ return [
         'documents' => 'Documenti',
         'forms' => 'Moduli da firmare',
         'payment' => 'Pagamento',
+    ],
+
+    'request_payment_status' => [
+        'awaiting_price' => 'In attesa dell\'importo',
+        'awaiting_payment' => 'Da pagare',
+        'payment_submitted' => 'Ricevuta caricata',
+        'paid' => 'Pagata',
+        'covered' => 'Inclusa in un pacchetto',
     ],
 
     'request_document_status' => [

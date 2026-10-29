@@ -11,13 +11,7 @@
             <dt class="text-zinc-500">{{ __('Provider') }}</dt>
             <dd class="col-span-2">{{ $licence->provider->label() }}</dd>
             <dt class="text-zinc-500">{{ __('Licence type') }}</dt>
-            <dd class="col-span-2">{{ $licence->licenceType?->name ?? $licence->role->label() }}</dd>
-            @if ($licence->level)
-                <dt class="text-zinc-500">{{ __('Level') }}</dt>
-                <dd class="col-span-2">{{ $licence->level->label() }}</dd>
-            @endif
-            <dt class="text-zinc-500">{{ __('Grade') }}</dt>
-            <dd class="col-span-2">{{ $licence->gradeName() }}</dd>
+            <dd class="col-span-2">{{ $licence->licenceTypeLabel() }} &middot; {{ $licence->role->label() }}</dd>
             <dt class="text-zinc-500">{{ __('Year') }}</dt>
             <dd class="col-span-2">{{ $licence->validity_year }}</dd>
             <dt class="text-zinc-500">{{ __('Status') }}</dt>

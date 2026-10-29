@@ -6,9 +6,6 @@ namespace Tests\Feature;
 
 use App\Actions\Orders\PlaceOrder;
 use App\Enums\OrderStatus;
-use App\Models\LicenceRequest;
-use App\Models\LicenceType;
-use App\Models\LicenceTypeDocument;
 use App\Models\Order;
 use App\Models\Price;
 use App\Models\Product;
@@ -25,33 +22,28 @@ class PublicProductControllerTest extends TestCase
 
     public function test_active_products_are_listed_with_their_current_price(): void
     {
-        Price::factory()->for(Product::factory()->state(['title' => 'Driver licence']))->create(['amount' => 18000]);
-        Price::factory()->range(23000, 31000)->for(Product::factory()->state(['title' => 'International licence']))->create();
-        Price::factory()->for(Product::factory()->inactive()->state(['title' => 'Old licence']))->create();
+        Price::factory()->for(Product::factory()->state(['title' => 'Season package']))->create(['amount' => 18000]);
+        Price::factory()->range(23000, 31000)->for(Product::factory()->state(['title' => 'Team package']))->create();
+        Price::factory()->for(Product::factory()->inactive()->state(['title' => 'Old package']))->create();
 
         $this->get(route('public.products.index'))
             ->assertSuccessful()
-            ->assertSee('Driver licence')
+            ->assertSee('Season package')
             ->assertSee('€180.00')
-            ->assertSee('International licence')
+            ->assertSee('Team package')
             ->assertSee('from €230.00 to €310.00')
             ->assertSee('final price after review')
-            ->assertDontSee('Old licence');
+            ->assertDontSee('Old package');
     }
 
     public function test_guest_sees_the_product_and_why_an_account_is_needed(): void
     {
-        $licenceType = LicenceType::factory()
-            ->has(LicenceTypeDocument::factory()->state(['name' => 'Medical certificate']), 'documents')
-            ->create();
-
-        $price = Price::factory()->for(Product::factory()->for($licenceType)->state(['title' => 'Driver licence']))->create();
+        $price = Price::factory()->for(Product::factory()->state(['title' => 'Season package']))->create();
 
         $this->get(route('public.products.show', $price->product))
             ->assertSuccessful()
-            ->assertSee('Driver licence')
+            ->assertSee('Season package')
             ->assertSee('€180.00')
-            ->assertSee('Medical certificate')
             ->assertSee('Why an account is needed')
             ->assertSee(route('public.products.continue', $price->product))
             ->assertSee(route('public.products.register', $price->product))
@@ -137,19 +129,6 @@ class PublicProductControllerTest extends TestCase
             ->assertRedirect(route('verification.notice'));
 
         $this->assertDatabaseEmpty('orders');
-    }
-
-    public function test_ordering_a_licence_product_starts_a_licence_request(): void
-    {
-        $user = User::factory()->create();
-        $product = Price::factory()->create(['amount' => 18000])->product;
-
-        $response = $this->actingAs($user)->post(route('public.products.order', $product));
-
-        $licenceRequest = LicenceRequest::sole();
-
-        $response->assertRedirect(route('licence-requests.edit', $licenceRequest));
-        $this->assertTrue($licenceRequest->order->is(Order::sole()));
     }
 
     public function test_verified_user_orders_and_uploads_the_payment_proof(): void

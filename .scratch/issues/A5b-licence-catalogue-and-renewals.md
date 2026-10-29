@@ -10,7 +10,7 @@ A1–A5 have not shipped, so their migrations are rewritten in place rather than
 
 - [Add licence providers and platform configuration](../../docs/how-to/maintainer/add-licence-providers-and-configuration.md): rewritten, with a step-by-step "Add or change a Licence Type" section a maintainer can follow to fill in the real lists.
 - [Request or renew a licence](../../docs/how-to/driver/request-or-renew-a-licence.md): renewals only, started from My licences.
-- [Set up licence types, products and prices](../../docs/how-to/organizer/set-up-licence-types-and-products.md): licence types removed; renamed to "Set up products and prices".
+- [Set up products and prices](../../docs/how-to/organizer/set-up-products-and-prices.md): licence types removed; renamed to "Set up products and prices".
 - [Process a licence request](../../docs/how-to/organizer/process-a-licence-request.md), [Lifecycles](../../docs/reference/lifecycles.md), [Roles and permissions](../../docs/reference/roles-and-permissions.md): updated for the request payment and the removed permissions.
 
 ## Scope

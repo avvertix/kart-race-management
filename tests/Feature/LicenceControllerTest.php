@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Enums\LicenceProvider;
 use App\Models\Licence;
-use App\Models\LicenceType;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
@@ -37,8 +36,7 @@ class LicenceControllerTest extends TestCase
         Licence::factory()->create([
             'holder' => LicenceFactory::holder('Anna', 'Neri'),
             'provider' => LicenceProvider::Asi,
-            'licence_type_id' => LicenceType::factory()->asi(),
-            'level' => null,
+            'licence_type' => 'driver',
             'validity_year' => $year - 1,
         ]);
 

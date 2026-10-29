@@ -30,7 +30,7 @@ class LicenceController extends Controller
             'filters' => $filters,
             'years' => Licence::query()->distinct()->orderByDesc('validity_year')->pluck('validity_year'),
             'licences' => Licence::query()
-                ->with(['licenceType', 'grade', 'user'])
+                ->with('user')
                 ->when($filters['provider'] ?? null, fn ($query, $provider) => $query->where('provider', $provider))
                 ->when($filters['year'] ?? null, fn ($query, $year) => $query->where('validity_year', $year))
                 ->when($request->boolean('unverified'), fn ($query) => $query->awaitingVerification())
@@ -48,7 +48,7 @@ class LicenceController extends Controller
     {
         $this->authorize('view', $licence);
 
-        $licence->load(['licenceType', 'grade', 'user']);
+        $licence->load('user');
 
         return view('licence.show', [
             'licence' => $licence,

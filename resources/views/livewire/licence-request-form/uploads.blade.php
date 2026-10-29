@@ -4,7 +4,7 @@
 @endphp
 
 @if ($items->isEmpty())
-    <p class="text-sm text-zinc-600">{{ __('Nothing to upload for this licence.') }}</p>
+    <p class="text-sm text-zinc-600">{{ __('Nothing to upload.') }}</p>
 @endif
 
 <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200">
@@ -19,16 +19,13 @@
             <div class="flex flex-wrap items-start gap-2">
                 <div class="flex-1 min-w-48">
                     <p class="font-medium text-zinc-900">
-                        {{ $required->document->name }}
+                        {{ $required->document->label() }}
                         @if ($required->parentIndex !== null)
-                            <span class="font-normal text-zinc-600">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() ??__('Parent or guardian :number', ['number' => $required->parentIndex + 1]) }}</span>
+                            <span class="font-normal text-zinc-600">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() ?? __('Parent or guardian :number', ['number' => $required->parentIndex + 1]) }}</span>
                         @endif
-                        @unless ($required->document->required)
-                            <span class="ml-1 inline-block px-2 rounded-full bg-zinc-100 text-xs text-zinc-700">{{ __('optional') }}</span>
-                        @endunless
                     </p>
-                    @if ($required->document->description)
-                        <p class="text-sm text-zinc-600">{{ $required->document->description }}</p>
+                    @if ($required->parentIndex === null && $required->document->description())
+                        <p class="text-sm text-zinc-600">{{ $required->document->description() }}</p>
                     @endif
                     @if ($upload)
                         <p class="text-sm text-zinc-600 break-all">
@@ -44,13 +41,13 @@
                 </div>
 
                 @if ($isForm)
-                    <a href="{{ route('licence-requests.forms.show', ['licenceRequest' => $licenceRequest, 'document' => $required->document->getKey(), 'parent' => $required->parentIndex]) }}" target="_blank" class="text-sm text-orange-600 hover:text-orange-900 py-1">{{ __('Download pre-filled') }}</a>
+                    <a href="{{ route('licence-requests.forms.show', ['licenceRequest' => $licenceRequest, 'document' => $required->document]) }}" target="_blank" class="text-sm text-orange-600 hover:text-orange-900 py-1">{{ __('Download pre-filled') }}</a>
                 @endif
             </div>
 
             @if ($canReplace)
                 <div class="flex flex-wrap items-center gap-2">
-                    <input type="file" wire:model="files.{{ $key }}" accept="image/png,image/jpeg,application/pdf" class="text-sm max-w-full" aria-label="{{ __('File for :document', ['document' => $required->document->name]) }}">
+                    <input type="file" wire:model="files.{{ $key }}" accept="image/png,image/jpeg,application/pdf" class="text-sm max-w-full" aria-label="{{ __('File for :document', ['document' => $required->document->label()]) }}">
                     <x-secondary-button type="button" wire:click="upload('{{ $key }}')" wire:loading.attr="disabled" wire:target="files.{{ $key }},upload">
                         {{ $upload ? __('Replace') : __('Upload') }}
                     </x-secondary-button>

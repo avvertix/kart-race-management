@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\HasLicenceType;
 use App\Data\HolderData;
 use App\Data\RequiredDocument;
+use App\Enums\LicenceDocument;
 use App\Enums\LicenceDocumentKind;
-use App\Enums\LicenceDocumentScope;
-use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestDocumentStatus;
+use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
+use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -20,24 +22,33 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\DataCollection;
 
 /**
- * A request to emit or renew a licence, made by a User for themselves or someone they act for.
+ * A request to renew a licence, made by a User for themselves or someone they act for. It is paid on its own, not through an Order.
  *
  * @property string $ulid
  * @property int $user_id
- * @property int $product_id
- * @property int $licence_type_id
- * @property ?LicenceLevel $level
- * @property ?int $licence_grade_id
- * @property ?string $grade_other
+ * @property ?LicenceProvider $provider
+ * @property ?string $licence_type
+ * @property bool $includes_competitor
+ * @property ?string $previous_licence_number
+ * @property ?string $previous_licence_number_hash
  * @property LicenceRequestStatus $status
  * @property ?HolderData $holder
  * @property ?DataCollection<int, HolderData> $parents
- * @property ?int $order_id
+ * @property LicenceRequestPaymentStatus $payment_status
+ * @property ?int $amount
+ * @property Currency $currency
+ * @property ?int $priced_by
+ * @property ?CarbonImmutable $priced_at
+ * @property ?int $payment_confirmed_by
+ * @property ?CarbonImmutable $paid_at
+ * @property ?int $covering_order_id
  * @property ?int $licence_id
  * @property ?CarbonImmutable $submitted_at
  * @property ?CarbonImmutable $forwarded_at
@@ -47,19 +58,18 @@ use Spatie\LaravelData\DataCollection;
  * @property ?int $reviewed_by
  * @property CarbonImmutable $created_at
  * @property-read User $user
- * @property-read Product $product
- * @property-read LicenceType $licenceType
- * @property-read ?LicenceGrade $grade
- * @property-read ?Order $order
+ * @property-read ?Order $coveringOrder
+ * @property-read ?Payment $latestPayment
  * @property-read ?Licence $licence
  * @property-read \Illuminate\Database\Eloquent\Collection<int, LicenceRequestDocument> $documents
  * @property-read \Illuminate\Database\Eloquent\Collection<int, LicenceRequestChangeRequest> $changeRequests
  */
-class LicenceRequest extends Model
+class LicenceRequest extends Model implements Payable
 {
     /** @use HasFactory<\Database\Factories\LicenceRequestFactory> */
     use HasFactory;
 
+    use HasLicenceType;
     use HasUlids;
 
     /**
@@ -67,23 +77,37 @@ class LicenceRequest extends Model
      */
     public const ADULT_AGE = 18;
 
+    protected $attributes = [
+        'includes_competitor' => false,
+        'payment_status' => 'awaiting_price',
+        'currency' => 'EUR',
+    ];
+
     protected $hidden = [
         'id',
         'holder',
         'parents',
+        'previous_licence_number',
+        'previous_licence_number_hash',
     ];
 
     protected $fillable = [
         'user_id',
-        'product_id',
-        'licence_type_id',
-        'level',
-        'licence_grade_id',
-        'grade_other',
+        'provider',
+        'licence_type',
+        'includes_competitor',
+        'previous_licence_number',
         'status',
         'holder',
         'parents',
-        'order_id',
+        'payment_status',
+        'amount',
+        'currency',
+        'priced_by',
+        'priced_at',
+        'payment_confirmed_by',
+        'paid_at',
+        'covering_order_id',
         'licence_id',
         'submitted_at',
         'forwarded_at',
@@ -92,6 +116,16 @@ class LicenceRequest extends Model
         'rejection_reason',
         'reviewed_by',
     ];
+
+    /**
+     * The licence year a request made on the given day is for: that year, or the next one from December, when renewals open.
+     */
+    public static function validityYearFor(CarbonImmutable $date): int
+    {
+        $date = $date->setTimezone(config('races.timezone'));
+
+        return $date->month === 12 ? $date->year + 1 : $date->year;
+    }
 
     /**
      * Get the columns that should receive a unique identifier.
@@ -122,35 +156,31 @@ class LicenceRequest extends Model
     }
 
     /**
-     * @return BelongsTo<Product, $this>
-     */
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
-    }
-
-    /**
-     * @return BelongsTo<LicenceType, $this>
-     */
-    public function licenceType(): BelongsTo
-    {
-        return $this->belongsTo(LicenceType::class);
-    }
-
-    /**
-     * @return BelongsTo<LicenceGrade, $this>
-     */
-    public function grade(): BelongsTo
-    {
-        return $this->belongsTo(LicenceGrade::class, 'licence_grade_id');
-    }
-
-    /**
+     * The paid Promotional Package Order covering the renewal, instead of its own payment.
+     *
      * @return BelongsTo<Order, $this>
      */
-    public function order(): BelongsTo
+    public function coveringOrder(): BelongsTo
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'covering_order_id');
+    }
+
+    /**
+     * The payment proofs, including the rejected ones.
+     *
+     * @return MorphMany<Payment, $this>
+     */
+    public function payments(): MorphMany
+    {
+        return $this->morphMany(Payment::class, 'payable');
+    }
+
+    /**
+     * @return MorphOne<Payment, $this>
+     */
+    public function latestPayment(): MorphOne
+    {
+        return $this->morphOne(Payment::class, 'payable')->latestOfMany();
     }
 
     /**
@@ -190,14 +220,6 @@ class LicenceRequest extends Model
     }
 
     /**
-     * The grade picked from the list, or the one written by the User.
-     */
-    public function gradeName(): ?string
-    {
-        return $this->licence_grade_id !== null ? $this->grade?->name : $this->grade_other;
-    }
-
-    /**
      * Whether the holder is underage on the request date: the day it was submitted, today for a draft.
      */
     public function isUnderage(): bool
@@ -225,8 +247,8 @@ class LicenceRequest extends Model
     }
 
     /**
-     * The documents of the given kind the request asks for: holder and once documents, plus one per parent entered.
-     * Underage-only documents are asked only for underage holders.
+     * The documents of the given kind the request asks for, the same for every Licence Type: the holder's, plus an identity
+     * document for each parent entered. Underage-only documents are asked only for underage holders.
      *
      * @return Collection<int, RequiredDocument>
      */
@@ -235,11 +257,14 @@ class LicenceRequest extends Model
         $isUnderage = $this->isUnderage();
         $parentCount = $isUnderage ? count($this->parentHolders()) : 0;
 
-        return $this->licenceType->documents
-            ->filter(fn (LicenceTypeDocument $document) => $document->kind === $kind && ($isUnderage || ! $document->underage_only))
-            ->flatMap(fn (LicenceTypeDocument $document) => $document->scope === LicenceDocumentScope::EachParent
-                ? collect($parentCount > 0 ? range(0, $parentCount - 1) : [])->map(fn (int $index) => new RequiredDocument($document, $index))
-                : [new RequiredDocument($document)])
+        return collect(LicenceDocument::cases())
+            ->filter(fn (LicenceDocument $document) => $document->kind() === $kind && ($isUnderage || ! $document->isUnderageOnly()))
+            ->flatMap(fn (LicenceDocument $document) => [
+                new RequiredDocument($document),
+                ...($document->isAlsoForEachParent() && $parentCount > 0
+                    ? array_map(fn (int $index) => new RequiredDocument($document, $index), range(0, $parentCount - 1))
+                    : []),
+            ])
             ->values();
     }
 
@@ -248,7 +273,7 @@ class LicenceRequest extends Model
      */
     public function uploadFor(RequiredDocument $required): ?LicenceRequestDocument
     {
-        return $this->documents->first(fn (LicenceRequestDocument $document) => $document->licence_type_document_id === $required->document->getKey()
+        return $this->documents->first(fn (LicenceRequestDocument $document) => $document->document === $required->document
             && $document->parent_index === $required->parentIndex);
     }
 
@@ -258,8 +283,7 @@ class LicenceRequest extends Model
     public function isSectionComplete(LicenceRequestSection $section): bool
     {
         return match ($section) {
-            LicenceRequestSection::Licence => ($this->licenceType->provider !== LicenceProvider::Aci || $this->level !== null)
-                && ($this->licence_grade_id !== null || filled($this->grade_other)),
+            LicenceRequestSection::Licence => $this->licenceTypeData() !== null && filled($this->previous_licence_number),
             LicenceRequestSection::Holder => $this->holder !== null,
             LicenceRequestSection::Parents => ! $this->isUnderage() || count($this->parentHolders()) > 0,
             LicenceRequestSection::Documents => $this->hasRequiredUploads(LicenceDocumentKind::Upload),
@@ -326,7 +350,7 @@ class LicenceRequest extends Model
 
         $kind = $section->documentKind();
 
-        return $kind !== null && $this->documents->contains(fn (LicenceRequestDocument $document) => $document->kind === $kind && $document->status === LicenceRequestDocumentStatus::Flagged);
+        return $kind !== null && $this->documents->contains(fn (LicenceRequestDocument $document) => $document->document->kind() === $kind && $document->status === LicenceRequestDocumentStatus::Flagged);
     }
 
     /**
@@ -341,7 +365,7 @@ class LicenceRequest extends Model
     /**
      * Whether the requester can change the section: any section of a draft; after a change request the flagged ones,
      * and those a fix left incomplete, e.g. parents needed after correcting the holder's birth date.
-     * Payment follows the Order instead.
+     * Payment follows its own status instead.
      */
     public function canEditSection(LicenceRequestSection $section): bool
     {
@@ -409,6 +433,46 @@ class LicenceRequest extends Model
     }
 
     /**
+     * Whether the requester still has to pay: the amount is not set yet, or no proof was uploaded for it.
+     */
+    public function needsPayment(): bool
+    {
+        return in_array($this->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true);
+    }
+
+    /**
+     * The amount to pay, null until the organizer sets it.
+     */
+    public function amountLabel(): ?string
+    {
+        return $this->amount === null ? null : $this->currency->format($this->amount);
+    }
+
+    public function lockAwaitingPayment(string $errorKey): self
+    {
+        $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
+
+        if ($locked->payment_status !== LicenceRequestPaymentStatus::AwaitingPayment) {
+            throw ValidationException::withMessages([
+                $errorKey => $locked->payment_status === LicenceRequestPaymentStatus::AwaitingPrice
+                    ? __('The organizer has not set the amount yet.')
+                    : __('The request is not awaiting a payment.'),
+            ]);
+        }
+
+        if ($locked->status->isClosed()) {
+            throw ValidationException::withMessages([$errorKey => __('The request is closed.')]);
+        }
+
+        return $locked;
+    }
+
+    public function markPaymentSubmitted(): void
+    {
+        $this->update(['payment_status' => LicenceRequestPaymentStatus::PaymentSubmitted]);
+    }
+
+    /**
      * Only the requests made by the given User.
      *
      * @param  Builder<self>  $query
@@ -428,6 +492,17 @@ class LicenceRequest extends Model
         $query->whereNotIn('status', [LicenceRequestStatus::Emitted, LicenceRequestStatus::Rejected]);
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (LicenceRequest $licenceRequest) {
+            if ($licenceRequest->isDirty('previous_licence_number')) {
+                $licenceRequest->previous_licence_number_hash = $licenceRequest->previous_licence_number === null
+                    ? null
+                    : Licence::hashNumber($licenceRequest->previous_licence_number);
+            }
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -436,10 +511,17 @@ class LicenceRequest extends Model
     protected function casts(): array
     {
         return [
-            'level' => LicenceLevel::class,
+            'provider' => LicenceProvider::class,
+            'includes_competitor' => 'boolean',
+            'previous_licence_number' => 'encrypted',
             'status' => LicenceRequestStatus::class,
             'holder' => HolderData::class.':encrypted',
             'parents' => DataCollection::class.':'.HolderData::class.',encrypted',
+            'payment_status' => LicenceRequestPaymentStatus::class,
+            'amount' => 'integer',
+            'currency' => Currency::class,
+            'priced_at' => 'datetime',
+            'paid_at' => 'datetime',
             'submitted_at' => 'datetime',
             'forwarded_at' => 'datetime',
             'emitted_at' => 'datetime',
@@ -450,7 +532,6 @@ class LicenceRequest extends Model
     private function hasRequiredUploads(LicenceDocumentKind $kind): bool
     {
         return $this->requiredDocuments($kind)
-            ->filter(fn (RequiredDocument $required) => $required->document->required)
             ->every(fn (RequiredDocument $required) => $this->uploadFor($required) !== null);
     }
 }

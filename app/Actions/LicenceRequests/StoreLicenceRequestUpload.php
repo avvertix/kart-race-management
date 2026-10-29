@@ -24,7 +24,7 @@ class StoreLicenceRequestUpload
      */
     public function __invoke(LicenceRequest $licenceRequest, RequiredDocument $required, UploadedFile $file): LicenceRequestDocument
     {
-        $isAskedFor = $licenceRequest->requiredDocuments($required->document->kind)
+        $isAskedFor = $licenceRequest->requiredDocuments($required->document->kind())
             ->contains(fn (RequiredDocument $asked) => $asked->key() === $required->key());
 
         if (! $isAskedFor) {
@@ -57,8 +57,6 @@ class StoreLicenceRequestUpload
         }
 
         $attributes = [
-            'name' => $required->document->name,
-            'kind' => $required->document->kind,
             'path' => $path,
             'original_name' => $file->getClientOriginalName(),
             'mime' => $file->getMimeType() ?? 'application/octet-stream',
@@ -79,7 +77,7 @@ class StoreLicenceRequestUpload
 
         return $licenceRequest->documents()->create([
             ...$attributes,
-            'licence_type_document_id' => $required->document->getKey(),
+            'document' => $required->document,
             'parent_index' => $required->parentIndex,
         ]);
     }

@@ -13,7 +13,6 @@ return [
     */
 
     'product_kind' => [
-        'licence_emission' => 'Emissione o rinnovo licenza',
         'enrollment' => 'Iscrizione al campionato',
         'package' => 'Pacchetto promozionale',
     ],

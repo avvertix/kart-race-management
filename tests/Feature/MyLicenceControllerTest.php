@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\RegisterParticipant;
-use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRole;
 use App\Enums\LicenceSource;
 use App\Models\Category;
 use App\Models\DriverLicence;
 use App\Models\Licence;
-use App\Models\LicenceGrade;
-use App\Models\LicenceType;
+use App\Models\LicenceRequest;
 use App\Models\Race;
 use App\Models\User;
+use Database\Factories\LicenceFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -35,8 +34,8 @@ class MyLicenceControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $own = Licence::factory()->for($user)->create(['holder' => \Database\Factories\LicenceFactory::holder('Giulia', 'Bianchi')]);
-        $other = Licence::factory()->create(['holder' => \Database\Factories\LicenceFactory::holder('Luca', 'Verdi')]);
+        $own = Licence::factory()->for($user)->create(['holder' => LicenceFactory::holder('Giulia', 'Bianchi')]);
+        $other = Licence::factory()->create(['holder' => LicenceFactory::holder('Luca', 'Verdi')]);
 
         $this->actingAs($user)
             ->get(route('my-licences.index'))
@@ -44,7 +43,7 @@ class MyLicenceControllerTest extends TestCase
             ->assertSee('Giulia Bianchi')
             ->assertDontSee('Luca Verdi')
             ->assertSee(route('my-licences.create'))
-            ->assertSee(route('public.products.index'));
+            ->assertSee(route('licence-requests.store'));
 
         $this->actingAs($user)->get(route('my-licences.show', $own))->assertSuccessful();
         $this->actingAs($user)->get(route('my-licences.show', $other))->assertForbidden();
@@ -57,14 +56,12 @@ class MyLicenceControllerTest extends TestCase
     public function test_user_declares_an_aci_licence(): void
     {
         $user = User::factory()->create();
-        $licenceType = LicenceType::factory()->create();
-        $grade = LicenceGrade::factory()->for($licenceType)->create(['level' => LicenceLevel::International, 'name' => 'International B']);
 
         $response = $this->actingAs($user)
             ->post(route('my-licences.store'), [
-                'licence_type' => $licenceType->ulid,
-                'level' => 'international',
-                'licence_grade' => $grade->getKey(),
+                'provider' => 'aci',
+                'licence_type' => 'int-e',
+                'includes_competitor' => '1',
                 'number' => '123456',
                 'validity_year' => now()->year,
                 'holder' => $this->holderInput(),
@@ -79,9 +76,10 @@ class MyLicenceControllerTest extends TestCase
         $this->assertEquals(LicenceSource::Declared, $licence->source);
         $this->assertEquals(LicenceProvider::Aci, $licence->provider);
         $this->assertEquals(LicenceRole::Driver, $licence->role);
-        $this->assertEquals(LicenceLevel::International, $licence->level);
+        $this->assertEquals('int-e', $licence->licence_type);
+        $this->assertTrue($licence->includes_competitor);
         $this->assertEquals(DriverLicence::LOCAL_INTERNATIONAL, $licence->race_licence_category);
-        $this->assertEquals('International B', $licence->gradeName());
+        $this->assertEquals('INT E with competitor licence', $licence->licenceTypeLabel());
         $this->assertFalse($licence->isVerified());
         $this->assertEquals('Giulia Bianchi', $licence->holder->fullName());
         $this->assertEquals('2010-05-14', $licence->holder->birth_date);
@@ -89,15 +87,15 @@ class MyLicenceControllerTest extends TestCase
         $this->assertEquals('Brescia', $licence->holder->residence_address->city);
     }
 
-    public function test_asi_licence_takes_the_race_category_of_its_type(): void
+    public function test_asi_licence_never_includes_the_competitor_licence(): void
     {
         $user = User::factory()->create();
-        $licenceType = LicenceType::factory()->asi()->create();
 
         $this->actingAs($user)
             ->post(route('my-licences.store'), [
-                'licence_type' => $licenceType->ulid,
-                'grade_other' => 'Agonistica',
+                'provider' => 'asi',
+                'licence_type' => 'driver',
+                'includes_competitor' => '1',
                 'number' => 'ASI-12345',
                 'validity_year' => now()->year,
                 'holder' => $this->holderInput(),
@@ -107,9 +105,80 @@ class MyLicenceControllerTest extends TestCase
         $licence = Licence::sole();
 
         $this->assertEquals(LicenceProvider::Asi, $licence->provider);
-        $this->assertNull($licence->level);
+        $this->assertFalse($licence->includes_competitor);
         $this->assertEquals(DriverLicence::LOCAL_NATIONAL, $licence->race_licence_category);
-        $this->assertEquals('Agonistica', $licence->gradeName());
+    }
+
+    public function test_only_listed_licence_types_can_be_declared(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->post(route('my-licences.store'), [
+                'provider' => 'asi',
+                'licence_type' => 'naz-e',
+                'number' => 'ASI-12345',
+                'validity_year' => now()->year,
+                'holder' => $this->holderInput(),
+            ])
+            ->assertSessionHasErrors('licence_type');
+
+        $this->assertDatabaseEmpty('licences');
+    }
+
+    public function test_renew_is_offered_on_the_latest_licence_of_each_holder(): void
+    {
+        $this->travelTo(now()->setDate(2026, 12, 5));
+
+        $user = User::factory()->create();
+        $giulia = LicenceFactory::holder('Giulia', 'Bianchi');
+
+        $older = Licence::factory()->for($user)->create(['holder' => $giulia, 'validity_year' => 2025]);
+        $latest = Licence::factory()->for($user)->create(['holder' => $giulia, 'validity_year' => 2026]);
+        $renewed = Licence::factory()->for($user)->create(['holder' => LicenceFactory::holder('Luca', 'Verdi'), 'validity_year' => 2027]);
+        $beingRenewed = Licence::factory()->for($user)->create(['holder' => LicenceFactory::holder('Anna', 'Neri'), 'validity_year' => 2026]);
+
+        LicenceRequest::factory()->for($user)->create(['previous_licence_number' => $beingRenewed->number]);
+
+        $this->actingAs($user)
+            ->get(route('my-licences.index'))
+            ->assertSuccessful()
+            ->assertSee('Renew for 2027')
+            ->assertSee('value="'.$latest->ulid.'"', false)
+            ->assertDontSee('value="'.$older->ulid.'"', false)
+            ->assertDontSee('value="'.$renewed->ulid.'"', false)
+            ->assertDontSee('value="'.$beingRenewed->ulid.'"', false);
+    }
+
+    public function test_a_licence_keeps_its_type_name_once_the_type_is_no_longer_offered(): void
+    {
+        config(['licences.types.aci.naz-c' => ['name' => 'NAZ C', 'role' => LicenceRole::Driver, 'active' => false]]);
+
+        $user = User::factory()->create();
+        Licence::factory()->for($user)->create(['licence_type' => 'naz-c']);
+
+        $this->actingAs($user)
+            ->get(route('my-licences.index'))
+            ->assertSuccessful()
+            ->assertSee('NAZ C');
+    }
+
+    public function test_renew_starts_a_pre_filled_request(): void
+    {
+        $user = User::factory()->create();
+        $licence = Licence::factory()->for($user)->create(['number' => 'A777']);
+
+        $response = $this->actingAs($user)
+            ->post(route('licence-requests.store'), ['licence' => $licence->ulid]);
+
+        $licenceRequest = LicenceRequest::sole();
+
+        $response->assertRedirect(route('licence-requests.edit', $licenceRequest));
+        $this->assertEquals('A777', $licenceRequest->previous_licence_number);
+
+        $this->actingAs(User::factory()->create())
+            ->post(route('licence-requests.store'), ['licence' => $licence->ulid])
+            ->assertNotFound();
+
+        $this->assertEquals(1, LicenceRequest::count());
     }
 
     public function test_number_and_holder_are_encrypted_and_the_hash_matches_race_registration(): void
@@ -143,15 +212,12 @@ class MyLicenceControllerTest extends TestCase
 
     public function test_the_same_number_and_year_cannot_be_declared_twice(): void
     {
-        $licenceType = LicenceType::factory()->create();
-
         Licence::factory()->create(['number' => '123456', 'validity_year' => now()->year, 'provider' => LicenceProvider::Aci]);
 
         $this->actingAs(User::factory()->create())
             ->post(route('my-licences.store'), [
-                'licence_type' => $licenceType->ulid,
-                'level' => 'national',
-                'grade_other' => 'C Senior',
+                'provider' => 'aci',
+                'licence_type' => 'naz-e',
                 'number' => '123456',
                 'validity_year' => now()->year,
                 'holder' => $this->holderInput(),
@@ -168,9 +234,8 @@ class MyLicenceControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('my-licences.update', $licence), [
-                'licence_type' => $licence->licenceType->ulid,
-                'level' => 'national',
-                'grade_other' => 'C Junior',
+                'provider' => 'aci',
+                'licence_type' => 'naz-e',
                 'number' => '654321',
                 'validity_year' => now()->year + 1,
                 'holder' => $this->holderInput(),
@@ -200,9 +265,8 @@ class MyLicenceControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('my-licences.update', $licence), [
-                'licence_type' => $licence->licenceType->ulid,
-                'level' => 'national',
-                'grade_other' => 'C Junior',
+                'provider' => 'aci',
+                'licence_type' => 'naz-e',
                 'number' => '654321',
                 'validity_year' => now()->year,
                 'holder' => $this->holderInput(),

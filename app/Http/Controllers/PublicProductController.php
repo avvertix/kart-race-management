@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\LicenceRequests\StartLicenceRequest;
 use App\Actions\Orders\PlaceOrder;
-use App\Models\LicenceRequest;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +32,7 @@ class PublicProductController extends Controller
      */
     public function show(Request $request, Product $product): View
     {
-        $product->load(['prices', 'licenceType.documents', 'championship']);
+        $product->load(['prices', 'championship']);
 
         return view('public-product.show', [
             'product' => $product,
@@ -64,18 +62,10 @@ class PublicProductController extends Controller
     }
 
     /**
-     * Place the order for the product. A licence product starts a Licence Request, which places the order.
+     * Place the order for the product.
      */
-    public function order(Request $request, Product $product, PlaceOrder $placeOrder, StartLicenceRequest $startLicenceRequest): RedirectResponse
+    public function order(Request $request, Product $product, PlaceOrder $placeOrder): RedirectResponse
     {
-        if ($product->sellsLicence()) {
-            $this->authorize('create', LicenceRequest::class);
-
-            $licenceRequest = $startLicenceRequest($request->user(), $product);
-
-            return redirect()->route('licence-requests.edit', $licenceRequest);
-        }
-
         $order = $placeOrder($request->user(), $product);
 
         return redirect()->route('my-orders.show', $order);

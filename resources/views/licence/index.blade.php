@@ -8,9 +8,14 @@
     </x-slot>
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
-            {{ __('All licences') }}
-        </h2>
+        <div class="flex flex-wrap justify-between items-center gap-2">
+            <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
+                {{ __('All licences') }}
+            </h2>
+            @can('viewAny', \App\Models\LicenceRequest::class)
+                <a href="{{ route('licence-request-reviews.index') }}" class="text-sm font-medium text-orange-600 hover:text-orange-900">{{ __('Requests to process (:count)', ['count' => $requestsToProcess]) }}</a>
+            @endcan
+        </div>
     </x-slot>
 
     <div class="pb-12">

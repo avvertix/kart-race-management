@@ -1,6 +1,7 @@
 @php
-    $openChangeRequests = $licenceRequest->changeRequests->whereNull('resolved_at');
-    $flaggedDocuments = $licenceRequest->documents->where('status', \App\Enums\LicenceRequestDocumentStatus::Flagged);
+    $isChangesRequested = $licenceRequest->status === \App\Enums\LicenceRequestStatus::ChangesRequested;
+    $openChangeRequests = $isChangesRequested ? $licenceRequest->changeRequests->whereNull('resolved_at') : collect();
+    $flaggedDocuments = $isChangesRequested ? $licenceRequest->documents->where('status', \App\Enums\LicenceRequestDocumentStatus::Flagged) : collect();
 
     $timeline = array_filter([
         [__('Started'), $licenceRequest->created_at],

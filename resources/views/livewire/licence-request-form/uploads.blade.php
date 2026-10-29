@@ -48,7 +48,7 @@
             @if ($canReplace)
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="file" wire:model="files.{{ $key }}" accept="image/png,image/jpeg,application/pdf" class="text-sm max-w-full" aria-label="{{ __('File for :document', ['document' => $required->document->label()]) }}">
-                    <x-secondary-button type="button" wire:click="upload('{{ $key }}')" wire:loading.attr="disabled" wire:target="files.{{ $key }},upload">
+                    <x-secondary-button type="button" wire:click="uploadDocument('{{ $key }}')" wire:loading.attr="disabled" wire:target="files.{{ $key }},uploadDocument">
                         {{ $upload ? __('Replace') : __('Upload') }}
                     </x-secondary-button>
                 </div>

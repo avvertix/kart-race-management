@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\LicenceDocument;
 use App\Enums\LicenceRequestDocumentStatus;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $mime
  * @property int $size
  * @property string $hash
+ * @property ?CarbonImmutable $uploaded_at
  * @property LicenceRequestDocumentStatus $status
  * @property ?string $note
  * @property-read LicenceRequest $licenceRequest
@@ -40,6 +42,7 @@ class LicenceRequestDocument extends Model
         'mime',
         'size',
         'hash',
+        'uploaded_at',
         'status',
         'note',
     ];
@@ -74,6 +77,14 @@ class LicenceRequestDocument extends Model
     }
 
     /**
+     * Whether the file was uploaded after the organizer last asked for changes: a replacement, or a document added then.
+     */
+    public function isUploadedAfter(?CarbonImmutable $changesRequestedAt): bool
+    {
+        return $changesRequestedAt !== null && $this->uploaded_at?->greaterThan($changesRequestedAt) === true;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -84,6 +95,7 @@ class LicenceRequestDocument extends Model
             'parent_index' => 'integer',
             'document' => LicenceDocument::class,
             'size' => 'integer',
+            'uploaded_at' => 'datetime',
             'status' => LicenceRequestDocumentStatus::class,
         ];
     }

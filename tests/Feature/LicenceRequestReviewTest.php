@@ -8,10 +8,13 @@ use App\Actions\LicenceRequests\EmitLicence;
 use App\Actions\LicenceRequests\FlagLicenceRequestSection;
 use App\Actions\LicenceRequests\ForwardLicenceRequest;
 use App\Actions\LicenceRequests\RequestLicenceRequestChanges;
+use App\Actions\LicenceRequests\ResubmitLicenceRequest;
 use App\Actions\LicenceRequests\ReviewLicenceRequestDocument;
 use App\Actions\LicenceRequests\ReviewLicenceRequestPayment;
 use App\Actions\LicenceRequests\SetLicenceRequestAmount;
+use App\Actions\LicenceRequests\StoreLicenceRequestUpload;
 use App\Actions\SubmitPaymentProof;
+use App\Data\RequiredDocument;
 use App\Enums\LicenceDocument;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestDocumentStatus;
@@ -102,6 +105,31 @@ class LicenceRequestReviewTest extends TestCase
             ->assertSee(route('licences.show', $other));
 
         $this->actingAs($organizer)->get(route('licence-requests.documents.show', [$licenceRequest, $document]))->assertSuccessful();
+    }
+
+    public function test_documents_show_what_changed_since_changes_were_requested(): void
+    {
+        $organizer = User::factory()->organizer()->create();
+        $licenceRequest = LicenceRequest::factory()->submitted()->withAllDocuments()->create();
+        $identity = $licenceRequest->documents()->where('document', LicenceDocument::IdentityDocument)->sole();
+        $identity->update(['uploaded_at' => now()->subDays(3)]);
+        $licenceRequest->documents()->where('document', '!=', LicenceDocument::IdentityDocument)->update(['uploaded_at' => now()->subDays(3)]);
+
+        $this->travel(-2)->days();
+        app(ReviewLicenceRequestDocument::class)($identity, $organizer, accept: false, note: 'Not visible.');
+        app(RequestLicenceRequestChanges::class)($licenceRequest, $organizer);
+        $this->travelBack();
+
+        $this->assertNotNull($licenceRequest->fresh()->changes_requested_at);
+
+        app(StoreLicenceRequestUpload::class)($licenceRequest->fresh(), new RequiredDocument(LicenceDocument::IdentityDocument), UploadedFile::fake()->create('identity.pdf', 10, 'application/pdf'));
+        app(ResubmitLicenceRequest::class)($licenceRequest->fresh());
+
+        $this->actingAs($organizer)
+            ->get(route('licence-request-reviews.show', $licenceRequest))
+            ->assertSuccessful()
+            ->assertSee('1 document replaced since you asked for changes')
+            ->assertSeeInOrder(['Identity document', 'New file', 'Your previous note', 'Not visible.', 'Medical certificate', 'Not reviewed yet']);
     }
 
     public function test_first_organizer_action_moves_the_request_to_review(): void

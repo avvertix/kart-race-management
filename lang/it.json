@@ -1268,5 +1268,9 @@
     "Yes": "Sì",
     "No": "No",
     "The licence is for the driver only": "La licenza è solo da conduttore",
-    "Leave it unchecked when the licence also covers the competitor.": "Lascia vuoto se la licenza comprende anche il concorrente."
+    "Leave it unchecked when the licence also covers the competitor.": "Lascia vuoto se la licenza comprende anche il concorrente.",
+    "New file": "Nuovo file",
+    "Not reviewed yet": "Non ancora verificato",
+    "Your previous note": "La tua nota precedente",
+    ":count document replaced since you asked for changes|:count documents replaced since you asked for changes": ":count documento sostituito da quando hai richiesto le modifiche|:count documenti sostituiti da quando hai richiesto le modifiche"
 }

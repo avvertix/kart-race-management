@@ -51,6 +51,7 @@ use Spatie\LaravelData\DataCollection;
  * @property ?int $covering_order_id
  * @property ?int $licence_id
  * @property ?CarbonImmutable $submitted_at
+ * @property ?CarbonImmutable $changes_requested_at
  * @property ?CarbonImmutable $forwarded_at
  * @property ?CarbonImmutable $emitted_at
  * @property ?CarbonImmutable $rejected_at
@@ -110,6 +111,7 @@ class LicenceRequest extends Model implements Payable
         'covering_order_id',
         'licence_id',
         'submitted_at',
+        'changes_requested_at',
         'forwarded_at',
         'emitted_at',
         'rejected_at',
@@ -585,6 +587,7 @@ class LicenceRequest extends Model implements Payable
             'priced_at' => 'datetime',
             'paid_at' => 'datetime',
             'submitted_at' => 'datetime',
+            'changes_requested_at' => 'datetime',
             'forwarded_at' => 'datetime',
             'emitted_at' => 'datetime',
             'rejected_at' => 'datetime',

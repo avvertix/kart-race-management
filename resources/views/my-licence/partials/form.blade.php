@@ -64,11 +64,12 @@
                     </div>
 
                     <div class="col-span-6" x-show="type?.allows_competitor">
-                        <label for="includes_competitor" class="flex items-center">
-                            <x-checkbox id="includes_competitor" name="includes_competitor" value="1" :checked="(bool) old('includes_competitor', $licence?->includes_competitor)" />
-                            <span class="ml-2">{{ __('The licence includes the competitor licence') }}</span>
+                        <label for="driver_only" class="flex items-center">
+                            <x-checkbox id="driver_only" name="driver_only" value="1" :checked="(bool) old('driver_only', $licence !== null && ! $licence->includes_competitor)" />
+                            <span class="ml-2">{{ __('The licence is for the driver only') }}</span>
                         </label>
-                        <x-input-error for="includes_competitor" class="mt-2" />
+                        <p class="text-zinc-600 text-sm">{{ __('Leave it unchecked when the licence also covers the competitor.') }}</p>
+                        <x-input-error for="driver_only" class="mt-2" />
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">

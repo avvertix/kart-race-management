@@ -1266,5 +1266,7 @@
     "No document uploaded yet.": "Nessun documento caricato.",
     "Requests to process (:count)": "Richieste da gestire (:count)",
     "Yes": "Sì",
-    "No": "No"
+    "No": "No",
+    "The licence is for the driver only": "La licenza è solo da conduttore",
+    "Leave it unchecked when the licence also covers the competitor.": "Lascia vuoto se la licenza comprende anche il concorrente."
 }

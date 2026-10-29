@@ -39,7 +39,7 @@ To add one:
 
 1. Pick a **code**: short, lowercase, with dashes, e.g. `int-f`. It is stored with every Licence and Licence Request of that type, so never change it or reuse it for another licence later.
 2. Write the **name** as printed on the licence. It is shown as is, not translated.
-3. Set the **role**: `LicenceRole::Driver` or `LicenceRole::Mechanic`. There is no competitor-only type: an ACI driver licence can include the competitor licence, which drivers say with a checkbox. ASI driver licences never include it.
+3. Set the **role**: `LicenceRole::Driver` or `LicenceRole::Mechanic`. There is no competitor-only type: an ACI driver licence includes the competitor licence unless drivers tick *The licence is for the driver only*. ASI driver licences never include it.
 4. For drivers, set **race_licence_category**: the `App\Models\DriverLicence` value the licence counts as in race registration and exports. National ACI licences are `LOCAL_NATIONAL`, international ones `LOCAL_INTERNATIONAL`, *Daily* is `DAILY` and *EasyRace* is `EASYRACE`. Mechanics have none. If no category fits, adding one changes race registration and exports too: treat it as a separate change.
 5. List the types in the order drivers should see them: the list keeps it.
 6. Run `php artisan test --compact tests/Feature/LicenceCatalogueTest.php` and, on a deployed instance, `php artisan config:cache` if the configuration is cached.

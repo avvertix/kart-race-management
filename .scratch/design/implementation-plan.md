@@ -66,13 +66,26 @@ Rules for every phase:
 - Actions: `SubmitLicenceRequest` (validates completeness and creates the Order from the Licence Type's product), `ResubmitLicenceRequest`.
 - Request detail page with a status timeline and the open change requests.
 
+### A5b. Licence catalogue in code, renewals without Products
+
+Supersedes the Licence Type configuration of A2 and the Product/Order link of A5 ([ADR 0004](../../docs/adr/0004-licence-renewals-outside-products.md)). Details in `.scratch/issues/A5b-licence-catalogue-and-renewals.md`.
+
+- Licence Types are fixed lists per provider in `config/licences.php` (code, name, role, race licence category, active). `LicenceLevel`, Licence Grades and the `/m/licence-types` pages go away.
+- Six fixed documents chosen by the holder's age; the organizer checks they fit the Licence Type.
+- Requests are renewals only, started from My licences, with the previous licence number. ACI driver types ask "also competitor licence".
+- A request has its own payment (amount set by the organizer, proof, confirmation), or is covered by a paid package Order (C4).
+- The unreleased A2–A5 migrations are rewritten in place.
+
 ### A6. Licence Request processing (organizer)
 
 - Queue page `/m/licence-requests`, filterable by status, oldest submitted first.
-- Review page: sections and documents with accept/flag, payment proof with confirm. Wireframe variant to pick: see Prototype.
-- Actions: `RequestLicenceRequestChanges`, `ForwardLicenceRequest` (requires a paid Order), `EmitLicence` (uploads the PDF, number and validity year; creates the `Licence`), `RejectLicenceRequest`.
+- Review page: sections and documents with accept/flag, the request payment with amount and proof confirmation. Wireframe variant to pick: see Prototype.
+- Actions: `RequestLicenceRequestChanges`, `ForwardLicenceRequest` (requires a paid or covered request), `EmitLicence` (uploads the PDF, number and validity year; creates the `Licence`; the number is pre-filled from the previous one for ACI), `RejectLicenceRequest`.
 - `EmitLicence` default validity year: the request's `submitted_at` year, or the next year when submitted in December.
-- Single merged PDF of the request: the summary page (dompdf) plus uploaded PDFs and images. **Needs a dependency** to merge PDFs (e.g. `setasign/fpdi`); approval required.
+
+### A9. Licence Request as a single PDF
+
+- The summary page (dompdf) plus uploaded PDFs and images, split out of A6. **Needs a dependency** to merge PDFs; approval required.
 
 ### A7. Notifications
 
@@ -86,9 +99,21 @@ Rules for every phase:
 ### Open decisions for Phase A
 
 1. ~~Encryption at rest~~ **Decided:** private disk plus volume encryption at deployment, documented in the deploy notes. No `Crypt` on file contents.
-2. **PDF merge dependency**, for the single PDF (A6): still open, decided inside the A6 issue. `setasign/fpdi`'s free parser can't read PDF 1.5+ files with compressed xref streams; alternatives are `qpdf`/`ghostscript` in the Docker image, or a ZIP fallback.
+2. **PDF merge dependency**, for the single PDF: still open, decided inside the A9 issue. `setasign/fpdi`'s free parser can't read PDF 1.5+ files with compressed xref streams; alternatives are `qpdf`/`ghostscript` in the Docker image, or a ZIP fallback.
 3. ~~Organizer recipient~~ **Decided:** `races.organizer.email`.
-4. **Reprice after a rejected proof**, to check at the end of Phase A. A3 refuses to change an Order's price once any proof was uploaded, rejected ones included (`Order::canBePriced()`), following "the price cannot change after a proof is uploaded". Allowing a new price after a rejection only needs `canBePriced()` to ignore rejected proofs.
+4. **Reprice after a rejected proof**, to check at the end of Phase A. A3 refuses to change an Order's price once any proof was uploaded, rejected ones included (`Order::canBePriced()`), following "the price cannot change after a proof is uploaded". Allowing a new price after a rejection only needs `canBePriced()` to ignore rejected proofs. The same question now also applies to the Licence Request payment (A5b).
+
+### Decisions from review (2026-10-29)
+
+These replace the 2026-10-26 decisions on Licence Grades, licence Products and starting a request from a Product.
+
+- Licence Types are fixed per provider in the code, maintained by developers; organizers configure none. "Licence Type" names the specific licence (e.g. NAZ E, Daily); Licence Grade and `LicenceLevel` are dropped. Each driver type records its race licence category for race registration only.
+- ACI driver types can include the competitor licence (one Licence, one number); ACI has no competitor-only licence. Mechanic licences stay. ASI has neither distinction.
+- Documents: identity document (holder, and each parent when underage), medical certificate, privacy, delegation, parental authorisation (underage). No self-declaration, no car driving licence.
+- The platform handles renewals only; first emissions are arranged with the organizer outside it. Renewals start from My licences: "Renew licence" (previous number typed) or "Renew" on each holder's latest Licence (pre-filled from the User's own Licences only).
+- Licence Requests are not Products or Orders. A request carries its own payment, or is covered by a paid Promotional Package Order (C4). Products are left for enrollments, race fees and special offers.
+- ACI licence numbers stay the same across years, ASI ones change: the emit form pre-fills the previous number for ACI only.
+- Declared Licences pick from the same lists, with no free text.
 
 ### Decisions from review (2026-10-26)
 

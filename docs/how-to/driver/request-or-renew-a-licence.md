@@ -1,27 +1,32 @@
-# Request or renew a licence
+# Renew a licence
 
-You need an account. One account can hold requests for several people, e.g. you and your child, or the drivers of your team. Each licence is a separate request.
+You need an account with a confirmed email address: notifications about your request are sent to it. One account can hold requests for several people, e.g. you and your child, or the drivers of your team. Each licence is a separate request.
 
-1. **Open the licences page**, or the link to an offer you received, and read what each licence and package includes, costs and needs. These pages are public.
-2. **Sign in or create an account**, and confirm your email address. You need a verified account to place an order: notifications about your request are sent to it.
-3. **Choose what you are buying**: a licence on its own, or a promotional package, e.g. a licence with the first race fee and the right to reserve your race number. Your order is created now, at today's price; you can pay later. Some licences show a price range: the organizer tells you the final price after checking your request, and only then can you pay.
-4. **Choose the licence.** For ACI, choose national or international, then the licence type from the list. If yours isn't listed, choose *Other* and write it. ASI licences have no national or international level.
-5. **Fill in the holder's details.** If the holder is underage, also fill in at least one parent or guardian; a second one is optional.
-6. **Pick your race number**, if your package includes a championship enrollment. It is held for you and confirmed with the enrollment.
-7. **Upload the documents** listed for that licence, e.g. identity card, fiscal code, medical certificate and the self-declaration.
-8. **Download the pre-filled forms** (delegation, privacy, parental authorisation), sign them and upload them.
-9. **Upload the payment proof**, now or later. With a price range, wait for the final price.
-10. **Review and submit.**
+The platform handles renewals of ACI and ASI licences. For a first licence, write to the organizer: the address is on **My licences**.
+
+1. **Open My licences.**
+   - Next to the latest licence of each holder you see **Renew for** the coming year: it starts a request already filled in with that licence, its holder and its number.
+   - Use **Renew licence** when last year's licence isn't in your account. You type its number yourself.
+2. **Choose the licence.** Pick the provider, if the organizer works with more than one, and the licence you need this year from the list. It can differ from last year's, e.g. moving from a national to an international licence. For an ACI driver licence, say whether you also need the competitor licence. Check last year's licence number.
+3. **Fill in the holder's details.** If the holder is underage, also fill in at least one parent or guardian; a second one is optional.
+4. **Upload the documents:** the holder's identity document and medical certificate, plus each parent's identity document when the holder is underage.
+5. **Download the pre-filled forms** (privacy, delegation and, for an underage holder, parental authorisation), sign them and upload them.
+6. **Review and submit.**
 
 You can stop at any step: the request stays saved as a draft for as long as you need.
+
+## Paying
+
+The organizer sets the amount after checking your request, since it depends on the licence. Once it is set, the request shows the bank details: pay by bank transfer and upload the payment proof from the request. The organizer sends the request to the provider only once the payment is confirmed.
+
+If you bought a promotional package that includes the renewal, the request shows it is covered by your order and there is nothing to pay.
 
 ## After submitting
 
 - Follow the request status in your account.
-- If you haven't paid yet, upload the payment proof from the request. The organizer sends the request to the provider only once the payment is confirmed.
 - If the organizer asks for changes, you are notified. Fix only the flagged documents or sections, then submit again.
 - When the licence is emitted, download the temporary licence PDF from your account. The licence is now available for enrollments and race registrations.
 
 ## Already have a licence?
 
-If you got your licence elsewhere, e.g. renewed directly with the provider, add it to your account as a declared licence. You can use it right away to enroll; the organizer verifies it before confirming the enrollment.
+If you got your licence elsewhere, e.g. renewed directly with the provider, add it to your account as a declared licence, picking its type from the same list. You can use it right away to enroll; the organizer verifies it before confirming the enrollment.

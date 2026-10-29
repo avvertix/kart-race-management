@@ -23,18 +23,20 @@ return new class extends Migration
             // The User who requests, not necessarily the holder
             $table->foreignId('user_id');
 
-            // The licence Product picked, plain or Package
-            $table->foreignId('product_id');
+            // LicenceProvider, null until the licence section is saved
+            $table->string('provider', 20)->nullable();
 
-            $table->foreignId('licence_type_id');
+            // Code of the Licence Type in config/licences.php
+            $table->string('licence_type', 50)->nullable();
 
-            // LicenceLevel, ACI only
-            $table->string('level', 20)->nullable();
+            // ACI driver licences only
+            $table->boolean('includes_competitor')->default(false);
 
-            $table->foreignId('licence_grade_id')->nullable();
+            // The number of the licence being renewed, encrypted
+            $table->text('previous_licence_number')->nullable();
 
-            // Grade written by the User when not in the list
-            $table->string('grade_other', 250)->nullable();
+            // sha512 of the previous number, as licences.number_hash
+            $table->string('previous_licence_number_hash', 128)->nullable()->index();
 
             // LicenceRequestStatus
             $table->string('status', 30);
@@ -45,7 +47,24 @@ return new class extends Migration
             // Encrypted list of HolderData, underage holders only
             $table->text('parents')->nullable();
 
-            $table->foreignId('order_id')->nullable();
+            // LicenceRequestPaymentStatus
+            $table->string('payment_status', 30);
+
+            // Set by the organizer, in cents
+            $table->unsignedInteger('amount')->nullable();
+
+            $table->string('currency', 3)->default('EUR');
+
+            $table->foreignId('priced_by')->nullable();
+
+            $table->timestamp('priced_at')->nullable();
+
+            $table->foreignId('payment_confirmed_by')->nullable();
+
+            $table->timestamp('paid_at')->nullable();
+
+            // The paid Promotional Package Order covering the renewal
+            $table->foreignId('covering_order_id')->nullable();
 
             // The Licence created on emission
             $table->foreignId('licence_id')->nullable();

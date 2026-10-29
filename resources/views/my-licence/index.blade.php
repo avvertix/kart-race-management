@@ -9,9 +9,12 @@
                 {{ __('My licences') }}
             </h2>
             <div class="flex flex-wrap gap-2">
-                <x-button-link href="{{ route('public.products.index') }}">
-                    {{ __('Request a licence') }}
-                </x-button-link>
+                @can('create', \App\Models\LicenceRequest::class)
+                    <form method="POST" action="{{ route('licence-requests.store') }}">
+                        @csrf
+                        <x-button>{{ __('Renew licence') }}</x-button>
+                    </form>
+                @endcan
                 @can('create', \App\Models\Licence::class)
                     <x-secondary-button-link href="{{ route('my-licences.create') }}">
                         {{ __('Add a licence I already have') }}
@@ -26,6 +29,11 @@
 
             <p class="text-sm text-zinc-600 max-w-prose">{{ __('The licences of the people you act for: yourself, your children or the drivers of your team. Each licence holds its holder\'s details.') }}</p>
 
+            <p class="text-sm text-zinc-600 max-w-prose">
+                {{ __('Licence renewals are requested here. For a first licence, write to the organizer:') }}
+                <a href="mailto:{{ config('races.organizer.email') }}" class="text-orange-600 hover:text-orange-900">{{ config('races.organizer.email') }}</a>
+            </p>
+
             @if ($licenceRequests->isNotEmpty())
                 <section class="space-y-2">
                     <h3 class="font-semibold text-zinc-800">{{ __('Open requests') }}</h3>
@@ -34,7 +42,7 @@
                             <li class="flex flex-wrap items-center gap-2 p-3">
                                 <div class="flex-1 min-w-48">
                                     <p class="font-medium text-zinc-900">{{ $licenceRequest->holder?->fullName() ?? __('Holder not filled in yet') }}</p>
-                                    <p class="text-sm text-zinc-500">{{ $licenceRequest->product->title }} &middot; {{ $licenceRequest->status->label() }}</p>
+                                    <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ $licenceRequest->status->label() }}</p>
                                 </div>
                                 <a href="{{ route('licence-requests.show', $licenceRequest) }}" class="text-sm font-medium text-orange-600 hover:text-orange-900">{{ __('Open') }}</a>
                             </li>
@@ -59,18 +67,27 @@
                         <td class="py-4 pl-4 pr-3 text-sm text-zinc-900 sm:pl-6 font-medium">{{ $item->holder->fullName() }}</td>
                         <td class="px-3 py-4 text-sm text-zinc-500">
                             <p class="text-zinc-900 font-mono">{{ $item->number }}</p>
-                            <p>{{ $item->provider->label() }} &middot; {{ $item->licenceType?->name ?? $item->role->label() }} &middot; {{ $item->gradeName() }}</p>
+                            <p>{{ $item->provider->label() }} &middot; {{ $item->licenceTypeLabel() }}</p>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->validity_year }}</td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">@include('my-licence.partials.status', ['licence' => $item])</td>
                         <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                            <a href="{{ route('my-licences.show', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Open') }}<span class="sr-only">, {{ $item->number }}</span></a>
+                            <div class="flex justify-end items-center gap-3">
+                                @if (in_array($item->getKey(), $renewableLicenceIds, true))
+                                    <form method="POST" action="{{ route('licence-requests.store') }}">
+                                        @csrf
+                                        <input type="hidden" name="licence" value="{{ $item->ulid }}">
+                                        <button type="submit" class="text-orange-600 hover:text-orange-900">{{ __('Renew for :year', ['year' => $renewalYear]) }}<span class="sr-only">, {{ $item->number }}</span></button>
+                                    </form>
+                                @endif
+                                <a href="{{ route('my-licences.show', $item) }}" class="text-orange-600 hover:text-orange-900">{{ __('Open') }}<span class="sr-only">, {{ $item->number }}</span></a>
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
                         <td colspan="5" class="px-3 py-4 space-y-2 text-center">
-                            <p>{{ __('No licences yet. Request one, or add a licence you already have.') }}</p>
+                            <p>{{ __('No licences yet. Renew one, or add a licence you already have.') }}</p>
                         </td>
                     </tr>
                 @endforelse

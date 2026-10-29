@@ -16,14 +16,14 @@ Tutorials will be added once the features can be tried end to end.
 For organizers:
 
 - [Configure a new championship](how-to/organizer/configure-a-new-championship.md)
-- [Set up licence types, products and prices](how-to/organizer/set-up-licence-types-and-products.md)
+- [Set up products and prices](how-to/organizer/set-up-products-and-prices.md)
 - [Process a licence request](how-to/organizer/process-a-licence-request.md)
 - [Confirm enrollments and race numbers](how-to/organizer/confirm-enrollments-and-race-numbers.md)
 - [Issue promo codes](how-to/organizer/issue-promo-codes.md)
 
 For drivers, parents and team managers:
 
-- [Request or renew a licence](how-to/driver/request-or-renew-a-licence.md)
+- [Renew a licence](how-to/driver/request-or-renew-a-licence.md)
 - [Enroll in a championship and reserve a race number](how-to/driver/enroll-in-a-championship.md)
 - [Use a promo code](how-to/driver/use-a-promo-code.md)
 - [Register for a race](how-to/driver/register-for-a-race.md)

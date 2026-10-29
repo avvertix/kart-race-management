@@ -1,5 +1,4 @@
 @php
-    $order = $licenceRequest->order;
     $openChangeRequests = $licenceRequest->changeRequests->whereNull('resolved_at');
     $flaggedDocuments = $licenceRequest->documents->where('status', \App\Enums\LicenceRequestDocumentStatus::Flagged);
 
@@ -29,7 +28,7 @@
                 </x-button-link>
             @endcan
         </div>
-        <p class="text-sm text-zinc-500">{{ $licenceRequest->product->title }} &middot; {{ $licenceRequest->status->label() }}</p>
+        <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ $licenceRequest->status->label() }}</p>
     </x-slot>
 
     <div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8 max-w-3xl space-y-6">
@@ -48,7 +47,7 @@
                         <li><span class="font-semibold">{{ $changeRequest->section->label() }}:</span> {{ $changeRequest->note }}</li>
                     @endforeach
                     @foreach ($flaggedDocuments as $document)
-                        <li><span class="font-semibold">{{ $document->name }}:</span> {{ $document->note }}</li>
+                        <li><span class="font-semibold">{{ $document->document->label() }}:</span> {{ $document->note }}</li>
                     @endforeach
                 </ul>
             </section>
@@ -75,25 +74,48 @@
             </ol>
         </section>
 
-        @if ($order)
-            <section class="rounded-md border border-zinc-200 bg-white p-4 space-y-2">
-                <h3 class="font-semibold text-zinc-800">{{ __('Payment') }}</h3>
-                <p class="text-sm">
-                    <span class="font-mono tabular-nums">{{ $order->amountLabel() }}</span>
-                    &middot; {{ $order->status->label() }}
-                </p>
-                @if ($order->status === \App\Enums\OrderStatus::AwaitingPayment)
-                    <a href="{{ route('my-orders.show', $order) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Pay and upload the payment proof') }}</a>
-                @elseif ($order->status === \App\Enums\OrderStatus::AwaitingPrice)
-                    <p class="text-sm text-zinc-600">{{ __('The organizer confirms the final price after checking your request. You can pay once it is set.') }}</p>
+        <section class="rounded-md border border-zinc-200 bg-white p-4 space-y-2">
+            <h3 class="font-semibold text-zinc-800">{{ __('Payment') }}</h3>
+            <p class="text-sm">
+                @if ($licenceRequest->amountLabel())
+                    <span class="font-mono tabular-nums">{{ $licenceRequest->amountLabel() }}</span> &middot;
                 @endif
-            </section>
-        @endif
+                {{ $licenceRequest->payment_status->label() }}
+            </p>
+            @if ($licenceRequest->payment_status === \App\Enums\LicenceRequestPaymentStatus::AwaitingPrice)
+                <p class="text-sm text-zinc-600">{{ __('The organizer sets the amount after checking your request. You can pay once it is set.') }}</p>
+            @elseif ($licenceRequest->payment_status === \App\Enums\LicenceRequestPaymentStatus::AwaitingPayment)
+                @can('pay', $licenceRequest)
+                    <div class="space-y-2 text-sm">
+                        <p>{{ __('Pay by bank transfer to:') }}</p>
+                        <p class="rounded-sm border border-zinc-200 bg-zinc-50 p-2">
+                            {{ config('races.organizer.bank_holder') }}
+                            <br>{{ config('races.organizer.bank') }}
+                            <br><span class="font-mono select-all break-all">{{ config('races.organizer.bank_account') }}</span>
+                        </p>
+                        <p>{{ __('Use the following text as the bank transfer reason:') }} <span class="font-mono select-all break-all">{{ $licenceRequest->ulid }}</span></p>
+
+                        @if ($licenceRequest->latestPayment)
+                            <p class="rounded-md border border-amber-400 bg-amber-50 px-2 py-1 text-amber-700">{{ __('The organizer could not confirm the previous payment proof. Upload a new one.') }}</p>
+                        @endif
+
+                        <form method="POST" action="{{ route('licence-requests.payment.store', $licenceRequest) }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+                            @csrf
+                            <input type="file" name="proof" accept="image/png,image/jpeg,application/pdf" class="text-sm max-w-full" aria-label="{{ __('Payment proof') }}" required>
+                            <x-secondary-button type="submit">{{ __('Upload payment proof') }}</x-secondary-button>
+                        </form>
+                        <x-input-error for="proof" />
+                    </div>
+                @endcan
+            @elseif ($licenceRequest->payment_status === \App\Enums\LicenceRequestPaymentStatus::Covered)
+                <p class="text-sm text-zinc-600">{{ __('Covered by your order :order.', ['order' => $licenceRequest->coveringOrder?->ulid]) }}</p>
+            @endif
+        </section>
 
         @can('delete', $licenceRequest)
             <section class="rounded-md border border-zinc-200 bg-white p-4 space-y-2">
                 <h3 class="font-semibold text-zinc-800">{{ __('Delete draft') }}</h3>
-                <p class="text-sm text-zinc-600">{{ __('Deleting the draft removes its files and cancels its order.') }}</p>
+                <p class="text-sm text-zinc-600">{{ __('Deleting the draft removes its files.') }}</p>
 
                 <flux:modal.trigger name="confirm-request-deletion">
                     <x-danger-button>{{ __('Delete draft') }}</x-danger-button>
@@ -106,7 +128,7 @@
 
                         <div>
                             <flux:heading size="lg">{{ __('Delete this licence request?') }}</flux:heading>
-                            <flux:subheading>{{ __('The draft, its uploaded files and its order are removed and cannot be restored.') }}</flux:subheading>
+                            <flux:subheading>{{ __('The draft and its uploaded files are removed and cannot be restored.') }}</flux:subheading>
                         </div>
 
                         <div class="flex justify-end gap-2">

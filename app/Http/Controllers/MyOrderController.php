@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\Orders\SubmitOrderPayment;
+use App\Actions\SubmitPaymentProof;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,7 +29,7 @@ class MyOrderController extends Controller
     /**
      * Upload the payment proof.
      */
-    public function pay(Request $request, Order $order, SubmitOrderPayment $submitOrderPayment): RedirectResponse
+    public function pay(Request $request, Order $order, SubmitPaymentProof $submitPaymentProof): RedirectResponse
     {
         $this->authorize('pay', $order);
 
@@ -37,7 +37,7 @@ class MyOrderController extends Controller
             'proof' => 'required|file',
         ]);
 
-        $submitOrderPayment($order, $request->file('proof'));
+        $submitPaymentProof($order, $request->file('proof'));
 
         return redirect()->route('my-orders.show', $order)
             ->with('flash.banner', __('Payment proof uploaded. The organizer will confirm it.'));

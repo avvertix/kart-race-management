@@ -59,7 +59,7 @@
                         <td class="py-4 pl-4 pr-3 text-sm text-zinc-900 sm:pl-6 font-medium">{{ $item->holder->fullName() }}</td>
                         <td class="px-3 py-4 text-sm text-zinc-500">
                             <p class="text-zinc-900 font-mono">{{ $item->number }}</p>
-                            <p>{{ $item->provider->label() }} &middot; {{ $item->licenceType?->name ?? $item->role->label() }} &middot; {{ $item->gradeName() }}</p>
+                            <p>{{ $item->provider->label() }} &middot; {{ $item->licenceTypeLabel() }}</p>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->validity_year }}</td>
                         <td class="px-3 py-4 text-sm text-zinc-500">{{ $item->user?->name }}</td>

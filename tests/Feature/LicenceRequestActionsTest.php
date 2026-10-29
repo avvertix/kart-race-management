@@ -6,25 +6,26 @@ namespace Tests\Feature;
 
 use App\Actions\LicenceRequests\DeleteLicenceRequestDraft;
 use App\Actions\LicenceRequests\ResubmitLicenceRequest;
-use App\Actions\LicenceRequests\StartLicenceRequest;
+use App\Actions\LicenceRequests\StartLicenceRenewal;
 use App\Actions\LicenceRequests\StoreLicenceRequestUpload;
 use App\Actions\LicenceRequests\SubmitLicenceRequest;
-use App\Actions\LicenceRequests\SwitchLicenceRequestProduct;
+use App\Actions\SubmitPaymentProof;
 use App\Data\RequiredDocument;
+use App\Enums\LicenceDocument;
 use App\Enums\LicenceDocumentKind;
-use App\Enums\LicenceDocumentScope;
+use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestDocumentStatus;
+use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
-use App\Enums\OrderStatus;
+use App\Enums\LicenceRole;
+use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestChangeRequest;
 use App\Models\LicenceRequestDocument;
-use App\Models\LicenceType;
-use App\Models\LicenceTypeDocument;
-use App\Models\Price;
-use App\Models\Product;
 use App\Models\User;
+use Database\Factories\LicenceFactory;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -40,116 +41,103 @@ class LicenceRequestActionsTest extends TestCase
         parent::setUp();
 
         Storage::fake('licence-documents');
+        Storage::fake('payments');
     }
 
-    public function test_starting_a_request_places_the_order_and_creates_a_draft(): void
+    public function test_renewing_a_licence_pre_fills_the_draft(): void
     {
         $user = User::factory()->create();
-        $product = Price::factory()->create(['amount' => 18000])->product;
+        $licence = Licence::factory()->for($user)->create([
+            'number' => 'A123456',
+            'includes_competitor' => true,
+            'holder' => LicenceFactory::holder('Giulia', 'Bianchi'),
+        ]);
 
-        $licenceRequest = app(StartLicenceRequest::class)($user, $product);
+        $licenceRequest = app(StartLicenceRenewal::class)($user, $licence);
 
         $this->assertEquals(LicenceRequestStatus::Draft, $licenceRequest->status);
+        $this->assertEquals(LicenceRequestPaymentStatus::AwaitingPrice, $licenceRequest->payment_status);
         $this->assertTrue($licenceRequest->user->is($user));
-        $this->assertTrue($licenceRequest->product->is($product));
-        $this->assertEquals($product->licence_type_id, $licenceRequest->licence_type_id);
-        $this->assertEquals(OrderStatus::AwaitingPayment, $licenceRequest->order->status);
-        $this->assertTrue($licenceRequest->order->user->is($user));
+        $this->assertEquals(LicenceProvider::Aci, $licenceRequest->provider);
+        $this->assertEquals('naz-e', $licenceRequest->licence_type);
+        $this->assertTrue($licenceRequest->includes_competitor);
+        $this->assertEquals('A123456', $licenceRequest->previous_licence_number);
+        $this->assertEquals(Licence::hashNumber('A123456'), $licenceRequest->previous_licence_number_hash);
+        $this->assertEquals('Giulia Bianchi', $licenceRequest->holder->fullName());
     }
 
-    public function test_only_licence_products_start_a_request(): void
+    public function test_renewing_a_licence_no_longer_offered_asks_for_the_type_again(): void
     {
-        $product = Price::factory()->for(Product::factory()->enrollment())->create()->product;
+        config(['licences.types.aci.naz-c' => ['name' => 'NAZ C', 'role' => LicenceRole::Driver, 'active' => false]]);
 
-        $this->expectException(ValidationException::class);
+        $user = User::factory()->create();
+        $licence = Licence::factory()->for($user)->create(['licence_type' => 'naz-c']);
+
+        $licenceRequest = app(StartLicenceRenewal::class)($user, $licence);
+
+        $this->assertNull($licenceRequest->licence_type);
+        $this->assertFalse($licenceRequest->isSectionComplete(LicenceRequestSection::Licence));
+    }
+
+    public function test_licences_managed_by_someone_else_cannot_be_renewed(): void
+    {
+        $licence = Licence::factory()->create();
+
+        $this->expectException(AuthorizationException::class);
 
         try {
-            app(StartLicenceRequest::class)(User::factory()->create(), $product);
+            app(StartLicenceRenewal::class)(User::factory()->create(), $licence);
         } finally {
             $this->assertDatabaseEmpty('licence_requests');
-            $this->assertDatabaseEmpty('orders');
         }
     }
 
-    public function test_switching_product_cancels_the_order_and_places_a_new_one(): void
+    public function test_renewal_without_a_licence_starts_empty(): void
     {
-        $user = User::factory()->create();
-        $licenceType = LicenceType::factory()->create();
-        $plain = Price::factory()->for(Product::factory()->for($licenceType))->create(['amount' => 18000])->product;
-        $package = Price::factory()->for(Product::factory()->for($licenceType)->state(['kind' => 'package']))->create(['amount' => 25000])->product;
+        $licenceRequest = app(StartLicenceRenewal::class)(User::factory()->create());
 
-        $licenceRequest = app(StartLicenceRequest::class)($user, $plain);
-        $firstOrder = $licenceRequest->order;
-
-        app(SwitchLicenceRequestProduct::class)($licenceRequest, $package);
-
-        $licenceRequest->refresh();
-
-        $this->assertTrue($licenceRequest->product->is($package));
-        $this->assertEquals(OrderStatus::Cancelled, $firstOrder->fresh()->status);
-        $this->assertFalse($licenceRequest->order->is($firstOrder));
-        $this->assertEquals(25000, $licenceRequest->order->total);
+        $this->assertNull($licenceRequest->licence_type);
+        $this->assertNull($licenceRequest->previous_licence_number);
+        $this->assertNull($licenceRequest->holder);
     }
 
-    public function test_switching_to_another_licence_type_clears_the_licence_choice_and_its_files(): void
-    {
-        $user = User::factory()->create();
-        $first = Price::factory()->create()->product;
-        $other = Price::factory()->create()->product;
-
-        $document = LicenceTypeDocument::factory()->for($first->licenceType)->create();
-
-        $licenceRequest = app(StartLicenceRequest::class)($user, $first);
-        $licenceRequest->update(['level' => 'national', 'grade_other' => 'C Senior']);
-
-        $upload = app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument($document), UploadedFile::fake()->create('id.pdf', 10, 'application/pdf'));
-
-        app(SwitchLicenceRequestProduct::class)($licenceRequest, $other);
-
-        $licenceRequest->refresh();
-
-        $this->assertEquals($other->licence_type_id, $licenceRequest->licence_type_id);
-        $this->assertNull($licenceRequest->level);
-        $this->assertNull($licenceRequest->grade_other);
-        $this->assertModelMissing($upload);
-        Storage::disk('licence-documents')->assertMissing($upload->path);
-    }
-
-    public function test_adult_holders_need_no_parents_nor_underage_documents(): void
+    public function test_adult_holders_need_four_documents_and_no_parents(): void
     {
         $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->create();
-        $licenceType = $licenceRequest->licenceType;
-
-        $identity = LicenceTypeDocument::factory()->for($licenceType)->create(['scope' => LicenceDocumentScope::Holder]);
-        LicenceTypeDocument::factory()->for($licenceType)->create(['scope' => LicenceDocumentScope::EachParent, 'underage_only' => true]);
-
-        $licenceRequest->refresh();
 
         $this->assertFalse($licenceRequest->isUnderage());
         $this->assertNotContains(LicenceRequestSection::Parents, $licenceRequest->sections());
-        $this->assertEquals([$identity->getKey()], $licenceRequest->requiredDocuments(LicenceDocumentKind::Upload)->map->document->map->getKey()->all());
+        $this->assertEquals(['identity_document', 'medical_certificate'], $this->requiredKeys($licenceRequest, LicenceDocumentKind::Upload));
+        $this->assertEquals(['privacy', 'delegation'], $this->requiredKeys($licenceRequest, LicenceDocumentKind::SignedForm));
     }
 
-    public function test_underage_request_needs_documents_for_each_parent_entered(): void
+    public function test_underage_holders_also_need_parental_authorisation_and_each_parent_identity(): void
     {
-        $licenceRequest = LicenceRequest::factory()->underage()->create();
+        $holder = LicenceFactory::holder('Luca', 'Rossi');
+        $holder->birth_date = now()->subYears(12)->toDateString();
 
-        $parentIdentity = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->create(['scope' => LicenceDocumentScope::EachParent, 'underage_only' => true]);
-
-        $licenceRequest->refresh();
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder($holder)->create([
+            'parents' => [LicenceFactory::holder('Mario', 'Rossi'), LicenceFactory::holder('Anna', 'Rossi')],
+        ]);
 
         $this->assertTrue($licenceRequest->isUnderage());
         $this->assertContains(LicenceRequestSection::Parents, $licenceRequest->sections());
-        $this->assertEquals(['documents'], array_map(fn ($section) => $section->value, $licenceRequest->missingSections()));
+        $this->assertEquals(['identity_document', 'identity_document-0', 'identity_document-1', 'medical_certificate'], $this->requiredKeys($licenceRequest, LicenceDocumentKind::Upload));
+        $this->assertEquals(['privacy', 'delegation', 'parental_authorisation'], $this->requiredKeys($licenceRequest, LicenceDocumentKind::SignedForm));
+    }
 
-        app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument($parentIdentity, 0), UploadedFile::fake()->create('parent.pdf', 10, 'application/pdf'));
+    public function test_request_is_complete_once_every_document_is_uploaded(): void
+    {
+        $withoutDocuments = LicenceRequest::factory()->underage()->create();
+        $withDocuments = LicenceRequest::factory()->underage()->withAllDocuments()->create();
 
-        $this->assertEquals([], $licenceRequest->refresh()->missingSections());
+        $this->assertEquals(['documents', 'forms'], array_map(fn ($section) => $section->value, $withoutDocuments->missingSections()));
+        $this->assertEquals([], $withDocuments->missingSections());
     }
 
     public function test_underage_request_cannot_be_submitted_without_a_parent(): void
     {
-        $licenceRequest = LicenceRequest::factory()->underage()->create(['parents' => []]);
+        $licenceRequest = LicenceRequest::factory()->underage()->withAllDocuments()->create(['parents' => []]);
 
         $this->expectException(ValidationException::class);
 
@@ -162,7 +150,7 @@ class LicenceRequestActionsTest extends TestCase
 
     public function test_complete_request_is_submitted_unpaid(): void
     {
-        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->create();
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->withAllDocuments()->create();
 
         app(SubmitLicenceRequest::class)($licenceRequest);
 
@@ -170,17 +158,18 @@ class LicenceRequestActionsTest extends TestCase
 
         $this->assertEquals(LicenceRequestStatus::Submitted, $licenceRequest->status);
         $this->assertNotNull($licenceRequest->submitted_at);
-        $this->assertEquals(OrderStatus::AwaitingPayment, $licenceRequest->order->status);
+        $this->assertEquals(LicenceRequestPaymentStatus::AwaitingPrice, $licenceRequest->payment_status);
     }
 
     public function test_resubmission_waits_for_every_flagged_part(): void
     {
-        $licenceRequest = LicenceRequest::factory()->changesRequested()->create();
+        $licenceRequest = LicenceRequest::factory()->changesRequested()->withAllDocuments()->create();
         $changeRequest = LicenceRequestChangeRequest::factory()->for($licenceRequest)->create();
-        $flagged = LicenceRequestDocument::factory()->for($licenceRequest)->flagged()->create();
+        $flagged = $licenceRequest->documents()->first();
+        $flagged->update(['status' => LicenceRequestDocumentStatus::Flagged, 'note' => 'Blurred']);
 
         try {
-            app(ResubmitLicenceRequest::class)($licenceRequest);
+            app(ResubmitLicenceRequest::class)($licenceRequest->refresh());
             $this->fail('A request with open change requests was resubmitted.');
         } catch (ValidationException) {
             $this->assertEquals(LicenceRequestStatus::ChangesRequested, $licenceRequest->fresh()->status);
@@ -197,10 +186,9 @@ class LicenceRequestActionsTest extends TestCase
     public function test_replacing_a_flagged_document_waits_for_a_new_review(): void
     {
         $licenceRequest = LicenceRequest::factory()->changesRequested()->create();
-        $typeDocument = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->create();
-        $flagged = LicenceRequestDocument::factory()->for($licenceRequest)->flagged()->create(['licence_type_document_id' => $typeDocument->getKey()]);
+        $flagged = LicenceRequestDocument::factory()->for($licenceRequest)->flagged()->create(['document' => LicenceDocument::MedicalCertificate]);
 
-        app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument($typeDocument), UploadedFile::fake()->create('new.pdf', 10, 'application/pdf'));
+        app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument(LicenceDocument::MedicalCertificate), UploadedFile::fake()->create('new.pdf', 10, 'application/pdf'));
 
         $flagged->refresh();
 
@@ -212,25 +200,70 @@ class LicenceRequestActionsTest extends TestCase
     public function test_accepted_documents_cannot_be_replaced_after_a_change_request(): void
     {
         $licenceRequest = LicenceRequest::factory()->changesRequested()->create();
-        $typeDocument = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->create();
-        LicenceRequestDocument::factory()->for($licenceRequest)->create(['licence_type_document_id' => $typeDocument->getKey(), 'status' => LicenceRequestDocumentStatus::Accepted]);
+        LicenceRequestDocument::factory()->for($licenceRequest)->create(['document' => LicenceDocument::MedicalCertificate, 'status' => LicenceRequestDocumentStatus::Accepted]);
 
         $this->expectException(ValidationException::class);
 
-        app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument($typeDocument), UploadedFile::fake()->create('new.pdf', 10, 'application/pdf'));
+        app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument(LicenceDocument::MedicalCertificate), UploadedFile::fake()->create('new.pdf', 10, 'application/pdf'));
     }
 
-    public function test_deleting_a_draft_cancels_its_order_and_removes_its_files(): void
+    public function test_documents_not_asked_for_are_refused(): void
     {
-        $licenceRequest = app(StartLicenceRequest::class)(User::factory()->create(), Price::factory()->create()->product);
-        $document = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->create();
-        $upload = app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument($document), UploadedFile::fake()->create('id.pdf', 10, 'application/pdf'));
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->create();
+
+        $this->expectException(ValidationException::class);
+
+        app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument(LicenceDocument::ParentalAuthorisation), UploadedFile::fake()->create('form.pdf', 10, 'application/pdf'));
+    }
+
+    public function test_deleting_a_draft_removes_its_files(): void
+    {
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->create();
+        $upload = app(StoreLicenceRequestUpload::class)($licenceRequest, new RequiredDocument(LicenceDocument::IdentityDocument), UploadedFile::fake()->create('id.pdf', 10, 'application/pdf'));
 
         app(DeleteLicenceRequestDraft::class)($licenceRequest);
 
         $this->assertModelMissing($licenceRequest);
         $this->assertModelMissing($upload);
-        $this->assertEquals(OrderStatus::Cancelled, $licenceRequest->order->fresh()->status);
         Storage::disk('licence-documents')->assertMissing($upload->path);
+    }
+
+    public function test_payment_proof_waits_for_the_amount(): void
+    {
+        $licenceRequest = LicenceRequest::factory()->submitted()->create();
+
+        try {
+            app(SubmitPaymentProof::class)($licenceRequest, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
+            $this->fail('A proof was accepted before the amount was set.');
+        } catch (ValidationException $exception) {
+            $this->assertEquals('The organizer has not set the amount yet.', $exception->validator->errors()->first('proof'));
+        }
+
+        $this->assertDatabaseEmpty('payments');
+    }
+
+    public function test_payment_proof_is_attached_to_the_request(): void
+    {
+        $licenceRequest = LicenceRequest::factory()->submitted()->awaitingPayment()->create();
+
+        $payment = app(SubmitPaymentProof::class)($licenceRequest, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
+
+        $this->assertTrue($payment->payable->is($licenceRequest));
+        $this->assertEquals(LicenceRequestPaymentStatus::PaymentSubmitted, $licenceRequest->fresh()->payment_status);
+        Storage::disk('payments')->assertExists($payment->path);
+    }
+
+    public function test_validity_year_moves_to_the_next_year_in_december(): void
+    {
+        $this->assertEquals(2026, LicenceRequest::validityYearFor(now()->setTimezone(config('races.timezone'))->setDate(2026, 11, 30)->setTime(23, 0)));
+        $this->assertEquals(2027, LicenceRequest::validityYearFor(now()->setTimezone(config('races.timezone'))->setDate(2026, 12, 1)->setTime(0, 30)));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function requiredKeys(LicenceRequest $licenceRequest, LicenceDocumentKind $kind): array
+    {
+        return $licenceRequest->requiredDocuments($kind)->map(fn (RequiredDocument $required) => $required->key())->all();
     }
 }

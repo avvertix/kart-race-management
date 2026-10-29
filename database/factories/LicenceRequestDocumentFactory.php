@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\LicenceDocumentKind;
+use App\Enums\LicenceDocument;
 use App\Enums\LicenceRequestDocumentStatus;
 use App\Models\LicenceRequest;
-use App\Models\LicenceTypeDocument;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,10 +23,8 @@ class LicenceRequestDocumentFactory extends Factory
     {
         return [
             'licence_request_id' => LicenceRequest::factory(),
-            'licence_type_document_id' => LicenceTypeDocument::factory(),
+            'document' => LicenceDocument::IdentityDocument,
             'parent_index' => null,
-            'name' => 'Identity card',
-            'kind' => LicenceDocumentKind::Upload,
             'path' => 'licence-requests/document.pdf',
             'original_name' => 'identity-card.pdf',
             'mime' => 'application/pdf',

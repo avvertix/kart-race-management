@@ -13,17 +13,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Something sold to Users: a licence emission or renewal, a championship enrollment or a promotional package.
+ * Something sold to Users: a championship enrollment or a promotional package. Licence renewals are not Products.
  *
  * @property string $ulid
  * @property ProductKind $kind
  * @property string $title
  * @property ?string $description
  * @property ?int $championship_id
- * @property ?int $licence_type_id
  * @property bool $active
  * @property-read ?Championship $championship
- * @property-read ?LicenceType $licenceType
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Price> $prices
  */
 class Product extends Model
@@ -42,7 +40,6 @@ class Product extends Model
         'title',
         'description',
         'championship_id',
-        'licence_type_id',
         'active',
     ];
 
@@ -73,14 +70,6 @@ class Product extends Model
     }
 
     /**
-     * @return BelongsTo<LicenceType, $this>
-     */
-    public function licenceType(): BelongsTo
-    {
-        return $this->belongsTo(LicenceType::class);
-    }
-
-    /**
      * @return HasMany<Price, $this>
      */
     public function prices(): HasMany
@@ -99,14 +88,6 @@ class Product extends Model
             ->filter(fn (Price $price) => $price->isValidAt($now))
             ->sortByDesc(fn (Price $price) => $price->starts_at->getTimestamp())
             ->first();
-    }
-
-    /**
-     * Whether ordering it starts a Licence Request: a licence emission, or a Package including a licence.
-     */
-    public function sellsLicence(): bool
-    {
-        return $this->licence_type_id !== null;
     }
 
     /**

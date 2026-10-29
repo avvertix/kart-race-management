@@ -6,7 +6,7 @@ A Package bundles a licence, an enrollment with race number, and Entitlements, g
 
 ## Docs
 
-- [Set up licence types, products and prices: Promotional Packages](../../docs/how-to/organizer/set-up-licence-types-and-products.md#promotional-packages)
+- [Set up products and prices: Promotional Packages](../../docs/how-to/organizer/set-up-products-and-prices.md#promotional-packages)
 - [Request or renew a licence](../../docs/how-to/driver/request-or-renew-a-licence.md)
 
 ## Scope

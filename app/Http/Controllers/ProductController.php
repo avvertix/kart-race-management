@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Enums\ProductKind;
 use App\Models\Championship;
 use App\Models\Currency;
-use App\Models\LicenceType;
 use App\Models\Product;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
@@ -31,7 +30,7 @@ class ProductController extends Controller
     {
         return view('product.index', [
             'products' => Product::query()
-                ->with(['prices', 'licenceType', 'championship'])
+                ->with(['prices', 'championship'])
                 ->orderBy('title')
                 ->get(),
         ]);
@@ -121,14 +120,13 @@ class ProductController extends Controller
     }
 
     /**
-     * The licence types and championships a product can be linked to.
+     * The championships a product can be linked to.
      *
      * @return array<string, mixed>
      */
     private function formOptions(): array
     {
         return [
-            'licenceTypes' => LicenceType::query()->orderBy('provider')->orderBy('name')->get(),
             'championships' => Championship::query()->orderByDesc('start_at')->get(),
         ];
     }
@@ -144,15 +142,9 @@ class ProductController extends Controller
             'title' => 'required|string|max:250',
             'description' => 'nullable|string|max:1000',
             'active' => 'nullable|boolean',
-            'licence_type' => match ($kind) {
-                ProductKind::LicenceEmission => ['required', 'string', Rule::exists('licence_types', 'ulid')],
-                ProductKind::Package => ['nullable', 'string', Rule::exists('licence_types', 'ulid')],
-                ProductKind::Enrollment => ['prohibited'],
-            },
             'championship' => match ($kind) {
                 ProductKind::Enrollment => ['required', 'string', Rule::exists('championships', 'uuid')],
                 ProductKind::Package => ['nullable', 'string', Rule::exists('championships', 'uuid')],
-                ProductKind::LicenceEmission => ['prohibited'],
             },
 
             'prices' => 'nullable|array',
@@ -177,7 +169,6 @@ class ProductController extends Controller
         return [
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
-            'licence_type_id' => isset($validated['licence_type']) ? LicenceType::where('ulid', $validated['licence_type'])->value('id') : null,
             'championship_id' => isset($validated['championship']) ? Championship::where('uuid', $validated['championship'])->value('id') : null,
             'active' => $request->boolean('active'),
         ];

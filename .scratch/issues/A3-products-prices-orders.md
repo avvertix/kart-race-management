@@ -6,7 +6,7 @@ The organizer sells things at fixed or ranged prices; Users place Orders, upload
 
 ## Docs
 
-- [Set up licence types, products and prices](../../docs/how-to/organizer/set-up-licence-types-and-products.md)
+- [Set up products and prices](../../docs/how-to/organizer/set-up-products-and-prices.md)
 - [Lifecycles: Order](../../docs/reference/lifecycles.md#order)
 - Glossary: Product, Price, Order
 

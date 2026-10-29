@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Orders;
+namespace App\Actions;
 
-use App\Enums\OrderStatus;
-use App\Models\Order;
+use App\Support\Payable;
 use App\Models\Payment;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -14,22 +13,16 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationException;
 
-class SubmitOrderPayment
+class SubmitPaymentProof
 {
     /**
-     * Store the payment proof of the Order. Rejected proofs are kept.
+     * Store the payment proof of an Order or a Licence Request. Rejected proofs are kept.
      *
-     * @throws ValidationException when the order is not awaiting payment or the proof is not valid
+     * @throws ValidationException when no payment is expected or the proof is not valid
      */
-    public function __invoke(Order $order, UploadedFile $proof): Payment
+    public function __invoke(Payable $payable, UploadedFile $proof): Payment
     {
-        $notAwaitingPayment = $order->status === OrderStatus::AwaitingPrice
-            ? __('The organizer has not set the price yet.')
-            : __('The order is not awaiting a payment.');
-
-        if ($order->status !== OrderStatus::AwaitingPayment) {
-            throw ValidationException::withMessages(['proof' => $notAwaitingPayment]);
-        }
+        DB::transaction(fn () => $payable->lockAwaitingPayment('proof'));
 
         Validator::make(['proof' => $proof], [
             'proof' => [
@@ -49,15 +42,15 @@ class SubmitOrderPayment
         }
 
         try {
-            return DB::transaction(function () use ($order, $path, $notAwaitingPayment) {
-                $locked = $order->lockInStatus([OrderStatus::AwaitingPayment], 'proof', $notAwaitingPayment);
+            return DB::transaction(function () use ($payable, $path) {
+                $locked = $payable->lockAwaitingPayment('proof');
 
                 $payment = $locked->payments()->create([
                     'path' => $path,
                     'hash' => hash_file('sha512', Storage::disk('payments')->path($path)),
                 ]);
 
-                $locked->update(['status' => OrderStatus::PaymentSubmitted]);
+                $locked->markPaymentSubmitted();
 
                 return $payment;
             });

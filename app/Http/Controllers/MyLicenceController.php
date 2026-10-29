@@ -197,7 +197,7 @@ class MyLicenceController extends Controller
 
         $validated = $request->validate([
             'licence_type' => ['required', 'string', Rule::in(LicenceCatalogue::selectableCodes($provider, $currentLicenceType))],
-            'includes_competitor' => ['nullable', 'boolean'],
+            'driver_only' => ['nullable', 'boolean'],
             'number' => ['required', 'string', 'max:250', new LicenseNumberValidationRule],
             'validity_year' => ['required', 'integer', Rule::in([$currentYear, $currentYear + 1])],
             'holder' => ['required', 'array'],
@@ -220,7 +220,7 @@ class MyLicenceController extends Controller
         abort_if($licenceType === null, 404);
 
         return [
-            ...$licenceType->licenceAttributes($request->boolean('includes_competitor')),
+            ...$licenceType->licenceAttributes(includesCompetitor: ! $request->boolean('driver_only')),
             'number' => $validated['number'],
             'validity_year' => (int) $validated['validity_year'],
             'holder' => HolderData::fromValidated($validated['holder']),

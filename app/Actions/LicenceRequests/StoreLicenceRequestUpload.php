@@ -63,6 +63,7 @@ class StoreLicenceRequestUpload
             'size' => (int) $file->getSize(),
             'hash' => hash_file('sha512', Storage::disk('licence-documents')->path($path)),
             'status' => LicenceRequestDocumentStatus::Pending,
+            'uploaded_at' => now(),
         ];
 
         $licenceRequest->unsetRelation('documents');

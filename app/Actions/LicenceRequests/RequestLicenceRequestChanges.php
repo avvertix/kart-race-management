@@ -30,7 +30,10 @@ class RequestLicenceRequestChanges
                 throw ValidationException::withMessages(['request' => __('Flag at least one section or document first.')]);
             }
 
-            $locked->update(['status' => LicenceRequestStatus::ChangesRequested]);
+            $locked->update([
+                'status' => LicenceRequestStatus::ChangesRequested,
+                'changes_requested_at' => now(),
+            ]);
 
             return $locked;
         });

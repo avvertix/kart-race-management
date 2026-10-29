@@ -11,7 +11,13 @@
     $openFlags = $licenceRequest->changeRequests->whereNull('resolved_at');
     $flagCount = $openFlags->count() + $licenceRequest->documents->where('status', LicenceRequestDocumentStatus::Flagged)->count();
     $canBePriced = $licenceRequest->canBePriced();
-    $requiredDocuments = $licenceRequest->requiredDocuments(LicenceDocumentKind::Upload)->merge($licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm));
+    $changesRequestedAt = $licenceRequest->changes_requested_at;
+    $isNew = fn ($required) => $licenceRequest->uploadFor($required)?->isUploadedAfter($changesRequestedAt) === true;
+    $requiredDocuments = $licenceRequest->requiredDocuments(LicenceDocumentKind::Upload)
+        ->merge($licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm))
+        ->sortBy(fn ($required) => $isNew($required) ? 0 : 1)
+        ->values();
+    $newUploadCount = $requiredDocuments->filter($isNew)->count();
     $parents = $licenceRequest->parentHolders();
     $inputClass = 'mt-1 block w-full rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50';
 @endphp
@@ -89,11 +95,16 @@
 
                 <section class="rounded-md border border-zinc-200 bg-white p-4 space-y-3">
                     <h3 class="font-semibold text-zinc-800">{{ __('Documents and forms') }}</h3>
+                    @if ($newUploadCount > 0)
+                        <p class="text-sm text-lime-800">{{ trans_choice(':count document replaced since you asked for changes|:count documents replaced since you asked for changes', $newUploadCount) }}</p>
+                    @endif
                     <ul class="divide-y divide-zinc-200">
                         @foreach ($requiredDocuments as $required)
                             @php
                                 $upload = $licenceRequest->uploadFor($required);
                                 $isSelected = $upload !== null && $selectedDocument?->is($upload);
+                                $isNewUpload = $upload?->isUploadedAfter($changesRequestedAt) === true;
+                                $isUnchanged = $upload?->status === LicenceRequestDocumentStatus::Pending && $changesRequestedAt !== null && ! $isNewUpload;
                             @endphp
                             <li @class(['py-2 space-y-2', 'bg-orange-50' => $isSelected])>
                                 <div class="flex flex-wrap items-center gap-2 text-sm">
@@ -103,15 +114,26 @@
                                             <span class="font-normal text-zinc-600">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() }}</span>
                                         @endif
                                     </span>
-                                    @if ($upload)
-                                        <span class="text-zinc-600">{{ $upload->status->label() }}</span>
-                                        <a href="{{ route('licence-request-reviews.show', [$licenceRequest, 'document' => $upload->getKey()]) }}" class="text-orange-600 hover:text-orange-900">{{ __('View') }}</a>
-                                    @else
+                                    @if ($upload === null)
                                         <span class="text-zinc-500">{{ __('Not uploaded yet') }}</span>
+                                    @elseif ($isNewUpload && $upload->status === LicenceRequestDocumentStatus::Pending)
+                                        <span class="inline-block px-2 rounded-full bg-lime-100 text-xs text-lime-800">{{ __('New file') }}</span>
+                                        <span class="text-zinc-500"><x-time :value="$upload->uploaded_at" /></span>
+                                    @elseif ($isUnchanged)
+                                        <span class="text-zinc-600">{{ __('Not reviewed yet') }}</span>
+                                    @else
+                                        <span class="text-zinc-600">{{ $upload->status->label() }}</span>
+                                    @endif
+                                    @if ($upload)
+                                        <a href="{{ route('licence-request-reviews.show', [$licenceRequest, 'document' => $upload->getKey()]) }}" class="text-orange-600 hover:text-orange-900">{{ __('View') }}</a>
                                     @endif
                                 </div>
                                 @if ($upload?->note)
-                                    <p class="text-sm text-red-700"><span class="font-semibold">{{ __('Note') }}:</span> {{ $upload->note }}</p>
+                                    @if ($upload->status === LicenceRequestDocumentStatus::Flagged)
+                                        <p class="text-sm text-red-700"><span class="font-semibold">{{ __('Note') }}:</span> {{ $upload->note }}</p>
+                                    @else
+                                        <p class="text-sm text-zinc-500"><span class="font-semibold">{{ __('Your previous note') }}:</span> {{ $upload->note }}</p>
+                                    @endif
                                 @endif
                                 @if ($upload && $isReviewable)
                                     <div class="flex flex-wrap items-start gap-2">

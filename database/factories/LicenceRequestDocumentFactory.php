@@ -30,6 +30,7 @@ class LicenceRequestDocumentFactory extends Factory
             'mime' => 'application/pdf',
             'size' => 1024,
             'hash' => hash('sha512', 'document'),
+            'uploaded_at' => now(),
             'status' => LicenceRequestDocumentStatus::Pending,
             'note' => null,
         ];

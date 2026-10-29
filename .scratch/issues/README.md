@@ -12,13 +12,15 @@ Rules for every slice (see [backward compatibility](../../docs/explanation/backw
 | Slice | Title | Depends on | Target |
 |---|---|---|---|
 | [A1](A1-foundations.md) | Foundations | – | December |
-| [A2](A2-licence-types-and-grades.md) | Licence Types, Grades, required documents | A1 | December |
+| [A2](A2-licence-types-and-grades.md) | Licence Types, Grades, required documents (superseded by A5b) | A1 | December |
 | [A3](A3-products-prices-orders.md) | Products, Prices, Orders, payments | A1 | December |
 | [A4](A4-licences.md) | Licences: declare, list, verify | A2 | December |
 | [A5](A5-licence-request-flow.md) | Licence Request flow (driver) | A3, A4 | December |
-| [A6](A6-licence-request-processing.md) | Licence Request processing (organizer) | A5 | December |
+| [A5b](A5b-licence-catalogue-and-renewals.md) | Licence catalogue in code, renewals without Products | A5 | December |
+| [A6](A6-licence-request-processing.md) | Licence Request processing (organizer) | A5b | December |
 | [A7](A7-notifications.md) | Notifications | A5, A6 | December |
 | [A8](A8-document-retention.md) | Document retention | A6 | 2027 |
+| [A9](A9-licence-request-single-pdf.md) | Licence Request as a single PDF | A6 | 2027 |
 | [B1](B1-championship-settings.md) | Championship licence provider and enrollment settings | A1 | 2027 season |
 | [B2](B2-bib-reservation-statuses.md) | BIB Reservation statuses and 1–999 cap | – | 2027 season |
 | [B3](B3-enrollments.md) | Enrollments | A4, A5, B1, B2 | 2027 season |

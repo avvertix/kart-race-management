@@ -18,6 +18,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
+use ReflectionClass;
+use ReflectionMethod;
 use Tests\TestCase;
 
 class LicenceRequestFormTest extends TestCase
@@ -170,7 +172,7 @@ class LicenceRequestFormTest extends TestCase
             ->call('open', 'documents')
             ->assertSee('Medical certificate')
             ->set('files.medical_certificate', UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
-            ->call('upload', 'medical_certificate')
+            ->call('uploadDocument', 'medical_certificate')
             ->assertHasNoErrors()
             ->assertSee('certificate.pdf');
 
@@ -180,6 +182,18 @@ class LicenceRequestFormTest extends TestCase
         Storage::disk('licence-documents')->assertExists($upload->path);
 
         $this->actingAs($user)->get(route('licence-requests.documents.show', [$licenceRequest, $upload]))->assertSuccessful();
+    }
+
+    public function test_actions_do_not_shadow_livewire_client_methods(): void
+    {
+        $reserved = ['upload', 'uploadMultiple', 'removeUpload', 'cancelUpload', 'set', 'get', 'call', 'watch', 'entangle', 'refresh', 'commit', 'dispatch', 'on'];
+
+        $actions = collect((new ReflectionClass(LicenceRequestForm::class))->getMethods(ReflectionMethod::IS_PUBLIC))
+            ->filter(fn (ReflectionMethod $method) => $method->class === LicenceRequestForm::class)
+            ->map(fn (ReflectionMethod $method) => $method->getName())
+            ->all();
+
+        $this->assertEmpty(array_intersect($reserved, $actions), 'wire:click on these names calls the Livewire client method instead of the action.');
     }
 
     public function test_payment_waits_for_the_amount_set_by_the_organizer(): void
@@ -293,7 +307,7 @@ class LicenceRequestFormTest extends TestCase
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->set('files.medical_certificate', UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
-            ->call('upload', 'medical_certificate')
+            ->call('uploadDocument', 'medical_certificate')
             ->assertHasNoErrors();
 
         $this->assertNotNull($changeRequest->fresh()->resolved_at);
@@ -330,7 +344,7 @@ class LicenceRequestFormTest extends TestCase
             ->call('saveParents')
             ->assertHasNoErrors()
             ->set('files.identity_document-1', UploadedFile::fake()->create('anna.pdf', 50, 'application/pdf'))
-            ->call('upload', 'identity_document-1')
+            ->call('uploadDocument', 'identity_document-1')
             ->assertHasNoErrors();
 
         $upload = $licenceRequest->documents()->sole();

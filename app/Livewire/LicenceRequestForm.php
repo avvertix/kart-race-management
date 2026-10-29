@@ -208,7 +208,7 @@ class LicenceRequestForm extends Component
     /**
      * Upload a document or signed form. Uploading after a change request on the section resolves it.
      */
-    public function upload(string $key, StoreLicenceRequestUpload $storeUpload): void
+    public function uploadDocument(string $key, StoreLicenceRequestUpload $storeUpload): void
     {
         $this->authorize('update', $this->licenceRequest);
 

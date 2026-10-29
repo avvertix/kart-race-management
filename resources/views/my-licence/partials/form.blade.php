@@ -6,15 +6,13 @@
         'sex' => $licence->holder->sex->value,
     ] : []);
 
-    $types = $licenceTypes->map(fn ($type) => [
-        'ulid' => $type->ulid,
-        'provider' => $type->provider->value,
-        'grades' => $type->grades->map(fn ($grade) => [
-            'id' => $grade->getKey(),
-            'level' => $grade->level?->value,
-            'name' => $grade->name,
-        ])->values(),
-    ])->values();
+    $types = collect($licenceTypes)->map(fn ($providerTypes) => $providerTypes->map(fn ($type) => [
+        'code' => $type->code,
+        'name' => $type->name,
+        'allows_competitor' => $type->allowsCompetitor(),
+    ])->values());
+
+    $providers = array_keys($licenceTypes);
 
     $currentYear = now()->year;
 
@@ -24,12 +22,10 @@
 <div
     x-data="{
         types: @js($types),
-        licenceType: @js(old('licence_type', $licence?->licenceType?->ulid ?? '')),
-        level: @js(old('level', $licence?->level?->value ?? 'national')),
-        grade: @js((string) old('licence_grade', $licence?->licence_grade_id ?? '')),
-        get type() { return this.types.find(type => type.ulid === this.licenceType) ?? null },
-        get isAci() { return this.type?.provider === 'aci' },
-        get grades() { return (this.type?.grades ?? []).filter(grade => ! this.isAci || grade.level === this.level) },
+        provider: @js(old('provider', $licence?->provider->value ?? (count($providers) === 1 ? $providers[0] : ''))),
+        licenceType: @js(old('licence_type', $licence?->licence_type ?? '')),
+        get providerTypes() { return this.types[this.provider] ?? [] },
+        get type() { return this.providerTypes.find(type => type.code === this.licenceType) ?? null },
     }"
 >
     <div class="md:grid md:grid-cols-3 md:gap-6">
@@ -41,44 +37,38 @@
         <div class="mt-5 md:mt-0 md:col-span-2">
             <div class="px-4 py-5">
                 <div class="grid grid-cols-6 gap-6">
+                    @if (count($providers) > 1)
+                        <div class="col-span-6 sm:col-span-2">
+                            <x-label for="provider" value="{{ __('Provider') }}*" />
+                            <select id="provider" name="provider" x-model="provider" @change="licenceType = ''" class="mt-1 {{ $inputClass }}" required>
+                                <option value="">{{ __('Choose a provider') }}</option>
+                                @foreach ($providers as $provider)
+                                    <option value="{{ $provider }}">{{ \App\Enums\LicenceProvider::from($provider)->label() }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error for="provider" class="mt-2" />
+                        </div>
+                    @else
+                        <input type="hidden" name="provider" :value="provider">
+                    @endif
+
                     <div class="col-span-6 sm:col-span-4">
                         <x-label for="licence_type" value="{{ __('Licence type') }}*" />
                         <select id="licence_type" name="licence_type" x-model="licenceType" class="mt-1 {{ $inputClass }}" required>
                             <option value="">{{ __('Choose a licence type') }}</option>
-                            @foreach ($licenceTypes as $type)
-                                <option value="{{ $type->ulid }}">{{ $type->provider->label() }} &middot; {{ $type->name }}</option>
-                            @endforeach
+                            <template x-for="option in providerTypes" :key="option.code">
+                                <option :value="option.code" x-text="option.name" :selected="option.code === licenceType"></option>
+                            </template>
                         </select>
                         <x-input-error for="licence_type" class="mt-2" />
                     </div>
 
-                    <template x-if="isAci">
-                        <div class="col-span-6 sm:col-span-2">
-                            <x-label for="level" value="{{ __('Level') }}*" />
-                            <select id="level" name="level" x-model="level" class="mt-1 {{ $inputClass }}">
-                                @foreach (\App\Enums\LicenceLevel::options() as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error for="level" class="mt-2" />
-                        </div>
-                    </template>
-
-                    <div class="col-span-6 sm:col-span-3" x-show="type">
-                        <x-label for="licence_grade" value="{{ __('Grade') }}*" />
-                        <select id="licence_grade" name="licence_grade" x-model="grade" class="mt-1 {{ $inputClass }}">
-                            <template x-for="option in grades" :key="option.id">
-                                <option :value="String(option.id)" x-text="option.name" :selected="String(option.id) === grade"></option>
-                            </template>
-                            <option value="">{{ __('Other, specify') }}</option>
-                        </select>
-                        <x-input-error for="licence_grade" class="mt-2" />
-                    </div>
-
-                    <div class="col-span-6 sm:col-span-3" x-show="type && grade === ''">
-                        <x-label for="grade_other" value="{{ __('Grade') }}*" />
-                        <x-input id="grade_other" type="text" name="grade_other" :value="old('grade_other', $licence?->grade_other)" class="mt-1 block w-full" />
-                        <x-input-error for="grade_other" class="mt-2" />
+                    <div class="col-span-6" x-show="type?.allows_competitor">
+                        <label for="includes_competitor" class="flex items-center">
+                            <x-checkbox id="includes_competitor" name="includes_competitor" value="1" :checked="(bool) old('includes_competitor', $licence?->includes_competitor)" />
+                            <span class="ml-2">{{ __('The licence includes the competitor licence') }}</span>
+                        </label>
+                        <x-input-error for="includes_competitor" class="mt-2" />
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">

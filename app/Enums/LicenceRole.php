@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Enums;
 
 /**
- * The role a licence allows its holder to take in a race.
+ * The role a licence allows its holder to take in a race. The competitor licence is part of an ACI driver licence, not a role.
  */
 enum LicenceRole: string
 {
     case Driver = 'driver';
-    case Competitor = 'competitor';
     case Mechanic = 'mechanic';
 
     /**

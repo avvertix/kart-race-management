@@ -92,4 +92,12 @@ class HolderData extends Data
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
+    /**
+     * What tells two holders apart: the fiscal code, or the name and birth date without one.
+     */
+    public function identityKey(): string
+    {
+        return mb_strtolower(filled($this->fiscal_code) ? $this->fiscal_code : "{$this->fullName()} {$this->birth_date}");
+    }
 }

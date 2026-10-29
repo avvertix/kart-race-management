@@ -32,7 +32,6 @@ use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ExportRacePrefinaleGridController;
 use App\Http\Controllers\LicenceController;
 use App\Http\Controllers\LicenceRequestController;
-use App\Http\Controllers\LicenceTypeController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\MyLicenceController;
 use App\Http\Controllers\MyOrderController;
@@ -244,8 +243,6 @@ Route::middleware([
 
         Route::resource('users', UserController::class)->except(['show']);
 
-        Route::resource('licence-types', LicenceTypeController::class)->except(['show', 'destroy']);
-
         Route::resource('products', ProductController::class)->except(['show', 'destroy']);
 
         Route::resource('licences', LicenceController::class)->only(['index', 'show']);
@@ -282,7 +279,11 @@ Route::middleware([
 
     Route::resource('licences', MyLicenceController::class)->names('my-licences');
 
+    Route::post('licence-requests', [LicenceRequestController::class, 'store'])->name('licence-requests.store');
     Route::get('licence-requests/{licenceRequest}', [LicenceRequestController::class, 'show'])->name('licence-requests.show');
+    Route::post('licence-requests/{licenceRequest}/payment', [LicenceRequestController::class, 'pay'])
+        ->middleware('throttle:10,10')
+        ->name('licence-requests.payment.store');
     Route::livewire('licence-requests/{licenceRequest}/edit', LicenceRequestForm::class)->name('licence-requests.edit');
     Route::delete('licence-requests/{licenceRequest}', [LicenceRequestController::class, 'destroy'])->name('licence-requests.destroy');
     Route::get('licence-requests/{licenceRequest}/documents/{document}', [LicenceRequestController::class, 'document'])->name('licence-requests.documents.show');

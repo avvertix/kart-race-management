@@ -5,7 +5,7 @@ Use this guide when creating a championship that uses enrollment, a specific lic
 ## Before you start
 
 - Decide whether drivers enroll for a race number, for points, or both.
-- If enrollment is paid, create its Product and Price first ([Set up licence types, products and prices](set-up-licence-types-and-products.md)).
+- If enrollment is paid, create its Product and Price first ([Set up products and prices](set-up-products-and-prices.md)).
 
 ## Steps
 

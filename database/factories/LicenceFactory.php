@@ -6,12 +6,10 @@ namespace Database\Factories;
 
 use App\Data\AddressData;
 use App\Data\HolderData;
-use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRole;
 use App\Enums\LicenceSource;
 use App\Models\DriverLicence;
-use App\Models\LicenceType;
 use App\Models\Sex;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -46,7 +44,7 @@ class LicenceFactory extends Factory
     }
 
     /**
-     * Define the model's default state: an ACI national driver licence declared by its manager, not yet verified.
+     * Define the model's default state: an ACI NAZ E driver licence declared by its manager, not yet verified.
      *
      * @return array<string, mixed>
      */
@@ -55,11 +53,9 @@ class LicenceFactory extends Factory
         return [
             'user_id' => User::factory(),
             'provider' => LicenceProvider::Aci,
-            'licence_type_id' => LicenceType::factory(),
+            'licence_type' => 'naz-e',
+            'includes_competitor' => false,
             'role' => LicenceRole::Driver,
-            'level' => LicenceLevel::National,
-            'licence_grade_id' => null,
-            'grade_other' => 'C Senior',
             'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
             'number' => (string) fake()->unique()->numberBetween(100000, 999999),
             'validity_year' => now()->year,

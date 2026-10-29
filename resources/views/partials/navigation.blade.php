@@ -29,12 +29,6 @@
         </x-dynamic-component>
     @endcan
 
-    @can('viewAny', \App\Models\LicenceType::class)
-        <x-dynamic-component :component="$item" :href="route('licence-types.index')" :current="request()->routeIs('licence-types.*')">
-            {{ __('Licence types') }}
-        </x-dynamic-component>
-    @endcan
-
     @can('viewAny', \App\Models\Licence::class)
         <x-dynamic-component :component="$item" :href="route('licences.index')" :current="request()->routeIs('licences.*')">
             {{ __('All licences') }}

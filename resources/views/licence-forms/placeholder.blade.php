@@ -3,7 +3,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <title>{{ $template->label() }}</title>
+    <title>{{ $document->label() }}</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
         dl { margin: 0 0 16px; }
@@ -13,11 +13,11 @@
     </style>
 </head>
 <body>
-    <h1>{{ $template->label() }}</h1>
+    <h1>{{ $document->label() }}</h1>
     <p>{{ __('This form is not available yet. Ask the organizer for the paper version.') }}</p>
 
-    @foreach (array_filter(['holder' => $holder ?? null, 'parent' => $parent ?? null]) as $role => $person)
-        <h2>{{ $role === 'holder' ? __('Holder') : __('Parent or guardian') }}</h2>
+    @foreach (array_filter([$holder ?? null, ...($parents ?? [])]) as $index => $person)
+        <h2>{{ $index === 0 ? __('Holder') : __('Parent or guardian :number', ['number' => $index]) }}</h2>
         <dl>
             <dt>{{ __('Name') }}</dt>
             <dd>{{ $person->fullName() }}</dd>

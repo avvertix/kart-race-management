@@ -1,11 +1,9 @@
 @use('App\Enums\LicenceRequestSection')
 @use('App\Enums\LicenceRequestStatus')
-@use('App\Enums\OrderStatus')
 
 @php
     $isChangesRequested = $licenceRequest->status === LicenceRequestStatus::ChangesRequested;
     $openChangeRequests = $licenceRequest->changeRequests->whereNull('resolved_at');
-    $order = $licenceRequest->order;
     $inputClass = 'mt-1 block w-full rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50';
 
     $stateLabels = [
@@ -27,7 +25,7 @@
     ];
 
     $leads = [
-        'licence' => __('Choose what you are buying and the licence you need.'),
+        'licence' => __('The licence to renew and the one you need this year.'),
         'holder' => __('The person the licence is for, as on their identity card.'),
         'parents' => __('The holder is underage: at least one parent or guardian is required.'),
         'documents' => __('Photos or PDFs. Files are only seen by the organizer.'),
@@ -44,9 +42,6 @@
     </h2>
     <p class="text-sm text-zinc-500">
         {{ $licenceRequest->status->label() }}
-        @if ($order)
-            &middot; {{ __('Order :order', ['order' => $order->ulid]) }}
-        @endif
         &middot; {{ $isChangesRequested ? __('Fix the flagged parts, everything else is accepted.') : __('Each section is saved as a draft. Come back any time.') }}
     </p>
 </x-slot>
@@ -97,68 +92,52 @@
                             <p class="text-sm text-zinc-600">{{ __('Accepted by the organizer. No changes needed.') }}</p>
                             <p class="text-sm text-zinc-900">{{ $this->sectionSummary($section) }}</p>
                         @elseif ($section === LicenceRequestSection::Licence)
-                            @if ($licenceRequest->status === LicenceRequestStatus::Draft)
+                            <p class="text-sm text-zinc-600">
+                                {{ __('Licence renewals are requested here. For a first licence, write to the organizer:') }}
+                                <a href="mailto:{{ config('races.organizer.email') }}" class="text-orange-600 hover:text-orange-900">{{ config('races.organizer.email') }}</a>
+                            </p>
+
+                            @if (count($providers) > 1)
                                 <fieldset>
-                                    <legend class="text-sm font-medium text-zinc-700">{{ __('What are you buying?') }}</legend>
-                                    <div class="mt-2 space-y-2">
-                                        @foreach ($licenceProducts as $item)
-                                            <label wire:key="product-{{ $item->ulid }}" class="flex items-start gap-3 rounded-md border border-zinc-200 p-3 has-checked:border-orange-400 has-checked:bg-orange-50">
-                                                <input type="radio" wire:model.live="product" value="{{ $item->ulid }}" class="mt-1 text-orange-600">
-                                                <span class="flex-1">
-                                                    <span class="block font-medium text-zinc-900">{{ $item->title }}</span>
-                                                    <span class="block text-sm text-zinc-600">{{ $item->kind->label() }}</span>
-                                                </span>
-                                                <span class="font-mono tabular-nums text-sm">{{ $item->orderablePrice()?->label() }}</span>
+                                    <legend class="text-sm font-medium text-zinc-700">{{ __('Provider') }}*</legend>
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        @foreach ($providers as $item)
+                                            <label wire:key="provider-{{ $item->value }}" class="flex items-center gap-2 rounded-md border border-zinc-200 px-3 py-2 text-sm has-checked:border-orange-400 has-checked:bg-orange-50">
+                                                <input type="radio" wire:model.live="provider" value="{{ $item->value }}" class="text-orange-600">
+                                                {{ $item->label() }}
                                             </label>
                                         @endforeach
                                     </div>
-                                    <x-input-error for="product" class="mt-1" />
-                                    @if ($product !== $licenceRequest->product->ulid)
-                                        <p class="mt-2 text-sm text-amber-700">{{ __('Saving cancels the current order and places a new one at today\'s price.') }}</p>
-                                    @endif
+                                    <x-input-error for="provider" class="mt-1" />
                                 </fieldset>
-                            @else
-                                <p class="text-sm"><span class="text-zinc-600">{{ __('Product') }}:</span> {{ $licenceRequest->product->title }}</p>
                             @endif
 
-                            @if ($selectedLicenceType)
-                                @if ($selectedLicenceType->provider === \App\Enums\LicenceProvider::Aci)
-                                    <fieldset>
-                                        <legend class="text-sm font-medium text-zinc-700">{{ __('ACI licence level') }}*</legend>
-                                        <div class="mt-2 flex flex-wrap gap-2">
-                                            @foreach (\App\Enums\LicenceLevel::options() as $value => $label)
-                                                <label class="flex items-center gap-2 rounded-md border border-zinc-200 px-3 py-2 text-sm has-checked:border-orange-400 has-checked:bg-orange-50">
-                                                    <input type="radio" wire:model.live="level" value="{{ $value }}" class="text-orange-600">
-                                                    {{ $label }}
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                        <x-input-error for="level" class="mt-1" />
-                                    </fieldset>
-                                @else
-                                    <p class="text-sm text-zinc-600">{{ __('ASI licences have no national or international level.') }}</p>
+                            @if ($provider !== '')
+                                <div>
+                                    <x-label for="licenceType" value="{{ __('Licence type') }}*" />
+                                    <select id="licenceType" wire:model.live="licenceType" class="{{ $inputClass }}">
+                                        <option value="">{{ __('Choose a licence type') }}</option>
+                                        @foreach ($licenceTypes as $item)
+                                            <option value="{{ $item->code }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="mt-1 text-sm text-zinc-500">{{ __('The licence you need this year. It can differ from last year\'s.') }}</p>
+                                    <x-input-error for="licenceType" class="mt-1" />
+                                </div>
+
+                                @if ($selectedLicenceType?->allowsCompetitor())
+                                    <label class="flex items-start gap-2 text-sm">
+                                        <input type="checkbox" wire:model="includesCompetitor" class="mt-0.5 rounded-sm border-zinc-300 text-orange-600">
+                                        <span>{{ __('I also need the competitor licence') }}</span>
+                                    </label>
                                 @endif
 
                                 <div>
-                                    <x-label for="licenceGrade" value="{{ __('Licence type') }}*" />
-                                    <select id="licenceGrade" wire:model.live="licenceGrade" class="{{ $inputClass }}">
-                                        @foreach ($grades as $grade)
-                                            <option value="{{ $grade->getKey() }}">{{ $grade->name }}</option>
-                                        @endforeach
-                                        <option value="">{{ __('Other, specify') }}</option>
-                                    </select>
-                                    <p class="mt-1 text-sm text-zinc-500">{{ __('The most requested types. Not in the list? Choose "Other".') }}</p>
-                                    <x-input-error for="licenceGrade" class="mt-1" />
+                                    <x-label for="previousLicenceNumber" value="{{ __('Last year\'s licence number') }}*" />
+                                    <x-input id="previousLicenceNumber" type="text" wire:model="previousLicenceNumber" class="mt-1 block w-full" />
+                                    <p class="mt-1 text-sm text-zinc-500">{{ __('As printed on the licence you are renewing.') }}</p>
+                                    <x-input-error for="previousLicenceNumber" class="mt-1" />
                                 </div>
-
-                                @if ($licenceGrade === '')
-                                    <div>
-                                        <x-label for="gradeOther" value="{{ __('Which licence type?') }}*" />
-                                        <x-input id="gradeOther" type="text" wire:model="gradeOther" class="mt-1 block w-full" />
-                                        <p class="mt-1 text-sm text-zinc-500">{{ __('As named by the provider, e.g. on last year\'s licence.') }}</p>
-                                        <x-input-error for="gradeOther" class="mt-1" />
-                                    </div>
-                                @endif
                             @endif
 
                             <x-button type="button" wire:click="saveLicence">{{ __('Save and continue') }}</x-button>
@@ -207,7 +186,7 @@
                             @include('livewire.licence-request-form.payment')
 
                             <x-button type="button" wire:click="continue('payment')">
-                                {{ in_array($order?->status, [OrderStatus::PaymentSubmitted, OrderStatus::Paid], true) ? __('Continue') : __('Pay later, continue') }}
+                                {{ $licenceRequest->needsPayment() ? __('Pay later, continue') : __('Continue') }}
                             </x-button>
                         @endif
                     </div>
@@ -235,7 +214,7 @@
                         </p>
                     @endif
 
-                    @if ($order && ! in_array($order->status, [OrderStatus::PaymentSubmitted, OrderStatus::Paid], true))
+                    @if ($licenceRequest->needsPayment())
                         <p class="text-sm text-zinc-600">{{ __('Not paid yet. You can submit now; the organizer forwards the request to the provider once it is paid.') }}</p>
                     @endif
 

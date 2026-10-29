@@ -13,7 +13,7 @@ Only the permissions added for licences, enrollment, orders and promo codes are 
 | Confirm, reject or withdraw Enrollments | ✓ | ✓ | |
 | Confirm, change or release race number reservations; copy reservations from a past championship | ✓ | ✓ | |
 | Enroll any Licence, also outside the enrollment period | ✓ | ✓ | |
-| Configure Licence Types, required documents, Products and Prices | ✓ | ✓ | |
+| Configure Products and Prices | ✓ | ✓ | |
 | Set the final price of range-priced Orders, confirm Order payments | ✓ | ✓ | |
 | Issue and revoke Promo Codes | ✓ | ✓ | |
 | Claim a Promo Code for an own Licence | ✓ | ✓ | ✓ |

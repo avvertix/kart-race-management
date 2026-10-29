@@ -32,4 +32,12 @@ enum LicenceRequestStatus: string
     {
         return in_array($this, [self::Draft, self::ChangesRequested]);
     }
+
+    /**
+     * Whether the request is over: emitted or rejected.
+     */
+    public function isClosed(): bool
+    {
+        return in_array($this, [self::Emitted, self::Rejected], true);
+    }
 }

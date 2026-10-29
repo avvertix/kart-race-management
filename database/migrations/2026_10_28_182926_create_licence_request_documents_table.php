@@ -20,16 +20,11 @@ return new class extends Migration
 
             $table->foreignId('licence_request_id');
 
-            $table->foreignId('licence_type_document_id');
+            // LicenceDocument
+            $table->string('document', 40);
 
-            // Which parent the document is about, for documents asked for each parent
+            // Which parent the document is about, null for the holder's
             $table->unsignedTinyInteger('parent_index')->nullable();
-
-            // Copied from the Licence Type document, which can be removed later
-            $table->string('name', 250);
-
-            // LicenceDocumentKind, copied from the Licence Type document
-            $table->string('kind', 20);
 
             // On the licence-documents disk
             $table->text('path');
@@ -49,7 +44,7 @@ return new class extends Migration
             // The organizer's note when flagged
             $table->text('note')->nullable();
 
-            $table->unique(['licence_request_id', 'licence_type_document_id', 'parent_index'], 'licence_request_documents_slot_unique');
+            $table->unique(['licence_request_id', 'document', 'parent_index'], 'licence_request_documents_slot_unique');
         });
     }
 

@@ -7,26 +7,19 @@ namespace App\Livewire;
 use App\Actions\LicenceRequests\ResubmitLicenceRequest;
 use App\Actions\LicenceRequests\StoreLicenceRequestUpload;
 use App\Actions\LicenceRequests\SubmitLicenceRequest;
-use App\Actions\LicenceRequests\SwitchLicenceRequestProduct;
-use App\Actions\Orders\SubmitOrderPayment;
+use App\Actions\SubmitPaymentProof;
 use App\Data\HolderData;
 use App\Data\RequiredDocument;
 use App\Enums\LicenceDocumentKind;
-use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
-use App\Enums\OrderStatus;
-use App\Models\LicenceGrade;
 use App\Models\LicenceRequest;
-use App\Models\Product;
+use App\Rules\LicenseNumberValidationRule;
+use App\Support\LicenceCatalogue;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Exists;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -49,13 +42,13 @@ class LicenceRequestForm extends Component
      */
     public string $openSection = '';
 
-    public string $product = '';
+    public string $provider = '';
 
-    public ?string $level = null;
+    public string $licenceType = '';
 
-    public string $licenceGrade = '';
+    public bool $includesCompetitor = false;
 
-    public string $gradeOther = '';
+    public string $previousLicenceNumber = '';
 
     /** @var array<string, mixed> */
     public array $holder = [];
@@ -80,8 +73,10 @@ class LicenceRequestForm extends Component
 
         $this->licenceRequest = $licenceRequest;
 
-        $this->product = $licenceRequest->product->ulid;
-        $this->fillLicence();
+        $this->provider = $licenceRequest->provider->value ?? '';
+        $this->licenceType = $licenceRequest->licence_type ?? '';
+        $this->includesCompetitor = $licenceRequest->includes_competitor;
+        $this->previousLicenceNumber = $licenceRequest->previous_licence_number ?? '';
         $this->holder = $licenceRequest->holder?->toArray() ?? ['residence_address' => []];
         $this->parents = array_map(fn (HolderData $parent) => $parent->toArray(), $licenceRequest->parentHolders());
 
@@ -94,70 +89,50 @@ class LicenceRequestForm extends Component
     }
 
     /**
-     * Picking a product of another Licence Type starts the licence choice over.
+     * Another provider has other Licence Types.
      */
-    public function updatedProduct(): void
+    public function updatedProvider(): void
     {
-        $licenceType = $this->selectedProduct()?->licenceType;
-
-        if ($licenceType !== null && $licenceType->isNot($this->licenceRequest->licenceType)) {
-            $this->level = $licenceType->provider === LicenceProvider::Aci ? LicenceLevel::National->value : null;
-            $this->licenceGrade = '';
-            $this->gradeOther = '';
-        }
+        $this->licenceType = '';
+        $this->includesCompetitor = false;
     }
 
     /**
-     * Save the licence choice. A draft switching product validates first, then cancels its order and places a new one.
+     * Save the licence being renewed: provider, Licence Type, competitor licence and last year's number.
      */
-    public function saveLicence(SwitchLicenceRequestProduct $switchProduct): void
+    public function saveLicence(): void
     {
         $this->ensureCanEdit(LicenceRequestSection::Licence);
 
-        $product = $this->licenceRequest->status === LicenceRequestStatus::Draft ? $this->selectedProduct() : $this->licenceRequest->product;
+        $this->validate([
+            'provider' => ['required', Rule::enum(LicenceProvider::class)->only(LicenceCatalogue::providers())],
+        ], attributes: ['provider' => __('Provider')]);
 
-        if ($product === null || ($product->isNot($this->licenceRequest->product) && $product->orderablePrice() === null)) {
-            $this->addError('product', __('The product is not available at the moment.'));
+        $provider = LicenceProvider::from($this->provider);
 
-            return;
-        }
+        $currentLicenceType = $this->licenceRequest->provider === $provider ? $this->licenceRequest->licence_type : null;
 
-        $licenceType = $product->licenceType;
+        $validated = $this->validate([
+            'licenceType' => ['required', 'string', Rule::in(LicenceCatalogue::selectableCodes($provider, $currentLicenceType))],
+            'includesCompetitor' => ['boolean'],
+            'previousLicenceNumber' => ['required', 'string', 'max:250', new LicenseNumberValidationRule],
+        ], attributes: [
+            'licenceType' => __('Licence type'),
+            'previousLicenceNumber' => __('Last year\'s licence number'),
+        ]);
+
+        $licenceType = LicenceCatalogue::find($provider, $validated['licenceType']);
 
         abort_if($licenceType === null, 404);
 
-        $isAci = $licenceType->provider === LicenceProvider::Aci;
-
-        $validated = $this->validate([
-            'level' => $isAci ? ['required', Rule::enum(LicenceLevel::class)] : ['nullable'],
-            'licenceGrade' => [
-                'nullable',
-                Rule::exists('licence_grades', 'id')
-                    ->where('licence_type_id', $licenceType->getKey())
-                    ->when($isAci, fn (Exists $rule) => $rule->where('level', $this->level)),
-            ],
-            'gradeOther' => ['required_without:licenceGrade', 'nullable', 'string', 'max:250'],
-        ], attributes: [
-            'licenceGrade' => __('Grade'),
-            'gradeOther' => __('Grade'),
+        $this->licenceRequest->update([
+            'provider' => $provider,
+            'licence_type' => $licenceType->code,
+            'includes_competitor' => $validated['includesCompetitor'] && $licenceType->allowsCompetitor(),
+            'previous_licence_number' => $validated['previousLicenceNumber'],
         ]);
 
-        try {
-            DB::transaction(function () use ($switchProduct, $product, $isAci, $validated) {
-                $this->licenceRequest = $switchProduct($this->licenceRequest, $product);
-
-                $this->licenceRequest->update([
-                    'level' => $isAci ? $validated['level'] : null,
-                    'licence_grade_id' => filled($validated['licenceGrade']) ? (int) $validated['licenceGrade'] : null,
-                    'grade_other' => filled($validated['licenceGrade']) ? null : $validated['gradeOther'],
-                ]);
-            });
-        } catch (ValidationException $exception) {
-            $this->licenceRequest->refresh();
-            $this->addError('product', $exception->validator->errors()->first());
-
-            return;
-        }
+        $this->includesCompetitor = $this->licenceRequest->includes_competitor;
 
         $this->completeSection(LicenceRequestSection::Licence);
     }
@@ -241,7 +216,7 @@ class LicenceRequestForm extends Component
 
         abort_if($required === null, 404);
 
-        $section = LicenceRequestSection::forDocumentKind($required->document->kind);
+        $section = LicenceRequestSection::forDocumentKind($required->document->kind());
 
         $this->ensureCanEdit($section);
 
@@ -282,17 +257,13 @@ class LicenceRequestForm extends Component
         $this->openSection = $this->nextSection($section);
     }
 
-    public function uploadProof(SubmitOrderPayment $submitOrderPayment): void
+    public function uploadProof(SubmitPaymentProof $submitPaymentProof): void
     {
         $this->ensureCanEdit(LicenceRequestSection::Payment);
 
-        $order = $this->licenceRequest->order;
-
-        abort_if($order === null, 404);
-
         $validated = $this->validate(['proof' => ['required', 'file']], attributes: ['proof' => __('Payment proof')]);
 
-        $submitOrderPayment($order, $validated['proof']);
+        $submitPaymentProof($this->licenceRequest, $validated['proof']);
 
         $this->proof = null;
 
@@ -318,17 +289,19 @@ class LicenceRequestForm extends Component
 
     public function render(): View
     {
-        $licenceRequest = $this->licenceRequest->load(['licenceType.documents', 'licenceType.grades', 'documents', 'changeRequests', 'order.lines.price', 'order.latestPayment', 'product']);
+        $licenceRequest = $this->licenceRequest->load(['documents', 'changeRequests', 'latestPayment', 'coveringOrder']);
 
-        $licenceType = $this->selectedProduct()->licenceType ?? $licenceRequest->licenceType;
+        $provider = LicenceProvider::tryFrom($this->provider);
+
+        $licenceTypes = $provider === null
+            ? collect()
+            : LicenceCatalogue::selectableTypes($provider, $licenceRequest->provider === $provider ? $licenceRequest->licence_type : null);
 
         return view('livewire.licence-request-form', [
             'sections' => $licenceRequest->sections(),
-            'licenceProducts' => $this->licenceProducts(),
-            'selectedLicenceType' => $licenceType,
-            'grades' => $licenceType->grades
-                ->filter(fn (LicenceGrade $grade) => $licenceType->provider !== LicenceProvider::Aci || $grade->level?->value === $this->level)
-                ->values(),
+            'providers' => LicenceCatalogue::providers(),
+            'licenceTypes' => $licenceTypes,
+            'selectedLicenceType' => $licenceTypes->firstWhere('code', $this->licenceType),
             'documents' => $licenceRequest->requiredDocuments(LicenceDocumentKind::Upload),
             'forms' => $licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm),
         ])->title(__('Licence request'));
@@ -350,7 +323,7 @@ class LicenceRequestForm extends Component
         }
 
         if ($section === LicenceRequestSection::Payment) {
-            return in_array($licenceRequest->order?->status, [OrderStatus::PaymentSubmitted, OrderStatus::Paid], true) ? 'done' : 'later';
+            return $licenceRequest->needsPayment() ? 'later' : 'done';
         }
 
         return $licenceRequest->isSectionComplete($section) ? 'done' : 'todo';
@@ -365,46 +338,18 @@ class LicenceRequestForm extends Component
 
         return match ($section) {
             LicenceRequestSection::Licence => collect([
-                $licenceRequest->product->title,
-                $licenceRequest->level?->label(),
-                $licenceRequest->gradeName(),
-            ])->filter()->join(' · '),
+                $licenceRequest->provider?->label(),
+                $licenceRequest->licenceTypeLabel(),
+            ])->filter()->join(' · ') ?: __('Not filled in yet'),
             LicenceRequestSection::Holder => $licenceRequest->holder?->fullName() ?? __('Not filled in yet'),
             LicenceRequestSection::Parents => collect($licenceRequest->parentHolders())->map->fullName()->join(', ') ?: __('Not filled in yet'),
             LicenceRequestSection::Documents => $this->uploadedCount(LicenceDocumentKind::Upload),
             LicenceRequestSection::Forms => $this->uploadedCount(LicenceDocumentKind::SignedForm),
-            LicenceRequestSection::Payment => $licenceRequest->order === null
-                ? __('No order')
-                : collect([
-                    $licenceRequest->order->amountLabel(),
-                    $licenceRequest->order->status->label(),
-                ])->filter()->join(' · '),
+            LicenceRequestSection::Payment => collect([
+                $licenceRequest->amountLabel(),
+                $licenceRequest->payment_status->label(),
+            ])->filter()->join(' · '),
         };
-    }
-
-    /**
-     * The licence products a draft can switch to, plus the one already picked.
-     *
-     * @return Collection<int, Product>
-     */
-    private function licenceProducts(): Collection
-    {
-        return Product::query()
-            ->whereNotNull('licence_type_id')
-            ->where(fn (Builder $query) => $query->where('active', true)->orWhere('id', $this->licenceRequest->product_id))
-            ->with(['prices', 'licenceType.grades'])
-            ->orderBy('title')
-            ->get()
-            ->filter(fn (Product $product) => $product->is($this->licenceRequest->product) || $product->orderablePrice() !== null)
-            ->values();
-    }
-
-    /**
-     * The product picked in the licence section, not saved yet when the draft switches product.
-     */
-    private function selectedProduct(): ?Product
-    {
-        return $this->licenceProducts()->firstWhere('ulid', $this->product);
     }
 
     private function uploadedCount(LicenceDocumentKind $kind): string
@@ -415,15 +360,6 @@ class LicenceRequestForm extends Component
             'uploaded' => $required->filter(fn (RequiredDocument $document) => $this->licenceRequest->uploadFor($document) !== null)->count(),
             'total' => $required->count(),
         ]);
-    }
-
-    private function fillLicence(): void
-    {
-        $isAci = $this->licenceRequest->licenceType->provider === LicenceProvider::Aci;
-
-        $this->level = $isAci ? ($this->licenceRequest->level ?? LicenceLevel::National)->value : null;
-        $this->licenceGrade = (string) ($this->licenceRequest->licence_grade_id ?? '');
-        $this->gradeOther = $this->licenceRequest->grade_other ?? '';
     }
 
     private function findRequiredDocument(string $key): ?RequiredDocument

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\Orders\PlaceOrder;
-use App\Actions\Orders\SubmitOrderPayment;
+use App\Actions\SubmitPaymentProof;
 use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Models\Price;
@@ -82,7 +82,7 @@ class OrderControllerTest extends TestCase
 
         $organizer = User::factory()->organizer()->create();
         $order = (new PlaceOrder)(User::factory()->create(), Price::factory()->create()->product);
-        $payment = (new SubmitOrderPayment)($order, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
+        $payment = (new SubmitPaymentProof)($order, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
 
         $this->actingAs($organizer)
             ->get(route('orders.show', $order))
@@ -102,7 +102,7 @@ class OrderControllerTest extends TestCase
 
         $organizer = User::factory()->organizer()->create();
         $order = (new PlaceOrder)(User::factory()->create(), Price::factory()->create()->product);
-        (new SubmitOrderPayment)($order, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
+        (new SubmitPaymentProof)($order, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
 
         $this->actingAs($organizer)
             ->post(route('orders.reject-payment', $order))

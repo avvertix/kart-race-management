@@ -4,7 +4,7 @@
     </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
-            <span><a href="{{ route('public.products.index') }}">{{ __('Licences and enrollments') }}</a></span>
+            <span><a href="{{ route('public.products.index') }}">{{ __('Enrollments and offers') }}</a></span>
             <span>/</span>
             <span>{{ $product->title }}</span>
         </h2>
@@ -19,41 +19,13 @@
                     <p class="text-zinc-700 whitespace-pre-line">{{ $product->description }}</p>
                 @endif
 
-                @if ($product->licenceType || $product->championship)
+                @if ($product->championship)
                     <section>
                         <h3 class="font-semibold text-lg text-zinc-800">{{ __('What is included') }}</h3>
                         <ul class="mt-2 list-disc pl-5 text-zinc-700">
-                            @if ($product->licenceType)
-                                <li>{{ $product->licenceType->provider->label() }} &middot; {{ $product->licenceType->name }}</li>
-                            @endif
                             @if ($product->championship)
                                 <li>{{ __('Enrollment in :championship', ['championship' => $product->championship->title]) }}</li>
                             @endif
-                        </ul>
-                    </section>
-                @endif
-
-                @if ($product->licenceType?->documents->isNotEmpty())
-                    <section>
-                        <h3 class="font-semibold text-lg text-zinc-800">{{ __('Documents the request needs') }}</h3>
-                        <p class="text-sm text-zinc-600">{{ __('Forms to sign are given to you pre-filled with your details.') }}</p>
-                        <ul class="mt-2 divide-y divide-zinc-200 rounded-md border border-zinc-200 bg-white">
-                            @foreach ($product->licenceType->documents as $document)
-                                <li class="px-3 py-2">
-                                    <p class="text-zinc-900">
-                                        {{ $document->name }}
-                                        @if ($document->underage_only)
-                                            <span class="ml-1 inline-block px-2 rounded-full bg-zinc-100 text-xs text-zinc-700">{{ __('only for underage holders') }}</span>
-                                        @endif
-                                        @unless ($document->required)
-                                            <span class="ml-1 inline-block px-2 rounded-full bg-zinc-100 text-xs text-zinc-700">{{ __('optional') }}</span>
-                                        @endunless
-                                    </p>
-                                    @if ($document->description)
-                                        <p class="text-sm text-zinc-600">{{ $document->description }}</p>
-                                    @endif
-                                </li>
-                            @endforeach
                         </ul>
                     </section>
                 @endif

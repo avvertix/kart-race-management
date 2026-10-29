@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,7 +34,7 @@ use Illuminate\Validation\ValidationException;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, OrderLine> $lines
  * @property-read ?Payment $latestPayment
  */
-class Order extends Model
+class Order extends Model implements Payable
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory;
@@ -145,6 +146,20 @@ class Order extends Model
         }
 
         return $locked;
+    }
+
+    public function lockAwaitingPayment(string $errorKey): self
+    {
+        $message = $this->status === OrderStatus::AwaitingPrice
+            ? __('The organizer has not set the price yet.')
+            : __('The order is not awaiting a payment.');
+
+        return $this->lockInStatus([OrderStatus::AwaitingPayment], $errorKey, $message);
+    }
+
+    public function markPaymentSubmitted(): void
+    {
+        $this->update(['status' => OrderStatus::PaymentSubmitted]);
     }
 
     /**

@@ -32,13 +32,7 @@ return [
 
     'role' => [
         'driver' => 'Driver',
-        'competitor' => 'Competitor',
         'mechanic' => 'Mechanic',
-    ],
-
-    'level' => [
-        'national' => 'National',
-        'international' => 'International',
     ],
 
     'document_kind' => [
@@ -46,17 +40,18 @@ return [
         'signed_form' => 'Form to sign',
     ],
 
-    'document_scope' => [
-        'holder' => 'Holder',
-        'each_parent' => 'Each parent or guardian',
-        'once' => 'Once per request',
+    'document' => [
+        'identity_document' => 'Identity document',
+        'medical_certificate' => 'Medical certificate',
+        'privacy' => 'Privacy policy',
+        'delegation' => 'Delegation',
+        'parental_authorisation' => 'Parental authorisation',
     ],
 
-    'form_template' => [
-        'delegation' => 'Delegation',
-        'privacy' => 'Privacy',
-        'parental_authorisation' => 'Parental authorisation',
-        'self_declaration' => 'Self-declaration',
+    'document_description' => [
+        'identity_document' => 'Identity card or passport, with the fiscal code.',
+        'medical_certificate' => 'Competitive sport medical certificate, valid for the whole licence year.',
+        'privacy' => 'Signed by both parents when the holder is underage.',
     ],
 
     'source' => [
@@ -81,6 +76,14 @@ return [
         'documents' => 'Documents',
         'forms' => 'Forms to sign',
         'payment' => 'Payment',
+    ],
+
+    'request_payment_status' => [
+        'awaiting_price' => 'Waiting for the amount',
+        'awaiting_payment' => 'To pay',
+        'payment_submitted' => 'Proof uploaded',
+        'paid' => 'Paid',
+        'covered' => 'Covered by a package',
     ],
 
     'request_document_status' => [

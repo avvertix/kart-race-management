@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\HasLicenceType;
 use App\Data\HolderData;
-use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRole;
 use App\Enums\LicenceSource;
@@ -23,11 +23,9 @@ use Illuminate\Support\Facades\URL;
  * @property string $ulid
  * @property int $user_id
  * @property LicenceProvider $provider
- * @property ?int $licence_type_id
+ * @property string $licence_type
+ * @property bool $includes_competitor
  * @property LicenceRole $role
- * @property ?LicenceLevel $level
- * @property ?int $licence_grade_id
- * @property ?string $grade_other
  * @property ?DriverLicence $race_licence_category
  * @property string $number
  * @property string $number_hash
@@ -39,15 +37,19 @@ use Illuminate\Support\Facades\URL;
  * @property ?string $temporary_licence_path
  * @property ?int $licence_request_id
  * @property-read User $user
- * @property-read ?LicenceType $licenceType
- * @property-read ?LicenceGrade $grade
+ * @property-read ?LicenceRequest $licenceRequest
  */
 class Licence extends Model
 {
     /** @use HasFactory<\Database\Factories\LicenceFactory> */
     use HasFactory;
 
+    use HasLicenceType;
     use HasUlids;
+
+    protected $attributes = [
+        'includes_competitor' => false,
+    ];
 
     protected $hidden = [
         'id',
@@ -59,11 +61,9 @@ class Licence extends Model
     protected $fillable = [
         'user_id',
         'provider',
-        'licence_type_id',
+        'licence_type',
+        'includes_competitor',
         'role',
-        'level',
-        'licence_grade_id',
-        'grade_other',
         'race_licence_category',
         'number',
         'validity_year',
@@ -112,27 +112,13 @@ class Licence extends Model
     }
 
     /**
-     * @return BelongsTo<LicenceType, $this>
+     * The request the licence was emitted from.
+     *
+     * @return BelongsTo<LicenceRequest, $this>
      */
-    public function licenceType(): BelongsTo
+    public function licenceRequest(): BelongsTo
     {
-        return $this->belongsTo(LicenceType::class);
-    }
-
-    /**
-     * @return BelongsTo<LicenceGrade, $this>
-     */
-    public function grade(): BelongsTo
-    {
-        return $this->belongsTo(LicenceGrade::class, 'licence_grade_id');
-    }
-
-    /**
-     * The grade picked from the list, or the one written by the User.
-     */
-    public function gradeName(): ?string
-    {
-        return $this->licence_grade_id !== null ? $this->grade?->name : $this->grade_other;
+        return $this->belongsTo(LicenceRequest::class);
     }
 
     public function isVerified(): bool
@@ -199,7 +185,7 @@ class Licence extends Model
         return [
             'provider' => LicenceProvider::class,
             'role' => LicenceRole::class,
-            'level' => LicenceLevel::class,
+            'includes_competitor' => 'boolean',
             'race_licence_category' => DriverLicence::class,
             'number' => 'encrypted',
             'validity_year' => 'integer',

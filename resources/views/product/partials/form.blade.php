@@ -24,7 +24,7 @@
 
 <div
     x-data="{
-        kind: @js(old('kind', $product?->kind->value ?? \App\Enums\ProductKind::LicenceEmission->value)),
+        kind: @js(old('kind', $product?->kind->value ?? \App\Enums\ProductKind::Enrollment->value)),
         prices: @js(array_values($prices)),
         locked: @js($lockedPriceIds),
         errors: @js($errors->getMessages()),
@@ -66,30 +66,16 @@
                         <x-textarea id="description" name="description" class="mt-1 block w-full">{{ old('description', $product?->description) }}</x-textarea>
                         <x-input-error for="description" class="mt-2" />
                     </div>
-                    <template x-if="kind !== 'enrollment'">
-                        <div class="col-span-6 sm:col-span-4">
-                            <x-label for="licence_type" value="{{ __('Licence type') }}" />
-                            <select id="licence_type" name="licence_type" class="mt-1 {{ $inputClass }}">
-                                <option value="">{{ __('Choose a licence type') }}</option>
-                                @foreach ($licenceTypes as $licenceType)
-                                    <option value="{{ $licenceType->ulid }}" @selected(old('licence_type', $product?->licenceType?->ulid) === $licenceType->ulid)>{{ $licenceType->provider->label() }} · {{ $licenceType->name }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error for="licence_type" class="mt-2" />
-                        </div>
-                    </template>
-                    <template x-if="kind !== 'licence_emission'">
-                        <div class="col-span-6 sm:col-span-4">
-                            <x-label for="championship" value="{{ __('Championship') }}" />
-                            <select id="championship" name="championship" class="mt-1 {{ $inputClass }}">
-                                <option value="">{{ __('Choose a championship') }}</option>
-                                @foreach ($championships as $championship)
-                                    <option value="{{ $championship->uuid }}" @selected(old('championship', $product?->championship?->uuid) === $championship->uuid)>{{ $championship->title }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error for="championship" class="mt-2" />
-                        </div>
-                    </template>
+                    <div class="col-span-6 sm:col-span-4">
+                        <x-label for="championship" value="{{ __('Championship') }}" />
+                        <select id="championship" name="championship" class="mt-1 {{ $inputClass }}">
+                            <option value="">{{ __('Choose a championship') }}</option>
+                            @foreach ($championships as $championship)
+                                <option value="{{ $championship->uuid }}" @selected(old('championship', $product?->championship?->uuid) === $championship->uuid)>{{ $championship->title }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="championship" class="mt-2" />
+                    </div>
                     <div class="col-span-6 sm:col-span-4">
                         <label for="active" class="flex items-center">
                             <x-checkbox id="active" name="active" value="1" :checked="$active" />

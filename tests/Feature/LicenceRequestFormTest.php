@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Actions\LicenceRequests\StartLicenceRequest;
-use App\Enums\LicenceDocumentKind;
-use App\Enums\LicenceFormTemplate;
-use App\Enums\LicenceLevel;
+use App\Enums\LicenceDocument;
+use App\Enums\LicenceProvider;
+use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
-use App\Enums\OrderStatus;
 use App\Livewire\LicenceRequestForm;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestChangeRequest;
 use App\Models\LicenceRequestDocument;
-use App\Models\LicenceTypeDocument;
-use App\Models\Price;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -33,12 +29,12 @@ class LicenceRequestFormTest extends TestCase
         parent::setUp();
 
         Storage::fake('licence-documents');
+        Storage::fake('payments');
     }
 
     public function test_other_users_cannot_open_the_request(): void
     {
-        $licenceRequest = $this->startRequest();
-        $form = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->signedForm()->create();
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->create();
         $document = LicenceRequestDocument::factory()->for($licenceRequest)->create();
 
         $other = User::factory()->create();
@@ -46,8 +42,11 @@ class LicenceRequestFormTest extends TestCase
         $this->actingAs($other)->get(route('licence-requests.show', $licenceRequest))->assertForbidden();
         $this->actingAs($other)->get(route('licence-requests.edit', $licenceRequest))->assertForbidden();
         $this->actingAs($other)->get(route('licence-requests.documents.show', [$licenceRequest, $document]))->assertForbidden();
-        $this->actingAs($other)->get(route('licence-requests.forms.show', [$licenceRequest, $form]))->assertForbidden();
+        $this->actingAs($other)->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::Privacy]))->assertForbidden();
         $this->actingAs($other)->delete(route('licence-requests.destroy', $licenceRequest))->assertForbidden();
+        $this->actingAs($other)
+            ->post(route('licence-requests.payment.store', $licenceRequest), ['proof' => UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf')])
+            ->assertForbidden();
 
         $this->assertModelExists($licenceRequest);
     }
@@ -55,30 +54,33 @@ class LicenceRequestFormTest extends TestCase
     public function test_each_section_saves_on_its_own_and_the_draft_reloads(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = $this->startRequest($user);
+        $licenceRequest = LicenceRequest::factory()->for($user)->create();
 
         $this->actingAs($user)->get(route('licence-requests.edit', $licenceRequest))->assertSuccessful();
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->assertSet('openSection', 'licence')
-            ->set('level', 'international')
-            ->set('licenceGrade', '')
-            ->set('gradeOther', 'International C Senior')
+            ->set('provider', 'aci')
+            ->set('licenceType', 'int-e')
+            ->set('includesCompetitor', true)
+            ->set('previousLicenceNumber', 'A123456')
             ->call('saveLicence')
             ->assertHasNoErrors()
             ->assertSet('openSection', 'holder');
 
         $licenceRequest->refresh();
 
-        $this->assertEquals(LicenceLevel::International, $licenceRequest->level);
-        $this->assertEquals('International C Senior', $licenceRequest->gradeName());
+        $this->assertEquals(LicenceProvider::Aci, $licenceRequest->provider);
+        $this->assertEquals('int-e', $licenceRequest->licence_type);
+        $this->assertTrue($licenceRequest->includes_competitor);
+        $this->assertEquals('A123456', $licenceRequest->previous_licence_number);
         $this->assertNull($licenceRequest->holder);
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->assertSet('openSection', 'holder')
-            ->assertSet('gradeOther', 'International C Senior')
+            ->assertSet('licenceType', 'int-e')
             ->set('holder', $this->holderInput())
             ->call('saveHolder')
             ->assertHasNoErrors()
@@ -87,10 +89,44 @@ class LicenceRequestFormTest extends TestCase
         $this->assertEquals('Giulia Bianchi', $licenceRequest->fresh()->holder->fullName());
     }
 
+    public function test_licence_type_must_belong_to_the_provider(): void
+    {
+        $user = User::factory()->create();
+        $licenceRequest = LicenceRequest::factory()->for($user)->create();
+
+        Livewire::actingAs($user)
+            ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
+            ->set('provider', 'asi')
+            ->set('licenceType', 'naz-e')
+            ->set('previousLicenceNumber', '')
+            ->call('saveLicence')
+            ->assertHasErrors(['licenceType', 'previousLicenceNumber']);
+
+        $this->assertNull($licenceRequest->fresh()->licence_type);
+    }
+
+    public function test_competitor_licence_is_dropped_for_types_that_cannot_include_it(): void
+    {
+        $user = User::factory()->create();
+        $licenceRequest = LicenceRequest::factory()->for($user)->create();
+
+        Livewire::actingAs($user)
+            ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
+            ->set('provider', 'asi')
+            ->set('licenceType', 'driver')
+            ->set('includesCompetitor', true)
+            ->set('previousLicenceNumber', 'ASI-1')
+            ->call('saveLicence')
+            ->assertHasNoErrors()
+            ->assertSet('includesCompetitor', false);
+
+        $this->assertFalse($licenceRequest->fresh()->includes_competitor);
+    }
+
     public function test_invalid_section_is_not_saved(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = $this->startRequest($user);
+        $licenceRequest = LicenceRequest::factory()->for($user)->create();
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
@@ -104,14 +140,13 @@ class LicenceRequestFormTest extends TestCase
     public function test_underage_holder_needs_a_parent(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = $this->startRequest($user);
+        $licenceRequest = LicenceRequest::factory()->for($user)->create();
 
         $component = Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->set('holder', $this->holderInput(now()->subYears(12)->toDateString()))
             ->call('saveHolder')
             ->assertHasNoErrors()
-            ->assertSet('openSection', 'parents')
             ->assertSee(LicenceRequestSection::Parents->label())
             ->call('saveParents')
             ->assertHasErrors('parents');
@@ -128,45 +163,61 @@ class LicenceRequestFormTest extends TestCase
     public function test_documents_are_uploaded_from_the_form(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = $this->startRequest($user);
-        $document = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->create(['name' => 'Medical certificate']);
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->call('open', 'documents')
             ->assertSee('Medical certificate')
-            ->set("files.{$document->getKey()}", UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
-            ->call('upload', (string) $document->getKey())
+            ->set('files.medical_certificate', UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
+            ->call('upload', 'medical_certificate')
             ->assertHasNoErrors()
             ->assertSee('certificate.pdf');
 
         $upload = $licenceRequest->documents()->sole();
 
-        $this->assertEquals('Medical certificate', $upload->name);
-        $this->assertEquals(LicenceDocumentKind::Upload, $upload->kind);
+        $this->assertEquals(LicenceDocument::MedicalCertificate, $upload->document);
         Storage::disk('licence-documents')->assertExists($upload->path);
 
         $this->actingAs($user)->get(route('licence-requests.documents.show', [$licenceRequest, $upload]))->assertSuccessful();
     }
 
-    public function test_ranged_order_shows_the_range_and_no_proof_upload(): void
+    public function test_payment_waits_for_the_amount_set_by_the_organizer(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = $this->startRequest($user, Price::factory()->range(23000, 31000)->create());
-
-        $this->assertEquals(OrderStatus::AwaitingPrice, $licenceRequest->order->status);
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->call('open', 'payment')
-            ->assertSee('from €230.00 to €310.00')
+            ->assertSee('The organizer sets the amount after checking your request.')
             ->assertDontSee(__('Upload payment proof'));
+    }
+
+    public function test_proof_is_uploaded_from_the_request_page_after_submitting(): void
+    {
+        $user = User::factory()->create();
+        $licenceRequest = LicenceRequest::factory()->submitted()->awaitingPayment(5000)->for($user)->create();
+
+        $this->actingAs($user)
+            ->get(route('licence-requests.show', $licenceRequest))
+            ->assertSuccessful()
+            ->assertSee('€50.00')
+            ->assertSee(route('licence-requests.payment.store', $licenceRequest));
+
+        $this->actingAs($user)
+            ->post(route('licence-requests.payment.store', $licenceRequest), ['proof' => UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf')])
+            ->assertRedirect(route('licence-requests.show', $licenceRequest))
+            ->assertSessionHasNoErrors();
+
+        $this->assertEquals(LicenceRequestPaymentStatus::PaymentSubmitted, $licenceRequest->fresh()->payment_status);
+        $this->assertEquals(1, $licenceRequest->payments()->count());
     }
 
     public function test_complete_request_is_submitted_unpaid_with_the_declaration(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->withAllDocuments()->for($user)->create();
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
@@ -186,7 +237,7 @@ class LicenceRequestFormTest extends TestCase
     public function test_after_a_change_request_only_flagged_parts_can_change(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = LicenceRequest::factory()->changesRequested()->for($user)->create();
+        $licenceRequest = LicenceRequest::factory()->changesRequested()->withAllDocuments()->for($user)->create();
         LicenceRequestChangeRequest::factory()->for($licenceRequest)->create(['section' => LicenceRequestSection::Holder, 'note' => 'Birth place is wrong.']);
 
         $this->actingAs($user)->get(route('licence-requests.show', $licenceRequest))->assertSee('Birth place is wrong.');
@@ -200,7 +251,7 @@ class LicenceRequestFormTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
-            ->set('gradeOther', 'Changed')
+            ->set('licenceType', 'int-e')
             ->call('saveLicence')
             ->assertForbidden();
 
@@ -218,7 +269,7 @@ class LicenceRequestFormTest extends TestCase
         $licenceRequest->refresh();
 
         $this->assertEquals(LicenceRequestStatus::Submitted, $licenceRequest->status);
-        $this->assertEquals('C Senior', $licenceRequest->gradeName());
+        $this->assertEquals('naz-e', $licenceRequest->licence_type);
         $this->assertEquals('Brescia', $licenceRequest->holder->birth_place);
     }
 
@@ -226,7 +277,6 @@ class LicenceRequestFormTest extends TestCase
     {
         $user = User::factory()->create();
         $licenceRequest = LicenceRequest::factory()->changesRequested()->for($user)->create();
-        $document = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->create(['required' => false]);
         $changeRequest = LicenceRequestChangeRequest::factory()->for($licenceRequest)->create(['section' => LicenceRequestSection::Documents, 'note' => 'Add the medical certificate.']);
 
         Livewire::actingAs($user)
@@ -242,8 +292,8 @@ class LicenceRequestFormTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
-            ->set("files.{$document->getKey()}", UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
-            ->call('upload', (string) $document->getKey())
+            ->set('files.medical_certificate', UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
+            ->call('upload', 'medical_certificate')
             ->assertHasNoErrors();
 
         $this->assertNotNull($changeRequest->fresh()->resolved_at);
@@ -265,14 +315,13 @@ class LicenceRequestFormTest extends TestCase
             ->set('parents.0', [...$this->holderInput(), 'first_name' => 'Marco'])
             ->call('saveParents')
             ->assertHasNoErrors()
-            ->assertSet('openSection', 'review');
+            ->assertSet('openSection', 'documents');
     }
 
     public function test_removing_the_second_parent_removes_their_documents(): void
     {
         $user = User::factory()->create();
         $licenceRequest = LicenceRequest::factory()->underage()->for($user)->create();
-        $document = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->create(['scope' => 'each_parent', 'underage_only' => true]);
 
         $component = Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
@@ -280,8 +329,8 @@ class LicenceRequestFormTest extends TestCase
             ->set('parents.1', [...$this->holderInput(), 'first_name' => 'Anna'])
             ->call('saveParents')
             ->assertHasNoErrors()
-            ->set("files.{$document->getKey()}-1", UploadedFile::fake()->create('anna.pdf', 50, 'application/pdf'))
-            ->call('upload', "{$document->getKey()}-1")
+            ->set('files.identity_document-1', UploadedFile::fake()->create('anna.pdf', 50, 'application/pdf'))
+            ->call('upload', 'identity_document-1')
             ->assertHasNoErrors();
 
         $upload = $licenceRequest->documents()->sole();
@@ -295,42 +344,29 @@ class LicenceRequestFormTest extends TestCase
         Storage::disk('licence-documents')->assertMissing($upload->path);
     }
 
-    public function test_an_invalid_licence_choice_keeps_the_current_order(): void
-    {
-        $user = User::factory()->create();
-        $licenceRequest = $this->startRequest($user);
-        $other = Price::factory()->create()->product;
-
-        Livewire::actingAs($user)
-            ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
-            ->set('product', $other->ulid)
-            ->set('licenceGrade', '')
-            ->set('gradeOther', '')
-            ->call('saveLicence')
-            ->assertHasErrors('gradeOther');
-
-        $licenceRequest->refresh();
-
-        $this->assertNotEquals($other->getKey(), $licenceRequest->product_id);
-        $this->assertEquals(OrderStatus::AwaitingPayment, $licenceRequest->order->status);
-    }
-
     public function test_pre_filled_form_downloads_as_pdf(): void
     {
         $user = User::factory()->create();
         $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();
-        $form = LicenceTypeDocument::factory()->for($licenceRequest->licenceType)->signedForm(LicenceFormTemplate::Privacy)->create();
 
         $this->actingAs($user)
-            ->get(route('licence-requests.forms.show', [$licenceRequest, $form]))
+            ->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::Privacy]))
             ->assertSuccessful()
             ->assertHeader('Content-Type', 'application/pdf');
+
+        $this->actingAs($user)
+            ->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::ParentalAuthorisation]))
+            ->assertNotFound();
+
+        $this->actingAs($user)
+            ->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::MedicalCertificate]))
+            ->assertNotFound();
     }
 
     public function test_requester_deletes_a_draft(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = $this->startRequest($user);
+        $licenceRequest = LicenceRequest::factory()->for($user)->create();
 
         $this->actingAs($user)
             ->get(route('my-licences.index'))
@@ -341,7 +377,6 @@ class LicenceRequestFormTest extends TestCase
             ->assertRedirect(route('my-licences.index'));
 
         $this->assertModelMissing($licenceRequest);
-        $this->assertEquals(OrderStatus::Cancelled, $licenceRequest->order->fresh()->status);
     }
 
     /**
@@ -366,10 +401,5 @@ class LicenceRequestFormTest extends TestCase
                 'postal_code' => '25121',
             ],
         ];
-    }
-
-    private function startRequest(?User $user = null, ?Price $price = null): LicenceRequest
-    {
-        return app(StartLicenceRequest::class)($user ?? User::factory()->create(), ($price ?? Price::factory()->create())->product);
     }
 }

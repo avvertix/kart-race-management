@@ -45,11 +45,6 @@ class RoleTest extends TestCase
     public function test_organizer_manages_licences_products_orders_enrollments_and_promo_codes(): void
     {
         $this->assertEquals([
-            'licence-type:list',
-            'licence-type:view',
-            'licence-type:create',
-            'licence-type:update',
-            'licence-type:delete',
             'product:list',
             'product:view',
             'product:create',
@@ -104,13 +99,13 @@ class RoleTest extends TestCase
     }
 
     /**
-     * The permissions of the role on licence types, products, licence requests, licences, orders, enrollments and promo codes.
+     * The permissions of the role on products, licence requests, licences, orders, enrollments and promo codes.
      *
      * @return list<string>
      */
     private function licencePermissions(Role $role): array
     {
-        $resources = ['licence-type', 'product', 'licence-request', 'licence', 'order', 'enrollment', 'promo-code'];
+        $resources = ['product', 'licence-request', 'licence', 'order', 'enrollment', 'promo-code'];
 
         return array_values(array_filter(
             $role->permissions(),

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\LicenceDocumentKind;
+use App\Enums\LicenceDocument;
 use App\Enums\LicenceRequestDocumentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,10 +16,8 @@ use Illuminate\Support\Facades\Storage;
  * A file uploaded for a Licence Request: a document or a signed form.
  *
  * @property int $licence_request_id
- * @property int $licence_type_document_id
+ * @property LicenceDocument $document
  * @property ?int $parent_index
- * @property string $name
- * @property LicenceDocumentKind $kind
  * @property string $path
  * @property string $original_name
  * @property string $mime
@@ -35,10 +33,8 @@ class LicenceRequestDocument extends Model
     use HasFactory;
 
     protected $fillable = [
-        'licence_type_document_id',
+        'document',
         'parent_index',
-        'name',
-        'kind',
         'path',
         'original_name',
         'mime',
@@ -86,7 +82,7 @@ class LicenceRequestDocument extends Model
     {
         return [
             'parent_index' => 'integer',
-            'kind' => LicenceDocumentKind::class,
+            'document' => LicenceDocument::class,
             'size' => 'integer',
             'status' => LicenceRequestDocumentStatus::class,
         ];

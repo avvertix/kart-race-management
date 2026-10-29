@@ -6,7 +6,6 @@ namespace Database\Factories;
 
 use App\Enums\ProductKind;
 use App\Models\Championship;
-use App\Models\LicenceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,14 +21,13 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'kind' => ProductKind::LicenceEmission,
+            'kind' => ProductKind::Package,
             'title' => fake()->randomElement([
-                'Driver licence',
-                'Driver licence renewal',
+                'Season package',
+                'Early bird package',
             ]),
             'description' => null,
             'championship_id' => null,
-            'licence_type_id' => LicenceType::factory(),
             'active' => true,
         ];
     }
@@ -43,7 +41,6 @@ class ProductFactory extends Factory
             'kind' => ProductKind::Enrollment,
             'title' => 'Championship enrollment',
             'championship_id' => Championship::factory(),
-            'licence_type_id' => null,
         ]);
     }
 

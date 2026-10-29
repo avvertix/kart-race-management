@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\LicenceRequests\DeleteLicenceRequestDraft;
+use App\Actions\LicenceRequests\StartLicenceRenewal;
+use App\Actions\SubmitPaymentProof;
+use App\Data\RequiredDocument;
+use App\Enums\LicenceDocument;
 use App\Enums\LicenceDocumentKind;
+use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestDocument;
-use App\Models\LicenceTypeDocument;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,13 +25,33 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class LicenceRequestController extends Controller
 {
     /**
-     * The request detail: status timeline, open change requests and order status.
+     * Start a renewal: empty, or pre-filled from one of the user's licences.
+     */
+    public function store(Request $request, StartLicenceRenewal $startRenewal): RedirectResponse
+    {
+        $this->authorize('create', LicenceRequest::class);
+
+        $request->validate([
+            'licence' => ['nullable', 'string'],
+        ]);
+
+        $previous = $request->filled('licence')
+            ? Licence::query()->managedBy($request->user())->where('ulid', $request->input('licence'))->firstOrFail()
+            : null;
+
+        $licenceRequest = $startRenewal($request->user(), $previous);
+
+        return redirect()->route('licence-requests.edit', $licenceRequest);
+    }
+
+    /**
+     * The request detail: status timeline, open change requests and payment.
      */
     public function show(LicenceRequest $licenceRequest): View
     {
         $this->authorize('view', $licenceRequest);
 
-        $licenceRequest->load(['product', 'licenceType', 'grade', 'order.lines.price', 'order.latestPayment', 'changeRequests', 'documents', 'licence']);
+        $licenceRequest->load(['latestPayment', 'coveringOrder', 'changeRequests', 'documents', 'licence']);
 
         return view('licence-request.show', [
             'licenceRequest' => $licenceRequest,
@@ -35,7 +59,7 @@ class LicenceRequestController extends Controller
     }
 
     /**
-     * Delete a draft, cancelling its order.
+     * Delete a draft.
      */
     public function destroy(LicenceRequest $licenceRequest, DeleteLicenceRequestDraft $deleteDraft): RedirectResponse
     {
@@ -45,6 +69,23 @@ class LicenceRequestController extends Controller
 
         return redirect()->route('my-licences.index')
             ->with('flash.banner', __('Licence request deleted.'));
+    }
+
+    /**
+     * Upload the payment proof once the organizer set the amount.
+     */
+    public function pay(Request $request, LicenceRequest $licenceRequest, SubmitPaymentProof $submitPaymentProof): RedirectResponse
+    {
+        $this->authorize('pay', $licenceRequest);
+
+        $request->validate([
+            'proof' => ['required', 'file'],
+        ]);
+
+        $submitPaymentProof($licenceRequest, $request->file('proof'));
+
+        return redirect()->route('licence-requests.show', $licenceRequest)
+            ->with('flash.banner', __('Payment proof uploaded. The organizer will confirm it.'));
     }
 
     /**
@@ -60,24 +101,22 @@ class LicenceRequestController extends Controller
     }
 
     /**
-     * A form to sign, pre-filled with the holder and, for forms asked for each parent, that parent.
+     * A form to sign, pre-filled with the holder and the parents entered.
      */
-    public function form(Request $request, LicenceRequest $licenceRequest, LicenceTypeDocument $document): Response
+    public function form(LicenceRequest $licenceRequest, LicenceDocument $document): Response
     {
         $this->authorize('view', $licenceRequest);
 
-        abort_unless($document->licence_type_id === $licenceRequest->licence_type_id && $document->kind === LicenceDocumentKind::SignedForm && $document->template !== null, 404);
+        $isAskedFor = $licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm)
+            ->contains(fn (RequiredDocument $required) => $required->document === $document);
 
-        $parentIndex = $request->integer('parent', -1);
-        $parents = $licenceRequest->parentHolders();
+        abort_unless($isAskedFor, 404);
 
-        return Pdf::loadView($document->template->view(), [
-            'template' => $document->template,
+        return Pdf::loadView((string) $document->formView(), [
             'document' => $document,
             'licenceRequest' => $licenceRequest,
             'holder' => $licenceRequest->holder,
-            'parents' => $parents,
-            'parent' => $parents[$parentIndex] ?? null,
-        ])->stream(Str::slug($document->name).'.pdf');
+            'parents' => $licenceRequest->parentHolders(),
+        ])->stream(Str::slug($document->label()).'.pdf');
     }
 }

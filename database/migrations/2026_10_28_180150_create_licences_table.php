@@ -26,20 +26,16 @@ return new class extends Migration
             // LicenceProvider
             $table->string('provider', 20);
 
-            $table->foreignId('licence_type_id')->nullable();
+            // Code of the Licence Type in config/licences.php
+            $table->string('licence_type', 50);
 
-            // LicenceRole
+            // ACI driver licences only
+            $table->boolean('includes_competitor')->default(false);
+
+            // LicenceRole, copied from the Licence Type
             $table->string('role', 20);
 
-            // LicenceLevel, ACI only
-            $table->string('level', 20)->nullable();
-
-            $table->foreignId('licence_grade_id')->nullable();
-
-            // Grade written by the User when not in the list
-            $table->string('grade_other', 250)->nullable();
-
-            // DriverLicence used in race registration, driver licences only
+            // DriverLicence used in race registration, copied from the Licence Type, driver licences only
             $table->unsignedTinyInteger('race_licence_category')->nullable();
 
             // Encrypted

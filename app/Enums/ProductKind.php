@@ -9,7 +9,6 @@ namespace App\Enums;
  */
 enum ProductKind: string
 {
-    case LicenceEmission = 'licence_emission';
     case Enrollment = 'enrollment';
     case Package = 'package';
 

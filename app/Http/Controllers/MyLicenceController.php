@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Data\HolderData;
-use App\Enums\LicenceLevel;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceSource;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
-use App\Models\LicenceType;
 use App\Rules\LicenseNumberValidationRule;
+use App\Support\LicenceCatalogue;
 use Closure;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -30,25 +30,31 @@ class MyLicenceController extends Controller
     }
 
     /**
-     * The licences managed by the signed-in user.
+     * The licences managed by the signed-in user, their open requests, and which licences can be renewed.
      */
     public function index(Request $request): View
     {
         $this->authorize('create', Licence::class);
 
+        $licenceRequests = LicenceRequest::query()
+            ->requestedBy($request->user())
+            ->open()
+            ->latest()
+            ->get();
+
+        $licences = Licence::query()
+            ->managedBy($request->user())
+            ->orderByDesc('validity_year')
+            ->orderBy('id')
+            ->get();
+
+        $renewalYear = LicenceRequest::validityYearFor(now());
+
         return view('my-licence.index', [
-            'licenceRequests' => LicenceRequest::query()
-                ->requestedBy($request->user())
-                ->open()
-                ->with(['product', 'order'])
-                ->latest()
-                ->get(),
-            'licences' => Licence::query()
-                ->managedBy($request->user())
-                ->with(['licenceType', 'grade'])
-                ->orderByDesc('validity_year')
-                ->orderBy('id')
-                ->get(),
+            'licenceRequests' => $licenceRequests,
+            'licences' => $licences,
+            'renewableLicenceIds' => $this->renewableLicenceIds($licences, $licenceRequests, $renewalYear),
+            'renewalYear' => $renewalYear,
         ]);
     }
 
@@ -82,8 +88,6 @@ class MyLicenceController extends Controller
      */
     public function show(Licence $licence): View
     {
-        $licence->load(['licenceType', 'grade']);
-
         return view('my-licence.show', [
             'licence' => $licence,
         ]);
@@ -137,19 +141,40 @@ class MyLicenceController extends Controller
     }
 
     /**
-     * The licence types a licence can be declared for, with their grades. A changed licence keeps its type even when deactivated.
+     * The latest licence of each holder, when older than the year renewals are for and not already being renewed.
+     * Holders are matched by fiscal code, or by name and birth date without one.
+     *
+     * @param  \Illuminate\Database\Eloquent\Collection<int, Licence>  $licences
+     * @param  \Illuminate\Database\Eloquent\Collection<int, LicenceRequest>  $licenceRequests
+     * @return array<int, int>
+     */
+    private function renewableLicenceIds(Collection $licences, Collection $licenceRequests, int $renewalYear): array
+    {
+        $renewingHashes = $licenceRequests->pluck('previous_licence_number_hash')->filter()->all();
+
+        return $licences->toBase()
+            ->groupBy(fn (Licence $licence) => $licence->holder->identityKey())
+            ->map(fn (Collection $holderLicences) => $holderLicences->sortByDesc('validity_year')->first())
+            ->filter()
+            ->filter(fn (Licence $licence) => $licence->validity_year < $renewalYear && ! in_array($licence->number_hash, $renewingHashes, true))
+            ->map(fn (Licence $licence) => (int) $licence->getKey())
+            ->values()
+            ->all();
+    }
+
+    /**
+     * The Licence Types a licence can be declared for, by provider. A changed licence keeps its type even when no longer offered.
      *
      * @return array<string, mixed>
      */
     private function formOptions(?Licence $licence = null): array
     {
         return [
-            'licenceTypes' => LicenceType::query()
-                ->offeredFor($licence)
-                ->with('grades')
-                ->orderBy('provider')
-                ->orderBy('name')
-                ->get(),
+            'licenceTypes' => collect(LicenceCatalogue::providers())
+                ->mapWithKeys(fn (LicenceProvider $provider) => [
+                    $provider->value => LicenceCatalogue::selectableTypes($provider, $licence?->provider === $provider ? $licence->licence_type : null),
+                ])
+                ->all(),
         ];
     }
 
@@ -161,31 +186,18 @@ class MyLicenceController extends Controller
     private function validatedAttributes(Request $request, ?Licence $licence = null): array
     {
         $request->validate([
-            'licence_type' => ['required', 'string'],
+            'provider' => ['required', Rule::enum(LicenceProvider::class)->only(LicenceCatalogue::providers())],
         ]);
 
-        $licenceType = LicenceType::query()->offeredFor($licence)->where('ulid', $request->input('licence_type'))->first();
+        $provider = $request->enum('provider', LicenceProvider::class);
 
-        if ($licenceType === null) {
-            throw ValidationException::withMessages([
-                'licence_type' => __('validation.exists', ['attribute' => __('Licence type')]),
-            ]);
-        }
-
-        $isAci = $licenceType->provider === LicenceProvider::Aci;
+        $currentLicenceType = $licence?->provider === $provider ? $licence->licence_type : null;
 
         $currentYear = now()->year;
 
         $validated = $request->validate([
-            'level' => $isAci ? ['required', Rule::enum(LicenceLevel::class)] : ['prohibited'],
-            'licence_grade' => [
-                'nullable',
-                'integer',
-                Rule::exists('licence_grades', 'id')
-                    ->where('licence_type_id', $licenceType->getKey())
-                    ->when($isAci, fn ($rule) => $rule->where('level', $request->input('level'))),
-            ],
-            'grade_other' => ['nullable', 'required_without:licence_grade', 'string', 'max:250'],
+            'licence_type' => ['required', 'string', Rule::in(LicenceCatalogue::selectableCodes($provider, $currentLicenceType))],
+            'includes_competitor' => ['nullable', 'boolean'],
             'number' => ['required', 'string', 'max:250', new LicenseNumberValidationRule],
             'validity_year' => ['required', 'integer', Rule::in([$currentYear, $currentYear + 1])],
             'holder' => ['required', 'array'],
@@ -195,7 +207,7 @@ class MyLicenceController extends Controller
         $isDuplicate = Licence::query()
             ->where('number_hash', Licence::hashNumber($validated['number']))
             ->where('validity_year', $validated['validity_year'])
-            ->where('provider', $licenceType->provider)
+            ->where('provider', $provider)
             ->when($licence, fn ($query) => $query->whereKeyNot($licence->getKey()))
             ->exists();
 
@@ -203,16 +215,12 @@ class MyLicenceController extends Controller
             $this->throwDuplicate((int) $validated['validity_year']);
         }
 
-        $level = $isAci ? LicenceLevel::from($validated['level']) : null;
+        $licenceType = LicenceCatalogue::find($provider, $validated['licence_type']);
+
+        abort_if($licenceType === null, 404);
 
         return [
-            'provider' => $licenceType->provider,
-            'licence_type_id' => $licenceType->getKey(),
-            'role' => $licenceType->role,
-            'level' => $level,
-            'licence_grade_id' => $validated['licence_grade'] ?? null,
-            'grade_other' => filled($validated['licence_grade'] ?? null) ? null : $validated['grade_other'],
-            'race_licence_category' => $licenceType->raceLicenceCategory($level),
+            ...$licenceType->licenceAttributes($request->boolean('includes_competitor')),
             'number' => $validated['number'],
             'validity_year' => (int) $validated['validity_year'],
             'holder' => HolderData::fromValidated($validated['holder']),

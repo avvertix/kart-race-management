@@ -6,7 +6,7 @@ Organizers configure which licences they process, their common Licence Grades, a
 
 ## Docs
 
-- [Set up licence types, products and prices](../../docs/how-to/organizer/set-up-licence-types-and-products.md)
+- [Set up products and prices](../../docs/how-to/organizer/set-up-products-and-prices.md)
 - Glossary: Licence Type, Licence Grade
 
 ## Scope

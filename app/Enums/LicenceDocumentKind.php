@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 /**
- * How a document required by a Licence Type is provided.
+ * How a document asked for by a Licence Request is provided.
  */
 enum LicenceDocumentKind: string
 {
@@ -18,18 +18,6 @@ enum LicenceDocumentKind: string
      * A form given to the applicant pre-filled with their details, to be signed and uploaded.
      */
     case SignedForm = 'signed_form';
-
-    /**
-     * The kinds as a value => label map.
-     *
-     * @return array<string, string>
-     */
-    public static function options(): array
-    {
-        return collect(self::cases())
-            ->mapWithKeys(fn (self $kind) => [$kind->value => $kind->label()])
-            ->all();
-    }
 
     /**
      * The human readable name of the kind.

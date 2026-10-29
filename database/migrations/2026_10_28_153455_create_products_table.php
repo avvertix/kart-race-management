@@ -30,9 +30,6 @@ return new class extends Migration
             // Required for enrollment products
             $table->foreignId('championship_id')->nullable();
 
-            // Required for licence emission products
-            $table->foreignId('licence_type_id')->nullable();
-
             // Inactive products are not listed and cannot be ordered
             $table->boolean('active')->default(true);
         });

@@ -7,7 +7,6 @@ namespace Tests\Feature;
 use App\Actions\Orders\PlaceOrder;
 use App\Enums\ProductKind;
 use App\Models\Championship;
-use App\Models\LicenceType;
 use App\Models\Price;
 use App\Models\Product;
 use App\Models\User;
@@ -55,20 +54,18 @@ class ProductControllerTest extends TestCase
             ->assertSee('230.00');
     }
 
-    public function test_organizer_creates_licence_product_with_prices_in_euro(): void
+    public function test_organizer_creates_package_with_prices_in_euro(): void
     {
         $this->travelTo(CarbonImmutable::parse('2026-10-28 12:00', 'UTC'));
 
         $user = User::factory()->organizer()->create();
-        $licenceType = LicenceType::factory()->create();
 
         $response = $this
             ->actingAs($user)
             ->post(route('products.store'), [
-                'kind' => 'licence_emission',
-                'title' => 'Driver licence 2027',
-                'description' => 'Emission or renewal',
-                'licence_type' => $licenceType->ulid,
+                'kind' => 'package',
+                'title' => 'Season package 2027',
+                'description' => 'Enrollment and race fees',
                 'active' => '1',
                 'prices' => [
                     ['type' => 'fixed', 'amount' => '150.50', 'starts_on' => '2026-11-01', 'ends_on' => '2026-11-30'],
@@ -81,8 +78,7 @@ class ProductControllerTest extends TestCase
 
         $product = Product::sole();
 
-        $this->assertEquals(ProductKind::LicenceEmission, $product->kind);
-        $this->assertTrue($product->licenceType->is($licenceType));
+        $this->assertEquals(ProductKind::Package, $product->kind);
         $this->assertNull($product->championship_id);
         $this->assertTrue($product->active);
 
@@ -108,9 +104,8 @@ class ProductControllerTest extends TestCase
             ->post(route('products.store'), [
                 'kind' => 'licence_emission',
                 'title' => 'Driver licence',
-                'championship' => (string) $championship->uuid,
             ])
-            ->assertSessionHasErrors(['licence_type', 'championship']);
+            ->assertSessionHasErrors(['kind']);
 
         $this
             ->actingAs($user)
@@ -137,14 +132,12 @@ class ProductControllerTest extends TestCase
     public function test_price_is_either_fixed_or_a_valid_range(): void
     {
         $user = User::factory()->organizer()->create();
-        $licenceType = LicenceType::factory()->create();
 
         $this
             ->actingAs($user)
             ->post(route('products.store'), [
-                'kind' => 'licence_emission',
-                'title' => 'Driver licence',
-                'licence_type' => $licenceType->ulid,
+                'kind' => 'package',
+                'title' => 'Season package',
                 'prices' => [
                     ['type' => 'fixed', 'starts_on' => '2026-11-01'],
                     ['type' => 'range', 'amount_min' => '310', 'amount_max' => '230', 'starts_on' => '2026-11-01'],
@@ -169,7 +162,6 @@ class ProductControllerTest extends TestCase
             ->actingAs($user)
             ->put(route('products.update', $product), [
                 'title' => $product->title,
-                'licence_type' => $product->licenceType->ulid,
                 'prices' => [],
             ])
             ->assertSessionHasErrors('prices');
@@ -180,7 +172,6 @@ class ProductControllerTest extends TestCase
             ->actingAs($user)
             ->put(route('products.update', $product), [
                 'title' => $product->title,
-                'licence_type' => $product->licenceType->ulid,
                 'prices' => [
                     ['id' => $price->getKey(), 'type' => 'fixed', 'amount' => '99', 'starts_on' => '2020-01-01', 'ends_on' => '2027-01-31'],
                 ],

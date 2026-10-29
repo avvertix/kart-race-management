@@ -37,7 +37,7 @@
                     <tr>
                         <td class="py-4 pl-4 pr-3 text-sm text-zinc-900 sm:pl-6">
                             <p class="font-medium"><a href="{{ route('public.products.show', $item) }}" class="hover:underline">{{ $item->title }}</a></p>
-                            <p class="text-zinc-500">{{ $item->licenceType?->name ?? $item->championship?->title }}</p>
+                            <p class="text-zinc-500">{{ $item->championship?->title }}</p>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->kind->label() }}</td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $currentPrice?->label() ?? __('No price at the moment') }}</td>

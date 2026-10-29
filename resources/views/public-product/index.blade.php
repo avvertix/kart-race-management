@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="title">
-        {{ __('Licences and enrollments') }}
+        {{ __('Enrollments and offers') }}
     </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
-            {{ __('Licences and enrollments') }}
+            {{ __('Enrollments and offers') }}
         </h2>
     </x-slot>
 

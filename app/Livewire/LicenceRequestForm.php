@@ -46,7 +46,10 @@ class LicenceRequestForm extends Component
 
     public string $licenceType = '';
 
-    public bool $includesCompetitor = false;
+    /**
+     * Whether an ACI driver licence leaves out the competitor licence, which it includes otherwise.
+     */
+    public bool $driverOnly = false;
 
     public string $previousLicenceNumber = '';
 
@@ -75,7 +78,7 @@ class LicenceRequestForm extends Component
 
         $this->provider = $licenceRequest->provider->value ?? '';
         $this->licenceType = $licenceRequest->licence_type ?? '';
-        $this->includesCompetitor = $licenceRequest->includes_competitor;
+        $this->driverOnly = $licenceRequest->licence_type !== null && ! $licenceRequest->includes_competitor;
         $this->previousLicenceNumber = $licenceRequest->previous_licence_number ?? '';
         $this->holder = $licenceRequest->holder?->toArray() ?? ['residence_address' => []];
         $this->parents = array_map(fn (HolderData $parent) => $parent->toArray(), $licenceRequest->parentHolders());
@@ -94,7 +97,7 @@ class LicenceRequestForm extends Component
     public function updatedProvider(): void
     {
         $this->licenceType = '';
-        $this->includesCompetitor = false;
+        $this->driverOnly = false;
     }
 
     /**
@@ -114,7 +117,7 @@ class LicenceRequestForm extends Component
 
         $validated = $this->validate([
             'licenceType' => ['required', 'string', Rule::in(LicenceCatalogue::selectableCodes($provider, $currentLicenceType))],
-            'includesCompetitor' => ['boolean'],
+            'driverOnly' => ['boolean'],
             'previousLicenceNumber' => ['required', 'string', 'max:250', new LicenseNumberValidationRule],
         ], attributes: [
             'licenceType' => __('Licence type'),
@@ -128,11 +131,9 @@ class LicenceRequestForm extends Component
         $this->licenceRequest->update([
             'provider' => $provider,
             'licence_type' => $licenceType->code,
-            'includes_competitor' => $validated['includesCompetitor'] && $licenceType->allowsCompetitor(),
+            'includes_competitor' => ! $validated['driverOnly'] && $licenceType->allowsCompetitor(),
             'previous_licence_number' => $validated['previousLicenceNumber'],
         ]);
-
-        $this->includesCompetitor = $this->licenceRequest->includes_competitor;
 
         $this->completeSection(LicenceRequestSection::Licence);
     }

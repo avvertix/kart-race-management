@@ -127,8 +127,8 @@
 
                                 @if ($selectedLicenceType?->allowsCompetitor())
                                     <label class="flex items-start gap-2 text-sm">
-                                        <input type="checkbox" wire:model="includesCompetitor" class="mt-0.5 rounded-sm border-zinc-300 text-orange-600">
-                                        <span>{{ __('I also need the competitor licence') }}</span>
+                                        <input type="checkbox" wire:model="driverOnly" class="mt-0.5 rounded-sm border-zinc-300 text-orange-600">
+                                        <span>{{ __('The licence is for the driver only') }}<span class="block text-zinc-500">{{ __('Leave it unchecked when the licence also covers the competitor.') }}</span></span>
                                     </label>
                                 @endif
 

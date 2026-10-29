@@ -61,7 +61,6 @@ class MyLicenceControllerTest extends TestCase
             ->post(route('my-licences.store'), [
                 'provider' => 'aci',
                 'licence_type' => 'int-e',
-                'includes_competitor' => '1',
                 'number' => '123456',
                 'validity_year' => now()->year,
                 'holder' => $this->holderInput(),
@@ -95,7 +94,6 @@ class MyLicenceControllerTest extends TestCase
             ->post(route('my-licences.store'), [
                 'provider' => 'asi',
                 'licence_type' => 'driver',
-                'includes_competitor' => '1',
                 'number' => 'ASI-12345',
                 'validity_year' => now()->year,
                 'holder' => $this->holderInput(),
@@ -107,6 +105,22 @@ class MyLicenceControllerTest extends TestCase
         $this->assertEquals(LicenceProvider::Asi, $licence->provider);
         $this->assertFalse($licence->includes_competitor);
         $this->assertEquals(DriverLicence::LOCAL_NATIONAL, $licence->race_licence_category);
+    }
+
+    public function test_aci_licence_for_the_driver_only_excludes_the_competitor_licence(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->post(route('my-licences.store'), [
+                'provider' => 'aci',
+                'licence_type' => 'naz-e',
+                'driver_only' => '1',
+                'number' => '123456',
+                'validity_year' => now()->year,
+                'holder' => $this->holderInput(),
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertFalse(Licence::sole()->includes_competitor);
     }
 
     public function test_only_listed_licence_types_can_be_declared(): void

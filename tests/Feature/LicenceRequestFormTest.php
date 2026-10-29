@@ -65,7 +65,6 @@ class LicenceRequestFormTest extends TestCase
             ->assertSet('openSection', 'licence')
             ->set('provider', 'aci')
             ->set('licenceType', 'int-e')
-            ->set('includesCompetitor', true)
             ->set('previousLicenceNumber', 'A123456')
             ->call('saveLicence')
             ->assertHasNoErrors()
@@ -116,13 +115,32 @@ class LicenceRequestFormTest extends TestCase
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->set('provider', 'asi')
             ->set('licenceType', 'driver')
-            ->set('includesCompetitor', true)
             ->set('previousLicenceNumber', 'ASI-1')
             ->call('saveLicence')
-            ->assertHasNoErrors()
-            ->assertSet('includesCompetitor', false);
+            ->assertHasNoErrors();
 
         $this->assertFalse($licenceRequest->fresh()->includes_competitor);
+    }
+
+    public function test_aci_driver_licence_for_the_driver_only_excludes_the_competitor_licence(): void
+    {
+        $user = User::factory()->create();
+        $licenceRequest = LicenceRequest::factory()->for($user)->create();
+
+        Livewire::actingAs($user)
+            ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
+            ->set('provider', 'aci')
+            ->set('licenceType', 'naz-e')
+            ->set('driverOnly', true)
+            ->set('previousLicenceNumber', 'A123456')
+            ->call('saveLicence')
+            ->assertHasNoErrors();
+
+        $this->assertFalse($licenceRequest->fresh()->includes_competitor);
+
+        Livewire::actingAs($user)
+            ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest->fresh()])
+            ->assertSet('driverOnly', true);
     }
 
     public function test_invalid_section_is_not_saved(): void

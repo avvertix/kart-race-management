@@ -39,15 +39,15 @@ The sporting body that issues a Licence, e.g. ACI or ASI. A championship accepts
 _Avoid_: Federation, issuer
 
 **Licence Type**:
-A provider-specific kind of Licence by role, e.g. ACI driver, ACI competitor or ASI mechanic. It decides which documents a Licence Request needs. ACI licences also have a level, national or international.
-
-**Licence Grade**:
-The specific licence within a Licence Type and level, e.g. C Junior or International B. Organizers list the common ones; any other is written by the applicant.
-_Avoid_: Licence type (for this meaning), category, class
+One specific licence in a Licence Provider's fixed list, e.g. ACI "NAZ E", "INT F", "Daily" or a mechanic licence, or a licence on the ASI list. Each is either a driver or a mechanic licence (the rulebooks call this its category). An ACI driver licence can include the competitor licence, under the same number; ACI has no competitor-only licence.
+_Avoid_: Licence grade, qualification, category (for this meaning)
 
 **Licence Request**:
-An application submitted through the platform to have a Licence emitted or renewed by the organizer on behalf of a Licence Provider.
+An application submitted through the platform to have a Licence renewed by the organizer on behalf of a Licence Provider. First emissions are arranged with the organizer outside the platform.
 _Avoid_: Licence application, renewal form
+
+**Renewal**:
+A Licence Request for a holder who had a Licence the previous year, identified by that Licence's number whether or not the Licence is on the platform. The Licence Type may change on renewal. ACI keeps the same number across years; ASI assigns a new one.
 
 ### Championships and races
 
@@ -79,10 +79,10 @@ A race number of 1000 or above, used for Participants of special categories that
 ### Commerce
 
 **Product**:
-Something the organizer sells, such as a licence emission, a championship enrollment or a race fee.
+Something the organizer sells, such as a championship enrollment, a race fee or a Promotional Package. Licence renewals are not Products: a Licence Request is not bought through an Order.
 
 **Price**:
-The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a licence's cost depends on its Licence Grade.
+The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a licence's cost depends on its Licence Type.
 
 **Order**:
 A request by a User to buy one or more Products. It is paid by uploading a payment proof that the organizer confirms.

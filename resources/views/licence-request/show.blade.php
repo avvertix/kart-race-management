@@ -198,10 +198,9 @@
                         $upload = $licenceRequest->uploadFor($required);
                         [$documentState, $documentClass] = match (true) {
                             $upload === null => [__('Not uploaded yet'), 'text-zinc-500'],
-                            $upload->status === LicenceRequestDocumentStatus::Accepted => [__('Accepted'), 'text-lime-700'],
                             $isChangesRequested && $upload->status === LicenceRequestDocumentStatus::Flagged => [__('Needs changes'), 'text-red-700'],
-                            $status === LicenceRequestStatus::Draft => [__('Uploaded'), 'text-zinc-600'],
-                            default => [__('Waiting for review'), 'text-zinc-600'],
+                            $isChangesRequested && $upload->wasFlagged() => [__('Replaced'), 'text-lime-700'],
+                            default => [__('Uploaded'), 'text-zinc-600'],
                         };
                     @endphp
                     <li class="flex flex-wrap justify-between gap-2 py-2">

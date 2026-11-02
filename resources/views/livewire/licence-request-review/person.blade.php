@@ -3,7 +3,7 @@
     <dt class="text-zinc-500">{{ __('Name') }}</dt>
     <dd class="col-span-2">{{ $person->fullName() }} &middot; {{ $person->sex->localizedName() }}</dd>
     <dt class="text-zinc-500">{{ __('Birth') }}</dt>
-    <dd class="col-span-2">{{ $person->birth_date }} &middot; {{ $person->birth_place }}</dd>
+    <dd class="col-span-2">{{ \Carbon\CarbonImmutable::parse($person->birth_date)->format('d/m/Y') }} &middot; {{ $person->birth_place }}</dd>
     <dt class="text-zinc-500">{{ __('Nationality') }}</dt>
     <dd class="col-span-2">{{ $person->nationality }}</dd>
     @if ($person->fiscal_code)

@@ -59,7 +59,9 @@ return [
         'submitted' => 'Inviata',
         'in_review' => 'In verifica',
         'changes_requested' => 'Modifiche richieste',
-        'forwarded' => 'Inoltrata all\'ente',
+        'verified' => 'Verificata',
+        'forwarded' => 'Presso l\'ente',
+        'sent_to_provider' => 'Inviata all\'ente',
         'emitted' => 'Emessa',
         'rejected' => 'Respinta',
     ],
@@ -82,7 +84,7 @@ return [
 
     'request_document_status' => [
         'pending' => 'Da verificare',
-        'accepted' => 'Accettato',
+        'accepted' => 'Visto',
         'flagged' => 'Da correggere',
     ],
 

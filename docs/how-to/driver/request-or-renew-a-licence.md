@@ -17,13 +17,13 @@ You can stop at any step: the request stays saved as a draft for as long as you 
 
 ## Paying
 
-The organizer sets the amount after checking your request, since it depends on the licence. Once it is set, the request shows the bank details: pay by bank transfer and upload the payment proof from the request. The organizer sends the request to the provider only once the payment is confirmed.
+The organizer sets the amount when your request is verified, since it depends on the licence. The request then shows the bank details: pay by bank transfer and upload the payment proof from the request. The organizer requests your licence from the provider only once the payment is confirmed.
 
 If you bought a promotional package that includes the renewal, the request shows it is covered by your order and there is nothing to pay.
 
 ## After submitting
 
-- Follow the request status in your account.
+- Follow the request status in your account: the organizer reviews it, then it is verified and you pay, then the licence is emitted. If the provider takes a while, the request shows it was sent to the provider.
 - If the organizer asks for changes, you are notified. Fix only the flagged documents or sections, then submit again.
 - When the licence is emitted, download the temporary licence PDF from your account. The licence is now available for enrollments and race registrations.
 

@@ -35,11 +35,6 @@ return [
         'mechanic' => 'Meccanico',
     ],
 
-    'document_kind' => [
-        'upload' => 'Caricamento',
-        'signed_form' => 'Modulo da firmare',
-    ],
-
     'document' => [
         'identity_document' => 'Documento d\'identità',
         'medical_certificate' => 'Certificato medico',

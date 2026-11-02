@@ -18,12 +18,4 @@ enum LicenceDocumentKind: string
      * A form given to the applicant pre-filled with their details, to be signed and uploaded.
      */
     case SignedForm = 'signed_form';
-
-    /**
-     * The human readable name of the kind.
-     */
-    public function label(): string
-    {
-        return trans("licences.document_kind.{$this->value}");
-    }
 }

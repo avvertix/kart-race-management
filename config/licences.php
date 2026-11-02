@@ -39,13 +39,33 @@ return [
                 'role' => LicenceRole::Driver,
                 'race_licence_category' => DriverLicence::LOCAL_INTERNATIONAL,
             ],
-            'daily' => [
-                'name' => 'Daily',
+            'naz-f' => [
+                'name' => 'NAZ F',
                 'role' => LicenceRole::Driver,
-                'race_licence_category' => DriverLicence::DAILY,
+                'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
+            ],
+            'int-f' => [
+                'name' => 'INT F',
+                'role' => LicenceRole::Driver,
+                'race_licence_category' => DriverLicence::LOCAL_INTERNATIONAL,
+            ],
+            'naz-g' => [
+                'name' => 'NAZ G',
+                'role' => LicenceRole::Driver,
+                'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
+            ],
+            'int-g' => [
+                'name' => 'INT G',
+                'role' => LicenceRole::Driver,
+                'race_licence_category' => DriverLicence::LOCAL_INTERNATIONAL,
+            ],
+            'k-mini' => [
+                'name' => 'K MINI',
+                'role' => LicenceRole::Driver,
+                'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
             ],
             'easyrace' => [
-                'name' => 'EasyRace',
+                'name' => 'Easy Race',
                 'role' => LicenceRole::Driver,
                 'race_licence_category' => DriverLicence::EASYRACE,
             ],

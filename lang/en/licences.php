@@ -35,11 +35,6 @@ return [
         'mechanic' => 'Mechanic',
     ],
 
-    'document_kind' => [
-        'upload' => 'Upload',
-        'signed_form' => 'Form to sign',
-    ],
-
     'document' => [
         'identity_document' => 'Identity document',
         'medical_certificate' => 'Medical certificate',

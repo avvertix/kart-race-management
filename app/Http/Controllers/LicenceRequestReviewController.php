@@ -24,9 +24,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
-/**
- * The organizer's side of Licence Requests: the queue, the review page and the actions that move a request on.
- */
 class LicenceRequestReviewController extends Controller
 {
     /**

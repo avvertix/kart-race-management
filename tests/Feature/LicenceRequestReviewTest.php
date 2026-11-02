@@ -146,6 +146,10 @@ class LicenceRequestReviewTest extends TestCase
         $this->assertEquals(LicenceRequestStatus::InReview, $licenceRequest->status);
         $this->assertEquals($organizer->getKey(), $licenceRequest->reviewed_by);
         $this->assertEquals(LicenceRequestDocumentStatus::Accepted, $document->fresh()->status);
+
+        $this->actingAs($licenceRequest->user)
+            ->get(route('licence-requests.show', $licenceRequest))
+            ->assertDontSee('Accepted');
     }
 
     public function test_flags_reach_the_requester_once_changes_are_requested(): void
@@ -166,7 +170,8 @@ class LicenceRequestReviewTest extends TestCase
 
         $this->actingAs($licenceRequest->user)
             ->get(route('licence-requests.show', $licenceRequest))
-            ->assertDontSee('Birth place is wrong.');
+            ->assertDontSee('Birth place is wrong.')
+            ->assertDontSee('Needs changes');
 
         app(RequestLicenceRequestChanges::class)($licenceRequest, $organizer);
 
@@ -179,7 +184,8 @@ class LicenceRequestReviewTest extends TestCase
         $this->actingAs($licenceRequest->user)
             ->get(route('licence-requests.show', $licenceRequest))
             ->assertSee('Birth place is wrong.')
-            ->assertSee('Blurred photo.');
+            ->assertSee('Blurred photo.')
+            ->assertSeeInOrder(['Medical certificate', 'Needs changes']);
     }
 
     public function test_setting_the_amount_lets_the_requester_pay_and_the_organizer_confirm(): void

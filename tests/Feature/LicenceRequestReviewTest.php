@@ -208,7 +208,8 @@ class LicenceRequestReviewTest extends TestCase
             ->call('startComment', "document:{$medicalCertificate->getKey()}")
             ->set('comment', 'Blurred photo.')
             ->call('saveComment')
-            ->assertSeeInOrder(['Request changes', 'Birth place is wrong.', 'Blurred photo.', 'Request changes (2 comments)']);
+            ->assertDontSee('Finish review')
+            ->assertSeeInOrder(['Request changes (2 comments)', 'Birth place is wrong.', 'Blurred photo.', 'Request changes (2 comments)']);
 
         $this->actingAs($licenceRequest->user)
             ->get(route('licence-requests.show', $licenceRequest))

@@ -122,9 +122,13 @@
             <div class="flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-4">
                 @if ($isReviewable)
                     <flux:modal.trigger name="finish-review">
-                        <x-button type="button">{{ __('Finish review') }}</x-button>
+                        <x-button type="button">{{ $commentCount > 0 ? trans_choice('Request changes (:count comment)|Request changes (:count comments)', $commentCount) : __('Finish review') }}</x-button>
                     </flux:modal.trigger>
-                    <p class="text-sm text-zinc-600">{{ __('Mark each document as viewed and comment on what needs fixing, then finish the review.') }}</p>
+                    <p class="text-sm text-zinc-600">
+                        {{ $commentCount > 0
+                            ? __('You confirm the comments before they are sent to the driver. Remove them to mark the request as verified instead.')
+                            : __('Mark each document as viewed and comment on what needs fixing, then finish the review.') }}
+                    </p>
                 @elseif ($status === LicenceRequestStatus::ChangesRequested)
                     <p class="text-sm text-zinc-600">{{ __('The driver is fixing what you commented on. The request comes back here once sent again.') }}</p>
                 @elseif ($isVerified && $paymentStatus === LicenceRequestPaymentStatus::PaymentSubmitted)

@@ -1366,5 +1366,8 @@
     "The amount can change only once the request is verified.": "L'importo si modifica solo dopo aver verificato la richiesta.",
     "Only a request being reviewed can be verified.": "Solo una richiesta in verifica può essere segnata come verificata.",
     "Mark every document as viewed first.": "Prima segna ogni documento come visto.",
-    "You confirm the comments before they are sent to the driver. Remove them to mark the request as verified instead.": "Confermi i commenti prima che vengano inviati al pilota. Rimuovili per segnare invece la richiesta come verificata."
+    "You confirm the comments before they are sent to the driver. Remove them to mark the request as verified instead.": "Confermi i commenti prima che vengano inviati al pilota. Rimuovili per segnare invece la richiesta come verificata.",
+    "Early access to licences and products": "Accesso anticipato a licenze e prodotti",
+    "Admins always have it.": "Gli amministratori ce l'hanno sempre.",
+    "Shows licences, licence requests, products and orders, still being prepared for a future championship.": "Mostra licenze, richieste di licenza, prodotti e ordini, ancora in preparazione per un prossimo campionato."
 }

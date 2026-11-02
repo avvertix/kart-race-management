@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Features\LicencesAndProducts;
 use App\Http\Controllers\BibReservationController;
 use App\Http\Controllers\BibReservationImportController;
 use App\Http\Controllers\ChampionshipAwardController;
@@ -79,6 +80,7 @@ use App\Livewire\LicenceRequestReview;
 use App\Livewire\LinkedDrivers;
 use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\DenyAgentMiddleware;
 use Illuminate\Support\Facades\Route;
+use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 Route::get('/', ListRacesWithOpenRegistrationController::class)->name('welcome');
 
@@ -245,29 +247,35 @@ Route::middleware([
 
         Route::resource('users', UserController::class)->except(['show']);
 
-        Route::resource('products', ProductController::class)->except(['show', 'destroy']);
+        Route::middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))->group(function () {
+            Route::resource('products', ProductController::class)->except(['show', 'destroy']);
 
-        Route::resource('licences', LicenceController::class)->only(['index', 'show']);
-        Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');
+            Route::resource('licences', LicenceController::class)->only(['index', 'show']);
+            Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');
 
-        Route::get('licence-requests', [LicenceRequestReviewController::class, 'index'])->name('licence-request-reviews.index');
-        Route::livewire('licence-requests/{licenceRequest}', LicenceRequestReview::class)->name('licence-request-reviews.show');
+            Route::get('licence-requests', [LicenceRequestReviewController::class, 'index'])->name('licence-request-reviews.index');
+            Route::livewire('licence-requests/{licenceRequest}', LicenceRequestReview::class)->name('licence-request-reviews.show');
 
-        Route::resource('orders', OrderController::class)->only(['index', 'show']);
-        Route::put('orders/{order}/price', [OrderController::class, 'price'])->name('orders.price');
-        Route::post('orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
-        Route::post('orders/{order}/reject-payment', [OrderController::class, 'rejectPayment'])->name('orders.reject-payment');
+            Route::resource('orders', OrderController::class)->only(['index', 'show']);
+            Route::put('orders/{order}/price', [OrderController::class, 'price'])->name('orders.price');
+            Route::post('orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
+            Route::post('orders/{order}/reject-payment', [OrderController::class, 'rejectPayment'])->name('orders.reject-payment');
+        });
 
     });
 
-// Products, open to everyone, and the orders of the signed-in user
+// Products, open to everyone, and the licences and orders of the signed-in user, while in early access (see App\Features\LicencesAndProducts)
 
-Route::get('products', [PublicProductController::class, 'index'])->name('public.products.index');
+Route::get('products', [PublicProductController::class, 'index'])
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
+    ->name('public.products.index');
 
-Route::get('products/{product}', [PublicProductController::class, 'show'])->name('public.products.show');
+Route::get('products/{product}', [PublicProductController::class, 'show'])
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
+    ->name('public.products.show');
 
 Route::get('products/{product}/register', [PublicProductController::class, 'register'])
-    ->middleware('guest')
+    ->middleware(['guest', EnsureFeaturesAreActive::using(LicencesAndProducts::class)])
     ->name('public.products.register');
 
 Route::middleware([
@@ -275,6 +283,7 @@ Route::middleware([
     'auth.session',
     'verified',
     DenyAgentMiddleware::class,
+    EnsureFeaturesAreActive::using(LicencesAndProducts::class),
 ])->group(function () {
     Route::get('products/{product}/continue', [PublicProductController::class, 'continue'])->name('public.products.continue');
 

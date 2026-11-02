@@ -12,10 +12,12 @@ use App\Models\Product;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
+use Tests\EnablesLicencesAndProducts;
 use Tests\TestCase;
 
 class ProductControllerTest extends TestCase
 {
+    use EnablesLicencesAndProducts;
     use FastRefreshDatabase;
 
     public function test_drivers_cannot_manage_products(): void

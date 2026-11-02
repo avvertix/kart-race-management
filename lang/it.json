@@ -1365,5 +1365,6 @@
     "The payment can be reviewed only once the request is verified.": "Il pagamento si verifica solo dopo aver verificato la richiesta.",
     "The amount can change only once the request is verified.": "L'importo si modifica solo dopo aver verificato la richiesta.",
     "Only a request being reviewed can be verified.": "Solo una richiesta in verifica può essere segnata come verificata.",
-    "Mark every document as viewed first.": "Prima segna ogni documento come visto."
+    "Mark every document as viewed first.": "Prima segna ogni documento come visto.",
+    "You confirm the comments before they are sent to the driver. Remove them to mark the request as verified instead.": "Confermi i commenti prima che vengano inviati al pilota. Rimuovili per segnare invece la richiesta come verificata."
 }

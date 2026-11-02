@@ -1272,5 +1272,12 @@
     "New file": "Nuovo file",
     "Not reviewed yet": "Non ancora verificato",
     "Your previous note": "La tua nota precedente",
-    ":count document replaced since you asked for changes|:count documents replaced since you asked for changes": ":count documento sostituito da quando hai richiesto le modifiche|:count documenti sostituiti da quando hai richiesto le modifiche"
+    ":count document replaced since you asked for changes|:count documents replaced since you asked for changes": ":count documento sostituito da quando hai richiesto le modifiche|:count documenti sostituiti da quando hai richiesto le modifiche",
+    "Each section is saved when you continue. You can come back any time.": "Ogni sezione viene salvata quando prosegui. Puoi tornare quando vuoi.",
+    "For a first licence, write to the organizer:": "Per una prima licenza scrivi all'organizzatore:",
+    "After you submit, the organizer checks the request and tells you the amount to pay.": "Dopo l'invio, l'organizzatore controlla la richiesta e ti indica l'importo da pagare.",
+    "Replace file": "Sostituisci file",
+    "Choose file": "Scegli file",
+    "Uploading…": "Caricamento…",
+    "PDF, JPG or PNG, up to 10 MB each.": "PDF, JPG o PNG, fino a 10 MB ciascuno."
 }

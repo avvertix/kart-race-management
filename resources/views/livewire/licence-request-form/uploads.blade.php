@@ -46,11 +46,12 @@
             </div>
 
             @if ($canReplace)
-                <div class="flex flex-wrap items-center gap-2">
-                    <input type="file" wire:model="files.{{ $key }}" accept="image/png,image/jpeg,application/pdf" class="text-sm max-w-full" aria-label="{{ __('File for :document', ['document' => $required->document->label()]) }}">
-                    <x-secondary-button type="button" wire:click="uploadDocument('{{ $key }}')" wire:loading.attr="disabled" wire:target="files.{{ $key }},uploadDocument">
-                        {{ $upload ? __('Replace') : __('Upload') }}
-                    </x-secondary-button>
+                <div class="flex flex-wrap items-center gap-2 text-sm">
+                    <label class="inline-flex cursor-pointer items-center rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-medium text-zinc-700 hover:bg-zinc-50 focus-within:ring-2 focus-within:ring-orange-300" wire:loading.class="pointer-events-none opacity-60" wire:target="files.{{ $key }}">
+                        <input type="file" wire:model="files.{{ $key }}" accept="image/png,image/jpeg,application/pdf" class="sr-only" aria-label="{{ __('File for :document', ['document' => $required->document->label()]) }}">
+                        {{ $upload ? __('Replace file') : __('Choose file') }}
+                    </label>
+                    <span wire:loading wire:target="files.{{ $key }}" class="text-zinc-600" role="status">{{ __('Uploading…') }}</span>
                 </div>
                 <x-input-error for="files.{{ $key }}" />
             @endif
@@ -58,4 +59,4 @@
     @endforeach
 </ul>
 
-<p class="text-sm text-zinc-500">{{ __('Accept pdf file or png/jpg images (maximum size 10 MB)') }}</p>
+<p class="text-sm text-zinc-500">{{ __('PDF, JPG or PNG, up to 10 MB each.') }}</p>

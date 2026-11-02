@@ -70,7 +70,6 @@ return [
         'parents' => 'Genitori o tutori',
         'documents' => 'Documenti',
         'forms' => 'Moduli da firmare',
-        'payment' => 'Pagamento',
     ],
 
     'request_payment_status' => [

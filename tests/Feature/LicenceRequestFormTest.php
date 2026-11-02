@@ -20,10 +20,12 @@ use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use ReflectionClass;
 use ReflectionMethod;
+use Tests\EnablesLicencesAndProducts;
 use Tests\TestCase;
 
 class LicenceRequestFormTest extends TestCase
 {
+    use EnablesLicencesAndProducts;
     use FastRefreshDatabase;
 
     protected function setUp(): void

@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Nightwatch\Records\Request;
+use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -57,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->configureAuthorization();
         $this->configureEvents();
+        $this->configureFeatures();
         $this->configureRateLimiting();
 
         Relation::enforceMorphMap([
@@ -127,6 +130,17 @@ class AppServiceProvider extends ServiceProvider
     private function configureEvents(): void
     {
         Event::listen(NotificationSent::class, LogNotification::class);
+    }
+
+    /**
+     * Pages behind a feature not active for the user don't exist for them. Livewire applies the check to the
+     * component updates too, not only to the page load.
+     */
+    private function configureFeatures(): void
+    {
+        EnsureFeaturesAreActive::whenInactive(fn () => abort(404));
+
+        Livewire::addPersistentMiddleware([EnsureFeaturesAreActive::class]);
     }
 
     /**

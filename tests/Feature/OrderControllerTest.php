@@ -13,10 +13,12 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
+use Tests\EnablesLicencesAndProducts;
 use Tests\TestCase;
 
 class OrderControllerTest extends TestCase
 {
+    use EnablesLicencesAndProducts;
     use FastRefreshDatabase;
 
     public function test_drivers_cannot_manage_orders(): void

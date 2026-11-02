@@ -16,6 +16,7 @@ Organizers set up **Products** and **Prices** from the application, see [Set up 
 | Where uploaded licence documents are stored | `licence-documents` disk in `config/filesystems.php` | Maintainer |
 | Platform-wide licence provider and country, organizer email | `.env` | Whoever deploys |
 | Products, Prices | Application | Organizer |
+| Who sees licences, licence requests, products and orders (early access) | User page, *Early access to licences and products* | Admin |
 
 ## Add or change a Licence Type
 
@@ -79,6 +80,12 @@ Forms to sign are rendered by the Blade view returned by `LicenceDocument::formV
 Permissions are listed one by one in `App\Enums\Role::permissions()` as `resource:action`. Only `*` (everything), `*:create` and `*:update` are understood as wildcards, so `licence:*` grants nothing: list each action instead. Policies call `$user->hasPermission('resource:action')` and, for drivers, also check that the record's `user_id` is theirs.
 
 Update `tests/Unit/RoleTest.php` with the new permission, and the [roles and permissions](../../reference/roles-and-permissions.md) table if the change is visible to users.
+
+## Early access
+
+Licences, licence requests, products and orders are being prepared for a future championship, so they sit behind the `App\Features\LicencesAndProducts` feature flag ([Laravel Pennant](https://laravel.com/docs/pennant), stored in the `features` table). For everyone else their pages answer 404 and their menu items are hidden. Admins always have them; an admin enables other users from the user page with *Early access to licences and products*. Guests never have them, so the public product pages stay hidden.
+
+To go live, remove the flag: delete the feature class, its `EnsureFeaturesAreActive` route middleware and the `@feature` blocks in the navigation, the user page checkbox and the `EnablesLicencesAndProducts` test trait.
 
 ## Store licence documents
 

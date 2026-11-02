@@ -14,10 +14,12 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
+use Tests\EnablesLicencesAndProducts;
 use Tests\TestCase;
 
 class PublicProductControllerTest extends TestCase
 {
+    use EnablesLicencesAndProducts;
     use FastRefreshDatabase;
 
     public function test_active_products_are_listed_with_their_current_price(): void

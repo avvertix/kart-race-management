@@ -9,7 +9,6 @@
     $stateLabels = [
         'done' => __('Complete'),
         'todo' => __('To do'),
-        'later' => __('Pay later'),
         'flagged' => __('Needs changes'),
         'fixed' => __('Fixed'),
         'accepted' => __('Accepted'),
@@ -18,7 +17,6 @@
     $stateClasses = [
         'done' => 'bg-lime-100 text-lime-800',
         'todo' => 'bg-zinc-100 text-zinc-700',
-        'later' => 'bg-amber-100 text-amber-800',
         'flagged' => 'bg-red-100 text-red-800',
         'fixed' => 'bg-lime-100 text-lime-800',
         'accepted' => 'bg-zinc-100 text-zinc-700',
@@ -30,7 +28,6 @@
         'parents' => __('The holder is underage: at least one parent or guardian is required.'),
         'documents' => __('Photos or PDFs. Files are only seen by the organizer.'),
         'forms' => __('Download each form, already filled in with the details, sign it and upload it.'),
-        'payment' => __('You can submit now and pay later. The request is sent to the provider only once paid.'),
     ];
 @endphp
 
@@ -42,7 +39,7 @@
     </h2>
     <p class="text-sm text-zinc-500">
         {{ $licenceRequest->status->label() }}
-        &middot; {{ $isChangesRequested ? __('Fix the flagged parts, everything else is accepted.') : __('Each section is saved as a draft. Come back any time.') }}
+        &middot; {{ $isChangesRequested ? __('Fix the flagged parts, everything else is accepted.') : __('Each section is saved when you continue. You can come back any time.') }}
     </p>
 </x-slot>
 
@@ -67,7 +64,7 @@
                 $notes = $openChangeRequests->where('section', $section);
             @endphp
             <li wire:key="section-{{ $section->value }}" @class(['rounded-md border bg-white', 'border-red-300' => $state === 'flagged', 'border-zinc-200' => $state !== 'flagged'])>
-                <button type="button" wire:click="open('{{ $section->value }}')" class="flex w-full items-start gap-3 p-4 text-left" aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
+                <button type="button" wire:click="open('{{ $section->value }}')" wire:loading.delay.class="opacity-60" wire:target="open('{{ $section->value }}')" class="flex w-full items-start gap-3 p-4 text-left" aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
                     <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm font-semibold text-zinc-700">{{ $index + 1 }}</span>
                     <span class="flex-1 min-w-0">
                         <span class="block font-semibold text-zinc-900">{{ $section->label() }}</span>
@@ -92,11 +89,6 @@
                             <p class="text-sm text-zinc-600">{{ __('Accepted by the organizer. No changes needed.') }}</p>
                             <p class="text-sm text-zinc-900">{{ $this->sectionSummary($section) }}</p>
                         @elseif ($section === LicenceRequestSection::Licence)
-                            <p class="text-sm text-zinc-600">
-                                {{ __('Licence renewals are requested here. For a first licence, write to the organizer:') }}
-                                <a href="mailto:{{ config('races.organizer.email') }}" class="text-orange-600 hover:text-orange-900">{{ config('races.organizer.email') }}</a>
-                            </p>
-
                             @if (count($providers) > 1)
                                 <fieldset>
                                     <legend class="text-sm font-medium text-zinc-700">{{ __('Provider') }}*</legend>
@@ -133,7 +125,7 @@
                                 @endif
 
                                 <div>
-                                    <x-label for="previousLicenceNumber" value="{{ __('Last year\'s licence number') }}*" />
+                                    <x-label for="previousLicenceNumber" :value="__('Last year\'s licence number').'*'" />
                                     <x-input id="previousLicenceNumber" type="text" wire:model="previousLicenceNumber" class="mt-1 block w-full" />
                                     <p class="mt-1 text-sm text-zinc-500">{{ __('As printed on the licence you are renewing.') }}</p>
                                     <x-input-error for="previousLicenceNumber" class="mt-1" />
@@ -141,6 +133,11 @@
                             @endif
 
                             <x-button type="button" wire:click="saveLicence">{{ __('Save and continue') }}</x-button>
+
+                            <p class="text-sm text-zinc-500">
+                                {{ __('For a first licence, write to the organizer:') }}
+                                <a href="mailto:{{ config('races.organizer.email') }}" class="text-orange-600 hover:text-orange-900">{{ config('races.organizer.email') }}</a>
+                            </p>
                         @elseif ($section === LicenceRequestSection::Holder)
                             @include('livewire.licence-request-form.person-fields', ['prefix' => 'holder'])
 
@@ -182,12 +179,6 @@
                             @include('livewire.licence-request-form.uploads', ['items' => $forms, 'isForm' => true])
 
                             <x-button type="button" wire:click="continue('forms')">{{ __('Continue') }}</x-button>
-                        @elseif ($section === LicenceRequestSection::Payment)
-                            @include('livewire.licence-request-form.payment')
-
-                            <x-button type="button" wire:click="continue('payment')">
-                                {{ $licenceRequest->needsPayment() ? __('Pay later, continue') : __('Continue') }}
-                            </x-button>
                         @endif
                     </div>
                 @endif
@@ -214,9 +205,9 @@
                         </p>
                     @endif
 
-                    @if ($licenceRequest->needsPayment())
-                        <p class="text-sm text-zinc-600">{{ __('Not paid yet. You can submit now; the organizer forwards the request to the provider once it is paid.') }}</p>
-                    @endif
+                    @unless ($isChangesRequested)
+                        <p class="text-sm text-zinc-600">{{ __('After you submit, the organizer checks the request and tells you the amount to pay.') }}</p>
+                    @endunless
 
                     @if ($isChangesRequested)
                         @unless ($licenceRequest->hasResolvedAllChanges())

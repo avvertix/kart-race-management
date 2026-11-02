@@ -14,7 +14,6 @@ enum LicenceRequestSection: string
     case Parents = 'parents';
     case Documents = 'documents';
     case Forms = 'forms';
-    case Payment = 'payment';
 
     /**
      * The section listing the documents of the given kind.

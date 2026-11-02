@@ -70,7 +70,6 @@ return [
         'parents' => 'Parents or guardians',
         'documents' => 'Documents',
         'forms' => 'Forms to sign',
-        'payment' => 'Payment',
     ],
 
     'request_payment_status' => [

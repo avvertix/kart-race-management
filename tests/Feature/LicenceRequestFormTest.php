@@ -237,7 +237,8 @@ class LicenceRequestFormTest extends TestCase
         $this->actingAs($user)
             ->get(route('licence-requests.show', $licenceRequest))
             ->assertSuccessful()
-            ->assertSee('€50.00')
+            ->assertSee('The organizer is checking your request')
+            ->assertSee('Pay €50.00 so the organizer can send the request to the provider.')
             ->assertSee(route('licence-requests.payment.store', $licenceRequest));
 
         $this->actingAs($user)

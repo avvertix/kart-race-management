@@ -100,11 +100,15 @@
                             <p class="rounded-md border border-amber-400 bg-amber-50 px-2 py-1 text-amber-700">{{ __('The organizer could not confirm the previous payment proof. Upload a new one.') }}</p>
                         @endif
 
-                        <form method="POST" action="{{ route('licence-requests.payment.store', $licenceRequest) }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+                        <form method="POST" action="{{ route('licence-requests.payment.store', $licenceRequest) }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2" x-data="{ uploading: false }">
                             @csrf
-                            <input type="file" name="proof" accept="image/png,image/jpeg,application/pdf" class="text-sm max-w-full" aria-label="{{ __('Payment proof') }}" required>
-                            <x-secondary-button type="submit">{{ __('Upload payment proof') }}</x-secondary-button>
+                            <label class="inline-flex cursor-pointer items-center rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-medium text-zinc-700 hover:bg-zinc-50 focus-within:ring-2 focus-within:ring-orange-300" :class="uploading && 'pointer-events-none opacity-60'">
+                                <input type="file" name="proof" accept="image/png,image/jpeg,application/pdf" class="sr-only" aria-label="{{ __('Payment proof') }}" required @change="uploading = true; $el.form.requestSubmit()">
+                                {{ $licenceRequest->latestPayment ? __('Choose a new payment proof') : __('Choose payment proof') }}
+                            </label>
+                            <span x-show="uploading" x-cloak class="text-zinc-600" role="status">{{ __('Uploading…') }}</span>
                         </form>
+                        <p class="text-zinc-500">{{ __('PDF, JPG or PNG, up to 10 MB each.') }}</p>
                         <x-input-error for="proof" />
                     </div>
                 @endcan

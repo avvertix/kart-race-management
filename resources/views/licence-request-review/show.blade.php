@@ -46,7 +46,6 @@
 
         <div class="grid gap-6 lg:grid-cols-2">
 
-            {{-- Checklist --}}
             <div class="space-y-4 min-w-0">
 
                 @if ($status === LicenceRequestStatus::Rejected && $licenceRequest->rejection_reason)
@@ -103,7 +102,7 @@
                             @php
                                 $upload = $licenceRequest->uploadFor($required);
                                 $isSelected = $upload !== null && $selectedDocument?->is($upload);
-                                $isNewUpload = $upload?->isUploadedAfter($changesRequestedAt) === true;
+                                $isNewUpload = $isNew($required);
                                 $isUnchanged = $upload?->status === LicenceRequestDocumentStatus::Pending && $changesRequestedAt !== null && ! $isNewUpload;
                             @endphp
                             <li @class(['py-2 space-y-2', 'bg-orange-50' => $isSelected])>
@@ -294,7 +293,6 @@
                 </section>
             </div>
 
-            {{-- Viewer --}}
             <div class="min-w-0 lg:sticky lg:top-4 lg:self-start">
                 @if ($selectedDocument)
                     @php

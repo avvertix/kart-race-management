@@ -17,11 +17,14 @@
         </x-dynamic-component>
     @endcan
 
+    @feature(\App\Features\LicencesAndProducts::class)
     @can('create', \App\Models\Licence::class)
-        <x-dynamic-component :component="$item" :href="route('my-licences.index')" :current="request()->routeIs('my-licences.*')">
+        <x-dynamic-component :component="$item" :href="route('my-licences.index')" :current="request()->routeIs('my-licences.*', 'licence-requests.*')">
             {{ __('My licences') }}
         </x-dynamic-component>
     @endcan
+
+    @endfeature
 
     @can('viewAny', \App\Models\Championship::class)
         <x-dynamic-component :component="$item" :href="route('championships.index')" :current="request()->routeIs('championships.*', 'categories.*', 'races.*', 'participants.*')">
@@ -29,6 +32,7 @@
         </x-dynamic-component>
     @endcan
 
+    @feature(\App\Features\LicencesAndProducts::class)
     @can('viewAny', \App\Models\LicenceRequest::class)
         <x-dynamic-component :component="$item" :href="route('licence-request-reviews.index')" :current="request()->routeIs('licence-request-reviews.*')">
             {{ __('Licence requests') }}
@@ -52,6 +56,7 @@
             {{ __('Orders') }}
         </x-dynamic-component>
     @endcan
+    @endfeature
 
     @can('viewAny', \App\Models\CommunicationMessage::class)
         <x-dynamic-component :component="$item" :href="route('communications.index')" :current="request()->routeIs('communications.*')">

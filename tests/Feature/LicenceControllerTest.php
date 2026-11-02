@@ -9,10 +9,12 @@ use App\Models\Licence;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
+use Tests\EnablesLicencesAndProducts;
 use Tests\TestCase;
 
 class LicenceControllerTest extends TestCase
 {
+    use EnablesLicencesAndProducts;
     use FastRefreshDatabase;
 
     public function test_drivers_cannot_list_or_verify_licences(): void

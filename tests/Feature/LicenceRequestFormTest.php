@@ -229,16 +229,16 @@ class LicenceRequestFormTest extends TestCase
             ->assertSee('The organizer sets the amount after checking your request.');
     }
 
-    public function test_proof_is_uploaded_from_the_request_page_after_submitting(): void
+    public function test_proof_is_uploaded_from_the_request_page_once_verified(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = LicenceRequest::factory()->submitted()->awaitingPayment(5000)->for($user)->create();
+        $licenceRequest = LicenceRequest::factory()->verified()->awaitingPayment(5000)->for($user)->create();
 
         $this->actingAs($user)
             ->get(route('licence-requests.show', $licenceRequest))
             ->assertSuccessful()
-            ->assertSee('The organizer is checking your request')
-            ->assertSee('Pay €50.00 so the organizer can send the request to the provider.')
+            ->assertSee('Your request is verified')
+            ->assertSee('Pay €50.00 so the organizer can request your licence.')
             ->assertSee(route('licence-requests.payment.store', $licenceRequest));
 
         $this->actingAs($user)

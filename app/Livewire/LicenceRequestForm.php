@@ -334,8 +334,7 @@ class LicenceRequestForm extends Component
 
     private function findRequiredDocument(string $key): ?RequiredDocument
     {
-        return $this->licenceRequest->requiredDocuments(LicenceDocumentKind::Upload)
-            ->merge($this->licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm))
+        return $this->licenceRequest->allRequiredDocuments()
             ->first(fn (RequiredDocument $required) => $required->key() === $key);
     }
 

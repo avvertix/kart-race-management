@@ -22,9 +22,9 @@ class ReviewLicenceRequestPayment
     {
         return DB::transaction(function () use ($licenceRequest, $organizer, $confirm) {
             $locked = $licenceRequest->lockForReview(
-                LicenceRequestStatus::underPaymentReview(),
+                LicenceRequestStatus::verified(),
                 $organizer,
-                __('The payment can be reviewed only while the request is being reviewed.'),
+                __('The payment can be reviewed only once the request is verified.'),
             );
 
             if ($locked->payment_status !== LicenceRequestPaymentStatus::PaymentSubmitted) {

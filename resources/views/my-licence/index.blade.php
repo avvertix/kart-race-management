@@ -42,7 +42,7 @@
                             <li class="flex flex-wrap items-center gap-2 p-3">
                                 <div class="flex-1 min-w-48">
                                     <p class="font-medium text-zinc-900">{{ $licenceRequest->holder?->fullName() ?? __('Holder not filled in yet') }}</p>
-                                    <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ $licenceRequest->status->label() }}</p>
+                                    <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ $licenceRequest->status->requesterLabel() }}</p>
                                 </div>
                                 <a href="{{ route('licence-requests.show', $licenceRequest) }}" class="text-sm font-medium text-orange-600 hover:text-orange-900">{{ __('Open') }}</a>
                             </li>

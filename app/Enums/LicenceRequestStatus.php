@@ -13,12 +13,13 @@ enum LicenceRequestStatus: string
     case Submitted = 'submitted';
     case InReview = 'in_review';
     case ChangesRequested = 'changes_requested';
+    case Verified = 'verified';
     case Forwarded = 'forwarded';
     case Emitted = 'emitted';
     case Rejected = 'rejected';
 
     /**
-     * The statuses in which the organizer checks sections and documents and can forward the request.
+     * The statuses in which the organizer reviews the request: marks documents as viewed, comments and finishes the review.
      *
      * @return array<int, self>
      */
@@ -28,13 +29,13 @@ enum LicenceRequestStatus: string
     }
 
     /**
-     * The statuses in which the organizer can set the amount and review the payment proof, also while waiting for fixes.
+     * The statuses after a review without changes to ask: the organizer reviews the payment and emits the licence.
      *
      * @return array<int, self>
      */
-    public static function underPaymentReview(): array
+    public static function verified(): array
     {
-        return [...self::underReview(), self::ChangesRequested];
+        return [self::Verified, self::Forwarded];
     }
 
     /**
@@ -44,7 +45,7 @@ enum LicenceRequestStatus: string
      */
     public static function rejectable(): array
     {
-        return [...self::underReview(), self::Forwarded];
+        return [...self::underReview(), ...self::verified()];
     }
 
     /**
@@ -54,7 +55,7 @@ enum LicenceRequestStatus: string
      */
     public static function toProcess(): array
     {
-        return [...self::underReview(), self::ChangesRequested, self::Forwarded];
+        return [...self::underReview(), self::ChangesRequested, ...self::verified()];
     }
 
     /**
@@ -63,6 +64,14 @@ enum LicenceRequestStatus: string
     public function label(): string
     {
         return trans("licences.request_status.{$this->value}");
+    }
+
+    /**
+     * The name of the status as the requester sees it: a forwarded request was sent to the provider.
+     */
+    public function requesterLabel(): string
+    {
+        return $this === self::Forwarded ? trans('licences.request_status.sent_to_provider') : $this->label();
     }
 
     /**

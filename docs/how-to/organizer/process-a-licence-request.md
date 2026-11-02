@@ -6,14 +6,19 @@ You are notified of each new request and each resubmission after a change reques
 
 Every request is a renewal: it carries last year's licence number. First licences are arranged with you outside the platform.
 
-1. **Open the request** from **Licence requests** in the menu, or from **Requests to process** on **All licences**. The list shows the requests waiting for you, oldest first; pick a status to see the others, e.g. drafts. The request shows the Licence Type, whether the competitor licence is included, last year's licence number, the holder's details, the parents' details (underage holders only), the uploaded documents, the signed forms and the payment. Choose **View** next to a document to open it beside the checklist. A warning appears when last year's number belongs to a licence managed by another user.
-2. **Set the amount** to pay for the Licence Type requested. The applicant is notified to pay. A request covered by a Promotional Package needs no amount.
-3. **Check the payment proof** and confirm the payment.
-4. **Check each section and document.** The documents are the same for every Licence Type: check they fit the one requested, e.g. the right medical certificate. If something is wrong, e.g. an unreadable identity card or an expired medical certificate, flag that section or document with a note, then choose **Request changes**. Flags stay with you until then, and you can remove a section flag or accept a flagged document. The applicant is notified, fixes only the flagged parts, and submits again. You don't need to review every document in one round: when the request comes back, files uploaded since you asked for changes are marked **New file** and listed first, with your previous note, and documents you didn't review are marked **Not reviewed yet**.
-5. **Download each document** and send them to the Licence Provider. Choose **Mark as forwarded**: it needs the payment confirmed, or covered by a package, and nothing flagged.
-6. **When the provider replies:**
-   - upload the temporary licence PDF, check the licence number (pre-filled with last year's for ACI, which keeps it across years; ASI assigns a new one) and set the validity year (pre-filled: requests from December onwards default to the next year), then choose **Emit licence**. The Licence appears in the applicant's account, ready to download and use for enrollment;
-   - or reject the request with a reason.
+Reviewing a request works like a pull request review: you mark the documents as viewed and comment on what is wrong, then finish the review with one outcome. The steps at the top of the request (Review, Payment, Licence) show where it is, and the main button is always the next thing to do.
+
+1. **Open the request** from **Licence requests** in the menu, or from **Requests to process** on **All licences**. The list shows the requests waiting for you, oldest first; pick a status to see the others. A draft shows only what the driver filled in so far. The request shows the uploaded documents and signed forms, the Licence Type, whether the competitor licence is included, last year's licence number, the holder's details and the parents' details (underage holders only). Choose a document to show it beside the list. A warning appears when last year's number belongs to a licence managed by another user.
+2. **Review each document.** The documents are the same for every Licence Type: check they fit the one requested, e.g. the right medical certificate. Tick **Viewed** on each document that is fine. If something is wrong, e.g. an unreadable identity card, an expired medical certificate or a wrong birth place, choose **Comment…** on that document or on the Licence, Holder or Parents section. Comments stay with you until you finish the review, and you can remove them.
+3. **Finish the review**, choosing one outcome:
+   - **Request changes** sends your comments to the applicant, who fixes only those parts and submits again. When the request comes back, files uploaded since you asked for changes are marked **New file** and listed first, with your previous comment.
+   - **Mark as verified** needs every document viewed and no comment left. Enter the amount to pay for the Licence Type requested; a request covered by a Promotional Package needs none. The applicant is asked to pay. You can change the amount until a payment proof is uploaded.
+4. **Check the payment proof** and choose **Confirm payment**, or **Reject proof** to ask for a new one.
+5. **Emit the licence** once the payment is confirmed or covered. Download each document and send them to the Licence Provider. When it replies, choose **Emit licence**, upload the temporary licence PDF, check the licence number (pre-filled with last year's for ACI, which keeps it across years; ASI assigns a new one) and the validity year (pre-filled: requests from December onwards default to the next year). The Licence appears in the applicant's account, ready to download and use for enrollment.
+
+   If the provider takes a while, choose **Handed to the provider, waiting for the licence** first: the request shows as **With the provider** and the applicant sees it was sent. This step is optional.
+
+You can **Reject request…** with a reason, shown to the applicant, until the licence is emitted.
 
 ## Keeping documents
 

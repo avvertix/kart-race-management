@@ -1,4 +1,3 @@
-@use('App\Enums\LicenceDocumentKind')
 @use('App\Enums\LicenceRequestDocumentStatus')
 @use('App\Enums\LicenceRequestPaymentStatus')
 @use('App\Enums\LicenceRequestStatus')
@@ -9,7 +8,7 @@
     $openChangeRequests = $isChangesRequested ? $licenceRequest->changeRequests->whereNull('resolved_at') : collect();
     $flaggedDocuments = $isChangesRequested ? $licenceRequest->documents->where('status', LicenceRequestDocumentStatus::Flagged) : collect();
     $isAwaitingPayment = $licenceRequest->payment_status === LicenceRequestPaymentStatus::AwaitingPayment && ! $status->isClosed();
-    $requiredDocuments = $licenceRequest->requiredDocuments(LicenceDocumentKind::Upload)->merge($licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm));
+    $requiredDocuments = $licenceRequest->allRequiredDocuments();
     $parents = $licenceRequest->parentHolders();
 
     $panelClasses = match ($status) {
@@ -22,18 +21,22 @@
         LicenceRequestStatus::Draft => [__('Not submitted yet'), __('Fill in the remaining sections and submit the request. What you entered so far is saved.')],
         LicenceRequestStatus::Submitted, LicenceRequestStatus::InReview => [__('The organizer is checking your request'), __('You will get an email if something needs fixing.')],
         LicenceRequestStatus::ChangesRequested => [__('Some parts need fixing'), __('Fix what the organizer flagged, then send the request back.')],
+        LicenceRequestStatus::Verified => [__('Your request is verified'), $licenceRequest->isPaymentSettled()
+            ? __('The organizer is requesting your licence from :provider.', ['provider' => $licenceRequest->provider?->label()])
+            : __('The organizer checked your request. Once the payment is confirmed, your licence is requested from :provider.', ['provider' => $licenceRequest->provider?->label()])],
         LicenceRequestStatus::Forwarded => [__('Sent to :provider', ['provider' => $licenceRequest->provider?->label()]), __('The provider emits the licence. It will appear in My licences, with the temporary licence to download.')],
         LicenceRequestStatus::Emitted => [__('Your licence is ready'), __('Download the temporary licence from the licence page.')],
         LicenceRequestStatus::Rejected => [__('Request rejected'), __('Write to the organizer for any question, including refunds.')],
     };
 
-    $isReviewDone = $licenceRequest->forwarded_at !== null || $status === LicenceRequestStatus::Emitted;
-    $steps = [
+    $isPaymentSettled = $licenceRequest->isPaymentSettled();
+    $steps = array_filter([
         [__('Submitted'), $licenceRequest->submitted_at !== null, $status === LicenceRequestStatus::Draft, $licenceRequest->submitted_at],
-        [$isChangesRequested ? __('Organizer review: waiting for your fixes') : __('Organizer review'), $isReviewDone, in_array($status, [LicenceRequestStatus::Submitted, LicenceRequestStatus::InReview, LicenceRequestStatus::ChangesRequested], true), null],
-        [__('Sent to the provider'), $licenceRequest->forwarded_at !== null, $status === LicenceRequestStatus::Forwarded, $licenceRequest->forwarded_at],
-        [__('Licence emitted'), $licenceRequest->emitted_at !== null, false, $licenceRequest->emitted_at],
-    ];
+        [$isChangesRequested ? __('Organizer review: waiting for your fixes') : __('Organizer review'), $licenceRequest->verified_at !== null, in_array($status, [LicenceRequestStatus::Submitted, LicenceRequestStatus::InReview, LicenceRequestStatus::ChangesRequested], true), $licenceRequest->verified_at],
+        [$licenceRequest->payment_status === LicenceRequestPaymentStatus::Covered ? __('Covered by your package') : __('Payment'), $isPaymentSettled, $status === LicenceRequestStatus::Verified && ! $isPaymentSettled, $licenceRequest->paid_at],
+        $licenceRequest->forwarded_at !== null ? [__('Sent to :provider', ['provider' => $licenceRequest->provider?->label()]), true, false, $licenceRequest->forwarded_at] : null,
+        [__('Licence emitted'), $licenceRequest->emitted_at !== null, $isPaymentSettled && in_array($status, LicenceRequestStatus::verified(), true), $licenceRequest->emitted_at],
+    ]);
 @endphp
 
 <x-app-layout>
@@ -46,7 +49,7 @@
             <span>/</span>
             <span>{{ $licenceRequest->holder ? __('Licence request for :holder', ['holder' => $licenceRequest->holder->fullName()]) : __('Licence request') }}</span>
         </h2>
-        <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ $status->label() }}</p>
+        <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ $status->requesterLabel() }}</p>
     </x-slot>
 
     <div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8 max-w-3xl space-y-6">
@@ -76,7 +79,7 @@
 
             @if ($isAwaitingPayment)
                 <p class="text-sm font-medium">
-                    {{ __('Pay :amount so the organizer can send the request to the provider.', ['amount' => $licenceRequest->amountLabel()]) }}
+                    {{ __('Pay :amount so the organizer can request your licence.', ['amount' => $licenceRequest->amountLabel()]) }}
                     <a href="#payment" class="text-orange-700 underline hover:text-orange-900">{{ __('How to pay') }}</a>
                 </p>
             @endif
@@ -96,7 +99,7 @@
             <section class="rounded-md border border-zinc-200 bg-white p-4">
                 <h3 class="sr-only">{{ __('Progress') }}</h3>
                 <ol class="space-y-3">
-                    @foreach ($steps as $index => [$label, $isDone, $isCurrent, $date])
+                    @foreach (array_values($steps) as $index => [$label, $isDone, $isCurrent, $date])
                         <li class="flex items-start gap-3 text-sm" @if ($isCurrent) aria-current="step" @endif>
                             <span @class([
                                 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold',

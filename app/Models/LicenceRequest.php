@@ -52,6 +52,7 @@ use Spatie\LaravelData\DataCollection;
  * @property ?int $licence_id
  * @property ?CarbonImmutable $submitted_at
  * @property ?CarbonImmutable $changes_requested_at
+ * @property ?CarbonImmutable $verified_at
  * @property ?CarbonImmutable $forwarded_at
  * @property ?CarbonImmutable $emitted_at
  * @property ?CarbonImmutable $rejected_at
@@ -112,6 +113,7 @@ class LicenceRequest extends Model implements Payable
         'licence_id',
         'submitted_at',
         'changes_requested_at',
+        'verified_at',
         'forwarded_at',
         'emitted_at',
         'rejected_at',
@@ -268,6 +270,27 @@ class LicenceRequest extends Model implements Payable
                     : []),
             ])
             ->values();
+    }
+
+    /**
+     * Every document and signed form the request asks for.
+     *
+     * @return Collection<int, RequiredDocument>
+     */
+    public function allRequiredDocuments(): Collection
+    {
+        return $this->requiredDocuments(LicenceDocumentKind::Upload)
+            ->merge($this->requiredDocuments(LicenceDocumentKind::SignedForm))
+            ->values();
+    }
+
+    /**
+     * Whether the organizer marked every document and signed form the request asks for as viewed.
+     */
+    public function isEveryDocumentViewed(): bool
+    {
+        return $this->allRequiredDocuments()
+            ->every(fn (RequiredDocument $required) => $this->uploadFor($required)?->status === LicenceRequestDocumentStatus::Accepted);
     }
 
     /**
@@ -483,6 +506,14 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
+     * Whether nothing is left to pay: the organizer confirmed the payment, or a package covers the request.
+     */
+    public function isPaymentSettled(): bool
+    {
+        return in_array($this->payment_status, [LicenceRequestPaymentStatus::Paid, LicenceRequestPaymentStatus::Covered], true);
+    }
+
+    /**
      * Whether the organizer can still set the amount: not covered by a package, and no payment proof ever uploaded.
      */
     public function canBePriced(): bool
@@ -585,6 +616,7 @@ class LicenceRequest extends Model implements Payable
             'paid_at' => 'datetime',
             'submitted_at' => 'datetime',
             'changes_requested_at' => 'datetime',
+            'verified_at' => 'datetime',
             'forwarded_at' => 'datetime',
             'emitted_at' => 'datetime',
             'rejected_at' => 'datetime',

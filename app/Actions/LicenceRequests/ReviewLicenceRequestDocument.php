@@ -15,18 +15,20 @@ use Illuminate\Validation\ValidationException;
 class ReviewLicenceRequestDocument
 {
     /**
-     * Accept an uploaded document or signed form, or flag it with a note for the requester. The flag reaches the requester
-     * once the organizer asks for changes.
+     * Mark an uploaded document or signed form as viewed, back to review, or flag it with a comment for the requester.
+     * The comment reaches the requester once the organizer asks for changes; any other status clears it.
      *
-     * @throws ValidationException when the request is not being reviewed or a flag has no note
+     * @throws ValidationException when the request is not being reviewed or a flag has no comment
      */
-    public function __invoke(LicenceRequestDocument $document, User $organizer, bool $accept, ?string $note = null): LicenceRequestDocument
+    public function __invoke(LicenceRequestDocument $document, User $organizer, LicenceRequestDocumentStatus $status, ?string $note = null): LicenceRequestDocument
     {
-        if (! $accept) {
+        $isFlagged = $status === LicenceRequestDocumentStatus::Flagged;
+
+        if ($isFlagged) {
             Validator::make(['note' => $note], ['note' => 'required|string|max:1000'])->validate();
         }
 
-        return DB::transaction(function () use ($document, $organizer, $accept, $note) {
+        return DB::transaction(function () use ($document, $organizer, $status, $isFlagged, $note) {
             $document->licenceRequest->lockForReview(
                 LicenceRequestStatus::underReview(),
                 $organizer,
@@ -34,8 +36,8 @@ class ReviewLicenceRequestDocument
             );
 
             $document->update([
-                'status' => $accept ? LicenceRequestDocumentStatus::Accepted : LicenceRequestDocumentStatus::Flagged,
-                'note' => $accept ? null : $note,
+                'status' => $status,
+                'note' => $isFlagged ? $note : null,
             ]);
 
             return $document;

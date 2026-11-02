@@ -22,10 +22,10 @@ use Throwable;
 class EmitLicence
 {
     /**
-     * Create the Licence the provider emitted for a forwarded request, with its temporary licence PDF. The Licence takes the
-     * request's holder, Licence Type and competitor licence, and is managed by the requester.
+     * Create the Licence the provider emitted for a verified request, paid or covered by a package, with its temporary licence
+     * PDF. The Licence takes the request's holder, Licence Type and competitor licence, and is managed by the requester.
      *
-     * @throws ValidationException when the request was not forwarded, the input is not valid or the number is already registered
+     * @throws ValidationException when the request is not verified or paid, the input is not valid or the number is already registered
      */
     public function __invoke(LicenceRequest $licenceRequest, User $organizer, string $number, int $validityYear, UploadedFile $temporaryLicence): Licence
     {
@@ -53,7 +53,11 @@ class EmitLicence
 
         try {
             return DB::transaction(function () use ($licenceRequest, $organizer, $licenceType, $number, $validityYear, $path) {
-                $locked = $licenceRequest->lockForReview([LicenceRequestStatus::Forwarded], $organizer, __('Only a forwarded request can be emitted.'));
+                $locked = $licenceRequest->lockForReview(LicenceRequestStatus::verified(), $organizer, __('Only a verified request can be emitted.'));
+
+                if (! $locked->isPaymentSettled()) {
+                    throw ValidationException::withMessages(['request' => __('Confirm the payment before emitting the licence.')]);
+                }
 
                 $isRegistered = Licence::query()
                     ->where('number_hash', Licence::hashNumber($number))

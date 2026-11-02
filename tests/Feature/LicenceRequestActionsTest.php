@@ -244,7 +244,7 @@ class LicenceRequestActionsTest extends TestCase
 
     public function test_payment_proof_is_attached_to_the_request(): void
     {
-        $licenceRequest = LicenceRequest::factory()->submitted()->awaitingPayment()->create();
+        $licenceRequest = LicenceRequest::factory()->verified()->awaitingPayment()->create();
 
         $payment = app(SubmitPaymentProof::class)($licenceRequest, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
 

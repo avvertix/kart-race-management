@@ -15,9 +15,9 @@ use Illuminate\Validation\ValidationException;
 class SetLicenceRequestAmount
 {
     /**
-     * Set the amount to pay, in cents, so the requester can pay. It can change until a payment proof is uploaded.
+     * Change the amount to pay, in cents, set when verifying the request. It can change until a payment proof is uploaded.
      *
-     * @throws ValidationException when the request is closed, covered by a package or a proof was already uploaded
+     * @throws ValidationException when the request is not verified, covered by a package or a proof was already uploaded
      */
     public function __invoke(LicenceRequest $licenceRequest, User $organizer, int $amount): LicenceRequest
     {
@@ -25,9 +25,9 @@ class SetLicenceRequestAmount
 
         return DB::transaction(function () use ($licenceRequest, $organizer, $amount) {
             $locked = $licenceRequest->lockForReview(
-                LicenceRequestStatus::underPaymentReview(),
+                [LicenceRequestStatus::Verified],
                 $organizer,
-                __('The amount can be set only while the request is being reviewed.'),
+                __('The amount can change only once the request is verified.'),
             );
 
             if (! $locked->canBePriced()) {

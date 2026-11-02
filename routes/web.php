@@ -75,6 +75,7 @@ use App\Http\Controllers\UpdateChampionshipRegistrationFormController;
 use App\Http\Controllers\UpdateRaceScoringController;
 use App\Http\Controllers\UserController;
 use App\Livewire\LicenceRequestForm;
+use App\Livewire\LicenceRequestReview;
 use App\Livewire\LinkedDrivers;
 use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\DenyAgentMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -249,19 +250,8 @@ Route::middleware([
         Route::resource('licences', LicenceController::class)->only(['index', 'show']);
         Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');
 
-        Route::prefix('licence-requests')->name('licence-request-reviews.')->controller(LicenceRequestReviewController::class)->group(function () {
-            Route::get('/', 'index')->name('index');
-            Route::get('{licenceRequest}', 'show')->name('show');
-            Route::put('{licenceRequest}/documents/{document}', 'reviewDocument')->name('documents.update');
-            Route::post('{licenceRequest}/flags', 'flagSection')->name('flags.store');
-            Route::delete('{licenceRequest}/flags/{changeRequest}', 'removeFlag')->name('flags.destroy');
-            Route::post('{licenceRequest}/request-changes', 'requestChanges')->name('request-changes');
-            Route::put('{licenceRequest}/amount', 'setAmount')->name('amount');
-            Route::post('{licenceRequest}/payment', 'reviewPayment')->name('payment');
-            Route::post('{licenceRequest}/forward', 'forward')->name('forward');
-            Route::post('{licenceRequest}/emit', 'emit')->name('emit');
-            Route::post('{licenceRequest}/reject', 'reject')->name('reject');
-        });
+        Route::get('licence-requests', [LicenceRequestReviewController::class, 'index'])->name('licence-request-reviews.index');
+        Route::livewire('licence-requests/{licenceRequest}', LicenceRequestReview::class)->name('licence-request-reviews.show');
 
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
         Route::put('orders/{order}/price', [OrderController::class, 'price'])->name('orders.price');

@@ -59,7 +59,9 @@ return [
         'submitted' => 'Submitted',
         'in_review' => 'In review',
         'changes_requested' => 'Changes requested',
-        'forwarded' => 'Forwarded to the provider',
+        'verified' => 'Verified',
+        'forwarded' => 'With the provider',
+        'sent_to_provider' => 'Sent to the provider',
         'emitted' => 'Emitted',
         'rejected' => 'Rejected',
     ],
@@ -82,7 +84,7 @@ return [
 
     'request_document_status' => [
         'pending' => 'To review',
-        'accepted' => 'Accepted',
+        'accepted' => 'Viewed',
         'flagged' => 'Needs changes',
     ],
 

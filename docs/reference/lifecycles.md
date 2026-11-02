@@ -5,19 +5,20 @@
 | Status | Meaning | Next |
 |---|---|---|
 | Draft | Being filled in; kept for as long as needed. The User can delete it | Submitted |
-| Submitted | Sent to the organizer, paid or not yet | In review, Rejected |
-| In review | Set on the organizer's first action (accepting or flagging a document, confirming the payment). The organizer checks documents and payment | Changes requested, Forwarded, Rejected |
-| Changes requested | The organizer flagged documents or sections to redo | Submitted |
-| Forwarded | Sent to the Licence Provider. Requires the payment to be paid or covered | Emitted, Rejected |
-| Emitted | The temporary licence PDF is uploaded and the Licence is created | — |
+| Submitted | Sent to the organizer | In review, Rejected |
+| In review | Set on the organizer's first action (marking a document as viewed, or commenting). The organizer reviews the documents and sections, like a pull request review | Changes requested, Verified, Rejected |
+| Changes requested | The organizer finished the review sending the comments to fix | Submitted |
+| Verified | The organizer finished the review with every document viewed and nothing to fix, and set the amount to pay | With the provider, Emitted, Rejected |
+| With the provider | Optional: handed to the Licence Provider, waiting for the licence. Requires the payment to be paid or covered | Emitted, Rejected |
+| Emitted | The temporary licence PDF is uploaded and the Licence is created. Requires the payment to be paid or covered | — |
 | Rejected | Closed without a licence | — |
 
 A Licence Request is a renewal and is paid on its own, not through an Order:
 
 | Payment status | Meaning | Next |
 |---|---|---|
-| Awaiting the amount | The organizer sets the amount after checking the request. No payment proof can be uploaded yet | To pay |
-| To pay | The amount is set; no payment proof yet | Proof uploaded |
+| Awaiting the amount | The organizer sets the amount when verifying the request. No payment proof can be uploaded yet | To pay |
+| To pay | The amount is set; no payment proof yet. The organizer can still change it | Proof uploaded |
 | Proof uploaded | A payment proof is uploaded | Paid, To pay |
 | Paid | The organizer confirmed the payment | — |
 | Covered | A paid Promotional Package Order includes the renewal | — |

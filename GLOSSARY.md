@@ -43,8 +43,8 @@ One specific licence in a Licence Provider's fixed list, e.g. ACI "NAZ E", "INT 
 _Avoid_: Licence grade, qualification, category (for this meaning)
 
 **Licence Request**:
-An application submitted through the platform to have a Licence renewed by the organizer on behalf of a Licence Provider. First emissions are arranged with the organizer outside the platform.
-_Avoid_: Licence application, renewal form
+An application submitted through the platform to have a Licence renewed by the organizer on behalf of a Licence Provider. First emissions are arranged with the organizer outside the platform. The organizer reviews it like a pull request: comments on what to fix, then either requests changes or marks it **Verified**, meaning every document was viewed and nothing needs fixing. Verified is the organizer's check, not the licence: the Licence Provider emits it.
+_Avoid_: Licence application, renewal form; Approved, for a verified request
 
 **Renewal**:
 A Licence Request for a holder who had a Licence the previous year, identified by that Licence's number whether or not the Licence is on the platform. The Licence Type may change on renewal. ACI keeps the same number across years; ASI assigns a new one.

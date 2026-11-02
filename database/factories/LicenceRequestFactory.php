@@ -6,7 +6,6 @@ namespace Database\Factories;
 
 use App\Data\HolderData;
 use App\Data\RequiredDocument;
-use App\Enums\LicenceDocumentKind;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestStatus;
@@ -80,13 +79,23 @@ class LicenceRequestFactory extends Factory
     }
 
     /**
+     * The organizer finished the review without asking for changes.
+     */
+    public function verified(): static
+    {
+        return $this->submitted()->state(fn (array $attributes) => [
+            'status' => LicenceRequestStatus::Verified,
+            'verified_at' => now(),
+        ]);
+    }
+
+    /**
      * Every document and form the request asks for uploaded, waiting for review.
      */
     public function withAllDocuments(): static
     {
         return $this->afterCreating(function (LicenceRequest $licenceRequest) {
-            $licenceRequest->requiredDocuments(LicenceDocumentKind::Upload)
-                ->merge($licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm))
+            $licenceRequest->allRequiredDocuments()
                 ->each(fn (RequiredDocument $required) => LicenceRequestDocument::factory()->for($licenceRequest)->create([
                     'document' => $required->document,
                     'parent_index' => $required->parentIndex,

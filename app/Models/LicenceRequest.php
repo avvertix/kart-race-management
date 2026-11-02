@@ -280,7 +280,7 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Whether the section has everything a submission needs. Payment is never required.
+     * Whether the section has everything a submission needs.
      */
     public function isSectionComplete(LicenceRequestSection $section): bool
     {
@@ -290,7 +290,6 @@ class LicenceRequest extends Model implements Payable
             LicenceRequestSection::Parents => ! $this->isUnderage() || count($this->parentHolders()) > 0,
             LicenceRequestSection::Documents => $this->hasRequiredUploads(LicenceDocumentKind::Upload),
             LicenceRequestSection::Forms => $this->hasRequiredUploads(LicenceDocumentKind::SignedForm),
-            LicenceRequestSection::Payment => true,
         };
     }
 
@@ -367,14 +366,12 @@ class LicenceRequest extends Model implements Payable
     /**
      * Whether the requester can change the section: any section of a draft; after a change request the flagged ones,
      * and those a fix left incomplete, e.g. parents needed after correcting the holder's birth date.
-     * Payment follows its own status instead.
      */
     public function canEditSection(LicenceRequestSection $section): bool
     {
         return match ($this->status) {
             LicenceRequestStatus::Draft => true,
-            LicenceRequestStatus::ChangesRequested => $section === LicenceRequestSection::Payment
-                || $this->wasSectionFlagged($section)
+            LicenceRequestStatus::ChangesRequested => $this->wasSectionFlagged($section)
                 || ! $this->isSectionComplete($section),
             default => false,
         };

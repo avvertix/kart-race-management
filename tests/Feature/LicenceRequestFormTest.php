@@ -190,7 +190,6 @@ class LicenceRequestFormTest extends TestCase
             ->call('open', 'documents')
             ->assertSee('Medical certificate')
             ->set('files.medical_certificate', UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
-            ->call('uploadDocument', 'medical_certificate')
             ->assertHasNoErrors()
             ->assertSee('certificate.pdf');
 
@@ -214,16 +213,20 @@ class LicenceRequestFormTest extends TestCase
         $this->assertEmpty(array_intersect($reserved, $actions), 'wire:click on these names calls the Livewire client method instead of the action.');
     }
 
-    public function test_payment_waits_for_the_amount_set_by_the_organizer(): void
+    public function test_payment_comes_after_the_review_not_in_the_form(): void
     {
         $user = User::factory()->create();
-        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->withAllDocuments()->for($user)->create();
 
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
-            ->call('open', 'payment')
-            ->assertSee('The organizer sets the amount after checking your request.')
+            ->assertSet('openSection', 'review')
+            ->assertSee('After you submit, the organizer checks the request and tells you the amount to pay.')
             ->assertDontSee(__('Upload payment proof'));
+
+        $this->actingAs($user)
+            ->get(route('licence-requests.show', $licenceRequest))
+            ->assertSee('The organizer sets the amount after checking your request.');
     }
 
     public function test_proof_is_uploaded_from_the_request_page_after_submitting(): void
@@ -325,7 +328,6 @@ class LicenceRequestFormTest extends TestCase
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->set('files.medical_certificate', UploadedFile::fake()->create('certificate.pdf', 50, 'application/pdf'))
-            ->call('uploadDocument', 'medical_certificate')
             ->assertHasNoErrors();
 
         $this->assertNotNull($changeRequest->fresh()->resolved_at);
@@ -362,7 +364,6 @@ class LicenceRequestFormTest extends TestCase
             ->call('saveParents')
             ->assertHasNoErrors()
             ->set('files.identity_document-1', UploadedFile::fake()->create('anna.pdf', 50, 'application/pdf'))
-            ->call('uploadDocument', 'identity_document-1')
             ->assertHasNoErrors();
 
         $upload = $licenceRequest->documents()->sole();

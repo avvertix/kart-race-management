@@ -7,7 +7,6 @@ namespace App\Livewire;
 use App\Actions\LicenceRequests\ResubmitLicenceRequest;
 use App\Actions\LicenceRequests\StoreLicenceRequestUpload;
 use App\Actions\LicenceRequests\SubmitLicenceRequest;
-use App\Actions\SubmitPaymentProof;
 use App\Data\HolderData;
 use App\Data\RequiredDocument;
 use App\Enums\LicenceDocumentKind;
@@ -23,7 +22,6 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 /**
@@ -65,8 +63,6 @@ class LicenceRequestForm extends Component
      * @var array<string, UploadedFile|null>
      */
     public array $files = [];
-
-    public ?TemporaryUploadedFile $proof = null;
 
     public bool $declared = false;
 
@@ -207,9 +203,9 @@ class LicenceRequestForm extends Component
     }
 
     /**
-     * Upload a document or signed form. Uploading after a change request on the section resolves it.
+     * Store a document or signed form as soon as its file is picked. Uploading after a change request on the section resolves it.
      */
-    public function uploadDocument(string $key, StoreLicenceRequestUpload $storeUpload): void
+    public function updatedFiles(mixed $file, string $key): void
     {
         $this->authorize('update', $this->licenceRequest);
 
@@ -221,16 +217,12 @@ class LicenceRequestForm extends Component
 
         $this->ensureCanEdit($section);
 
-        $file = $this->files[$key] ?? null;
-
         if (! $file instanceof UploadedFile) {
-            $this->addError("files.{$key}", __('Choose a file to upload.'));
-
             return;
         }
 
         try {
-            $storeUpload($this->licenceRequest, $required, $file);
+            app(StoreLicenceRequestUpload::class)($this->licenceRequest, $required, $file);
         } catch (ValidationException $exception) {
             $this->addError("files.{$key}", $exception->validator->errors()->first());
 
@@ -245,32 +237,17 @@ class LicenceRequestForm extends Component
     }
 
     /**
-     * Move on from a section without fields: documents, forms or payment. Change requests are resolved by uploading, not here.
+     * Move on from a section without fields: documents or forms. Change requests are resolved by uploading, not here.
      */
     public function continue(string $section): void
     {
         $section = LicenceRequestSection::from($section);
 
-        abort_unless(in_array($section, [LicenceRequestSection::Documents, LicenceRequestSection::Forms, LicenceRequestSection::Payment], true), 404);
+        abort_unless(in_array($section, [LicenceRequestSection::Documents, LicenceRequestSection::Forms], true), 404);
 
         $this->ensureCanEdit($section);
 
         $this->openSection = $this->nextSection($section);
-    }
-
-    public function uploadProof(SubmitPaymentProof $submitPaymentProof): void
-    {
-        $this->ensureCanEdit(LicenceRequestSection::Payment);
-
-        $validated = $this->validate(['proof' => ['required', 'file']], attributes: ['proof' => __('Payment proof')]);
-
-        $submitPaymentProof($this->licenceRequest, $validated['proof']);
-
-        $this->proof = null;
-
-        $this->licenceRequest->resolveChangeRequests(LicenceRequestSection::Payment);
-
-        $this->licenceRequest->refresh();
     }
 
     public function submit(SubmitLicenceRequest $submit, ResubmitLicenceRequest $resubmit): void
@@ -309,22 +286,18 @@ class LicenceRequestForm extends Component
     }
 
     /**
-     * The state shown on a section header: done, todo, later (payment), flagged, fixed or accepted.
+     * The state shown on a section header: done, todo, flagged, fixed or accepted.
      */
     public function sectionState(LicenceRequestSection $section): string
     {
         $licenceRequest = $this->licenceRequest;
 
-        if ($licenceRequest->status === LicenceRequestStatus::ChangesRequested && $section !== LicenceRequestSection::Payment) {
+        if ($licenceRequest->status === LicenceRequestStatus::ChangesRequested) {
             return match (true) {
                 $licenceRequest->isSectionFlagged($section) => 'flagged',
                 $licenceRequest->wasSectionFlagged($section) => 'fixed',
                 default => 'accepted',
             };
-        }
-
-        if ($section === LicenceRequestSection::Payment) {
-            return $licenceRequest->needsPayment() ? 'later' : 'done';
         }
 
         return $licenceRequest->isSectionComplete($section) ? 'done' : 'todo';
@@ -341,15 +314,11 @@ class LicenceRequestForm extends Component
             LicenceRequestSection::Licence => collect([
                 $licenceRequest->provider?->label(),
                 $licenceRequest->licenceTypeLabel(),
-            ])->filter()->join(' · ') ?: __('Not filled in yet'),
-            LicenceRequestSection::Holder => $licenceRequest->holder?->fullName() ?? __('Not filled in yet'),
-            LicenceRequestSection::Parents => collect($licenceRequest->parentHolders())->map->fullName()->join(', ') ?: __('Not filled in yet'),
+            ])->filter()->join(' · '),
+            LicenceRequestSection::Holder => $licenceRequest->holder?->fullName() ?? '',
+            LicenceRequestSection::Parents => collect($licenceRequest->parentHolders())->map->fullName()->join(', '),
             LicenceRequestSection::Documents => $this->uploadedCount(LicenceDocumentKind::Upload),
             LicenceRequestSection::Forms => $this->uploadedCount(LicenceDocumentKind::SignedForm),
-            LicenceRequestSection::Payment => collect([
-                $licenceRequest->amountLabel(),
-                $licenceRequest->payment_status->label(),
-            ])->filter()->join(' · '),
         };
     }
 
@@ -401,7 +370,7 @@ class LicenceRequestForm extends Component
         $isChangesRequested = $this->licenceRequest->status === LicenceRequestStatus::ChangesRequested;
 
         foreach (array_slice($sections, (int) $start) as $section) {
-            $isIncomplete = $section !== LicenceRequestSection::Payment && ! $this->licenceRequest->isSectionComplete($section);
+            $isIncomplete = ! $this->licenceRequest->isSectionComplete($section);
 
             $needsWork = $isIncomplete || ($isChangesRequested && $this->licenceRequest->isSectionFlagged($section));
 

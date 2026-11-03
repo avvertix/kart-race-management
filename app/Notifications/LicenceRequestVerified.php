@@ -26,7 +26,7 @@ class LicenceRequestVerified extends AccountNotification
     {
         $mail = $this->mailMessage()
             ->subject(__('Your licence request is verified'))
-            ->line(__('The organizer checked the request for the :type licence of :holder.', $this->describe($this->licenceRequest)));
+            ->line(__('The organizer checked the licence request of :holder (:type).', $this->describe($this->licenceRequest)));
 
         if ($this->licenceRequest->payment_status === LicenceRequestPaymentStatus::Covered) {
             return $mail

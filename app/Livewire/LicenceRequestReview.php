@@ -77,8 +77,6 @@ class LicenceRequestReview extends Component
     {
         $this->authorize('review', $licenceRequest);
 
-        $this->user()->markNotificationsAsReadAbout($licenceRequest);
-
         $this->licenceRequest = $licenceRequest;
         $this->amount = $licenceRequest->amount === null ? '' : number_format($licenceRequest->amount / 100, 2, '.', '');
         $this->number = $licenceRequest->provider === LicenceProvider::Aci ? ($licenceRequest->previous_licence_number ?? '') : '';

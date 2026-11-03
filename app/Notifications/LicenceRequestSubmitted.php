@@ -32,7 +32,7 @@ class LicenceRequestSubmitted extends AccountNotification
             ->line($this->isResubmission
                 ? __('The licence request of :holder (:type) was changed and sent again.', $replacements)
                 : __('A licence request of :holder (:type) was submitted.', $replacements))
-            ->action(__('Review the request'), route('licence-request-reviews.show', $this->licenceRequest));
+            ->action(__('Review the request'), $this->openUrl());
     }
 
     /**

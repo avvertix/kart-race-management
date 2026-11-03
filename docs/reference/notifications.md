@@ -4,7 +4,7 @@ Only the notifications added for licence requests and their orders are listed he
 
 Each notification is kept in the app and also sent by email to the User's account email, which is verified at sign-up. Users turn the email of each notification off from **Settings → Notifications**; the copy in the app is always kept, so nothing that needs their attention is missed. Every email ends with a link to those settings. Emails are in the language the User last used on the platform, queued and sent only once the change is saved. They never contain documents or the fiscal code.
 
-In the app, the bell next to the account menu shows how many notifications are unread and opens **Notifications**, newest first. Opening one marks it as read and goes to the request, licence or order it is about; **Mark all as read** clears the count. Opening that request, licence or order in any other way, e.g. from the email, also marks its notifications as read. A notification about something since deleted stays in the list as *No longer available*.
+In the app, the bell next to the account menu shows how many notifications are unread and opens **Notifications**, newest first. Opening one marks it as read and goes to the request, licence or order it is about; **Mark all as read** clears the count. The button in the email opens the same notification, so following it also marks it as read. Opening that request, licence or order in any other way, e.g. from **Licence requests**, keeps its notifications unread, so a request sent again while the organizer is already looking at it is not missed. A notification about something since deleted stays in the list as *No longer available*.
 
 | When | Who is notified |
 |---|---|

@@ -7,6 +7,7 @@ namespace App\Actions\LicenceRequests;
 use App\Enums\LicenceRequestStatus;
 use App\Models\LicenceRequest;
 use App\Models\User;
+use App\Notifications\LicenceRequestChangesRequested;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -19,7 +20,7 @@ class RequestLicenceRequestChanges
      */
     public function __invoke(LicenceRequest $licenceRequest, User $organizer): LicenceRequest
     {
-        return DB::transaction(function () use ($licenceRequest, $organizer) {
+        $reviewed = DB::transaction(function () use ($licenceRequest, $organizer) {
             $locked = $licenceRequest->lockForReview(
                 LicenceRequestStatus::underReview(),
                 $organizer,
@@ -37,5 +38,9 @@ class RequestLicenceRequestChanges
 
             return $locked;
         });
+
+        $reviewed->user->notify(new LicenceRequestChangesRequested($reviewed));
+
+        return $reviewed;
     }
 }

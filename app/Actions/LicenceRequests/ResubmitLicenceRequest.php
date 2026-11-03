@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Actions\LicenceRequests;
 
 use App\Enums\LicenceRequestStatus;
+use App\Enums\NotificationType;
 use App\Models\LicenceRequest;
+use App\Models\User;
+use App\Notifications\LicenceRequestSubmitted;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class ResubmitLicenceRequest
@@ -18,7 +22,7 @@ class ResubmitLicenceRequest
      */
     public function __invoke(LicenceRequest $licenceRequest): LicenceRequest
     {
-        return DB::transaction(function () use ($licenceRequest) {
+        $resubmitted = DB::transaction(function () use ($licenceRequest) {
             $locked = $licenceRequest->lockInStatus(LicenceRequestStatus::ChangesRequested, __('The organizer did not ask for changes.'));
 
             if (! $locked->hasResolvedAllChanges()) {
@@ -33,5 +37,9 @@ class ResubmitLicenceRequest
 
             return $locked;
         });
+
+        Notification::send(User::organizersToNotify(NotificationType::LicenceRequestSubmitted), new LicenceRequestSubmitted($resubmitted, isResubmission: true));
+
+        return $resubmitted;
     }
 }

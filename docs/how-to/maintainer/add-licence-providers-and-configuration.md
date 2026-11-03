@@ -112,4 +112,4 @@ The files are not encrypted by the application. Put the storage volume on an enc
 |---|---|---|
 | `RACE_LICENCE_PROVIDER` | Provider named in race registration texts | `ACI Sport` |
 | `RACE_LICENCE_COUNTRY` | Country of the provider, as a two letter code | `it` |
-| `RACE_ORGANIZER_EMAIL` | Where organizer notifications are sent, e.g. a submitted Licence Request; also shown to drivers asking for a first licence | — |
+| `RACE_ORGANIZER_EMAIL` | The organizer's contact address, shown to drivers asking for a first licence. Notifications go to the organizers' accounts instead, see [Notifications](../../reference/notifications.md) | — |

@@ -188,80 +188,84 @@
                     <p class="text-sm text-sky-800">{{ trans_choice(':count document replaced since you asked for changes|:count documents replaced since you asked for changes', $newUploadCount) }}</p>
                 @endif
 
-                <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200">
-                    @foreach ($requiredDocuments as $required)
-                        @php
-                            $upload = $licenceRequest->uploadFor($required);
-                            $target = $upload ? 'document:'.$upload->getKey() : null;
-                            $isSelected = ! $isDraft && $upload !== null && $selectedDocument?->is($upload);
-                            $isFlagged = $upload?->status === LicenceRequestDocumentStatus::Flagged;
-                            $isViewed = $upload?->status === LicenceRequestDocumentStatus::Accepted;
-                            $providerFormUrl = LicenceCatalogue::formUrl($licenceRequest->provider, $required->document);
-                            [$badge, $badgeLabel] = match (true) {
-                                $upload === null => ['missing', __('Not uploaded yet')],
-                                $isFlagged => ['comment', __('Needs changes')],
-                                $isViewed => ['viewed', __('Viewed')],
-                                $upload->isUploadedAfter($changesRequestedAt) => ['new', __('New file')],
-                                default => ['todo', __('To review')],
-                            };
-                        @endphp
-                        <li wire:key="document-{{ $required->key() }}" @class(['p-3 space-y-2', 'bg-orange-50' => $isSelected])>
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                                @if ($upload && ! $isDraft)
-                                    <button type="button" wire:click="selectDocument({{ $upload->getKey() }})" class="flex-1 min-w-40 text-left font-medium text-zinc-900 hover:text-orange-700" @if ($isSelected) aria-current="true" @endif>
-                                        {{ $required->document->label() }}
-                                        @if ($required->parentIndex !== null)
-                                            <span class="font-normal text-zinc-600">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() }}</span>
-                                        @endif
-                                        <span class="block text-xs font-normal text-orange-600">{{ $isSelected ? __('Shown on the right') : __('View') }}</span>
-                                    </button>
-                                @else
-                                    <span class="flex-1 min-w-40 font-medium text-zinc-900">
-                                        {{ $required->document->label() }}
-                                        @if ($required->parentIndex !== null)
-                                            <span class="font-normal text-zinc-600">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() }}</span>
-                                        @endif
-                                    </span>
-                                @endif
-
-                                <span class="inline-block px-2 rounded-full text-xs font-medium {{ $badgeClasses[$badge] }}">{{ $badgeLabel }}</span>
-
-                                @if ($providerFormUrl)
-                                    <a href="{{ $providerFormUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 {{ $commentButtonClass }}">
-                                        {{ __('Original from :provider', ['provider' => $providerLabel]) }}
-                                        <flux:icon.arrow-top-right-on-square variant="micro" aria-hidden="true" />
-                                        <span class="sr-only">{{ __('(opens the provider\'s website)') }}</span>
-                                    </a>
-                                @endif
-
-                                @if ($upload && $isReviewable && ! $isFlagged)
-                                    <label class="inline-flex cursor-pointer items-center gap-1.5 text-zinc-700">
-                                        <input type="checkbox" wire:click="toggleViewed({{ $upload->getKey() }})" @checked($isViewed) class="rounded-sm border-zinc-300 text-orange-600 focus:ring-orange-300">
-                                        {{ __('Viewed') }}
-                                    </label>
-                                    @if ($commentingOn !== $target)
-                                        <button type="button" wire:click="startComment('{{ $target }}')" class="{{ $commentButtonClass }}">{{ __('Comment…') }}</button>
+                @if ($licenceRequest->documents_pruned_at)
+                    <p class="text-sm text-zinc-600">{{ __('Documents deleted on :date after the retention period.', ['date' => $licenceRequest->documents_pruned_at->setTimezone(config('races.timezone'))->isoFormat('D MMMM YYYY')]) }}</p>
+                @else
+                    <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200">
+                        @foreach ($requiredDocuments as $required)
+                            @php
+                                $upload = $licenceRequest->uploadFor($required);
+                                $target = $upload ? 'document:'.$upload->getKey() : null;
+                                $isSelected = ! $isDraft && $upload !== null && $selectedDocument?->is($upload);
+                                $isFlagged = $upload?->status === LicenceRequestDocumentStatus::Flagged;
+                                $isViewed = $upload?->status === LicenceRequestDocumentStatus::Accepted;
+                                $providerFormUrl = LicenceCatalogue::formUrl($licenceRequest->provider, $required->document);
+                                [$badge, $badgeLabel] = match (true) {
+                                    $upload === null => ['missing', __('Not uploaded yet')],
+                                    $isFlagged => ['comment', __('Needs changes')],
+                                    $isViewed => ['viewed', __('Viewed')],
+                                    $upload->isUploadedAfter($changesRequestedAt) => ['new', __('New file')],
+                                    default => ['todo', __('To review')],
+                                };
+                            @endphp
+                            <li wire:key="document-{{ $required->key() }}" @class(['p-3 space-y-2', 'bg-orange-50' => $isSelected])>
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                                    @if ($upload && ! $isDraft)
+                                        <button type="button" wire:click="selectDocument({{ $upload->getKey() }})" class="flex-1 min-w-40 text-left font-medium text-zinc-900 hover:text-orange-700" @if ($isSelected) aria-current="true" @endif>
+                                            {{ $required->document->label() }}
+                                            @if ($required->parentIndex !== null)
+                                                <span class="font-normal text-zinc-600">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() }}</span>
+                                            @endif
+                                            <span class="block text-xs font-normal text-orange-600">{{ $isSelected ? __('Shown on the right') : __('View') }}</span>
+                                        </button>
+                                    @else
+                                        <span class="flex-1 min-w-40 font-medium text-zinc-900">
+                                            {{ $required->document->label() }}
+                                            @if ($required->parentIndex !== null)
+                                                <span class="font-normal text-zinc-600">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() }}</span>
+                                            @endif
+                                        </span>
                                     @endif
-                                @endif
-                            </div>
 
-                            @if ($isFlagged)
-                                <div class="flex flex-wrap items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-                                    <p class="flex-1 min-w-40"><span class="font-semibold">{{ __('Comment') }}:</span> {{ $upload->note }}</p>
-                                    @if ($isReviewable)
-                                        <button type="button" wire:click="removeDocumentComment({{ $upload->getKey() }})" class="font-medium text-red-700 hover:text-red-900">{{ __('Remove') }}</button>
+                                    <span class="inline-block px-2 rounded-full text-xs font-medium {{ $badgeClasses[$badge] }}">{{ $badgeLabel }}</span>
+
+                                    @if ($providerFormUrl)
+                                        <a href="{{ $providerFormUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 {{ $commentButtonClass }}">
+                                            {{ __('Original from :provider', ['provider' => $providerLabel]) }}
+                                            <flux:icon.arrow-top-right-on-square variant="micro" aria-hidden="true" />
+                                            <span class="sr-only">{{ __('(opens the provider\'s website)') }}</span>
+                                        </a>
+                                    @endif
+
+                                    @if ($upload && $isReviewable && ! $isFlagged)
+                                        <label class="inline-flex cursor-pointer items-center gap-1.5 text-zinc-700">
+                                            <input type="checkbox" wire:click="toggleViewed({{ $upload->getKey() }})" @checked($isViewed) class="rounded-sm border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                            {{ __('Viewed') }}
+                                        </label>
+                                        @if ($commentingOn !== $target)
+                                            <button type="button" wire:click="startComment('{{ $target }}')" class="{{ $commentButtonClass }}">{{ __('Comment…') }}</button>
+                                        @endif
                                     @endif
                                 </div>
-                            @elseif ($upload?->note)
-                                <p class="text-sm text-zinc-500"><span class="font-semibold">{{ __('Your previous comment') }}:</span> {{ $upload->note }}</p>
-                            @endif
 
-                            @if ($target)
-                                @include('livewire.licence-request-review.comment-form', ['target' => $target])
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
+                                @if ($isFlagged)
+                                    <div class="flex flex-wrap items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                                        <p class="flex-1 min-w-40"><span class="font-semibold">{{ __('Comment') }}:</span> {{ $upload->note }}</p>
+                                        @if ($isReviewable)
+                                            <button type="button" wire:click="removeDocumentComment({{ $upload->getKey() }})" class="font-medium text-red-700 hover:text-red-900">{{ __('Remove') }}</button>
+                                        @endif
+                                    </div>
+                                @elseif ($upload?->note)
+                                    <p class="text-sm text-zinc-500"><span class="font-semibold">{{ __('Your previous comment') }}:</span> {{ $upload->note }}</p>
+                                @endif
+
+                                @if ($target)
+                                    @include('livewire.licence-request-review.comment-form', ['target' => $target])
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
 
                 @include('livewire.licence-request-review.comments', ['sections' => [LicenceRequestSection::Documents, LicenceRequestSection::Forms], 'target' => null])
             </section>

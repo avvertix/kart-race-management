@@ -32,7 +32,10 @@ class Notifications extends Component
             ->all();
     }
 
-    public function save(): void
+    /**
+     * Saves as soon as a switch is toggled, as users expect from a switch.
+     */
+    public function updatedEmails(): void
     {
         $this->validate(['emails' => ['array'], 'emails.*' => ['boolean']]);
 

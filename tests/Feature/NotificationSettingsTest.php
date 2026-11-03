@@ -31,7 +31,6 @@ class NotificationSettingsTest extends TestCase
             ->test(Notifications::class)
             ->assertSet('emails.'.NotificationType::LicenceRequestVerified->value, true)
             ->set('emails.'.NotificationType::LicenceRequestVerified->value, false)
-            ->call('save')
             ->assertHasNoErrors();
 
         $user->refresh();
@@ -49,8 +48,7 @@ class NotificationSettingsTest extends TestCase
             ->assertSee(NotificationType::LicenceRequestSubmitted->label())
             ->assertSee('Admins receive it only with the email on.')
             ->assertSet('emails.'.NotificationType::LicenceRequestSubmitted->value, false)
-            ->set('emails.'.NotificationType::LicenceRequestSubmitted->value, true)
-            ->call('save');
+            ->set('emails.'.NotificationType::LicenceRequestSubmitted->value, true);
 
         $this->assertTrue($admin->fresh()->wantsEmail(NotificationType::LicenceRequestSubmitted));
         $this->assertTrue(User::organizersToNotify(NotificationType::LicenceRequestSubmitted)->contains($admin));

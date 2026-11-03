@@ -89,4 +89,24 @@ return [
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Forms published by the providers
+    |--------------------------------------------------------------------------
+    |
+    | Forms to sign that a Licence Provider publishes in a format the platform
+    | cannot generate, keyed by provider and then by LicenceDocument value,
+    | e.g. 'aci' => ['privacy' => 'https://…/privacy.pdf']. Applicants
+    | download them from the provider's website and fill them in by hand;
+    | forms not listed here are generated pre-filled by the platform.
+    |
+    */
+
+    'forms' => [
+        'aci' => [
+            'privacy' => 'https://www.acisport.it/public_federazione/2019/pdf/Modulistica/informativa_privacy_licenziati_.pdf',
+            'parental_authorisation' => 'https://www.acisport.it/public_federazione/2017/pdf/Modulistica/autorizzazione_esercenti_potesta_genitoriale_kart.doc'
+        ],
+    ],
+
 ];

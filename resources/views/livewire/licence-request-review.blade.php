@@ -3,6 +3,7 @@
 @use('App\Enums\LicenceRequestSection')
 @use('App\Enums\LicenceRequestStatus')
 @use('App\Models\PaymentChannelType')
+@use('App\Support\LicenceCatalogue')
 
 @php
     $status = $licenceRequest->status;
@@ -195,6 +196,7 @@
                             $isSelected = ! $isDraft && $upload !== null && $selectedDocument?->is($upload);
                             $isFlagged = $upload?->status === LicenceRequestDocumentStatus::Flagged;
                             $isViewed = $upload?->status === LicenceRequestDocumentStatus::Accepted;
+                            $providerFormUrl = LicenceCatalogue::formUrl($licenceRequest->provider, $required->document);
                             [$badge, $badgeLabel] = match (true) {
                                 $upload === null => ['missing', __('Not uploaded yet')],
                                 $isFlagged => ['comment', __('Needs changes')],
@@ -223,6 +225,14 @@
                                 @endif
 
                                 <span class="inline-block px-2 rounded-full text-xs font-medium {{ $badgeClasses[$badge] }}">{{ $badgeLabel }}</span>
+
+                                @if ($providerFormUrl)
+                                    <a href="{{ $providerFormUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 {{ $commentButtonClass }}">
+                                        {{ __('Original from :provider', ['provider' => $providerLabel]) }}
+                                        <flux:icon.arrow-top-right-on-square variant="micro" aria-hidden="true" />
+                                        <span class="sr-only">{{ __('(opens the provider\'s website)') }}</span>
+                                    </a>
+                                @endif
 
                                 @if ($upload && $isReviewable && ! $isFlagged)
                                     <label class="inline-flex cursor-pointer items-center gap-1.5 text-zinc-700">

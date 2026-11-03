@@ -353,6 +353,18 @@ class LicenceRequestReviewTest extends TestCase
         $this->assertEquals(PaymentChannelType::BANK_TRANSFER, $licenceRequest->payment_channel);
     }
 
+    public function test_the_organizer_compares_a_form_with_the_one_published_by_the_provider(): void
+    {
+        config(['licences.forms.aci.privacy' => 'https://example.com/aci-privacy.pdf']);
+
+        $organizer = User::factory()->organizer()->create();
+        $licenceRequest = LicenceRequest::factory()->submitted()->create();
+
+        $this->review($licenceRequest, $organizer)
+            ->assertSeeHtml('href="https://example.com/aci-privacy.pdf"')
+            ->assertSee('Original from ACI Sport');
+    }
+
     public function test_the_organizer_records_a_payment_made_at_the_office(): void
     {
         $organizer = User::factory()->organizer()->create();

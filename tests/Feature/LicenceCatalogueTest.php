@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Data\LicenceTypeData;
+use App\Enums\LicenceDocument;
+use App\Enums\LicenceDocumentKind;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRole;
 use App\Models\DriverLicence;
@@ -60,6 +62,31 @@ class LicenceCatalogueTest extends TestCase
         $this->assertTrue(LicenceCatalogue::find(LicenceProvider::Aci, 'naz-e')->allowsCompetitor());
         $this->assertFalse(LicenceCatalogue::find(LicenceProvider::Aci, 'mechanic')->allowsCompetitor());
         $this->assertFalse(LicenceCatalogue::find(LicenceProvider::Asi, 'driver')->allowsCompetitor());
+    }
+
+    public function test_a_form_published_by_the_provider_replaces_the_pre_filled_one(): void
+    {
+        config(['licences.forms' => ['aci' => ['privacy' => 'https://example.com/aci-privacy.pdf']]]);
+
+        $this->assertEquals('https://example.com/aci-privacy.pdf', LicenceCatalogue::formUrl(LicenceProvider::Aci, LicenceDocument::Privacy));
+        $this->assertNull(LicenceCatalogue::formUrl(LicenceProvider::Aci, LicenceDocument::Delegation));
+        $this->assertNull(LicenceCatalogue::formUrl(LicenceProvider::Asi, LicenceDocument::Privacy));
+        $this->assertNull(LicenceCatalogue::formUrl(null, LicenceDocument::Privacy));
+    }
+
+    public function test_configured_provider_forms_are_secure_links_to_forms_to_sign(): void
+    {
+        $this->assertIsArray(config('licences.forms'));
+
+        foreach (config('licences.forms') as $provider => $forms) {
+            $this->assertNotNull(LicenceProvider::tryFrom($provider), "Unknown provider [{$provider}] in licences.forms.");
+
+            foreach ($forms as $document => $url) {
+                $this->assertSame(LicenceDocumentKind::SignedForm, LicenceDocument::tryFrom($document)?->kind(), "[{$provider}.{$document}] in licences.forms is not a form to sign.");
+                $this->assertNotFalse(filter_var($url, FILTER_VALIDATE_URL), "[{$provider}.{$document}] in licences.forms is not a URL.");
+                $this->assertStringStartsWith('https://', $url, "[{$provider}.{$document}] in licences.forms must use https.");
+            }
+        }
     }
 
     public function test_providers_without_types_are_not_offered(): void

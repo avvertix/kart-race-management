@@ -241,6 +241,54 @@ parameters:
 			path: app/Actions/CalculateParticipationCost.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$full_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:notExpired\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
+			message: '#^Method App\\Actions\\CopyChampionshipBibReservations\:\:__invoke\(\) should return array\{copied\: Illuminate\\Support\\Collection\<int, App\\Models\\BibReservation\>, skipped\: Illuminate\\Support\\Collection\<int, int\>\} but returns array\{copied\: Illuminate\\Support\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>, skipped\: Illuminate\\Support\\Collection\<int, mixed\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
+			message: '#^Method App\\Actions\\CopyChampionshipBibReservations\:\:candidatesFromParticipants\(\) should return Illuminate\\Support\\Collection\<int, array\{bib\: int, driver\: string, driver_licence\: string\|null, driver_licence_hash\: string\|null, contact_email\: string\|null, licence_type\: mixed\}\> but returns Illuminate\\Support\\Collection\<int, array\{bib\: int\<0, max\>, driver\: mixed, driver_licence\: null, driver_licence_hash\: string, contact_email\: null, licence_type\: int\<0, max\>\|null\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
+			message: '#^Offset ''email'' on string on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
+			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Participant\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Participant\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Actions/CopyChampionshipBibReservations.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\Category\:\:\$tire\.$#'
 			identifier: property.notFound
 			count: 1
@@ -331,6 +379,42 @@ parameters:
 			path: app/Actions/DetermineParticipantZone.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$race\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Actions/FindDuplicateDrivers.php
+
+		-
+			message: '#^Method App\\Actions\\FindDuplicateDrivers\:\:__invoke\(\) should return Illuminate\\Support\\Collection\<int, array\{participants\: Illuminate\\Support\\Collection\<int, App\\Models\\Participant\>, same_name\: bool, same_birth_date\: bool, same_licence\: bool\}\> but returns Illuminate\\Support\\Collection\<int, array\{participants\: Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Participant\>, same_name\: bool, same_birth_date\: bool, same_licence\: bool\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Actions/FindDuplicateDrivers.php
+
+		-
+			message: '#^Offset ''birth_date'' on string on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Actions/FindDuplicateDrivers.php
+
+		-
+			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Actions/FindDuplicateDrivers.php
+
+		-
+			message: '#^Relation ''race'' is not found in App\\Models\\Participant model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Actions/FindDuplicateDrivers.php
+
+		-
+			message: '#^Relation ''results'' is not found in App\\Models\\Participant model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Actions/FindDuplicateDrivers.php
+
+		-
 			message: '#^Method App\\Actions\\Fortify\\CreateNewUser\:\:create\(\) has parameter \$input with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -365,6 +449,24 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Actions/GenerateRaceNumber.php
+
+		-
+			message: '#^Offset ''licence_number'' does not exist on string\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Actions/MergeDuplicateDrivers.php
+
+		-
+			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Actions/MergeDuplicateDrivers.php
+
+		-
+			message: '#^Only iterables can be unpacked, string given\.$#'
+			identifier: arrayUnpacking.nonIterable
+			count: 1
+			path: app/Actions/MergeDuplicateDrivers.php
 
 		-
 			message: '#^Method App\\Actions\\ProcessMyLapsResult\:\:groupResultsByCategory\(\) has parameter \$rows with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
@@ -1837,6 +1939,24 @@ parameters:
 			path: app/Http/Controllers/ChampionshipController.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$full_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ChampionshipDuplicateDriverController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ChampionshipDuplicateDriverController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ChampionshipDuplicateDriverController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\ChampionshipDuplicateDriverController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/ChampionshipDuplicateDriverController.php
+
+		-
 			message: '#^Method App\\Http\\Controllers\\ChampionshipParticipantController\:\:index\(\) should return Illuminate\\Http\\Response but returns Illuminate\\View\\View\.$#'
 			identifier: return.type
 			count: 1
@@ -2123,6 +2243,30 @@ parameters:
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/ConfirmParticipantController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\CopyChampionshipBibReservationsController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/CopyChampionshipBibReservationsController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\CopyChampionshipBibReservationsController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/CopyChampionshipBibReservationsController.php
+
+		-
+			message: '#^Parameter \#1 \$sourceChampionship of callable App\\Actions\\CopyChampionshipBibReservations expects App\\Models\\Championship, App\\Models\\Championship\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Championship\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/CopyChampionshipBibReservationsController.php
+
+		-
+			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Championship\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, ''ASC'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/CopyChampionshipBibReservationsController.php
 
 		-
 			message: '#^Method App\\Http\\Controllers\\CopyChampionshipCategoriesController\:\:create\(\) has no return type specified\.$#'
@@ -2829,7 +2973,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$race\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: app/Http/Controllers/RaceParticipantController.php
 
 		-
@@ -2841,7 +2985,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: app/Http/Controllers/RaceParticipantController.php
 
 		-
@@ -2877,6 +3021,12 @@ parameters:
 		-
 			message: '#^Method App\\Http\\Controllers\\RaceParticipantController\:\:buildActivityLog\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/RaceParticipantController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\RaceParticipantController\:\:buildMergedActivity\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Controllers/RaceParticipantController.php
 
@@ -2965,18 +3115,6 @@ parameters:
 			path: app/Http/Controllers/RaceParticipantController.php
 
 		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Spatie\\Activitylog\\Models\\Activity\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:sortBy\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
 			message: '#^Relation ''bonuses'' is not found in App\\Models\\Participant model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -3009,7 +3147,7 @@ parameters:
 		-
 			message: '#^Relation ''race'' is not found in App\\Models\\Participant model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
+			count: 3
 			path: app/Http/Controllers/RaceParticipantController.php
 
 		-
@@ -3028,18 +3166,6 @@ parameters:
 			message: '#^Relation ''transponders'' is not found in App\\Models\\Participant model\.$#'
 			identifier: larastan.relationExistence
 			count: 2
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Spatie\\Activitylog\\Models\\Activity\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:values\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
 			path: app/Http/Controllers/RaceParticipantController.php
 
 		-

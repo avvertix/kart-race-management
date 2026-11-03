@@ -1415,5 +1415,11 @@
     "Choose which notifications you also receive by email. You always find them in the app.": "Scegli quali notifiche ricevere anche via email. Le trovi sempre nell'app.",
     "Admins receive it only with the email on.": "Gli amministratori la ricevono solo con l'email attiva.",
     "The organizer commented on the request for the :type licence of :holder and asks you to fix it.": "L'organizzatore ha commentato la richiesta della licenza :type di :holder e ti chiede di correggerla.",
-    "See the comments": "Vedi i commenti"
+    "See the comments": "Vedi i commenti",
+    "Mark all as read": "Segna tutte come lette",
+    "No notifications yet. You find here what needs your attention on licence requests and orders.": "Ancora nessuna notifica. Qui trovi ciò che richiede la tua attenzione su richieste di licenza e ordini.",
+    "unread": "da leggere",
+    "No longer available": "Non più disponibile",
+    "Notification": "Notifica",
+    ":count unread notification|:count unread notifications": ":count notifica da leggere|:count notifiche da leggere"
 }

@@ -48,11 +48,13 @@ class LicenceRequestController extends Controller
     /**
      * The request detail: status timeline, open change requests and payment.
      */
-    public function show(LicenceRequest $licenceRequest): View
+    public function show(Request $request, LicenceRequest $licenceRequest): View
     {
         $this->authorize('view', $licenceRequest);
 
         $licenceRequest->load(['latestPayment', 'coveringOrder', 'changeRequests', 'documents', 'licence']);
+
+        $request->user()->markNotificationsAsReadAbout($licenceRequest);
 
         return view('licence-request.show', [
             'licenceRequest' => $licenceRequest,

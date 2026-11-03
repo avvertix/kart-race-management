@@ -1,15 +1,22 @@
 @php
     $currentType = $type ?? \App\Models\AwardType::Category;
     $isCategory = $currentType === \App\Models\AwardType::Category;
+    $isDay = $currentType === \App\Models\AwardType::Day;
     $currentAward = $award ?? null;
+    $selectedRaceIds = old('race_ids', $currentAward?->races?->pluck('id')->all() ?? (isset($selectedRace) ? [$selectedRace->getKey()] : []));
 @endphp
 
 <div class="md:grid md:grid-cols-3 md:gap-6">
     <div class="md:col-span-1">
         <h3 class="text-lg font-medium text-zinc-900">{{ __('Details') }}</h3>
         <p class="mt-1 text-sm text-zinc-600">
-            {{ $isCategory ? trans('award.types.category') : trans('award.types.overall') }}
+            {{ $currentType->localizedName() }}
         </p>
+        @if($isDay)
+            <p class="mt-1 text-sm text-zinc-600">
+                {{ __('Drivers are ranked by the points of qualifying, race 1 and race 2 plus a bonus equal to the number of entries of their smallest session.') }}
+            </p>
+        @endif
     </div>
 
     <div class="mt-5 md:mt-0 md:col-span-2">
@@ -63,6 +70,28 @@
 
 <x-section-border />
 
+@if($isDay)
+<div class="md:grid md:grid-cols-3 md:gap-6">
+    <div class="md:col-span-1">
+        <h3 class="text-lg font-medium text-zinc-900">{{ __('Race') }}</h3>
+    </div>
+
+    <div class="mt-5 md:mt-0 md:col-span-2">
+        <div class="px-4 py-5 space-y-2">
+            @foreach($races as $race)
+                <label class="flex items-center">
+                    <input type="radio" name="race_ids[]" value="{{ $race->getKey() }}"
+                        class="border-zinc-300 text-orange-600 shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
+                        @checked(in_array($race->getKey(), $selectedRaceIds))
+                    >
+                    <span class="ml-2 text-sm text-zinc-600">{{ $race->title }}</span>
+                </label>
+            @endforeach
+            <x-input-error for="race_ids" class="mt-2" />
+        </div>
+    </div>
+</div>
+@else
 <div class="md:grid md:grid-cols-3 md:gap-6" x-data="{ rankingMode: '{{ old('ranking_mode', optional($currentAward)?->ranking_mode?->value ?? 'all') }}' }">
     <div class="md:col-span-1">
         <h3 class="text-lg font-medium text-zinc-900">{{ __('Ranking mode') }}</h3>
@@ -96,7 +125,7 @@
                         <label class="flex items-center">
                             <input type="checkbox" name="race_ids[]" value="{{ $race->getKey() }}"
                                 class="rounded-sm border-zinc-300 text-orange-600 shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
-                                @checked(in_array($race->getKey(), old('race_ids', $currentAward?->races?->pluck('id')->all() ?? [])))
+                                @checked(in_array($race->getKey(), $selectedRaceIds))
                             >
                             <span class="ml-2 text-sm text-zinc-600">{{ $race->title }}</span>
                         </label>
@@ -108,6 +137,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <x-section-border />
 

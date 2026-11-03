@@ -11,7 +11,9 @@ use App\Models\ChampionshipAward;
 use App\Models\Participant;
 use App\Models\ParticipantResult;
 use App\Models\Race;
+use App\Models\ResultStatus;
 use App\Models\RunResult;
+use App\Models\RunType;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
@@ -591,12 +593,12 @@ class CalculateAwardRankingTest extends TestCase
 
         $qualifying = RunResult::factory()->published()->create([
             'race_id' => $race->getKey(),
-            'run_type' => \App\Models\RunType::QUALIFY->value,
+            'run_type' => RunType::QUALIFY->value,
             'title' => 'Qualifying',
         ]);
         $finalRun = RunResult::factory()->published()->create([
             'race_id' => $race->getKey(),
-            'run_type' => \App\Models\RunType::RACE_2->value,
+            'run_type' => RunType::RACE_2->value,
             'title' => 'Final',
         ]);
 
@@ -681,6 +683,67 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertCount(1, $breakdown['entries_by_race']->get($race2->getKey()));
     }
 
+    public function test_day_award_adds_smallest_session_size_once_to_points(): void
+    {
+        $championship = Championship::factory()->create();
+        $mini = Category::factory()->recycle($championship)->create();
+        $miniUnder10 = Category::factory()->recycle($championship)->create();
+        $otherCategory = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+
+        $driverA = Participant::factory()->recycle($championship)->recycle($race)->category($mini)->create(['first_name' => 'Alice']);
+        $driverB = Participant::factory()->recycle($championship)->recycle($race)->category($mini)->create(['first_name' => 'Bob']);
+        $driverC = Participant::factory()->recycle($championship)->recycle($race)->category($miniUnder10)->create(['first_name' => 'Carol']);
+        $driverX = Participant::factory()->recycle($championship)->recycle($race)->category($otherCategory)->create();
+
+        $qualify = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::QUALIFY]);
+        $this->createResult($qualify, $driverA, 10);
+        $this->createResult($qualify, $driverB, 0, dns: true);
+        $this->createResult($qualify, $driverC, 8);
+        $this->createResult($qualify, $driverX, 5);
+
+        $race1Mini = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_1]);
+        $this->createResult($race1Mini, $driverA, 20);
+        $this->createResult($race1Mini, $driverB, 0, dns: true);
+
+        $race1MiniUnder10 = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_1]);
+        $this->createResult($race1MiniUnder10, $driverC, 20);
+        ParticipantResult::factory()->count(2)->create(['run_result_id' => $race1MiniUnder10->getKey(), 'participant_id' => null, 'points' => 0]);
+
+        $race2 = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_2]);
+        $this->createResult($race2, $driverA, 25);
+        $this->createResult($race2, $driverB, 0, dns: true);
+        $this->createResult($race2, $driverC, 30);
+
+        $warmUp = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::WARM_UP]);
+        $this->createResult($warmUp, $driverA, 100);
+
+        $award = ChampionshipAward::factory()->dayAward()->recycle($championship)->create();
+        $award->categories()->sync([$mini->getKey(), $miniUnder10->getKey()]);
+        $award->races()->sync([$race->getKey()]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertEquals(['Carol', 'Alice', 'Bob'], $ranking->pluck('first_name')->all());
+
+        $this->assertEquals(3, $ranking[0]['session_bonus']);
+        $this->assertEquals(58.0, $ranking[0]['points_per_race'][$race->getKey()]);
+        $this->assertEquals(61.0, $ranking[0]['total_points']);
+
+        $this->assertEquals(2, $ranking[1]['session_bonus']);
+        $this->assertEquals(55.0, $ranking[1]['points_per_race'][$race->getKey()]);
+        $this->assertEquals(57.0, $ranking[1]['total_points']);
+
+        $this->assertEquals(2, $ranking[2]['session_bonus']);
+        $this->assertEquals(2.0, $ranking[2]['total_points']);
+
+        $breakdown = app(CalculateAwardRanking::class)->breakdown($award, $driverA->racer_hash);
+
+        $this->assertEquals(57.0, $breakdown['total_points']);
+        $this->assertEquals(2, $breakdown['session_bonus']);
+        $this->assertCount(3, $breakdown['entries_by_race']->get($race->getKey()));
+    }
+
     public function test_breakdown_returns_empty_result_for_racer_with_no_points(): void
     {
         $championship = Championship::factory()->create();
@@ -695,5 +758,15 @@ class CalculateAwardRankingTest extends TestCase
 
         $this->assertEquals(0.0, $breakdown['total_points']);
         $this->assertTrue($breakdown['entries_by_race']->isEmpty());
+    }
+
+    private function createResult(RunResult $runResult, Participant $participant, float $points, bool $dns = false): ParticipantResult
+    {
+        return ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult->getKey(),
+            'points' => $points,
+            'is_dns' => $dns,
+            'status' => $dns ? ResultStatus::DID_NOT_START : ResultStatus::FINISHED,
+        ]);
     }
 }

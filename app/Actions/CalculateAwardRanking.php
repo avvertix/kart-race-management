@@ -17,29 +17,24 @@ use Illuminate\Support\Collection;
 class CalculateAwardRanking
 {
     /**
+     * Sessions considered when ranking a day award.
+     *
+     * @var array<int, RunType>
+     */
+    private const DAY_AWARD_RUN_TYPES = [RunType::QUALIFY, RunType::RACE_1, RunType::RACE_2];
+
+    /**
      * Calculate the ranking for a given award.
      *
-     * @return Collection<int, array{participant_id: int, first_name: string, last_name: string, bib: int, total_points: float, races_counted: int, points_per_race: array<int, float>}>
+     * Day awards also include the `session_bonus` already added to `total_points`.
+     *
+     * @return Collection<int, array{participant_id: int, first_name: string, last_name: string, bib: int, total_points: float, races_counted: int, points_per_race: array<int, float>, session_bonus?: int}>
      */
     public function __invoke(ChampionshipAward $award, bool $publishedOnly = true): Collection
     {
-        $raceIds = $this->resolveRaceIds($award);
-        $categoryIds = $award->isCategoryAward()
-            ? collect([$award->category_id])
-            : $award->categories()->pluck('categories.id');
+        $query = $this->buildAwardQuery($award, $publishedOnly);
 
-        $query = $this->buildBaseQuery($raceIds, $publishedOnly)
-            ->whereIn('participant_results.category_id', $categoryIds);
-
-        $this->applyWildcardFilter($query, $award->wildcard_filter);
-
-        $perRacePoints = $this->fetchPerRacePoints($query);
-
-        if ($award->ranking_mode === AwardRankingMode::BestN) {
-            return $this->rankByBestN($perRacePoints, $award->best_n);
-        }
-
-        return $this->rankByTotal($perRacePoints);
+        return $this->rank($award, $this->fetchPerRacePoints($query, $award->isDayAward()));
     }
 
     /**
@@ -52,27 +47,16 @@ class CalculateAwardRanking
      *     races_counted: int,
      *     counted_race_ids: array<int, int>,
      *     points_per_race: array<int, float>,
+     *     session_bonus: ?int,
      *     entries_by_race: Collection<int, Collection<int, array>>,
      * }
      */
     public function breakdown(ChampionshipAward $award, string $racerHash, bool $publishedOnly = false): array
     {
-        $raceIds = $this->resolveRaceIds($award);
-        $categoryIds = $award->isCategoryAward()
-            ? collect([$award->category_id])
-            : $award->categories()->pluck('categories.id');
-
-        $summaryQuery = $this->buildBaseQuery($raceIds, $publishedOnly)
-            ->whereIn('participant_results.category_id', $categoryIds)
+        $summaryQuery = $this->buildAwardQuery($award, $publishedOnly)
             ->where('participants.racer_hash', $racerHash);
 
-        $this->applyWildcardFilter($summaryQuery, $award->wildcard_filter);
-
-        $perRacePoints = $this->fetchPerRacePoints($summaryQuery);
-
-        $summary = ($award->ranking_mode === AwardRankingMode::BestN
-            ? $this->rankByBestN($perRacePoints, $award->best_n)
-            : $this->rankByTotal($perRacePoints))->first();
+        $summary = $this->rank($award, $this->fetchPerRacePoints($summaryQuery, $award->isDayAward()))->first();
 
         if ($summary === null) {
             return [
@@ -80,23 +64,57 @@ class CalculateAwardRanking
                 'races_counted' => 0,
                 'counted_race_ids' => [],
                 'points_per_race' => [],
+                'session_bonus' => null,
                 'entries_by_race' => collect(),
             ];
         }
 
-        $entriesQuery = $this->buildBaseQuery($raceIds, $publishedOnly)
-            ->whereIn('participant_results.category_id', $categoryIds)
+        $entriesQuery = $this->buildAwardQuery($award, $publishedOnly)
             ->where('participants.racer_hash', $racerHash);
-
-        $this->applyWildcardFilter($entriesQuery, $award->wildcard_filter);
 
         return [
             'total_points' => $summary['total_points'],
             'races_counted' => $summary['races_counted'],
             'counted_race_ids' => $summary['counted_race_ids'] ?? array_keys($summary['points_per_race']),
             'points_per_race' => $summary['points_per_race'],
+            'session_bonus' => $summary['session_bonus'] ?? null,
             'entries_by_race' => $this->fetchRunDetails($entriesQuery),
         ];
+    }
+
+    /**
+     * Build the query selecting the participant results in scope for the award: its races,
+     * categories and wildcard filter. Day awards only consider qualifying and race sessions.
+     */
+    private function buildAwardQuery(ChampionshipAward $award, bool $publishedOnly): Builder
+    {
+        $categoryIds = $award->isCategoryAward()
+            ? collect([$award->category_id])
+            : $award->categories()->pluck('categories.id');
+
+        $query = $this->buildBaseQuery($this->resolveRaceIds($award), $publishedOnly)
+            ->whereIn('participant_results.category_id', $categoryIds);
+
+        $this->applyWildcardFilter($query, $award->wildcard_filter);
+
+        if ($award->isDayAward()) {
+            $query->whereIn('run_results.run_type', array_map(fn (RunType $type) => $type->value, self::DAY_AWARD_RUN_TYPES));
+        }
+
+        return $query;
+    }
+
+    private function rank(ChampionshipAward $award, Collection $perRacePoints): Collection
+    {
+        if ($award->isDayAward()) {
+            return $this->rankByDay($perRacePoints);
+        }
+
+        if ($award->ranking_mode === AwardRankingMode::BestN) {
+            return $this->rankByBestN($perRacePoints, $award->best_n);
+        }
+
+        return $this->rankByTotal($perRacePoints);
     }
 
     /**
@@ -180,9 +198,22 @@ class CalculateAwardRanking
     /**
      * Aggregate points in the database to one row per participant per race.
      * This avoids fetching and grouping individual run-result rows in PHP.
+     *
+     * With the session size, each row also carries the smallest number of entries
+     * (all categories, DNS and DNF included) among the sessions the participant raced in.
      */
-    private function fetchPerRacePoints(Builder $query): Collection
+    private function fetchPerRacePoints(Builder $query, bool $withSessionSize = false): Collection
     {
+        if ($withSessionSize) {
+            $sessionSizes = ParticipantResult::query()
+                ->selectRaw('run_result_id, COUNT(*) as session_size')
+                ->groupBy('run_result_id');
+
+            $query
+                ->joinSub($sessionSizes, 'session_sizes', 'session_sizes.run_result_id', '=', 'participant_results.run_result_id')
+                ->selectRaw('MIN(session_sizes.session_size) as session_size');
+        }
+
         return $query
             ->selectRaw('
                 participant_results.participant_id,
@@ -224,6 +255,35 @@ class CalculateAwardRanking
                     'total_points' => $pointsPerRace->sum(),
                     'races_counted' => $raceRows->count(),
                     'points_per_race' => $pointsPerRace->all(),
+                ];
+            })
+            ->sortByDesc('total_points')
+            ->values();
+    }
+
+    /**
+     * Rank a day award: a single race where the session size is added once, as a bonus, to the points.
+     */
+    private function rankByDay(Collection $perRacePoints): Collection
+    {
+        return $perRacePoints
+            ->groupBy('racer_hash')
+            ->map(function (Collection $raceRows) {
+                $first = $raceRows->first();
+                $pointsPerRace = $raceRows->mapWithKeys(fn ($row) => [$row->race_id => (float) $row->race_points]);
+                $sessionBonus = (int) $raceRows->min('session_size');
+
+                return [
+                    'participant_id' => $first->participant_id,
+                    'uuid' => $first->uuid,
+                    'racer_hash' => $first->racer_hash,
+                    'first_name' => str()->title($first->first_name),
+                    'last_name' => str()->title($first->last_name),
+                    'bib' => $first->bib,
+                    'total_points' => $pointsPerRace->sum() + $sessionBonus,
+                    'races_counted' => $raceRows->count(),
+                    'points_per_race' => $pointsPerRace->all(),
+                    'session_bonus' => $sessionBonus,
                 ];
             })
             ->sortByDesc('total_points')

@@ -8,6 +8,7 @@ enum AwardType: string
 {
     case Category = 'category';
     case Overall = 'overall';
+    case Day = 'day';
 
     public function localizedName(): string
     {

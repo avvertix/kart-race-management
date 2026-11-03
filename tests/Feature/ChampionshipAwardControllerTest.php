@@ -232,6 +232,79 @@ class ChampionshipAwardControllerTest extends TestCase
         $this->assertCount(2, $award->races);
     }
 
+    public function test_day_award_created_for_a_single_race(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $cat1 = Category::factory()->recycle($championship)->create();
+        $cat2 = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.awards.create', $championship))
+            ->post(route('championships.awards.store', $championship), [
+                'type' => 'day',
+                'name' => 'Mini',
+                'category_ids' => [$cat1->getKey(), $cat2->getKey()],
+                'race_ids' => [$race->getKey()],
+                'ranking_mode' => 'best_n',
+                'best_n' => 3,
+            ]);
+
+        $response->assertRedirectToRoute('championships.awards.index', $championship);
+
+        $award = ChampionshipAward::first();
+        $this->assertEquals(AwardType::Day, $award->type);
+        $this->assertEquals(AwardRankingMode::SpecificRaces, $award->ranking_mode);
+        $this->assertNull($award->best_n);
+        $this->assertCount(2, $award->categories);
+        $this->assertTrue($award->races->first()->is($race));
+    }
+
+    public function test_day_award_requires_exactly_one_race(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->recycle($championship)->create();
+        $races = Race::factory()->count(2)->recycle($championship)->create();
+
+        foreach ([[], $races->modelKeys()] as $raceIds) {
+            $response = $this
+                ->actingAs($user)
+                ->from(route('championships.awards.create', $championship))
+                ->post(route('championships.awards.store', $championship), [
+                    'type' => 'day',
+                    'name' => 'Mini',
+                    'category_ids' => [$category->getKey()],
+                    'race_ids' => $raceIds,
+                ]);
+
+            $response->assertSessionHasErrors('race_ids');
+        }
+
+        $this->assertDatabaseCount('championship_awards', 0);
+    }
+
+    public function test_day_award_requires_categories(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $race = Race::factory()->recycle($championship)->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('championships.awards.create', $championship))
+            ->post(route('championships.awards.store', $championship), [
+                'type' => 'day',
+                'name' => 'Mini',
+                'category_ids' => [],
+                'race_ids' => [$race->getKey()],
+            ]);
+
+        $response->assertSessionHasErrors('category_ids');
+    }
+
     public function test_overall_award_requires_categories(): void
     {
         $user = User::factory()->organizer()->create();

@@ -64,6 +64,9 @@
                 <td class="">#</td>
                 <td class="col-name">{{ __('Name') }}</td>
                 <td class="">{{ __('Points') }}</td>
+                @if($award->isDayAward())
+                    <td class="text-center">{{ __('Session bonus') }}</td>
+                @endif
                 @foreach($races as $race)
                     <td class="text-center {{ $loop->odd ? 'bg-zinc-100': '' }}">{{ $loop->iteration }}</td>
                 @endforeach
@@ -75,6 +78,9 @@
                     <td >{{ $index + 1 }}</td>
                     <td class="col-name">{{ $entry['bib'] }}&nbsp;{{ $entry['first_name'] }} {{ $entry['last_name'] }}</td>
                     <td ><strong>{{ $entry['total_points'] }}</strong></td>
+                    @if($award->isDayAward())
+                        <td class="text-center">{{ $entry['session_bonus'] }}</td>
+                    @endif
                     @foreach($races as $race)
                         @php
                             $racePoints = $entry['points_per_race'][$race->getKey()] ?? null;
@@ -87,7 +93,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="{{ 3 + $races->count() }}" class="">
+                    <td colspan="{{ 3 + $races->count() + ($award->isDayAward() ? 1 : 0) }}" class="">
                         {{ __('No participants found') }}
                     </td>
                 </tr>

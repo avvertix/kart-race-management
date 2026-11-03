@@ -21,6 +21,12 @@
                 <dt class="text-sm font-medium text-zinc-500">{{ __('Races counted') }}</dt>
                 <dd class="mt-1 text-sm text-zinc-900">{{ $breakdown['races_counted'] }}</dd>
             </div>
+            @if($award->isDayAward())
+                <div>
+                    <dt class="text-sm font-medium text-zinc-500">{{ __('Session bonus') }}</dt>
+                    <dd class="mt-1 text-sm text-zinc-900">{{ $breakdown['session_bonus'] ?? 0 }}</dd>
+                </div>
+            @endif
         </dl>
     </div>
 

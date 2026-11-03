@@ -7,6 +7,7 @@ return [
     'types' => [
         'category' => 'Categoria',
         'overall' => 'Generale',
+        'day' => 'Giornata',
     ],
 
     'ranking_modes' => [

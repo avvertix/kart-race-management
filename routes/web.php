@@ -37,6 +37,7 @@ use App\Http\Controllers\LicenceRequestReviewController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\MyLicenceController;
 use App\Http\Controllers\MyOrderController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantFederationAuthorizationController;
 use App\Http\Controllers\OrderController;
@@ -310,6 +311,10 @@ Route::middleware([
     Route::post('orders/{order}/payment', [MyOrderController::class, 'pay'])
         ->middleware('throttle:10,10')
         ->name('my-orders.payment.store');
+
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/read', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('notifications/{notification}', [NotificationController::class, 'open'])->name('notifications.open');
 });
 
 // Public race results

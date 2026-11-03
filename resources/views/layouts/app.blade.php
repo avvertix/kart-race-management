@@ -23,6 +23,21 @@
             <x-language-selector class="max-lg:hidden" />
 
             @auth
+                @feature(\App\Features\LicencesAndProducts::class)
+                    @php
+                        $unreadNotificationCount = auth()->user()->unreadNotifications()->count();
+                    @endphp
+                    <a href="{{ route('notifications.index') }}" class="relative me-2 inline-flex h-10 w-10 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500">
+                        <flux:icon.bell variant="outline" class="size-5" aria-hidden="true" />
+                        @if ($unreadNotificationCount > 0)
+                            <span class="absolute right-1 top-1 min-w-4 rounded-full bg-orange-600 px-1 text-center text-[10px] font-semibold leading-4 text-white tabular-nums" aria-hidden="true">{{ $unreadNotificationCount > 9 ? '9+' : $unreadNotificationCount }}</span>
+                            <span class="sr-only">{{ trans_choice(':count unread notification|:count unread notifications', $unreadNotificationCount) }}</span>
+                        @else
+                            <span class="sr-only">{{ __('Notifications') }}</span>
+                        @endif
+                    </a>
+                @endfeature
+
                 <flux:dropdown position="bottom" align="end">
                     <flux:profile circle :initials="auth()->user()->initials()" :chevron="false" />
 

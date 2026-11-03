@@ -11,6 +11,7 @@ Organizers set up **Products** and **Prices** from the application, see [Set up 
 | Licence roles (driver, mechanic) | `App\Enums\LicenceRole` | Maintainer |
 | Which providers allow the competitor licence | `App\Data\LicenceTypeData::allowsCompetitor()` | Maintainer |
 | Documents a renewal asks for, and the forms to sign | `App\Enums\LicenceDocument` and `resources/views/licence-forms/` | Maintainer |
+| Forms to sign published by a provider | `config/licences.php`, under `forms` | Maintainer |
 | Labels of providers, roles and documents | `lang/{en,it}/licences.php` | Maintainer |
 | Permissions of each role | `App\Enums\Role::permissions()` | Maintainer |
 | Where uploaded licence documents are stored | `licence-documents` disk in `config/filesystems.php` | Maintainer |
@@ -74,6 +75,18 @@ The documents are the same for every Licence Type; organizers check that they fi
 To add a document, add a case with a lowercase value that never changes, its label under `document` in both `lang/*/licences.php` files, and update `tests/Feature/LicenceEnumsTest.php` and `tests/Feature/LicenceRequestActionsTest.php`.
 
 Forms to sign are rendered by the Blade view returned by `LicenceDocument::formView()`. Until the real paperwork is available, every form uses `licence-forms.placeholder`, which prints the holder's and parents' details.
+
+When a provider publishes a form in a format the platform cannot generate, link it instead in `config/licences.php`, under `forms`, keyed by the provider value and then by the document value:
+
+```php
+'forms' => [
+    'aci' => [
+        'privacy' => 'https://www.acisport.it/…/informativa_privacy_licenziati_.pdf',
+    ],
+],
+```
+
+For requests to that provider, the form shows *Download from <provider>* with an external link icon instead of *Download pre-filled*: applicants fill it in by hand and upload it as usual. Organizers see *Original from <provider>* next to the upload to compare them. Only forms to sign can be linked, and links must use `https`: `tests/Feature/LicenceCatalogueTest.php` checks both. Check the link still works each season, as providers move their files.
 
 ## Give a role a new permission
 

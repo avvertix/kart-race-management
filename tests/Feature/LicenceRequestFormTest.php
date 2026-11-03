@@ -382,6 +382,8 @@ class LicenceRequestFormTest extends TestCase
 
     public function test_pre_filled_form_downloads_as_pdf(): void
     {
+        config(['licences.forms' => []]);
+
         $user = User::factory()->create();
         $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();
 
@@ -397,6 +399,30 @@ class LicenceRequestFormTest extends TestCase
         $this->actingAs($user)
             ->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::MedicalCertificate]))
             ->assertNotFound();
+    }
+
+    public function test_a_form_published_by_the_provider_is_downloaded_from_its_website(): void
+    {
+        config(['licences.forms.aci.privacy' => 'https://example.com/aci-privacy.pdf']);
+
+        $user = User::factory()->create();
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();
+
+        Livewire::actingAs($user)
+            ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
+            ->call('open', LicenceRequestSection::Forms->value)
+            ->assertSeeHtml('href="https://example.com/aci-privacy.pdf"')
+            ->assertSee('Download from ACI Sport')
+            ->assertSee('Opens the provider\'s website. Fill it in by hand.')
+            ->assertSee('Download pre-filled');
+
+        $this->actingAs($user)
+            ->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::Privacy]))
+            ->assertRedirect('https://example.com/aci-privacy.pdf');
+
+        $this->actingAs($user)
+            ->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::Delegation]))
+            ->assertHeader('Content-Type', 'application/pdf');
     }
 
     public function test_requester_deletes_a_draft(): void

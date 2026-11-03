@@ -13,6 +13,7 @@ use App\Enums\LicenceDocumentKind;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestDocument;
+use App\Support\LicenceCatalogue;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -101,9 +102,9 @@ class LicenceRequestController extends Controller
     }
 
     /**
-     * A form to sign, pre-filled with the holder and the parents entered.
+     * A form to sign, pre-filled with the holder and the parents entered, or the one published by the provider.
      */
-    public function form(LicenceRequest $licenceRequest, LicenceDocument $document): Response
+    public function form(LicenceRequest $licenceRequest, LicenceDocument $document): Response|RedirectResponse
     {
         $this->authorize('view', $licenceRequest);
 
@@ -111,6 +112,12 @@ class LicenceRequestController extends Controller
             ->contains(fn (RequiredDocument $required) => $required->document === $document);
 
         abort_unless($isAskedFor, 404);
+
+        $providerFormUrl = LicenceCatalogue::formUrl($licenceRequest->provider, $document);
+
+        if ($providerFormUrl !== null) {
+            return redirect()->away($providerFormUrl);
+        }
 
         return Pdf::loadView((string) $document->formView(), [
             'document' => $document,

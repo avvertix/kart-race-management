@@ -41,7 +41,20 @@
                 </div>
 
                 @if ($isForm)
-                    <a href="{{ route('licence-requests.forms.show', ['licenceRequest' => $licenceRequest, 'document' => $required->document]) }}" target="_blank" class="text-sm text-orange-600 hover:text-orange-900 py-1">{{ __('Download pre-filled') }}</a>
+                    @php
+                        $providerFormUrl = \App\Support\LicenceCatalogue::formUrl($licenceRequest->provider, $required->document);
+                    @endphp
+                    @if ($providerFormUrl)
+                        <div class="text-sm py-1 sm:text-right">
+                            <a href="{{ $providerFormUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-medium text-orange-600 hover:text-orange-900">
+                                {{ __('Download from :provider', ['provider' => $licenceRequest->provider?->label()]) }}
+                                <flux:icon.arrow-top-right-on-square variant="micro" aria-hidden="true" />
+                            </a>
+                            <p class="text-zinc-500">{{ __('Opens the provider\'s website. Fill it in by hand.') }}</p>
+                        </div>
+                    @else
+                        <a href="{{ route('licence-requests.forms.show', ['licenceRequest' => $licenceRequest, 'document' => $required->document]) }}" target="_blank" class="text-sm text-orange-600 hover:text-orange-900 py-1">{{ __('Download pre-filled') }}</a>
+                    @endif
                 @endif
             </div>
 

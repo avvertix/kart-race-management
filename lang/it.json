@@ -1195,7 +1195,7 @@
     "The request is closed.": "La richiesta è chiusa.",
     "Last year's licence number": "Numero della licenza dello scorso anno",
     "The licence to renew and the one you need this year.": "La licenza da rinnovare e quella che ti serve quest'anno.",
-    "The licence you need this year. It can differ from last year's.": "La licenza che ti serve quest'anno. Può essere diversa da quella dello scorso anno.",
+    "The type of licence you are renewing..": "La tipologia della licenza che stai rinnovando.",
     "I also need the competitor licence": "Mi serve anche la licenza concorrente",
     "As printed on the licence you are renewing.": "Come stampato sulla licenza da rinnovare.",
     "The organizer sets the amount after checking your request. You can pay once it is set.": "L'organizzatore indica l'importo dopo aver controllato la richiesta. Puoi pagare quando è indicato.",
@@ -1379,5 +1379,9 @@
     "Paid at the organizer's office by :channel.": "Pagato presso l'ufficio dell'organizzatore con :channel.",
     "At the office the payment is by cash or credit card.": "In ufficio il pagamento avviene in contanti o con carta di credito.",
     "The payment can be recorded only once the request is verified.": "Il pagamento può essere registrato solo dopo che la richiesta è stata verificata.",
-    "A payment proof awaits your review. Confirm or reject it first.": "Una prova di pagamento attende la tua verifica. Confermala o rifiutala prima."
+    "A payment proof awaits your review. Confirm or reject it first.": "Una prova di pagamento attende la tua verifica. Confermala o rifiutala prima.",
+    "Original from :provider": "Originale di :provider",
+    "(opens the provider's website)": "(apre il sito dell'ente)",
+    "Download from :provider": "Scarica da :provider",
+    "Opens the provider's website. Fill it in by hand.": "Apre il sito dell'ente. Compilalo a mano."
 }

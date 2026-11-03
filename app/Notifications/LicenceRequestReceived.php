@@ -25,7 +25,7 @@ class LicenceRequestReceived extends AccountNotification
     {
         return $this->mailMessage()
             ->subject(__('We received your licence request'))
-            ->line(__('We received your request for the :type licence of :holder.', $this->describe($this->licenceRequest)))
+            ->line(__('We received the licence request of :holder (:type).', $this->describe($this->licenceRequest)))
             ->line(__('The organizer checks it and tells you if anything needs to be fixed.'))
             ->action(__('View the request'), route('licence-requests.show', $this->licenceRequest));
     }

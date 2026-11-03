@@ -98,7 +98,7 @@ class LicenceNotificationsTest extends TestCase
         Notification::assertSentToTimes($licenceRequest->user, LicenceRequestChangesRequested::class, 1);
 
         $this->assertSafeMail(new LicenceRequestChangesRequested($licenceRequest->fresh()), $licenceRequest->user, [
-            'asks you to fix it',
+            'asks you to make changes',
             route('licence-requests.edit', $licenceRequest),
         ]);
     }

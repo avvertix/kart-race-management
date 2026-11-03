@@ -25,7 +25,7 @@ class LicenceEmitted extends AccountNotification
     {
         return $this->mailMessage()
             ->subject(__('Your licence is ready'))
-            ->line(__('The :type licence of :holder for :year is emitted.', [
+            ->line(__('The :year licence of :holder (:type) is emitted.', [
                 'type' => $this->licence->licenceTypeLabel(),
                 'holder' => $this->licence->holder->fullName(),
                 'year' => $this->licence->validity_year,

@@ -25,7 +25,7 @@ class LicenceRequestChangesRequested extends AccountNotification
     {
         return $this->mailMessage()
             ->subject(__('Your licence request needs changes'))
-            ->line(__('The organizer commented on the request for the :type licence of :holder and asks you to fix it.', $this->describe($this->licenceRequest)))
+            ->line(__('The organizer commented on the licence request of :holder (:type) and asks you to make changes.', $this->describe($this->licenceRequest)))
             ->action(__('See the comments'), route('licence-requests.edit', $this->licenceRequest))
             ->line(__('Send it again once fixed: the organizer reviews it again.'));
     }

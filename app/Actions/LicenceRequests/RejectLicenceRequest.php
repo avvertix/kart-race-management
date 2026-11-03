@@ -7,6 +7,7 @@ namespace App\Actions\LicenceRequests;
 use App\Enums\LicenceRequestStatus;
 use App\Models\LicenceRequest;
 use App\Models\User;
+use App\Notifications\LicenceRequestRejected;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -22,7 +23,7 @@ class RejectLicenceRequest
     {
         Validator::make(['rejection_reason' => $reason], ['rejection_reason' => 'required|string|max:1000'])->validate();
 
-        return DB::transaction(function () use ($licenceRequest, $organizer, $reason) {
+        $reviewed = DB::transaction(function () use ($licenceRequest, $organizer, $reason) {
             $locked = $licenceRequest->lockForReview(
                 LicenceRequestStatus::rejectable(),
                 $organizer,
@@ -37,5 +38,9 @@ class RejectLicenceRequest
 
             return $locked;
         });
+
+        $reviewed->user->notify(new LicenceRequestRejected($reviewed));
+
+        return $reviewed;
     }
 }

@@ -1421,5 +1421,7 @@
     "unread": "da leggere",
     "No longer available": "Non più disponibile",
     "Notification": "Notifica",
-    ":count unread notification|:count unread notifications": ":count notifica da leggere|:count notifiche da leggere"
+    ":count unread notification|:count unread notifications": ":count notifica da leggere|:count notifiche da leggere",
+    "Documents deleted on :date after the retention period.": "Documenti eliminati il :date al termine del periodo di conservazione.",
+    "Documents deleted": "Documenti eliminati"
 }

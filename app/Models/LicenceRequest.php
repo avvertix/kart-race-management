@@ -57,6 +57,7 @@ use Spatie\LaravelData\DataCollection;
  * @property ?CarbonImmutable $forwarded_at
  * @property ?CarbonImmutable $emitted_at
  * @property ?CarbonImmutable $rejected_at
+ * @property ?CarbonImmutable $documents_pruned_at
  * @property ?string $rejection_reason
  * @property ?int $reviewed_by
  * @property CarbonImmutable $created_at
@@ -119,6 +120,7 @@ class LicenceRequest extends Model implements Payable
         'forwarded_at',
         'emitted_at',
         'rejected_at',
+        'documents_pruned_at',
         'rejection_reason',
         'reviewed_by',
     ];
@@ -586,6 +588,28 @@ class LicenceRequest extends Model implements Payable
         $query->whereNotIn('status', [LicenceRequestStatus::Emitted, LicenceRequestStatus::Rejected]);
     }
 
+    /**
+     * Only the requests whose documents are past the retention period and not deleted yet: emitted ones once the year
+     * after the Licence's validity year ends, in the races' timezone, and rejected ones 12 months after rejection.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopePastDocumentRetention(Builder $query): void
+    {
+        $now = now();
+        $lastExpiredValidityYear = $now->setTimezone(config('races.timezone'))->year - 2;
+
+        $query
+            ->whereNull('documents_pruned_at')
+            ->where(fn (Builder $query) => $query
+                ->where(fn (Builder $query) => $query
+                    ->where('status', LicenceRequestStatus::Emitted)
+                    ->whereHas('licence', fn (Builder $query) => $query->where('validity_year', '<=', $lastExpiredValidityYear)))
+                ->orWhere(fn (Builder $query) => $query
+                    ->where('status', LicenceRequestStatus::Rejected)
+                    ->where('rejected_at', '<=', $now->subYear())));
+    }
+
     protected static function booted(): void
     {
         static::saving(function (LicenceRequest $licenceRequest) {
@@ -623,6 +647,7 @@ class LicenceRequest extends Model implements Payable
             'forwarded_at' => 'datetime',
             'emitted_at' => 'datetime',
             'rejected_at' => 'datetime',
+            'documents_pruned_at' => 'datetime',
         ];
     }
 

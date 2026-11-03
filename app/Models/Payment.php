@@ -7,6 +7,8 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
 class Payment extends Model
@@ -45,6 +47,18 @@ class Payment extends Model
     public function payable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Delete the record and, once the transaction commits, its file.
+     */
+    public function deleteWithFile(): void
+    {
+        $path = $this->path;
+
+        $this->delete();
+
+        DB::afterCommit(fn () => Storage::disk('payments')->delete($path));
     }
 
     protected function downloadUrl(): \Illuminate\Database\Eloquent\Casts\Attribute

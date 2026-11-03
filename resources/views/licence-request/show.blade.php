@@ -203,28 +203,32 @@
                 @endif
             </dl>
 
-            <ul class="divide-y divide-zinc-200 border-t border-zinc-200 text-sm">
-                @foreach ($requiredDocuments as $required)
-                    @php
-                        $upload = $licenceRequest->uploadFor($required);
-                        [$documentState, $documentClass] = match (true) {
-                            $upload === null => [__('Not uploaded yet'), 'text-zinc-500'],
-                            $isChangesRequested && $upload->status === LicenceRequestDocumentStatus::Flagged => [__('Needs changes'), 'text-red-700'],
-                            $isChangesRequested && $upload->wasFlagged() => [__('Replaced'), 'text-lime-700'],
-                            default => [__('Uploaded'), 'text-zinc-600'],
-                        };
-                    @endphp
-                    <li class="flex flex-wrap justify-between gap-2 py-2">
-                        <span>
-                            {{ $required->document->label() }}
-                            @if ($required->parentIndex !== null)
-                                <span class="text-zinc-500">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() }}</span>
-                            @endif
-                        </span>
-                        <span class="{{ $documentClass }}">{{ $documentState }}</span>
-                    </li>
-                @endforeach
-            </ul>
+            @if ($licenceRequest->documents_pruned_at)
+                <p class="border-t border-zinc-200 pt-2 text-sm text-zinc-600">{{ __('Documents deleted on :date after the retention period.', ['date' => $licenceRequest->documents_pruned_at->setTimezone(config('races.timezone'))->isoFormat('D MMMM YYYY')]) }}</p>
+            @else
+                <ul class="divide-y divide-zinc-200 border-t border-zinc-200 text-sm">
+                    @foreach ($requiredDocuments as $required)
+                        @php
+                            $upload = $licenceRequest->uploadFor($required);
+                            [$documentState, $documentClass] = match (true) {
+                                $upload === null => [__('Not uploaded yet'), 'text-zinc-500'],
+                                $isChangesRequested && $upload->status === LicenceRequestDocumentStatus::Flagged => [__('Needs changes'), 'text-red-700'],
+                                $isChangesRequested && $upload->wasFlagged() => [__('Replaced'), 'text-lime-700'],
+                                default => [__('Uploaded'), 'text-zinc-600'],
+                            };
+                        @endphp
+                        <li class="flex flex-wrap justify-between gap-2 py-2">
+                            <span>
+                                {{ $required->document->label() }}
+                                @if ($required->parentIndex !== null)
+                                    <span class="text-zinc-500">&middot; {{ ($parents[$required->parentIndex] ?? null)?->fullName() }}</span>
+                                @endif
+                            </span>
+                            <span class="{{ $documentClass }}">{{ $documentState }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
         </section>
 
         @can('delete', $licenceRequest)

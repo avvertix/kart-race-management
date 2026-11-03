@@ -26,11 +26,16 @@ class NotificationController extends Controller
     }
 
     /**
-     * Mark the notification as read and go to what it is about, or back to the inbox when that no longer exists.
+     * Mark the notification as read and go to what it is about, or to the inbox when either no longer exists, e.g. from
+     * the link in an old email once the read notification was deleted.
      */
     public function open(Request $request, string $notification): RedirectResponse
     {
-        $notification = $this->user($request)->notifications()->findOrFail($notification);
+        $notification = $this->user($request)->notifications()->find($notification);
+
+        if ($notification === null) {
+            return redirect()->route('notifications.index');
+        }
 
         $notification->markAsRead();
 

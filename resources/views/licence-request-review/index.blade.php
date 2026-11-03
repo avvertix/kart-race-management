@@ -59,10 +59,14 @@
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                            {{ __(':reviewed of :total reviewed', [
-                                'reviewed' => $item->documents->where('status', '!==', \App\Enums\LicenceRequestDocumentStatus::Pending)->count(),
-                                'total' => $item->documents->count(),
-                            ]) }}
+                            @if ($item->documents_pruned_at)
+                                {{ __('Documents deleted') }}
+                            @else
+                                {{ __(':reviewed of :total reviewed', [
+                                    'reviewed' => $item->documents->where('status', '!==', \App\Enums\LicenceRequestDocumentStatus::Pending)->count(),
+                                    'total' => $item->documents->count(),
+                                ]) }}
+                            @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                             {{ $item->payment_status->label() }}

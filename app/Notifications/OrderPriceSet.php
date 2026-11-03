@@ -34,7 +34,7 @@ class OrderPriceSet extends AccountNotification
         return $mail
             ->line($this->bankTransferLine())
             ->line(__('Use the following text as the bank transfer reason:').' '.$this->order->ulid)
-            ->action(__('Upload the payment proof'), route('my-orders.show', $this->order));
+            ->action(__('Upload the payment proof'), $this->openUrl());
     }
 
     /**

@@ -15,13 +15,11 @@ class MyOrderController extends Controller
     /**
      * The order of the signed-in user, with what to pay and the payment proof upload.
      */
-    public function show(Request $request, Order $order): View
+    public function show(Order $order): View
     {
         $this->authorize('view', $order);
 
         $order->load(['lines.price', 'latestPayment']);
-
-        $request->user()->markNotificationsAsReadAbout($order);
 
         return view('my-order.show', [
             'order' => $order,

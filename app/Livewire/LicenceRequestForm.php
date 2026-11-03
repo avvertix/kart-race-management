@@ -14,7 +14,6 @@ use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
 use App\Models\LicenceRequest;
-use App\Models\User;
 use App\Rules\LicenseNumberValidationRule;
 use App\Support\LicenceCatalogue;
 use Illuminate\Contracts\View\View;
@@ -70,10 +69,6 @@ class LicenceRequestForm extends Component
     public function mount(LicenceRequest $licenceRequest): void
     {
         $this->authorize('update', $licenceRequest);
-
-        /** @var User $user */
-        $user = auth()->user();
-        $user->markNotificationsAsReadAbout($licenceRequest);
 
         $this->licenceRequest = $licenceRequest;
 

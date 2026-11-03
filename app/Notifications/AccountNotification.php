@@ -48,6 +48,15 @@ abstract class AccountNotification extends Notification implements ShouldQueueAf
     }
 
     /**
+     * Where the email's button leads: through the notification kept in the app, so that following the link marks it
+     * as read, like opening it from the notifications list. A fragment is kept by the browser across the redirect.
+     */
+    protected function openUrl(string $fragment = ''): string
+    {
+        return route('notifications.open', $this->id).$fragment;
+    }
+
+    /**
      * The organizer's bank account to pay to.
      */
     protected function bankTransferLine(): string

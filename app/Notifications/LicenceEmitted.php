@@ -31,7 +31,7 @@ class LicenceEmitted extends AccountNotification
                 'year' => $this->licence->validity_year,
             ]))
             ->line(__('Download the temporary licence and use it to enroll in races until the provider sends the final one.'))
-            ->action(__('Open the licence'), route('my-licences.show', $this->licence));
+            ->action(__('Open the licence'), $this->openUrl());
     }
 
     /**

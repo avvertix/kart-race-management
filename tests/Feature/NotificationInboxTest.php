@@ -101,20 +101,18 @@ class NotificationInboxTest extends TestCase
         $this->assertCount(0, $user->unreadNotifications()->get());
     }
 
-    public function test_viewing_the_request_marks_its_notifications_as_read(): void
+    public function test_viewing_the_request_keeps_its_notifications_unread(): void
     {
         $licenceRequest = $this->request();
-        $other = $this->request($licenceRequest->user);
         $user = $licenceRequest->user;
         $user->notify(new LicenceRequestReceived($licenceRequest));
-        $user->notify(new LicenceRequestReceived($other));
 
         $this->actingAs($user)->get(route('licence-requests.show', $licenceRequest))->assertSuccessful();
 
-        $this->assertEquals([$other->ulid], $user->unreadNotifications()->get()->pluck('data.licence_request')->all());
+        $this->assertCount(1, $user->unreadNotifications()->get());
     }
 
-    public function test_reviewing_the_request_marks_the_organizer_notifications_as_read(): void
+    public function test_reviewing_the_request_keeps_the_organizer_notifications_unread(): void
     {
         $organizer = User::factory()->organizer()->create();
         $licenceRequest = $this->request();
@@ -122,11 +120,23 @@ class NotificationInboxTest extends TestCase
 
         Livewire::actingAs($organizer)->test(LicenceRequestReview::class, ['licenceRequest' => $licenceRequest]);
 
-        $this->assertCount(0, $organizer->unreadNotifications()->get());
+        $this->assertCount(1, $organizer->unreadNotifications()->get());
+    }
+
+    public function test_the_email_link_marks_the_notification_as_read(): void
+    {
+        $organizer = User::factory()->organizer()->create();
+        $licenceRequest = $this->request();
+        $organizer->notify(new LicenceRequestSubmitted($licenceRequest));
+
+        $notification = new LicenceRequestSubmitted($licenceRequest);
+        $notification->id = $organizer->notifications()->sole()->getKey();
 
         $this->actingAs($organizer)
-            ->get(route('notifications.open', $organizer->notifications()->sole()->getKey()))
+            ->get($notification->toMail($organizer)->actionUrl)
             ->assertRedirect(route('licence-request-reviews.show', $licenceRequest));
+
+        $this->assertCount(0, $organizer->unreadNotifications()->get());
     }
 
     public function test_a_notification_about_a_deleted_request_is_no_longer_available(): void

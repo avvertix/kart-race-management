@@ -34,6 +34,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification as BaseNotification;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\EnablesLicencesAndProducts;
 use Tests\TestCase;
@@ -72,7 +73,7 @@ class LicenceNotificationsTest extends TestCase
         Notification::assertNotSentTo($licenceRequest->user, LicenceRequestSubmitted::class);
 
         $this->assertSafeMail(new LicenceRequestReceived($licenceRequest->fresh()), $licenceRequest->user, ['The organizer checks it and tells you if anything needs to be fixed.']);
-        $this->assertSafeMail(new LicenceRequestSubmitted($licenceRequest->fresh()), $organizer, ['Giulia Bianchi', route('licence-request-reviews.show', $licenceRequest)]);
+        $this->assertSafeMail(new LicenceRequestSubmitted($licenceRequest->fresh()), $organizer, ['Giulia Bianchi']);
     }
 
     public function test_sending_again_after_changes_notifies_the_organizers_only(): void
@@ -99,7 +100,6 @@ class LicenceNotificationsTest extends TestCase
 
         $this->assertSafeMail(new LicenceRequestChangesRequested($licenceRequest->fresh()), $licenceRequest->user, [
             'asks you to make changes',
-            route('licence-requests.edit', $licenceRequest),
         ]);
     }
 
@@ -121,7 +121,6 @@ class LicenceNotificationsTest extends TestCase
             'IT60X0542811101000000123456',
             $licenceRequest->ulid,
             'You can also pay by cash or credit card at the organizer\'s office.',
-            route('licence-requests.show', $licenceRequest),
         ]);
     }
 
@@ -156,7 +155,7 @@ class LicenceNotificationsTest extends TestCase
 
         Notification::assertSentToTimes($licenceRequest->user, LicenceEmitted::class, 1);
 
-        $this->assertSafeMail(new LicenceEmitted($licence), $licenceRequest->user, [route('my-licences.show', $licence)]);
+        $this->assertSafeMail(new LicenceEmitted($licence), $licenceRequest->user, [(string) $licence->validity_year]);
     }
 
     public function test_pricing_an_order_asks_the_buyer_to_pay(): void
@@ -168,7 +167,7 @@ class LicenceNotificationsTest extends TestCase
 
         Notification::assertSentToTimes($order->user, OrderPriceSet::class, 1);
 
-        $this->assertSafeMail(new OrderPriceSet($order), $order->user, [$order->amountLabel(), $order->ulid, route('my-orders.show', $order)]);
+        $this->assertSafeMail(new OrderPriceSet($order), $order->user, [$order->amountLabel(), $order->ulid]);
     }
 
     public function test_turning_off_the_email_keeps_the_notification_in_the_app(): void
@@ -219,16 +218,20 @@ class LicenceNotificationsTest extends TestCase
     }
 
     /**
-     * Render the mail and check it shows the given texts and no personal document or fiscal code.
+     * Render the mail and check it shows the given texts, links through the notification kept in the app and shows
+     * no personal document or fiscal code.
      *
      * @param  array<int, string>  $expected
      */
     private function assertSafeMail(BaseNotification $notification, User $notifiable, array $expected): void
     {
+        $notification->id = (string) Str::uuid();
+
         /** @var MailMessage $mail */
         $mail = $notification->toMail($notifiable);
         $html = html_entity_decode((string) $mail->render(), ENT_QUOTES);
 
+        $this->assertStringStartsWith(route('notifications.open', $notification->id), (string) $mail->actionUrl);
         $this->assertEmpty($mail->attachments);
         $this->assertEmpty($mail->rawAttachments);
         $this->assertStringNotContainsString(self::FISCAL_CODE, $html);

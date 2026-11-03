@@ -14,6 +14,7 @@ use App\Models\Race;
 use App\Models\ResultStatus;
 use App\Models\RunResult;
 use App\Models\RunType;
+use Illuminate\Support\Arr;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
@@ -744,6 +745,96 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertCount(3, $breakdown['entries_by_race']->get($race->getKey()));
     }
 
+    public function test_day_award_breaks_ties_by_session_size_then_race_and_qualifying_best_lap(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+
+        $participants = collect(['Anna', 'Bruno', 'Carla', 'Dario', 'Elena', 'Fabio'])->mapWithKeys(fn (string $name) => [
+            $name => Participant::factory()->recycle($championship)->recycle($race)->category($category)->create(['first_name' => $name]),
+        ]);
+
+        $smallQualifying = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::QUALIFY]);
+        $this->createResult($smallQualifying, $participants['Anna'], 7, bestLapTime: '50.000');
+        ParticipantResult::factory()->create(['run_result_id' => $smallQualifying->getKey(), 'participant_id' => null, 'points' => 0]);
+
+        $smallRace1 = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_1]);
+        $this->createResult($smallRace1, $participants['Anna'], 0, bestLapTime: '50.000');
+        ParticipantResult::factory()->create(['run_result_id' => $smallRace1->getKey(), 'participant_id' => null, 'points' => 0]);
+
+        $smallRace2 = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_2]);
+        $this->createResult($smallRace2, $participants['Anna'], 6, bestLapTime: '50.000');
+        ParticipantResult::factory()->create(['run_result_id' => $smallRace2->getKey(), 'participant_id' => null, 'points' => 0]);
+
+        $busyQualifying = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::QUALIFY]);
+        $this->createResult($busyQualifying, $participants['Bruno'], 5, bestLapTime: '55.000');
+        $this->createResult($busyQualifying, $participants['Carla'], 5, bestLapTime: '58.000');
+        $this->createResult($busyQualifying, $participants['Dario'], 5, bestLapTime: '57.500');
+        $this->createResult($busyQualifying, $participants['Elena'], 5, bestLapTime: '55.000');
+        $this->createResult($busyQualifying, $participants['Fabio'], 5, bestLapTime: '54.000');
+
+        $busyRace1 = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_1]);
+        $this->createResult($busyRace1, $participants['Bruno'], 0, bestLapTime: '1:01.000');
+        $this->createResult($busyRace1, $participants['Carla'], 0, bestLapTime: '1:01.000');
+        $this->createResult($busyRace1, $participants['Dario'], 0, bestLapTime: '1:01.000');
+        $this->createResult($busyRace1, $participants['Elena'], 0, bestLapTime: '1:00.000');
+        $this->createResult($busyRace1, $participants['Fabio'], 0, dnf: true, bestLapTime: '58.000');
+
+        $busyRace2 = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_2]);
+        $this->createResult($busyRace2, $participants['Bruno'], 5, bestLapTime: '1:00.500');
+        $this->createResult($busyRace2, $participants['Carla'], 5, bestLapTime: '59.900');
+        $this->createResult($busyRace2, $participants['Dario'], 5, bestLapTime: '59.900');
+        $this->createResult($busyRace2, $participants['Elena'], 5, dns: true, bestLapTime: '');
+        $this->createResult($busyRace2, $participants['Fabio'], 5, bestLapTime: '59.000');
+
+        $award = ChampionshipAward::factory()->dayAward()->recycle($championship)->create();
+        $award->categories()->sync([$category->getKey()]);
+        $award->races()->sync([$race->getKey()]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertEquals([15.0, 15.0, 15.0, 15.0, 15.0, 15.0], $ranking->pluck('total_points')->all());
+        $this->assertEquals(['Elena', 'Dario', 'Carla', 'Bruno', 'Fabio', 'Anna'], $ranking->pluck('first_name')->all());
+
+        $this->assertEquals([
+            ['position' => 'above', 'first_name' => 'Elena', 'criterion' => 'race_1_best_lap_time', 'value' => '1:01.000', 'other_value' => '1:00.000'],
+            ['position' => 'below', 'first_name' => 'Carla', 'criterion' => 'qualifying_best_lap_time', 'value' => '57.500', 'other_value' => '58.000'],
+        ], array_map(fn (array $tieBreak) => Arr::except($tieBreak, ['last_name', 'bib']), $ranking[1]['tie_breaks']));
+
+        $this->assertEquals('race_2_best_lap_time', $ranking[2]['tie_breaks'][1]['criterion']);
+        $this->assertEquals('session_bonus', $ranking[5]['tie_breaks'][0]['criterion']);
+        $this->assertEquals([2, 5], [$ranking[5]['tie_breaks'][0]['value'], $ranking[5]['tie_breaks'][0]['other_value']]);
+
+        $breakdown = app(CalculateAwardRanking::class)->breakdown($award, $participants['Carla']->racer_hash);
+
+        $this->assertEquals(3, $breakdown['day_ranking']['position']);
+        $this->assertEquals('59.900', $breakdown['day_ranking']['race_2_best_lap_time']);
+        $this->assertCount(2, $breakdown['day_ranking']['tie_breaks']);
+    }
+
+    public function test_day_award_reports_ties_not_resolved_by_any_tie_break(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+        $first = Participant::factory()->recycle($championship)->recycle($race)->category($category)->create();
+        $second = Participant::factory()->recycle($championship)->recycle($race)->category($category)->create();
+
+        $qualifying = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::QUALIFY]);
+        $this->createResult($qualifying, $first, 10, bestLapTime: '55.000');
+        $this->createResult($qualifying, $second, 10, bestLapTime: '55.000');
+
+        $award = ChampionshipAward::factory()->dayAward()->recycle($championship)->create();
+        $award->categories()->sync([$category->getKey()]);
+        $award->races()->sync([$race->getKey()]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertNull($ranking[0]['tie_breaks'][0]['criterion']);
+        $this->assertNull($ranking[1]['tie_breaks'][0]['criterion']);
+    }
+
     public function test_breakdown_returns_empty_result_for_racer_with_no_points(): void
     {
         $championship = Championship::factory()->create();
@@ -760,13 +851,19 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertTrue($breakdown['entries_by_race']->isEmpty());
     }
 
-    private function createResult(RunResult $runResult, Participant $participant, float $points, bool $dns = false): ParticipantResult
+    private function createResult(RunResult $runResult, Participant $participant, float $points, bool $dns = false, bool $dnf = false, ?string $bestLapTime = null): ParticipantResult
     {
-        return ParticipantResult::factory()->forParticipant($participant)->create([
+        return ParticipantResult::factory()->forParticipant($participant)->create(array_filter([
             'run_result_id' => $runResult->getKey(),
             'points' => $points,
             'is_dns' => $dns,
-            'status' => $dns ? ResultStatus::DID_NOT_START : ResultStatus::FINISHED,
-        ]);
+            'is_dnf' => $dnf,
+            'status' => match (true) {
+                $dns => ResultStatus::DID_NOT_START,
+                $dnf => ResultStatus::DID_NOT_FINISH,
+                default => ResultStatus::FINISHED,
+            },
+            'best_lap_time' => $bestLapTime,
+        ], fn ($value) => $value !== null));
     }
 }

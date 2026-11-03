@@ -156,6 +156,7 @@
                         <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Points') }}</th>
                         <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Session bonus') }}</th>
                         <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Total') }}</th>
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Tie-break') }}</th>
                     </x-slot>
 
                     @forelse ($dayAward['ranking'] as $index => $entry)
@@ -169,10 +170,13 @@
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 text-right">{{ $entry['points_per_race'][$race->getKey()] ?? 0 }}</td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 text-right">{{ $entry['session_bonus'] }}</td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-900 text-right font-semibold">{{ $entry['total_points'] }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                @include('award.partials.tie-breaks', ['tieBreaks' => $entry['tie_breaks']])
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-3 py-4 text-center text-sm text-zinc-500">{{ __('No participants found') }}</td>
+                            <td colspan="6" class="px-3 py-4 text-center text-sm text-zinc-500">{{ __('No participants found') }}</td>
                         </tr>
                     @endforelse
                 </x-table>

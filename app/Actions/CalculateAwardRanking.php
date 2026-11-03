@@ -12,10 +12,18 @@ use App\Models\ResultStatus;
 use App\Models\RunType;
 use App\Models\WildcardFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class CalculateAwardRanking
 {
+    /**
+     * Tie-breaks applied, in order, to day award drivers with the same points.
+     *
+     * @var array<int, string>
+     */
+    public const DAY_AWARD_TIE_BREAKERS = ['session_bonus', 'race_1_best_lap_time', 'race_2_best_lap_time', 'qualifying_best_lap_time'];
+
     /**
      * Sessions considered when ranking a day award.
      *
@@ -26,7 +34,8 @@ class CalculateAwardRanking
     /**
      * Calculate the ranking for a given award.
      *
-     * Day awards also include the `session_bonus` already added to `total_points`.
+     * Day awards also include the `session_bonus` already added to `total_points`, the lap
+     * times used as tie-breaks and, in `tie_breaks`, how ties with adjacent drivers were resolved.
      *
      * @return Collection<int, array{participant_id: int, first_name: string, last_name: string, bib: int, total_points: float, races_counted: int, points_per_race: array<int, float>, session_bonus?: int}>
      */
@@ -48,15 +57,23 @@ class CalculateAwardRanking
      *     counted_race_ids: array<int, int>,
      *     points_per_race: array<int, float>,
      *     session_bonus: ?int,
+     *     day_ranking: ?array,
      *     entries_by_race: Collection<int, Collection<int, array>>,
      * }
      */
     public function breakdown(ChampionshipAward $award, string $racerHash, bool $publishedOnly = false): array
     {
-        $summaryQuery = $this->buildAwardQuery($award, $publishedOnly)
-            ->where('participants.racer_hash', $racerHash);
+        if ($award->isDayAward()) {
+            // Ties depend on the other drivers, so the whole ranking is needed
+            $ranking = $this($award, $publishedOnly);
+            $position = $ranking->search(fn (array $entry) => $entry['racer_hash'] === $racerHash);
+            $summary = $position === false ? null : [...$ranking->get($position), 'position' => $position + 1];
+        } else {
+            $summaryQuery = $this->buildAwardQuery($award, $publishedOnly)
+                ->where('participants.racer_hash', $racerHash);
 
-        $summary = $this->rank($award, $this->fetchPerRacePoints($summaryQuery, $award->isDayAward()))->first();
+            $summary = $this->rank($award, $this->fetchPerRacePoints($summaryQuery))->first();
+        }
 
         if ($summary === null) {
             return [
@@ -65,6 +82,7 @@ class CalculateAwardRanking
                 'counted_race_ids' => [],
                 'points_per_race' => [],
                 'session_bonus' => null,
+                'day_ranking' => null,
                 'entries_by_race' => collect(),
             ];
         }
@@ -78,6 +96,7 @@ class CalculateAwardRanking
             'counted_race_ids' => $summary['counted_race_ids'] ?? array_keys($summary['points_per_race']),
             'points_per_race' => $summary['points_per_race'],
             'session_bonus' => $summary['session_bonus'] ?? null,
+            'day_ranking' => $award->isDayAward() ? Arr::only($summary, ['position', ...self::DAY_AWARD_TIE_BREAKERS, 'tie_breaks']) : null,
             'entries_by_race' => $this->fetchRunDetails($entriesQuery),
         ];
     }
@@ -199,19 +218,23 @@ class CalculateAwardRanking
      * Aggregate points in the database to one row per participant per race.
      * This avoids fetching and grouping individual run-result rows in PHP.
      *
-     * With the session size, each row also carries the smallest number of entries
-     * (all categories, DNS and DNF included) among the sessions the participant raced in.
+     * For day awards each row also carries the smallest number of entries (all categories,
+     * DNS and DNF included) among the sessions the participant raced in, and the best lap
+     * times of race 1, race 2 and qualifying, all used to rank and break ties.
      */
-    private function fetchPerRacePoints(Builder $query, bool $withSessionSize = false): Collection
+    private function fetchPerRacePoints(Builder $query, bool $forDayAward = false): Collection
     {
-        if ($withSessionSize) {
+        if ($forDayAward) {
             $sessionSizes = ParticipantResult::query()
                 ->selectRaw('run_result_id, COUNT(*) as session_size')
                 ->groupBy('run_result_id');
 
             $query
                 ->joinSub($sessionSizes, 'session_sizes', 'session_sizes.run_result_id', '=', 'participant_results.run_result_id')
-                ->selectRaw('MIN(session_sizes.session_size) as session_size');
+                ->selectRaw('MIN(session_sizes.session_size) as session_size')
+                ->selectRaw('MAX(CASE WHEN run_results.run_type = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_1_best_lap_time', [RunType::RACE_1->value])
+                ->selectRaw('MAX(CASE WHEN run_results.run_type = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_2_best_lap_time', [RunType::RACE_2->value])
+                ->selectRaw('MAX(CASE WHEN run_results.run_type = ? THEN participant_results.best_lap_time END) as qualifying_best_lap_time', [RunType::QUALIFY->value]);
         }
 
         return $query
@@ -263,10 +286,15 @@ class CalculateAwardRanking
 
     /**
      * Rank a day award: a single race where the session size is added once, as a bonus, to the points.
+     *
+     * Ties are broken by the larger session bonus (the driver in the busiest group wins),
+     * then by the faster best lap in race 1, in race 2 and finally in qualifying.
+     * Race laps only count when the driver finished that race (no DNS or DNF);
+     * a missing or not counted lap time ranks last.
      */
     private function rankByDay(Collection $perRacePoints): Collection
     {
-        return $perRacePoints
+        $ranking = $perRacePoints
             ->groupBy('racer_hash')
             ->map(function (Collection $raceRows) {
                 $first = $raceRows->first();
@@ -284,10 +312,79 @@ class CalculateAwardRanking
                     'races_counted' => $raceRows->count(),
                     'points_per_race' => $pointsPerRace->all(),
                     'session_bonus' => $sessionBonus,
+                    'race_1_best_lap_time' => $raceRows->pluck('race_1_best_lap_time')->filter()->first(),
+                    'race_2_best_lap_time' => $raceRows->pluck('race_2_best_lap_time')->filter()->first(),
+                    'qualifying_best_lap_time' => $raceRows->pluck('qualifying_best_lap_time')->filter()->first(),
                 ];
             })
-            ->sortByDesc('total_points')
+            ->sort(fn (array $a, array $b) => $this->dayRankingKey($a) <=> $this->dayRankingKey($b))
             ->values();
+
+        return $ranking->map(fn (array $entry, int $index) => [
+            ...$entry,
+            'tie_breaks' => array_values(array_filter([
+                $this->resolveTieBreak($entry, $ranking->get($index - 1), 'above'),
+                $this->resolveTieBreak($entry, $ranking->get($index + 1), 'below'),
+            ])),
+        ]);
+    }
+
+    /**
+     * The values a day award ranking is sorted by, in order: points, then the tie-breaks.
+     *
+     * @return array<int, float|int>
+     */
+    private function dayRankingKey(array $entry): array
+    {
+        return [
+            -$entry['total_points'],
+            ...array_map(
+                fn (string $criterion) => $criterion === 'session_bonus' ? -$entry['session_bonus'] : $this->lapTimeInSeconds($entry[$criterion]),
+                self::DAY_AWARD_TIE_BREAKERS,
+            ),
+        ];
+    }
+
+    /**
+     * Explain how a tie on points with an adjacent driver in the ranking was resolved:
+     * the first tie-break whose values differ, or null as criterion when all are equal.
+     *
+     * @return array{position: string, first_name: string, last_name: string, bib: int, criterion: ?string, value: int|string|null, other_value: int|string|null}|null
+     */
+    private function resolveTieBreak(array $entry, ?array $other, string $position): ?array
+    {
+        if ($other === null || $other['total_points'] !== $entry['total_points']) {
+            return null;
+        }
+
+        $entryKey = $this->dayRankingKey($entry);
+        $otherKey = $this->dayRankingKey($other);
+
+        $criterion = collect(self::DAY_AWARD_TIE_BREAKERS)
+            ->first(fn (string $criterion, int $index) => $entryKey[$index + 1] !== $otherKey[$index + 1]);
+
+        return [
+            'position' => $position,
+            'first_name' => $other['first_name'],
+            'last_name' => $other['last_name'],
+            'bib' => $other['bib'],
+            'criterion' => $criterion,
+            'value' => $criterion ? $entry[$criterion] : null,
+            'other_value' => $criterion ? $other[$criterion] : null,
+        ];
+    }
+
+    /**
+     * Convert a lap time as exported by MyLaps (e.g. "56.063" or "1:02.345") to seconds.
+     * A missing or unreadable time is considered infinitely slow.
+     */
+    private function lapTimeInSeconds(?string $lapTime): float
+    {
+        if (blank($lapTime) || ! preg_match('/^(?:(\d+):)?(\d+(?:\.\d+)?)$/', mb_trim($lapTime), $matches)) {
+            return INF;
+        }
+
+        return ((int) $matches[1]) * 60 + (float) $matches[2];
     }
 
     private function rankByBestN(Collection $perRacePoints, int $bestN): Collection

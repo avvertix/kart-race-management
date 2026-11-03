@@ -92,6 +92,7 @@
                 <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Points') }}</th>
                 @if($award->isDayAward())
                     <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-zinc-900">{{ __('Session bonus') }}</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Tie-break') }}</th>
                 @endif
                 @foreach($races as $race)
                     <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-zinc-900 max-w-12 odd:bg-zinc-100"><a href="{{ route('races.results.index', $race) }}" class="block w-full truncate hover:underline">{{ $race->title }}</a></th>
@@ -114,6 +115,9 @@
                     </td>
                     @if($award->isDayAward())
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-center text-zinc-900">{{ $entry['session_bonus'] }}</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm">
+                            @include('award.partials.tie-breaks', ['tieBreaks' => $entry['tie_breaks']])
+                        </td>
                     @endif
                     @foreach($races as $race)
                         @php
@@ -127,7 +131,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="{{ 3 + $races->count() + ($award->isDayAward() ? 1 : 0) }}" class="px-3 py-4 text-center text-sm text-zinc-500">
+                    <td colspan="{{ 3 + $races->count() + ($award->isDayAward() ? 2 : 0) }}" class="px-3 py-4 text-center text-sm text-zinc-500">
                         {{ __('No participants found') }}
                     </td>
                 </tr>

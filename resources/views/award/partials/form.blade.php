@@ -14,7 +14,7 @@
         </p>
         @if($isDay)
             <p class="mt-1 text-sm text-zinc-600">
-                {{ __('Drivers are ranked by the points of qualifying, race 1 and race 2 plus a bonus equal to the number of entries of their smallest session.') }}
+                {{ __('Drivers are ranked by the points of qualifying, race 1 and race 2 plus a bonus equal to the number of entries of their smallest session. Ties go to the driver in the busiest session, then to the fastest lap in race 1, then in race 2 (only for drivers who finished the race, no DNS or DNF) and finally in qualifying.') }}
             </p>
         @endif
     </div>

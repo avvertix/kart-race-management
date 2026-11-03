@@ -13,6 +13,7 @@ use App\Models\Participant;
 use App\Models\ParticipantResult;
 use App\Models\Race;
 use App\Models\RunResult;
+use App\Models\RunType;
 use App\Models\User;
 use App\Models\WildcardFilter;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
@@ -303,6 +304,36 @@ class ChampionshipAwardControllerTest extends TestCase
             ]);
 
         $response->assertSessionHasErrors('category_ids');
+    }
+
+    public function test_day_award_show_and_breakdown_explain_how_ties_were_resolved(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+        $winner = Participant::factory()->recycle($championship)->recycle($race)->category($category)->create(['bib' => 11, 'first_name' => 'Winner']);
+        $runnerUp = Participant::factory()->recycle($championship)->recycle($race)->category($category)->create(['bib' => 22, 'first_name' => 'Runner']);
+
+        $race1 = RunResult::factory()->recycle($race)->create(['run_type' => RunType::RACE_1]);
+        ParticipantResult::factory()->forParticipant($winner)->create(['run_result_id' => $race1->getKey(), 'points' => 10, 'best_lap_time' => '48.040']);
+        ParticipantResult::factory()->forParticipant($runnerUp)->create(['run_result_id' => $race1->getKey(), 'points' => 10, 'best_lap_time' => '48.227']);
+
+        $award = ChampionshipAward::factory()->dayAward()->recycle($championship)->create();
+        $award->categories()->sync([$category->getKey()]);
+        $award->races()->sync([$race->getKey()]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('awards.show', $award))
+            ->assertSuccessful()
+            ->assertSeeInOrder(['Ahead of 22 Runner', 'Race 1 best lap', '48.040', '48.227']);
+
+        $this
+            ->actingAs($user)
+            ->get(route('awards.participants.breakdown', ['award' => $award, 'participant' => $runnerUp]))
+            ->assertSuccessful()
+            ->assertSeeInOrder(['Behind 11 Winner', 'Race 1 best lap', '48.227', '48.040']);
     }
 
     public function test_overall_award_requires_categories(): void

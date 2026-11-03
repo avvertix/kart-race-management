@@ -84,7 +84,16 @@ class NotificationInboxTest extends TestCase
 
         $this->actingAs(User::factory()->create())
             ->get(route('notifications.open', $licenceRequest->user->notifications()->sole()->getKey()))
-            ->assertNotFound();
+            ->assertRedirect(route('notifications.index'));
+
+        $this->assertCount(1, $licenceRequest->user->unreadNotifications()->get());
+    }
+
+    public function test_the_email_link_of_a_deleted_notification_opens_the_notifications(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('notifications.open', '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'))
+            ->assertRedirect(route('notifications.index'));
     }
 
     public function test_all_notifications_are_marked_as_read(): void

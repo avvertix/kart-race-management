@@ -22,4 +22,11 @@ You can **Reject request…** with a reason, shown to the applicant, until the l
 
 ## Keeping documents
 
-Uploaded documents are kept until 12 months after the licence expires, then deleted. The temporary licence PDF is kept as long as the Licence.
+Uploaded documents, signed forms and the payment proofs of a request are deleted once they are no longer needed:
+
+- for an emitted licence, after 31 December of the year after its validity year, e.g. on 1 January 2029 for a 2027 licence;
+- for a rejected request, 12 months after the rejection.
+
+Requests still in progress or verified keep their documents. The temporary licence PDF is kept as long as the Licence, and so are the request's details and history. Once deleted, the request shows **Documents deleted on** with the date in place of the documents, for you and the applicant.
+
+The deletion runs every night (`licence-requests:prune-documents`). Run it with `--dry-run` to list the requests it would delete documents of.

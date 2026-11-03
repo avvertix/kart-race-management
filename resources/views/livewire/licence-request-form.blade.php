@@ -113,7 +113,7 @@
                                             <option value="{{ $item->code }}">{{ $item->name }}</option>
                                         @endforeach
                                     </select>
-                                    <p class="mt-1 text-sm text-zinc-500">{{ __('The licence you need this year. It can differ from last year\'s.') }}</p>
+                                    <p class="mt-1 text-sm text-zinc-500">{{ __('The type of licence you are renewing.') }}</p>
                                     <x-input-error for="licenceType" class="mt-1" />
                                 </div>
 

@@ -8,6 +8,7 @@ use App\Enums\OrderStatus;
 use App\Events\OrderPriced;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\OrderPriceSet;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -59,6 +60,8 @@ class SetOrderPrice
         });
 
         OrderPriced::dispatch($order);
+
+        $order->user->notify(new OrderPriceSet($order));
 
         return $order;
     }

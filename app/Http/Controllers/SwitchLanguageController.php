@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\Locale;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SwitchLanguageController extends Controller
 {
@@ -17,7 +19,7 @@ class SwitchLanguageController extends Controller
     {
 
         $validated = $this->validate($request, [
-            'lang' => 'required|in:en,it',
+            'lang' => ['required', Rule::in(Locale::SUPPORTED)],
         ]);
 
         $lang = $validated['lang'];

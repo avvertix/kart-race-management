@@ -9,6 +9,7 @@ use App\Enums\LicenceSource;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\User;
+use App\Notifications\LicenceEmitted;
 use App\Rules\LicenseNumberValidationRule;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
@@ -52,7 +53,7 @@ class EmitLicence
         }
 
         try {
-            return DB::transaction(function () use ($licenceRequest, $organizer, $licenceType, $number, $validityYear, $path) {
+            $licence = DB::transaction(function () use ($licenceRequest, $organizer, $licenceType, $number, $validityYear, $path) {
                 $locked = $licenceRequest->lockForReview(LicenceRequestStatus::verified(), $organizer, __('Only a verified request can be emitted.'));
 
                 if (! $locked->isPaymentSettled()) {
@@ -97,5 +98,9 @@ class EmitLicence
 
             throw $exception;
         }
+
+        $licence->user->notify(new LicenceEmitted($licence));
+
+        return $licence;
     }
 }

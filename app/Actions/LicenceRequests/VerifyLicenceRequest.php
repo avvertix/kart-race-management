@@ -8,6 +8,7 @@ use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Models\LicenceRequest;
 use App\Models\User;
+use App\Notifications\LicenceRequestVerified;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -22,7 +23,7 @@ class VerifyLicenceRequest
      */
     public function __invoke(LicenceRequest $licenceRequest, User $organizer, ?int $amount): LicenceRequest
     {
-        return DB::transaction(function () use ($licenceRequest, $organizer, $amount) {
+        $reviewed = DB::transaction(function () use ($licenceRequest, $organizer, $amount) {
             $locked = $licenceRequest->lockForReview(
                 LicenceRequestStatus::underReview(),
                 $organizer,
@@ -60,5 +61,9 @@ class VerifyLicenceRequest
 
             return $locked;
         });
+
+        $reviewed->user->notify(new LicenceRequestVerified($reviewed));
+
+        return $reviewed;
     }
 }

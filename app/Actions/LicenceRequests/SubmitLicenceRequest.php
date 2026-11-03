@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Actions\LicenceRequests;
 
 use App\Enums\LicenceRequestStatus;
+use App\Enums\NotificationType;
 use App\Models\LicenceRequest;
+use App\Models\User;
+use App\Notifications\LicenceRequestReceived;
+use App\Notifications\LicenceRequestSubmitted;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class SubmitLicenceRequest
@@ -18,7 +23,7 @@ class SubmitLicenceRequest
      */
     public function __invoke(LicenceRequest $licenceRequest): LicenceRequest
     {
-        return DB::transaction(function () use ($licenceRequest) {
+        $submitted = DB::transaction(function () use ($licenceRequest) {
             $locked = $licenceRequest->lockInStatus(LicenceRequestStatus::Draft, __('The request was already submitted.'));
 
             $locked->ensureNothingIsMissing();
@@ -30,5 +35,11 @@ class SubmitLicenceRequest
 
             return $locked;
         });
+
+        $submitted->user->notify(new LicenceRequestReceived($submitted));
+
+        Notification::send(User::organizersToNotify(NotificationType::LicenceRequestSubmitted), new LicenceRequestSubmitted($submitted));
+
+        return $submitted;
     }
 }

@@ -27,7 +27,7 @@ class LicenceRequestRejected extends AccountNotification
             ->subject(__('Your licence request was rejected'))
             ->line(__('The organizer rejected the licence request of :holder (:type).', $this->describe($this->licenceRequest)))
             ->line(__('Reason: :reason', ['reason' => $this->licenceRequest->rejection_reason]))
-            ->action(__('View the request'), route('licence-requests.show', $this->licenceRequest))
+            ->action(__('View the request'), $this->openUrl())
             ->line(__('Write to the organizer for any question, or about a refund if you already paid.'));
     }
 

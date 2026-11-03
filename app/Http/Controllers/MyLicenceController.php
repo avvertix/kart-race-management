@@ -86,10 +86,8 @@ class MyLicenceController extends Controller
     /**
      * The licence detail.
      */
-    public function show(Request $request, Licence $licence): View
+    public function show(Licence $licence): View
     {
-        $request->user()->markNotificationsAsReadAbout($licence);
-
         return view('my-licence.show', [
             'licence' => $licence,
         ]);

@@ -1369,5 +1369,15 @@
     "You confirm the comments before they are sent to the driver. Remove them to mark the request as verified instead.": "Confermi i commenti prima che vengano inviati al pilota. Rimuovili per segnare invece la richiesta come verificata.",
     "Early access to licences and products": "Accesso anticipato a licenze e prodotti",
     "Admins always have it.": "Gli amministratori ce l'hanno sempre.",
-    "Shows licences, licence requests, products and orders, still being prepared for a future championship.": "Mostra licenze, richieste di licenza, prodotti e ordini, ancora in preparazione per un prossimo campionato."
+    "Shows licences, licence requests, products and orders, still being prepared for a future championship.": "Mostra licenze, richieste di licenza, prodotti e ordini, ancora in preparazione per un prossimo campionato.",
+    "Paid by :channel, :amount": "Pagato con :channel, :amount",
+    "Paid at the office": "Pagato in ufficio",
+    "Record that the driver paid :amount at your office. You can then emit the licence.": "Registra che il pilota ha pagato :amount presso il tuo ufficio. Potrai poi emettere la licenza.",
+    "Paid by": "Pagato con",
+    "Record payment": "Registra pagamento",
+    "You can also pay by cash or credit card at the organizer's office.": "Puoi anche pagare in contanti o con carta di credito presso l'ufficio dell'organizzatore.",
+    "Paid at the organizer's office by :channel.": "Pagato presso l'ufficio dell'organizzatore con :channel.",
+    "At the office the payment is by cash or credit card.": "In ufficio il pagamento avviene in contanti o con carta di credito.",
+    "The payment can be recorded only once the request is verified.": "Il pagamento può essere registrato solo dopo che la richiesta è stata verificata.",
+    "A payment proof awaits your review. Confirm or reject it first.": "Una prova di pagamento attende la tua verifica. Confermala o rifiutala prima."
 }

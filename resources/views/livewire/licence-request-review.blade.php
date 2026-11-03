@@ -2,6 +2,7 @@
 @use('App\Enums\LicenceRequestPaymentStatus')
 @use('App\Enums\LicenceRequestSection')
 @use('App\Enums\LicenceRequestStatus')
+@use('App\Models\PaymentChannelType')
 
 @php
     $status = $licenceRequest->status;
@@ -41,7 +42,9 @@
                 LicenceRequestPaymentStatus::AwaitingPrice => __('You set the amount when you finish the review'),
                 LicenceRequestPaymentStatus::AwaitingPayment => __('Waiting for the driver\'s payment of :amount', ['amount' => $licenceRequest->amountLabel()]),
                 LicenceRequestPaymentStatus::PaymentSubmitted => __('Payment proof to confirm, :amount', ['amount' => $licenceRequest->amountLabel()]),
-                LicenceRequestPaymentStatus::Paid => __('Paid, :amount', ['amount' => $licenceRequest->amountLabel()]),
+                LicenceRequestPaymentStatus::Paid => $licenceRequest->payment_channel
+                    ? __('Paid by :channel, :amount', ['channel' => mb_strtolower($licenceRequest->payment_channel->localizedName()), 'amount' => $licenceRequest->amountLabel()])
+                    : __('Paid, :amount', ['amount' => $licenceRequest->amountLabel()]),
                 LicenceRequestPaymentStatus::Covered => __('Covered by a package'),
             },
         ],
@@ -140,6 +143,11 @@
                 @elseif ($isVerified && ! $isPaymentSettled)
                     <x-button type="button" disabled>{{ __('Emit licence') }}</x-button>
                     <p class="text-sm text-zinc-600">{{ __('Waiting for the driver\'s payment.') }}</p>
+                    @if ($paymentStatus === LicenceRequestPaymentStatus::AwaitingPayment)
+                        <flux:modal.trigger name="office-payment">
+                            <x-secondary-button>{{ __('Paid at the office') }}</x-secondary-button>
+                        </flux:modal.trigger>
+                    @endif
                     @if ($licenceRequest->canBePriced())
                         <flux:modal.trigger name="change-amount">
                             <x-secondary-button>{{ __('Change amount') }}</x-secondary-button>
@@ -393,6 +401,34 @@
                         <x-secondary-button>{{ __('Cancel') }}</x-secondary-button>
                     </flux:modal.close>
                     <x-button>{{ __('Save amount') }}</x-button>
+                </div>
+            </form>
+        </flux:modal>
+    @endif
+
+    @if ($isVerified && $paymentStatus === LicenceRequestPaymentStatus::AwaitingPayment)
+        <flux:modal name="office-payment" class="max-w-md">
+            <form wire:submit="recordOfficePayment" class="space-y-6">
+                <div>
+                    <flux:heading size="lg">{{ __('Paid at the office') }}</flux:heading>
+                    <flux:subheading>{{ __('Record that the driver paid :amount at your office. You can then emit the licence.', ['amount' => $licenceRequest->amountLabel()]) }}</flux:subheading>
+                </div>
+                <x-input-error for="payment" />
+                <fieldset class="space-y-2">
+                    <legend class="text-sm font-medium text-zinc-700">{{ __('Paid by') }}*</legend>
+                    @foreach ([PaymentChannelType::CASH, PaymentChannelType::CREDIT_CARD] as $channel)
+                        <label class="flex cursor-pointer items-center gap-2 text-sm">
+                            <input type="radio" name="office_payment_channel" value="{{ $channel->value }}" wire:model="officePaymentChannel" class="text-orange-600 focus:ring-orange-500" required>
+                            {{ $channel->localizedName() }}
+                        </label>
+                    @endforeach
+                    <x-input-error for="officePaymentChannel" />
+                </fieldset>
+                <div class="flex justify-end gap-2">
+                    <flux:modal.close>
+                        <x-secondary-button>{{ __('Cancel') }}</x-secondary-button>
+                    </flux:modal.close>
+                    <x-button>{{ __('Record payment') }}</x-button>
                 </div>
             </form>
         </flux:modal>

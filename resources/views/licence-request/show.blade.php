@@ -1,6 +1,7 @@
 @use('App\Enums\LicenceRequestDocumentStatus')
 @use('App\Enums\LicenceRequestPaymentStatus')
 @use('App\Enums\LicenceRequestStatus')
+@use('App\Models\PaymentChannelType')
 
 @php
     $status = $licenceRequest->status;
@@ -142,6 +143,7 @@
                                 <br><span class="font-mono select-all break-all">{{ config('races.organizer.bank_account') }}</span>
                             </p>
                             <p>{{ __('Use the following text as the bank transfer reason:') }} <span class="font-mono select-all break-all">{{ $licenceRequest->ulid }}</span></p>
+                            <p class="text-zinc-600">{{ __('You can also pay by cash or credit card at the organizer\'s office.') }}</p>
 
                             @if ($licenceRequest->latestPayment)
                                 <p class="rounded-md border border-amber-400 bg-amber-50 px-2 py-1 text-amber-700">{{ __('The organizer could not confirm the previous payment proof. Upload a new one.') }}</p>
@@ -171,7 +173,13 @@
                     @break
 
                 @case (LicenceRequestPaymentStatus::Paid)
-                    <p class="text-sm text-lime-700">{{ __('Payment confirmed by the organizer.') }}</p>
+                    <p class="text-sm text-lime-700">
+                        @if (in_array($licenceRequest->payment_channel, [PaymentChannelType::CASH, PaymentChannelType::CREDIT_CARD], true))
+                            {{ __('Paid at the organizer\'s office by :channel.', ['channel' => mb_strtolower($licenceRequest->payment_channel->localizedName())]) }}
+                        @else
+                            {{ __('Payment confirmed by the organizer.') }}
+                        @endif
+                    </p>
                     @break
 
                 @case (LicenceRequestPaymentStatus::Covered)

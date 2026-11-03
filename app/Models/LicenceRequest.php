@@ -42,6 +42,7 @@ use Spatie\LaravelData\DataCollection;
  * @property ?HolderData $holder
  * @property ?DataCollection<int, HolderData> $parents
  * @property LicenceRequestPaymentStatus $payment_status
+ * @property ?PaymentChannelType $payment_channel
  * @property ?int $amount
  * @property Currency $currency
  * @property ?int $priced_by
@@ -103,6 +104,7 @@ class LicenceRequest extends Model implements Payable
         'holder',
         'parents',
         'payment_status',
+        'payment_channel',
         'amount',
         'currency',
         'priced_by',
@@ -610,6 +612,7 @@ class LicenceRequest extends Model implements Payable
             'holder' => HolderData::class.':encrypted',
             'parents' => DataCollection::class.':'.HolderData::class.',encrypted',
             'payment_status' => LicenceRequestPaymentStatus::class,
+            'payment_channel' => PaymentChannelType::class,
             'amount' => 'integer',
             'currency' => Currency::class,
             'priced_at' => 'datetime',

@@ -18,9 +18,9 @@ A Licence Request is a renewal and is paid on its own, not through an Order:
 | Payment status | Meaning | Next |
 |---|---|---|
 | Awaiting the amount | The organizer sets the amount when verifying the request. No payment proof can be uploaded yet | To pay |
-| To pay | The amount is set; no payment proof yet. The organizer can still change it | Proof uploaded |
+| To pay | The amount is set; no payment proof yet. The organizer can still change it | Proof uploaded, Paid |
 | Proof uploaded | A payment proof is uploaded | Paid, To pay |
-| Paid | The organizer confirmed the payment | — |
+| Paid | The organizer confirmed the bank transfer proof, or recorded a cash or credit card payment at the office | — |
 | Covered | A paid Promotional Package Order includes the renewal | — |
 
 ## Licence

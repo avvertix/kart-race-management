@@ -76,6 +76,20 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
     }
 
     /**
+     * Mark as read the User's notifications about the given request, licence or order, once they open it.
+     */
+    public function markNotificationsAsReadAbout(LicenceRequest|Licence|Order $subject): void
+    {
+        $key = match (true) {
+            $subject instanceof LicenceRequest => 'licence_request',
+            $subject instanceof Licence => 'licence',
+            $subject instanceof Order => 'order',
+        };
+
+        $this->unreadNotifications()->where("data->{$key}", $subject->ulid)->update(['read_at' => now()]);
+    }
+
+    /**
      * Get the user's initials.
      */
     public function initials(): string

@@ -254,14 +254,14 @@ class LicenceRequest extends Model implements Payable
 
     /**
      * The documents of the given kind the request asks for, the same for every Licence Type: the holder's, plus an identity
-     * document for each parent entered. Underage-only documents are asked only for underage holders.
+     * document for each parent of an underage holder. Underage-only documents are asked only for underage holders.
      *
      * @return Collection<int, RequiredDocument>
      */
     public function requiredDocuments(LicenceDocumentKind $kind): Collection
     {
         $isUnderage = $this->isUnderage();
-        $parentCount = $isUnderage ? count($this->parentHolders()) : 0;
+        $parentCount = $this->requiredParentCount();
 
         return collect(LicenceDocument::cases())
             ->filter(fn (LicenceDocument $document) => $document->kind() === $kind && ($isUnderage || ! $document->isUnderageOnly()))
@@ -407,7 +407,7 @@ class LicenceRequest extends Model implements Payable
      */
     public function forgetUploadsOfRemovedParents(): void
     {
-        $parentCount = $this->isUnderage() ? count($this->parentHolders()) : 0;
+        $parentCount = $this->requiredParentCount();
 
         $this->documents()
             ->whereNotNull('parent_index')
@@ -624,6 +624,15 @@ class LicenceRequest extends Model implements Payable
             'emitted_at' => 'datetime',
             'rejected_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The parents or guardians whose identity document is asked for: those entered for an underage holder, at least one
+     * even before they are entered, so their document can be uploaded in any order.
+     */
+    private function requiredParentCount(): int
+    {
+        return $this->isUnderage() ? max(1, count($this->parentHolders())) : 0;
     }
 
     private function hasRequiredUploads(LicenceDocumentKind $kind): bool

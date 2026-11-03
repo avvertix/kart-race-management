@@ -401,6 +401,31 @@ class LicenceRequestFormTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_a_parent_identity_document_is_asked_for_before_the_parents_are_entered(): void
+    {
+        $user = User::factory()->create();
+        $licenceRequest = LicenceRequest::factory()->underage()->for($user)->create(['parents' => []]);
+
+        $component = Livewire::actingAs($user)
+            ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
+            ->call('open', LicenceRequestSection::Documents->value)
+            ->assertSee('Parent or guardian 1')
+            ->set('files.identity_document-0', UploadedFile::fake()->create('parent.pdf', 50, 'application/pdf'))
+            ->assertHasNoErrors();
+
+        $upload = $licenceRequest->documents()->sole();
+
+        $component
+            ->call('addParent')
+            ->set('parents.0', [...$this->holderInput(), 'first_name' => 'Marco'])
+            ->call('saveParents')
+            ->assertHasNoErrors()
+            ->call('open', LicenceRequestSection::Documents->value)
+            ->assertSee('Marco');
+
+        $this->assertModelExists($upload);
+    }
+
     public function test_a_form_published_by_the_provider_is_downloaded_from_its_website(): void
     {
         config(['licences.forms.aci.privacy' => 'https://example.com/aci-privacy.pdf']);

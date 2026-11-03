@@ -134,5 +134,55 @@
         @empty
             <p class="text-zinc-600 p-4">{{ __('No results uploaded.') }}</p>
         @endforelse
+
+        <div class="flex justify-between items-center mt-10 mb-2">
+            <h4 class="font-semibold text-lg text-zinc-700">{{ __('Day awards') }}</h4>
+            @can('create', \App\Models\ChampionshipAward::class)
+                <a href="{{ route('championships.awards.create', ['championship' => $race->championship, 'type' => 'day', 'race' => $race]) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Add day award') }}</a>
+            @endcan
+        </div>
+
+        @forelse ($dayAwards as $dayAward)
+            <div class="mb-6">
+                <p class="flex items-center gap-2 mb-2">
+                    <a href="{{ route('awards.show', $dayAward['award']) }}" class="font-semibold text-orange-600 hover:text-orange-900">{{ $dayAward['award']->name }}</a>
+                    <span class="text-sm text-zinc-500">{{ $dayAward['award']->categories->pluck('name')->join(', ') }}</span>
+                </p>
+
+                <x-table>
+                    <x-slot name="head">
+                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">#</th>
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Name') }}</th>
+                        <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Points') }}</th>
+                        <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Session bonus') }}</th>
+                        <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Total') }}</th>
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Tie-break') }}</th>
+                    </x-slot>
+
+                    @forelse ($dayAward['ranking'] as $index => $entry)
+                        <tr>
+                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-zinc-500 sm:pl-6">{{ $index + 1 }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-zinc-900">
+                                <a href="{{ route('awards.participants.breakdown', ['award' => $dayAward['award'], 'participant' => $entry['uuid']]) }}" class="text-orange-600 hover:text-orange-900">
+                                    <span class="inline-block font-mono font-normal mr-2 w-7 text-zinc-900">{{ $entry['bib'] }}</span>{{ $entry['first_name'] }} {{ $entry['last_name'] }}
+                                </a>
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 text-right">{{ $entry['points_per_race'][$race->getKey()] ?? 0 }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 text-right">{{ $entry['session_bonus'] }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-900 text-right font-semibold">{{ $entry['total_points'] }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                @include('award.partials.tie-breaks', ['tieBreaks' => $entry['tie_breaks']])
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-3 py-4 text-center text-sm text-zinc-500">{{ __('No participants found') }}</td>
+                        </tr>
+                    @endforelse
+                </x-table>
+            </div>
+        @empty
+            <p class="text-zinc-600 p-4">{{ __('No day awards configured for this race.') }}</p>
+        @endforelse
     </div>
 </x-app-layout>

@@ -67,7 +67,7 @@ class ChampionshipAward extends Model
     }
 
     /**
-     * Get the selected categories (for overall awards).
+     * Get the selected categories (for overall and day awards).
      */
     public function categories(): BelongsToMany
     {
@@ -90,6 +90,15 @@ class ChampionshipAward extends Model
     public function isOverallAward(): bool
     {
         return $this->type === AwardType::Overall;
+    }
+
+    /**
+     * A day award ranks a group of categories within a single race, adding the
+     * size of the sessions the driver raced in as a bonus to the points.
+     */
+    public function isDayAward(): bool
+    {
+        return $this->type === AwardType::Day;
     }
 
     public function isPublished(): bool

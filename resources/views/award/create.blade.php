@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="title">
-        {{ $type === \App\Models\AwardType::Category ? __('Add category award') : __('Add overall award') }} - {{ $championship->title }}
+        {{ match ($type) { \App\Models\AwardType::Category => __('Add category award'), \App\Models\AwardType::Overall => __('Add overall award'), \App\Models\AwardType::Day => __('Add day award') } }} - {{ $championship->title }}
     </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight flex gap-2">
             <span><a href="{{ route('championships.awards.index', $championship) }}">{{ $championship->title }}</a></span>
             <span>/</span>
-            <span>{{ $type === \App\Models\AwardType::Category ? __('Add category award') : __('Add overall award') }}</span>
+            <span>{{ match ($type) { \App\Models\AwardType::Category => __('Add category award'), \App\Models\AwardType::Overall => __('Add overall award'), \App\Models\AwardType::Day => __('Add day award') } }}</span>
         </h2>
     </x-slot>
 

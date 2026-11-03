@@ -90,6 +90,10 @@
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">#</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Name') }}</th>
                 <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-zinc-900">{{ __('Points') }}</th>
+                @if($award->isDayAward())
+                    <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-zinc-900">{{ __('Session bonus') }}</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900">{{ __('Tie-break') }}</th>
+                @endif
                 @foreach($races as $race)
                     <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-zinc-900 max-w-12 odd:bg-zinc-100"><a href="{{ route('races.results.index', $race) }}" class="block w-full truncate hover:underline">{{ $race->title }}</a></th>
                 @endforeach
@@ -109,6 +113,12 @@
                             <span class="block text-xs font-normal text-zinc-400">{{ trans_choice(':value race|:value races', count($entry['points_per_race']), ['value' => count($entry['points_per_race'])]) }}</span>
                         @endif
                     </td>
+                    @if($award->isDayAward())
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-center text-zinc-900">{{ $entry['session_bonus'] }}</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm">
+                            @include('award.partials.tie-breaks', ['tieBreaks' => $entry['tie_breaks']])
+                        </td>
+                    @endif
                     @foreach($races as $race)
                         @php
                             $racePoints = $entry['points_per_race'][$race->getKey()] ?? null;
@@ -121,7 +131,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="{{ 3 + $races->count() }}" class="px-3 py-4 text-center text-sm text-zinc-500">
+                    <td colspan="{{ 3 + $races->count() + ($award->isDayAward() ? 2 : 0) }}" class="px-3 py-4 text-center text-sm text-zinc-500">
                         {{ __('No participants found') }}
                     </td>
                 </tr>

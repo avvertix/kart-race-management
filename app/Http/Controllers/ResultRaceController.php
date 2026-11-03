@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\AssignPointsToRunResult;
+use App\Actions\CalculateAwardRanking;
 use App\Actions\ProcessMyLapsResult;
 use App\Jobs\AssignPointsToRaceResults;
 use App\Jobs\LinkParticipantResults;
+use App\Models\AwardType;
+use App\Models\ChampionshipAward;
 use App\Models\ChampionshipPointScheme;
 use App\Models\Participant;
 use App\Models\ParticipantResult;
@@ -44,10 +47,24 @@ class ResultRaceController extends Controller
             ->get()
             ->groupBy('run_type');
 
+        $calculateRanking = app(CalculateAwardRanking::class);
+
+        $dayAwards = $race->championship->awards()
+            ->where('type', AwardType::Day)
+            ->whereRelation('races', 'races.id', $race->getKey())
+            ->with('categories')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (ChampionshipAward $award) => [
+                'award' => $award,
+                'ranking' => $calculateRanking($award, publishedOnly: false),
+            ]);
+
         return view('race-result.index', [
             'race' => $race,
             'championship' => $race->championship,
             'runResults' => $runResults,
+            'dayAwards' => $dayAwards,
         ]);
     }
 

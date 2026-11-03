@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Jobs\LinkParticipantResults;
+use App\Models\Category;
+use App\Models\Championship;
+use App\Models\ChampionshipAward;
 use App\Models\Participant;
 use App\Models\ParticipantResult;
 use App\Models\Race;
@@ -54,6 +57,42 @@ class ResultRaceControllerTest extends TestCase
         $runResults = $response->viewData('runResults');
         $this->assertEquals(1, $runResults->count()); // one run_type group
         $this->assertEquals(3, $runResults->first()->first()->participant_results_count);
+    }
+
+    public function test_index_shows_day_award_ranking_for_the_race(): void
+    {
+        $user = User::factory()->admin()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+        $otherRace = Race::factory()->recycle($championship)->create();
+
+        $participant = Participant::factory()->recycle($championship)->recycle($race)->category($category)->create();
+        $runResult = RunResult::factory()->recycle($race)->create(['run_type' => RunType::RACE_1]);
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult->getKey(),
+            'points' => 25,
+        ]);
+
+        $dayAward = ChampionshipAward::factory()->dayAward()->recycle($championship)->create(['name' => 'Mini day']);
+        $dayAward->categories()->sync([$category->getKey()]);
+        $dayAward->races()->sync([$race->getKey()]);
+
+        $otherDayAward = ChampionshipAward::factory()->dayAward()->recycle($championship)->create(['name' => 'Other day']);
+        $otherDayAward->categories()->sync([$category->getKey()]);
+        $otherDayAward->races()->sync([$otherRace->getKey()]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('races.results.index', $race));
+
+        $response->assertSuccessful();
+        $response->assertSee('Mini day');
+        $response->assertDontSee('Other day');
+
+        $dayAwards = $response->viewData('dayAwards');
+        $this->assertCount(1, $dayAwards);
+        $this->assertEquals(26.0, $dayAwards->first()['ranking']->first()['total_points']);
     }
 
     public function test_create_page_loads(): void

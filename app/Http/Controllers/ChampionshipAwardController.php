@@ -29,7 +29,7 @@ class ChampionshipAwardController extends Controller
     {
         return view('award.index', [
             'championship' => $championship,
-            'awards' => $championship->awards()->with('category')->orderBy('name', 'ASC')->get(),
+            'awards' => $championship->awards()->with(['category', 'races'])->orderBy('name', 'ASC')->get(),
         ]);
     }
 
@@ -45,6 +45,7 @@ class ChampionshipAwardController extends Controller
             'type' => $type,
             'categories' => $championship->categories()->where('enabled', true)->orderBy('name')->get(),
             'races' => $championship->races()->get(),
+            'selectedRace' => $request->filled('race') ? $championship->races()->where('uuid', $request->query('race'))->first() : null,
         ]);
     }
 
@@ -53,7 +54,7 @@ class ChampionshipAwardController extends Controller
      */
     public function store(Request $request, Championship $championship)
     {
-        $validated = $this->validate($request, $this->validationRules());
+        $validated = $this->validateAward($request);
 
         $award = $championship->awards()->create([
             'name' => $validated['name'],
@@ -64,7 +65,7 @@ class ChampionshipAwardController extends Controller
             'category_id' => $validated['category_id'] ?? null,
         ]);
 
-        if ($validated['type'] === AwardType::Overall->value && ! empty($validated['category_ids'])) {
+        if ($validated['type'] !== AwardType::Category->value && ! empty($validated['category_ids'])) {
             $award->categories()->sync($validated['category_ids']);
         }
 
@@ -137,7 +138,7 @@ class ChampionshipAwardController extends Controller
      */
     public function update(Request $request, ChampionshipAward $award)
     {
-        $validated = $this->validate($request, $this->validationRules());
+        $validated = $this->validateAward($request);
 
         $award->update([
             'name' => $validated['name'],
@@ -148,7 +149,7 @@ class ChampionshipAwardController extends Controller
             'category_id' => $validated['category_id'] ?? null,
         ]);
 
-        if ($validated['type'] === AwardType::Overall->value) {
+        if ($validated['type'] !== AwardType::Category->value) {
             $award->categories()->sync($validated['category_ids'] ?? []);
         }
 
@@ -205,21 +206,34 @@ class ChampionshipAwardController extends Controller
     }
 
     /**
+     * Validate the award input. Day awards always rank exactly one specific race.
+     *
      * @return array<string, mixed>
      */
-    private function validationRules(): array
+    private function validateAward(Request $request): array
     {
-        return [
+        $isDayAward = $request->input('type') === AwardType::Day->value;
+
+        if ($isDayAward) {
+            $request->merge([
+                'ranking_mode' => AwardRankingMode::SpecificRaces->value,
+                'best_n' => null,
+            ]);
+        }
+
+        return $this->validate($request, [
             'type' => ['required', Rule::in(array_column(AwardType::cases(), 'value'))],
             'name' => ['required', 'string', 'max:250'],
             'category_id' => ['required_if:type,category', 'nullable', 'exists:categories,id'],
             'ranking_mode' => ['nullable', Rule::in(array_column(AwardRankingMode::cases(), 'value'))],
             'best_n' => ['required_if:ranking_mode,best_n', 'nullable', 'integer', 'min:1'],
             'wildcard_filter' => ['nullable', Rule::in(array_column(WildcardFilter::cases(), 'value'))],
-            'race_ids' => ['required_if:ranking_mode,specific', 'nullable', 'array'],
+            'race_ids' => ['required_if:ranking_mode,specific', 'nullable', 'array', Rule::when($isDayAward, ['size:1'])],
             'race_ids.*' => ['exists:races,id'],
-            'category_ids' => ['required_if:type,overall', 'nullable', 'array', 'min:1'],
+            'category_ids' => ['required_if:type,overall,day', 'nullable', 'array', 'min:1'],
             'category_ids.*' => ['exists:categories,id'],
-        ];
+        ], [
+            'race_ids.size' => __('A day award requires exactly one race.'),
+        ]);
     }
 }

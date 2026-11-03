@@ -21,7 +21,31 @@
                 <dt class="text-sm font-medium text-zinc-500">{{ __('Races counted') }}</dt>
                 <dd class="mt-1 text-sm text-zinc-900">{{ $breakdown['races_counted'] }}</dd>
             </div>
+            @if($award->isDayAward() && $breakdown['day_ranking'])
+                <div>
+                    <dt class="text-sm font-medium text-zinc-500">{{ __('Position') }}</dt>
+                    <dd class="mt-1 text-sm text-zinc-900">{{ $breakdown['day_ranking']['position'] }}</dd>
+                </div>
+            @endif
         </dl>
+
+        @if($award->isDayAward() && $breakdown['day_ranking'])
+            <div class="mt-6">
+                <h4 class="font-semibold text-sm text-zinc-700 mb-2">{{ __('Tie-break') }}</h4>
+                <dl class="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-4">
+                    @foreach(\App\Actions\CalculateAwardRanking::DAY_AWARD_TIE_BREAKERS as $criterion)
+                        <div>
+                            <dt class="text-sm font-medium text-zinc-500">{{ trans("award.tie_breakers.{$criterion}") }}</dt>
+                            <dd class="mt-1 text-sm text-zinc-900">{{ $breakdown['day_ranking'][$criterion] ?? '—' }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+                <p class="mt-2 text-xs text-zinc-500">{{ __('Lap times count only when the driver finished the race, — means not counted.') }}</p>
+                <div class="mt-2">
+                    @include('award.partials.tie-breaks', ['tieBreaks' => $breakdown['day_ranking']['tie_breaks']])
+                </div>
+            </div>
+        @endif
     </div>
 
     <div class="space-y-8">

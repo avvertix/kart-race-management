@@ -7,6 +7,14 @@ return [
     'types' => [
         'category' => 'Category',
         'overall' => 'Overall',
+        'day' => 'Day',
+    ],
+
+    'tie_breakers' => [
+        'session_bonus' => 'Session bonus',
+        'race_1_best_lap_time' => 'Race 1 best lap',
+        'race_2_best_lap_time' => 'Race 2 best lap',
+        'qualifying_best_lap_time' => 'Qualifying best lap',
     ],
 
     'ranking_modes' => [

@@ -50,6 +50,15 @@ class ChampionshipAwardFactory extends Factory
         ]);
     }
 
+    public function dayAward(): static
+    {
+        return $this->state(fn () => [
+            'type' => AwardType::Day,
+            'ranking_mode' => AwardRankingMode::SpecificRaces,
+            'category_id' => null,
+        ]);
+    }
+
     public function bestN(int $n): static
     {
         return $this->state(fn () => [

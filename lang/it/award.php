@@ -7,6 +7,14 @@ return [
     'types' => [
         'category' => 'Categoria',
         'overall' => 'Generale',
+        'day' => 'Giornata',
+    ],
+
+    'tie_breakers' => [
+        'session_bonus' => 'Bonus sessione',
+        'race_1_best_lap_time' => 'Miglior giro gara 1',
+        'race_2_best_lap_time' => 'Miglior giro gara 2',
+        'qualifying_best_lap_time' => 'Miglior giro qualifica',
     ],
 
     'ranking_modes' => [

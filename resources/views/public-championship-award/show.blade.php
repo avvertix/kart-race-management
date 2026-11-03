@@ -34,6 +34,9 @@
                         <td class="px-2 text-xs w-8">#</td>
                         <td class="px-2 text-xs">{{ __('Name') }}</td>
                         <td class="px-2 text-xs text-right">{{ __('Points') }}</td>
+                        @if($award->isDayAward())
+                            <td class="px-2 text-xs text-center">{{ __('Session bonus') }}</td>
+                        @endif
                         @foreach($races as $race)
                             <td class="px-2 text-xs text-center max-w-12 odd:bg-zinc-100"><span class="block w-full truncate">{{ $race->title }}</span></td>
                         @endforeach
@@ -45,6 +48,9 @@
                             <td class="px-2 py-2 border-b text-zinc-500">{{ $index + 1 }}</td>
                             <td class="px-2 py-2 border-b font-medium"><span class="inline-block font-mono font-normal mr-2 w-7">{{ $entry['bib'] }}</span>{{ $entry['first_name'] }} {{ $entry['last_name'] }}</td>
                             <td class="px-2 py-2 border-b text-right font-semibold">{{ $entry['total_points'] }}</td>
+                            @if($award->isDayAward())
+                                <td class="px-2 py-2 border-b text-center">{{ $entry['session_bonus'] }}</td>
+                            @endif
                             @foreach($races as $race)
                                 @php
                                     $racePoints = $entry['points_per_race'][$race->getKey()] ?? null;
@@ -57,7 +63,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ 3 + $races->count() }}" class="px-2 py-4 text-center text-sm text-zinc-500">
+                            <td colspan="{{ 3 + $races->count() + ($award->isDayAward() ? 1 : 0) }}" class="px-2 py-4 text-center text-sm text-zinc-500">
                                 {{ __('No participants found') }}
                             </td>
                         </tr>

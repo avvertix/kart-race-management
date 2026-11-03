@@ -10,6 +10,9 @@
             <x-button-link href="{{ route('championships.awards.create', ['championship' => $championship, 'type' => 'overall']) }}">
                 {{ __('Add overall award') }}
             </x-button-link>
+            <x-button-link href="{{ route('championships.awards.create', ['championship' => $championship, 'type' => 'day']) }}">
+                {{ __('Add day award') }}
+            </x-button-link>
         @endcan
     </x-slot>
 
@@ -33,7 +36,11 @@
                     {{ $item->type->localizedName() }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                    {{ $item->ranking_mode->localizedName() }}
+                    @if($item->isDayAward())
+                        {{ $item->races->first()?->title }}
+                    @else
+                        {{ $item->ranking_mode->localizedName() }}
+                    @endif
                     @if($item->ranking_mode === \App\Models\AwardRankingMode::BestN)
                         ({{ $item->best_n }})
                     @endif

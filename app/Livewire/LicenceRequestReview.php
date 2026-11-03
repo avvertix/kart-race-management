@@ -7,6 +7,7 @@ namespace App\Livewire;
 use App\Actions\LicenceRequests\EmitLicence;
 use App\Actions\LicenceRequests\FlagLicenceRequestSection;
 use App\Actions\LicenceRequests\ForwardLicenceRequest;
+use App\Actions\LicenceRequests\RecordLicenceRequestPaymentAtOffice;
 use App\Actions\LicenceRequests\RejectLicenceRequest;
 use App\Actions\LicenceRequests\RemoveLicenceRequestFlag;
 use App\Actions\LicenceRequests\RequestLicenceRequestChanges;
@@ -21,10 +22,12 @@ use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestDocument;
+use App\Models\PaymentChannelType;
 use App\Models\User;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -58,6 +61,11 @@ class LicenceRequestReview extends Component
     public string $amount = '';
 
     public string $rejectionReason = '';
+
+    /**
+     * The PaymentChannelType of a payment made at the organizer's office.
+     */
+    public string $officePaymentChannel = '';
 
     public string $number = '';
 
@@ -192,6 +200,25 @@ class LicenceRequestReview extends Component
         $this->authorize('review', $this->licenceRequest);
 
         $reviewPayment($this->licenceRequest, $this->user(), confirm: false);
+    }
+
+    /**
+     * Record a payment made by cash or credit card at the organizer's office.
+     */
+    public function recordOfficePayment(RecordLicenceRequestPaymentAtOffice $recordPayment): void
+    {
+        $this->authorize('review', $this->licenceRequest);
+
+        $this->validate(
+            ['officePaymentChannel' => ['required', Rule::in([PaymentChannelType::CASH->value, PaymentChannelType::CREDIT_CARD->value])]],
+            attributes: ['officePaymentChannel' => __('Paid by')],
+        );
+
+        $recordPayment($this->licenceRequest, $this->user(), PaymentChannelType::from((int) $this->officePaymentChannel));
+
+        $this->officePaymentChannel = '';
+
+        Flux::modal('office-payment')->close();
     }
 
     public function handToProvider(ForwardLicenceRequest $forward): void

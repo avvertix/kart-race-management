@@ -7,6 +7,7 @@ namespace App\Actions\LicenceRequests;
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Models\LicenceRequest;
+use App\Models\PaymentChannelType;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -34,6 +35,7 @@ class ReviewLicenceRequestPayment
             $locked->update($confirm
                 ? [
                     'payment_status' => LicenceRequestPaymentStatus::Paid,
+                    'payment_channel' => PaymentChannelType::BANK_TRANSFER,
                     'payment_confirmed_by' => $organizer->getKey(),
                     'paid_at' => now(),
                 ]

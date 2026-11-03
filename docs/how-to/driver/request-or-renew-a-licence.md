@@ -17,7 +17,7 @@ You can stop at any step: the request stays saved as a draft for as long as you 
 
 ## Paying
 
-The organizer sets the amount when your request is verified, since it depends on the licence. The request then shows the bank details: pay by bank transfer and upload the payment proof from the request. The organizer requests your licence from the provider only once the payment is confirmed.
+The organizer sets the amount when your request is verified, since it depends on the licence. The request then shows the bank details: pay by bank transfer and upload the payment proof from the request, or pay by cash or credit card at the organizer's office. The organizer requests your licence from the provider only once the payment is confirmed.
 
 If you bought a promotional package that includes the renewal, the request shows it is covered by your order and there is nothing to pay.
 

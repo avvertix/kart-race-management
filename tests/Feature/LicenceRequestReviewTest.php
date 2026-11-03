@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Actions\LicenceRequests\EmitLicence;
 use App\Actions\LicenceRequests\ForwardLicenceRequest;
+use App\Actions\LicenceRequests\RecordLicenceRequestPaymentAtOffice;
 use App\Actions\LicenceRequests\ResubmitLicenceRequest;
 use App\Actions\LicenceRequests\ReviewLicenceRequestDocument;
 use App\Actions\LicenceRequests\SetLicenceRequestAmount;
@@ -23,6 +24,7 @@ use App\Livewire\LicenceRequestReview;
 use App\Models\DriverLicence;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\PaymentChannelType;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Factories\LicenceFactory;
@@ -348,6 +350,56 @@ class LicenceRequestReviewTest extends TestCase
 
         $this->assertEquals(LicenceRequestPaymentStatus::Paid, $licenceRequest->payment_status);
         $this->assertEquals($organizer->getKey(), $licenceRequest->payment_confirmed_by);
+        $this->assertEquals(PaymentChannelType::BANK_TRANSFER, $licenceRequest->payment_channel);
+    }
+
+    public function test_the_organizer_records_a_payment_made_at_the_office(): void
+    {
+        $organizer = User::factory()->organizer()->create();
+        $licenceRequest = LicenceRequest::factory()->verified()->awaitingPayment(4500)->create();
+
+        $this->actingAs($licenceRequest->user)
+            ->get(route('licence-requests.show', $licenceRequest))
+            ->assertSee('You can also pay by cash or credit card at the organizer\'s office.');
+
+        $this->review($licenceRequest, $organizer)
+            ->assertSee('Paid at the office')
+            ->call('recordOfficePayment')
+            ->assertHasErrors('officePaymentChannel')
+            ->set('officePaymentChannel', (string) PaymentChannelType::BANK_TRANSFER->value)
+            ->call('recordOfficePayment')
+            ->assertHasErrors('officePaymentChannel')
+            ->set('officePaymentChannel', (string) PaymentChannelType::CREDIT_CARD->value)
+            ->call('recordOfficePayment')
+            ->assertHasNoErrors()
+            ->assertSee('Paid by credit card, '.$licenceRequest->amountLabel());
+
+        $licenceRequest->refresh();
+
+        $this->assertEquals(LicenceRequestPaymentStatus::Paid, $licenceRequest->payment_status);
+        $this->assertEquals(PaymentChannelType::CREDIT_CARD, $licenceRequest->payment_channel);
+        $this->assertEquals($organizer->getKey(), $licenceRequest->payment_confirmed_by);
+        $this->assertNotNull($licenceRequest->paid_at);
+
+        $this->actingAs($licenceRequest->user)
+            ->get(route('licence-requests.show', $licenceRequest))
+            ->assertSee('Paid at the organizer\'s office by credit card.');
+    }
+
+    public function test_office_payments_need_a_verified_request_without_a_proof_to_review(): void
+    {
+        $organizer = User::factory()->organizer()->create();
+        $recordPayment = app(RecordLicenceRequestPaymentAtOffice::class);
+
+        $submitted = LicenceRequest::factory()->submitted()->create();
+        $this->expectValidationError(fn () => $recordPayment($submitted, $organizer, PaymentChannelType::CASH));
+
+        $withProof = LicenceRequest::factory()->verified()->awaitingPayment()->create();
+        app(SubmitPaymentProof::class)($withProof, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
+        $this->expectValidationError(fn () => $recordPayment($withProof->fresh(), $organizer, PaymentChannelType::CASH));
+
+        $this->assertEquals(LicenceRequestPaymentStatus::PaymentSubmitted, $withProof->fresh()->payment_status);
+        $this->assertNull($withProof->fresh()->payment_channel);
     }
 
     public function test_emitting_and_handing_to_the_provider_need_a_settled_payment(): void

@@ -58,7 +58,7 @@ class FreeRaceNumbers extends Component
 
         if ($reservation) {
             $this->checkResult = 'taken';
-            $this->takenBy = $reservation->driver_name ?? __('Reserved');
+            $this->takenBy = $reservation->driver ?: __('Reserved');
             $this->takenByType = 'reservation';
 
             return;

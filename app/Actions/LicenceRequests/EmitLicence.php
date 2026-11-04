@@ -6,6 +6,7 @@ namespace App\Actions\LicenceRequests;
 
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceSource;
+use App\Models\BibReservation;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
@@ -26,7 +27,7 @@ class EmitLicence
     /**
      * Create the Licence the provider emitted for a verified request, paid or covered by a package, with its temporary licence
      * PDF. The Licence takes the request's holder, Licence Type and competitor licence, and is managed by the requester.
-     * The Enrollments waiting for the request move to the new Licence.
+     * The Enrollments waiting for the request move to the new Licence, and their race numbers are bound to it.
      *
      * @throws ValidationException when the request is not verified or paid, the input is not valid or the number is already registered
      */
@@ -89,13 +90,26 @@ class EmitLicence
                     'licence_id' => $licence->getKey(),
                 ]);
 
-                Enrollment::query()
+                $waiting = Enrollment::query()
                     ->where('licence_request_id', $locked->getKey())
                     ->active()
-                    ->update([
+                    ->pluck('id');
+
+                Enrollment::query()->whereKey($waiting)->update([
+                    'licence_id' => $licence->getKey(),
+                    'licence_request_id' => null,
+                ]);
+
+                BibReservation::query()
+                    ->whereIn('enrollment_id', $waiting)
+                    ->notReleased()
+                    ->get()
+                    ->each(fn (BibReservation $reservation) => $reservation->update([
                         'licence_id' => $licence->getKey(),
-                        'licence_request_id' => null,
-                    ]);
+                        'driver_licence' => $licence->number,
+                        'driver_licence_hash' => $licence->number_hash,
+                        'licence_type' => $licence->race_licence_category,
+                    ]));
 
                 return $licence;
             });

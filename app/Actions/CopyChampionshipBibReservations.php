@@ -6,7 +6,9 @@ namespace App\Actions;
 
 use App\Models\BibReservation;
 use App\Models\Championship;
+use App\Models\DriverLicence;
 use App\Models\Participant;
+use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 
@@ -19,22 +21,23 @@ class CopyChampionshipBibReservations
     /**
      * Copy race number reservations from a source championship to a target championship.
      *
-     * Reservations can be taken from the source championship reservations (expired ones excluded)
+     * Reservations can be taken from the source championship reservations (expired and released ones excluded)
      * or from its registered participants, one for each unique driver licence and bib pair.
      * Entries with a bib outside BibReservation::MIN_BIB and BibReservation::MAX_BIB, or conflicting with reservations or
      * participants already in the target championship (same bib, driver or licence), are skipped.
      *
      * @param  string  $from  Either FROM_RESERVATIONS or FROM_PARTICIPANTS
      * @param  CarbonInterface|null  $expiresAt  Expiration applied to all copied reservations, null for end of championship
+     * @param  User|null  $createdBy  The user copying the reservations
      * @return array{copied: Collection<int, BibReservation>, skipped: Collection<int, int>} The created reservations and the sorted, unique bibs that were skipped
      */
-    public function __invoke(Championship $sourceChampionship, Championship $targetChampionship, string $from, ?CarbonInterface $expiresAt = null): array
+    public function __invoke(Championship $sourceChampionship, Championship $targetChampionship, string $from, ?CarbonInterface $expiresAt = null, ?User $createdBy = null): array
     {
         $candidates = $from === self::FROM_PARTICIPANTS
             ? $this->candidatesFromParticipants($sourceChampionship)
             : $this->candidatesFromReservations($sourceChampionship);
 
-        $targetReservations = $targetChampionship->reservations()->get(['bib', 'driver', 'driver_licence_hash']);
+        $targetReservations = $targetChampionship->reservations()->notReleased()->get(['bib', 'driver', 'driver_licence_hash']);
 
         $usedBibs = $targetReservations->pluck('bib')->map(fn ($bib) => (int) $bib);
         $usedDrivers = $targetReservations->pluck('driver')->map(fn ($driver) => mb_strtolower($driver));
@@ -78,6 +81,7 @@ class CopyChampionshipBibReservations
             $toCreate->push([
                 ...$candidate,
                 'reservation_expires_at' => $expiresAt,
+                'created_by_user_id' => $createdBy?->getKey(),
             ]);
         }
 
@@ -90,12 +94,13 @@ class CopyChampionshipBibReservations
     }
 
     /**
-     * @return Collection<int, array{bib: int, driver: string, driver_licence: ?string, driver_licence_hash: ?string, contact_email: ?string, licence_type: mixed}>
+     * @return Collection<int, array{bib: int, driver: string, driver_licence: ?string, driver_licence_hash: ?string, contact_email: ?string, licence_type: ?DriverLicence}>
      */
     protected function candidatesFromReservations(Championship $championship): Collection
     {
         return $championship->reservations()
             ->notExpired()
+            ->notReleased()
             ->orderBy('bib')
             ->get()
             ->map(fn (BibReservation $reservation) => [

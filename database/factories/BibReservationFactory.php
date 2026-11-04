@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\BibReservationStatus;
 use App\Models\Championship;
 use App\Models\DriverLicence;
 use Carbon\CarbonInterface;
@@ -41,6 +42,25 @@ class BibReservationFactory extends Factory
                 'licence_type' => DriverLicence::LOCAL_NATIONAL,
             ];
         });
+    }
+
+    /**
+     * A reservation picked by a driver and waiting for the organizer.
+     */
+    public function pending(): static
+    {
+        return $this->state(['status' => BibReservationStatus::Pending]);
+    }
+
+    /**
+     * A reservation the organizer released.
+     */
+    public function released(): static
+    {
+        return $this->state([
+            'status' => BibReservationStatus::Released,
+            'released_at' => now(),
+        ]);
     }
 
     public function expired(?CarbonInterface $expirationTime = null): Factory

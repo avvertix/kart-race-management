@@ -1455,5 +1455,10 @@
     "Platform default (:provider)": "Predefinito della piattaforma (:provider)",
     "As for championships created before the provider could be chosen.": "Come per i campionati creati prima che si potesse scegliere l'ente.",
     "Who issues the licences. It sets the wording of the registration form and which exports are offered.": "Chi rilascia le licenze. Determina i testi del modulo di iscrizione e quali esportazioni sono disponibili.",
-    ":championship enrollment settings updated.": "Impostazioni di iscrizione di :championship aggiornate."
+    ":championship enrollment settings updated.": "Impostazioni di iscrizione di :championship aggiornate.",
+    "Reservation for :bib confirmed.": "Prenotazione del numero :bib confermata.",
+    "Reservation for :bib released.": "Prenotazione del numero :bib liberata. Il numero è di nuovo disponibile.",
+    "Confirm reservation": "Conferma la prenotazione",
+    "Release the number": "Libera il numero",
+    "Contact email": "Email di contatto"
 }

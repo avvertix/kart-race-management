@@ -191,7 +191,7 @@ class Participant extends Model implements HasLocalePreference
 
     public function reservations()
     {
-        return $this->hasMany(BibReservation::class, 'bib', 'bib');
+        return $this->hasMany(BibReservation::class, 'bib', 'bib')->notReleased();
     }
 
     /**

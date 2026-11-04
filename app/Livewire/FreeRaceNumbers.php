@@ -53,6 +53,7 @@ class FreeRaceNumbers extends Component
         $reservation = BibReservation::where('championship_id', $this->championship->getKey())
             ->where('bib', $bib)
             ->notExpired()
+            ->notReleased()
             ->first();
 
         if ($reservation) {

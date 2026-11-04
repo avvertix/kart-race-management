@@ -81,7 +81,9 @@ class BibReservationImportController extends Controller
             ]);
         }
 
-        $toCreate = collect($validator->validated()['reservations'])->map(function ($d) {
+        $createdBy = $request->user()->getKey();
+
+        $toCreate = collect($validator->validated()['reservations'])->map(function ($d) use ($createdBy) {
             return [
                 'bib' => (int) $d['bib'],
                 'driver' => $d['driver'],
@@ -91,6 +93,7 @@ class BibReservationImportController extends Controller
                 'reservation_expires_at' => ! empty($d['reservation_expiration_date'])
                     ? Date::parse($d['reservation_expiration_date'])->endOfDay()
                     : null,
+                'created_by_user_id' => $createdBy,
             ];
         });
 
@@ -101,6 +104,7 @@ class BibReservationImportController extends Controller
         $licenceHashes = $toCreate->pluck('driver_licence_hash');
 
         $existingBibsInReservations = $championship->reservations()
+            ->notReleased()
             ->whereIn('bib', $bibs->toArray())
             ->pluck('bib');
 
@@ -110,6 +114,7 @@ class BibReservationImportController extends Controller
             ->pluck('bib');
 
         $existingDrivers = $championship->reservations()
+            ->notReleased()
             ->whereIn('driver', $drivers->toArray())
             ->pluck('driver');
 

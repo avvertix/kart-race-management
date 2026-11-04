@@ -149,6 +149,16 @@ class Championship extends Model
     }
 
     /**
+     * The promo codes issued for the championship.
+     *
+     * @return HasMany<PromoCode, $this>
+     */
+    public function promoCodes(): HasMany
+    {
+        return $this->hasMany(PromoCode::class);
+    }
+
+    /**
      * The Licences enrolled in the championship.
      *
      * @return HasMany<Enrollment, $this>

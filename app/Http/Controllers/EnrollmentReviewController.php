@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Enrollments\ConfirmEnrollment;
+use App\Actions\Enrollments\FindPreviousNumbers;
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\RejectEnrollment;
 use App\Actions\Enrollments\WithdrawEnrollment;
+use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
+use App\Support\RaceNumberAvailability;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -20,9 +23,9 @@ use Illuminate\View\View;
 class EnrollmentReviewController extends Controller
 {
     /**
-     * The Enrollment with what is still missing before it can be confirmed.
+     * The Enrollment with what is still missing before it can be confirmed, and the numbers its driver used before.
      */
-    public function show(Enrollment $enrollment): View
+    public function show(Enrollment $enrollment, FindPreviousNumbers $findPreviousNumbers): View
     {
         $this->authorize('review', Enrollment::class);
 
@@ -31,6 +34,9 @@ class EnrollmentReviewController extends Controller
         return view('enrollment.show', [
             'enrollment' => $enrollment,
             'missing' => $enrollment->missingForConfirmation(),
+            'previousNumbers' => $findPreviousNumbers($enrollment),
+            'availability' => RaceNumberAvailability::in($enrollment->championship, array_filter([$enrollment->licence?->number_hash]), $enrollment),
+            'canPickNumber' => $enrollment->status === EnrollmentStatus::Submitted && $enrollment->championship->enrollment->grants_bib_reservation,
         ]);
     }
 

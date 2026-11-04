@@ -7,13 +7,13 @@ namespace Tests\Feature\Livewire;
 use App\Livewire\LinkedDrivers;
 use App\Models\Participant;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class LinkPastRacesTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_component_renders(): void
     {

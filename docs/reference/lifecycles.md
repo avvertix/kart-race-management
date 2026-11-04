@@ -35,13 +35,12 @@ A Licence Request is a renewal and is paid on its own, not through an Order:
 
 | Status | Meaning | Next |
 |---|---|---|
-| Draft | Being filled in | Submitted |
-| Submitted | Waiting for the organizer. When it names an open Licence Request instead of a Licence, it also waits for the licence | Confirmed, Rejected, Withdrawn |
+| Submitted | Created when the driver submits the form. Waiting for the organizer. When it names an open Licence Request instead of a Licence, it also waits for the licence | Confirmed, Rejected, Withdrawn |
 | Confirmed | Accepted by the organizer. Confirms the race number reservation | Withdrawn |
 | Rejected | Not accepted | — |
 | Withdrawn | Cancelled by the driver while submitted, or by the organizer at any time | — |
 
-The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Enrollment moves to the new Licence; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
+The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Licence, or a Licence Request, has at most one submitted or confirmed Enrollment per championship. Underage is judged on the championship start date. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Enrollment moves to the new Licence; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
 
 ## BIB Reservation
 

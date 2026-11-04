@@ -6,11 +6,14 @@ namespace App\Models;
 
 use App\Data\BonusSettingsData;
 use App\Data\EnrollmentSettingsData;
+use App\Data\HolderData;
 use App\Data\LicenceSettingsData;
 use App\Data\PaymentSettingsData;
 use App\Data\RegistrationSettingsData;
 use App\Data\WildcardSettingsData;
 use App\Enums\LicenceProvider;
+use App\Enums\ProductKind;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property LicenceSettingsData $licences
  * @property EnrollmentSettingsData $enrollment
+ * @property CarbonImmutable $start_at
+ * @property ?CarbonImmutable $end_at
  */
 class Championship extends Model
 {
@@ -106,6 +111,49 @@ class Championship extends Model
     public function awards(): HasMany
     {
         return $this->hasMany(ChampionshipAward::class);
+    }
+
+    /**
+     * The Product paying for the enrollment, null when enrollment is free or the Product is no longer an enrollment of
+     * the championship.
+     */
+    public function enrollmentProduct(): ?Product
+    {
+        if ($this->enrollment->isFree()) {
+            return null;
+        }
+
+        return Product::query()
+            ->where('kind', ProductKind::Enrollment->value)
+            ->where('championship_id', $this->getKey())
+            ->find($this->enrollment->product_id);
+    }
+
+    /**
+     * Whether the holder is underage when the championship starts.
+     */
+    public function isUnderageAtStart(HolderData $holder): bool
+    {
+        return CarbonImmutable::parse($holder->birth_date)->diffInYears($this->start_at) < LicenceRequest::ADULT_AGE;
+    }
+
+    /**
+     * Whether enrolling the holder needs a Competitor Licence: underage when the championship starts, and the
+     * championship asks for it.
+     */
+    public function requiresCompetitorFor(HolderData $holder): bool
+    {
+        return $this->enrollment->requires_competitor_when_underage && $this->isUnderageAtStart($holder);
+    }
+
+    /**
+     * The Licences enrolled in the championship.
+     *
+     * @return HasMany<Enrollment, $this>
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
     }
 
     /**

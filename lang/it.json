@@ -1553,5 +1553,15 @@
     "No competitor licence": "Nessuna licenza concorrente",
     "No mechanic licence": "Nessuna licenza meccanico",
     "Fill in the form": "Compila il modulo",
-    "As in the previous registration": "Come nell'iscrizione precedente"
+    "As in the previous registration": "Come nell'iscrizione precedente",
+    "Disable bonuses before enabling promo codes and packages.": "Disattiva i bonus prima di attivare codici promozionali e pacchetti.",
+    ":championship discounts updated.": "Sconti di :championship aggiornati.",
+    "Disable promo codes and packages before enabling bonuses.": "Disattiva codici promozionali e pacchetti prima di attivare i bonus.",
+    "Promo codes and packages": "Codici promozionali e pacchetti",
+    "Whether promo codes and packages reduce the race fee of this race.": "Se codici promozionali e pacchetti riducono la quota di iscrizione di questa gara.",
+    "Apply, as in the championship": "Si applicano, come nel campionato",
+    "Don't apply to this race": "Non si applicano a questa gara",
+    "Let promo codes and promotional packages reduce the race fees. A championship uses either these or bonuses: disable bonuses first. Each race can opt out.": "Permetti a codici promozionali e pacchetti promozionali di ridurre le quote di iscrizione. Un campionato usa questi oppure i bonus: disattiva prima i bonus. Ogni gara può escluderli.",
+    "Promo codes and packages reduce race fees": "Codici promozionali e pacchetti riducono le quote di iscrizione",
+    "Promo codes don't apply to this race.": "I codici promozionali non si applicano a questa gara."
 }

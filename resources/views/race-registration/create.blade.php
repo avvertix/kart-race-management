@@ -77,6 +77,12 @@
         <div class=" px-4 sm:px-6 lg:px-8">
 
         @include('race-registration.partials.participant-limit-banner')
+
+        @if ($race->championship->entitlements_enabled && ! $race->isEntitlementEnabled())
+            <div class="mb-3 p-2 bg-amber-50 border border-amber-400 text-amber-700">
+                {{ __('Promo codes don\'t apply to this race.') }}
+            </div>
+        @endif
         
         @if ($licencePickers)
             @include('race-registration.partials.licence-pickers')

@@ -14,6 +14,7 @@ A championship chooses Entitlements instead of Bonuses; each race can opt out.
 - `championships.entitlements_enabled` (or a field in a settings Data object), default off; enabling requires `bonus_enabled = false`.
 - `races.entitlements_enabled` nullable override, like `races.bonus_enabled`, with `Race::isEntitlementEnabled()`.
 - Organizer UI on championship and race settings. The race page tells drivers when promo codes don't apply.
+- A race can only opt out (`false`); null follows the championship. Enabling bonuses while Entitlements are on is refused too. Both UIs are in early access.
 
 ## Acceptance criteria
 

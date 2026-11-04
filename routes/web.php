@@ -78,6 +78,7 @@ use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBibSettingsController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
 use App\Http\Controllers\UpdateChampionshipEnrollmentSettingsController;
+use App\Http\Controllers\UpdateChampionshipEntitlementSettingsController;
 use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use App\Http\Controllers\UpdateChampionshipRegistrationFormController;
@@ -259,6 +260,7 @@ Route::middleware([
         Route::middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))->group(function () {
             Route::get('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'edit'])->name('championships.enrollment-settings.edit');
             Route::put('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'update'])->name('championships.enrollment-settings.update');
+            Route::put('championships/{championship}/entitlement-settings', UpdateChampionshipEntitlementSettingsController::class)->name('championships.entitlement-settings.update');
 
             Route::post('bib-reservations/{bib_reservation}/confirm', [BibReservationStatusController::class, 'confirm'])->name('bib-reservations.confirm');
             Route::post('bib-reservations/{bib_reservation}/release', [BibReservationStatusController::class, 'release'])->name('bib-reservations.release');

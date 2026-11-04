@@ -9,19 +9,24 @@ use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SubmitEnrollment
 {
-    public function __construct(private CreateEnrollment $createEnrollment) {}
+    public function __construct(
+        private CreateEnrollment $createEnrollment,
+        private PickRaceNumber $pickRaceNumber,
+    ) {}
 
     /**
      * The driver enrolls one of their Licences, or an open Licence Request, while enrollment is open. Places the Order
-     * for the enrollment Product when not free.
+     * for the enrollment Product when not free, and reserves the picked race number when the championship grants one,
+     * unless the Licence already holds a reservation in the championship: it keeps that number.
      *
-     * @param  array{licence?: ?string, licence_request?: ?string, competitor_licence?: ?string}  $input  ULIDs
+     * @param  array{licence?: ?string, licence_request?: ?string, competitor_licence?: ?string, bib?: mixed}  $input  ULIDs and the race number
      *
      * @throws ValidationException
      */
@@ -59,6 +64,22 @@ class SubmitEnrollment
             throw ValidationException::withMessages(['competitor_licence' => __('The driver is underage: name the competitor.')]);
         }
 
-        return ($this->createEnrollment)($user, $championship, $licence, $licenceRequest, $competitorLicence, pays: true);
+        $createEnrollment = fn () => ($this->createEnrollment)($user, $championship, $licence, $licenceRequest, $competitorLicence, pays: true);
+
+        if (! $championship->enrollment->grants_bib_reservation
+            || blank($input['bib'] ?? null)
+            || PickRaceNumber::reservationHeldBy($championship, $licence) !== null) {
+            return $createEnrollment();
+        }
+
+        $bib = $this->pickRaceNumber->validated($input['bib']);
+
+        return $this->pickRaceNumber->whileHolding($bib, fn () => DB::transaction(function () use ($createEnrollment, $bib, $user) {
+            $enrollment = $createEnrollment();
+
+            $this->pickRaceNumber->assign($enrollment, $bib, $user);
+
+            return $enrollment;
+        }));
     }
 }

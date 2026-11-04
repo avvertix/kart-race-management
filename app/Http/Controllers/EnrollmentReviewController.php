@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Enrollments\ConfirmEnrollment;
+use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\RejectEnrollment;
 use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Models\Enrollment;
@@ -50,6 +51,19 @@ class EnrollmentReviewController extends Controller
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Licence verified.'));
+    }
+
+    /**
+     * Pick or change the race number for the driver, while the Enrollment is submitted, see PickRaceNumber.
+     */
+    public function raceNumber(Request $request, Enrollment $enrollment, PickRaceNumber $pickRaceNumber): RedirectResponse
+    {
+        $this->authorize('review', Enrollment::class);
+
+        $reservation = $pickRaceNumber($enrollment, $request->input('bib'), $request->user());
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', __('Race number :bib picked for the enrollment.', ['bib' => $reservation->bib]));
     }
 
     /**

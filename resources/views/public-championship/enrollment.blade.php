@@ -57,6 +57,9 @@
                                                 @endif
                                                 &middot; {{ $item->status->label() }}
                                             </p>
+                                            @foreach ($item->reservations->filter(fn ($reservation) => $reservation->status->holdsTheNumber()) as $reservation)
+                                                <p class="text-sm text-zinc-600">{{ __('Race number') }} <span class="font-mono">{{ $reservation->bib }}</span> &middot; {{ $reservation->status->label() }}</p>
+                                            @endforeach
                                             @if ($item->rejection_reason)
                                                 <p class="text-sm text-zinc-600">{{ $item->rejection_reason }}</p>
                                             @endif
@@ -65,6 +68,9 @@
                                             @if ($item->order && $item->status->isActive())
                                                 <a href="{{ route('my-orders.show', $item->order) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Payment') }}: {{ $item->order->status->label() }}</a>
                                             @endif
+                                            @can('pickRaceNumber', $item)
+                                                <a href="{{ route('my-enrollments.race-number.edit', $item) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ $item->reservations->contains(fn ($reservation) => $reservation->status->holdsTheNumber()) ? __('Change race number') : __('Pick a race number') }}</a>
+                                            @endcan
                                             @can('withdraw', $item)
                                                 <form method="POST" action="{{ route('my-enrollments.withdraw', $item) }}">
                                                     @csrf
@@ -120,6 +126,10 @@
                                             <p class="mt-1 text-sm text-zinc-600">{{ __('Required for underage drivers.') }}</p>
                                         @endif
                                     </div>
+                                @endif
+
+                                @if ($settings->grants_bib_reservation)
+                                    <livewire:race-number-picker :championship="$championship" />
                                 @endif
 
                                 <x-button type="submit">{{ $settings->isFree() ? __('Submit enrollment') : __('Submit and pay') }}</x-button>

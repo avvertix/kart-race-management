@@ -12,6 +12,6 @@ Enrollment is optional: you can always register for single races. Depending on t
 ## After submitting
 
 - The organizer confirms enrollments in the order they arrive. Race numbers are first confirmed, first served.
-- Until confirmation you can change your race number pick or withdraw the enrollment. After it, ask the organizer.
+- Until confirmation you can change your race number pick or withdraw the enrollment, from your enrollment on the championship's enrollment page. After it, ask the organizer.
 - For a refund of a paid enrollment that is withdrawn or rejected, email the organizer.
 - Your category isn't fixed by the enrollment. You choose it at each race registration, and points don't transfer between categories.

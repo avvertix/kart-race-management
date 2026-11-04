@@ -269,6 +269,7 @@ Route::middleware([
             Route::post('enrollments/{enrollment}/confirm', [EnrollmentReviewController::class, 'confirm'])->name('enrollments.confirm');
             Route::post('enrollments/{enrollment}/reject', [EnrollmentReviewController::class, 'reject'])->name('enrollments.reject');
             Route::post('enrollments/{enrollment}/withdraw', [EnrollmentReviewController::class, 'withdraw'])->name('enrollments.withdraw');
+            Route::put('enrollments/{enrollment}/race-number', [EnrollmentReviewController::class, 'raceNumber'])->name('enrollments.race-number.update');
 
             Route::resource('products', ProductController::class)->except(['show', 'destroy']);
 
@@ -317,6 +318,10 @@ Route::middleware([
 
     Route::post('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'store'])->name('public.championships.enrollment.store');
     Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
+    Route::get('my-enrollments/{enrollment}/race-number', [MyEnrollmentController::class, 'editRaceNumber'])->name('my-enrollments.race-number.edit');
+    Route::put('my-enrollments/{enrollment}/race-number', [MyEnrollmentController::class, 'updateRaceNumber'])
+        ->middleware('throttle:30,1')
+        ->name('my-enrollments.race-number.update');
 
     Route::get('orders/{order}', [MyOrderController::class, 'show'])->name('my-orders.show');
 

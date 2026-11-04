@@ -11,11 +11,13 @@ During enrollment a driver picks a free Championship BIB, helped by the numbers 
 
 ## Scope
 
-- Livewire picker reusing `FreeRaceNumbers` and `GenerateRaceNumber`; fix the `driver_name` label bug there.
+- Livewire picker (`RaceNumberPicker`) using `GenerateRaceNumber` for the first free numbers; states shared with `PickRaceNumber` through `RaceNumberAvailability`. Fix the `driver_name` label bug in `FreeRaceNumbers`.
 - Hundreds overview (1–99, 100–199, …, 900–999) with free counts; zoom into a hundred; a text input to jump to a number.
 - States: free, reserved (pending or confirmed), already used (raced in this championship by another Driver). The public view shows states only; organizers also see holders.
 - "Numbers you used before": from Participants the User claimed or added (`claimed_by`, `added_by`), with number, championship and driver; pickable when free.
-- Shown in enrollment when `grants_bib_reservation` is on; creates or changes a `Pending` reservation for the Enrollment; confirmed with it; released on rejection or withdrawal.
+- Shown in enrollment when `grants_bib_reservation` is on; creates or changes a `Pending` reservation for the Enrollment; confirmed with it; released on rejection or withdrawal. The pick is optional at submit; the driver can pick or change it from their enrollment while submitted, the organizer from the enrollment review.
+- A licence that already holds a reservation in the championship (e.g. copied from last season) can't pick another number.
+- A number picked while waiting for a Licence Request is bound to the licence number when the Licence is emitted; until then race registration can't check it against the licence.
 
 ## Acceptance criteria
 

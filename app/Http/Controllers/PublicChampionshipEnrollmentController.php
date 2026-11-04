@@ -35,7 +35,7 @@ class PublicChampionshipEnrollmentController extends Controller
             'price' => $championship->enrollmentProduct()?->orderablePrice(),
             'myEnrollments' => $user === null ? collect() : $championship->enrollments()
                 ->where('user_id', $user->getKey())
-                ->with(['licence', 'licenceRequest', 'order'])
+                ->with(['licence', 'licenceRequest', 'order', 'reservations'])
                 ->latest()
                 ->get(),
             'licences' => $user === null ? collect() : Licence::query()->managedBy($user)->enrollableIn($championship)->orderBy('id')->get(),
@@ -60,6 +60,7 @@ class PublicChampionshipEnrollmentController extends Controller
             'licence' => $kind === 'licence' ? $ulid : null,
             'licence_request' => $kind === 'licence_request' ? $ulid : null,
             'competitor_licence' => $request->input('competitor_licence'),
+            'bib' => $request->input('bib'),
         ]);
 
         if ($enrollment->order !== null) {

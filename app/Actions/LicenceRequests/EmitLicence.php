@@ -6,6 +6,7 @@ namespace App\Actions\LicenceRequests;
 
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceSource;
+use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\User;
@@ -25,6 +26,7 @@ class EmitLicence
     /**
      * Create the Licence the provider emitted for a verified request, paid or covered by a package, with its temporary licence
      * PDF. The Licence takes the request's holder, Licence Type and competitor licence, and is managed by the requester.
+     * The Enrollments waiting for the request move to the new Licence.
      *
      * @throws ValidationException when the request is not verified or paid, the input is not valid or the number is already registered
      */
@@ -86,6 +88,14 @@ class EmitLicence
                     'emitted_at' => now(),
                     'licence_id' => $licence->getKey(),
                 ]);
+
+                Enrollment::query()
+                    ->where('licence_request_id', $locked->getKey())
+                    ->active()
+                    ->update([
+                        'licence_id' => $licence->getKey(),
+                        'licence_request_id' => null,
+                    ]);
 
                 return $licence;
             });

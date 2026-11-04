@@ -66,6 +66,13 @@ return [
         'rejected' => 'Rejected',
     ],
 
+    'enrollment_status' => [
+        'submitted' => 'Submitted',
+        'confirmed' => 'Confirmed',
+        'rejected' => 'Rejected',
+        'withdrawn' => 'Withdrawn',
+    ],
+
     'bib_reservation_status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',

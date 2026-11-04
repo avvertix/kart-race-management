@@ -54,6 +54,8 @@ class BibReservation extends Model
         'reservation_expires_at',
         'status',
         'created_by_user_id',
+        'enrollment_id',
+        'licence_id',
         'released_at',
     ];
 

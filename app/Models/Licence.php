@@ -84,6 +84,14 @@ class Licence extends Model
     }
 
     /**
+     * The Licence with the given ULID, null when none is given.
+     */
+    public static function findByUlid(?string $ulid): ?self
+    {
+        return $ulid === null ? null : self::query()->where('ulid', $ulid)->sole();
+    }
+
+    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array<int, string>
@@ -121,6 +129,25 @@ class Licence extends Model
         return $this->belongsTo(LicenceRequest::class);
     }
 
+    /**
+     * Whether the organizer can rely on the licence: emitted on the platform, or declared and verified.
+     */
+    public function isVerifiedOrEmitted(): bool
+    {
+        return $this->source === LicenceSource::Emitted || $this->isVerified();
+    }
+
+    /**
+     * The organizer verified the declared licence.
+     */
+    public function markVerifiedBy(User $organizer): void
+    {
+        $this->update([
+            'verified_at' => now(),
+            'verified_by' => $organizer->getKey(),
+        ]);
+    }
+
     public function isVerified(): bool
     {
         return $this->verified_at !== null;
@@ -154,6 +181,31 @@ class Licence extends Model
     public function scopeAwaitingVerification(Builder $query): void
     {
         $query->where('source', LicenceSource::Declared)->whereNull('verified_at');
+    }
+
+    /**
+     * Only the driver licences that can be enrolled in the championship: valid in its year and, when it names a
+     * provider, emitted by it.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeEnrollableIn(Builder $query, Championship $championship): void
+    {
+        $query->where('role', LicenceRole::Driver)
+            ->where('validity_year', $championship->start_at->year)
+            ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));
+    }
+
+    /**
+     * Only the licences that can name the Competitor in the championship: including a competitor licence, valid in its
+     * year.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeCompetitorIn(Builder $query, Championship $championship): void
+    {
+        $query->where('includes_competitor', true)
+            ->where('validity_year', $championship->start_at->year);
     }
 
     /**

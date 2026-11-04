@@ -945,23 +945,8 @@ parameters:
 			count: 1
 			path: app/Console/Commands/RecalculateParticipantWildcard.php
 
-		-
-			message: '#^Relation ''bonuses'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Console/Commands/RecalculateParticipantWildcard.php
 
-		-
-			message: '#^Relation ''championship'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Console/Commands/RecalculateParticipantWildcard.php
 
-		-
-			message: '#^Relation ''racingCategory'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Console/Commands/RecalculateParticipantWildcard.php
 
 		-
 			message: '#^Cannot call method setTimezone\(\) on string\.$#'
@@ -4438,23 +4423,8 @@ parameters:
 			count: 5
 			path: app/Livewire/WildcardSettings.php
 
-		-
-			message: '#^Cannot access property \$enabled on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/WildcardSettings.php
 
-		-
-			message: '#^Cannot access property \$requiredBonusAmount on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/WildcardSettings.php
 
-		-
-			message: '#^Cannot access property \$strategy on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/WildcardSettings.php
 
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
@@ -4468,11 +4438,6 @@ parameters:
 			count: 1
 			path: app/Livewire/WildcardSettings.php
 
-		-
-			message: '#^Method App\\Livewire\\WildcardSettings\:\:getStrategiesProperty\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/WildcardSettings.php
 
 		-
 			message: '#^Method App\\Livewire\\WildcardSettings\:\:render\(\) has no return type specified\.$#'
@@ -4498,11 +4463,6 @@ parameters:
 			count: 1
 			path: app/Livewire/WildcardSettings.php
 
-		-
-			message: '#^Using nullsafe property access "\?\-\>enabled" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Livewire/WildcardSettings.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>requiredBonusAmount" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'

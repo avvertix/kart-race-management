@@ -60,9 +60,39 @@
                     <span class="block text-zinc-500">{{ __('Race number') }}</span>
                     @foreach ($enrollment->reservations as $reservation)
                         <span class="font-mono">{{ $reservation->bib }}</span> &middot; {{ $reservation->status->label() }}
+                        @can('confirm', $reservation)
+                            <form method="POST" action="{{ route('bib-reservations.confirm', $reservation) }}" class="inline">
+                                @csrf
+                                <input type="hidden" name="return" value="enrollment">
+                                <button type="submit" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Confirm number :bib', ['bib' => $reservation->bib]) }}</button>
+                            </form>
+                        @endcan
                     @endforeach
                 </p>
             @endif
+            <div>
+                <span class="block text-zinc-500">{{ __('Previous numbers') }}</span>
+                @forelse ($previousNumbers as $item)
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-100 py-2 first:border-t-0">
+                        <p class="text-sm">
+                            <span class="font-mono font-semibold">{{ $item['bib'] }}</span>
+                            &middot; {{ $item['championship'] }}
+                            &middot; {{ trans_choice(':count race|:count races', $item['races'], ['count' => $item['races']]) }}
+                            <span class="block text-zinc-600">{{ $item['driver'] }} &middot; {{ collect($item['matches'])->map->label()->join(', ') }}</span>
+                        </p>
+                        @if ($canPickNumber && $availability->isFree($item['bib']))
+                            <form method="POST" action="{{ route('enrollments.race-number.update', $enrollment) }}">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="bib" value="{{ $item['bib'] }}">
+                                <x-secondary-button type="submit">{{ __('Use number :bib', ['bib' => $item['bib']]) }}</x-secondary-button>
+                            </form>
+                        @endif
+                    </div>
+                @empty
+                    <p class="text-sm text-zinc-600">{{ __('No numbers found in past championships.') }}</p>
+                @endforelse
+            </div>
             <p>
                 <span class="block text-zinc-500">{{ __('Submitted by') }}</span>
                 {{ $enrollment->user->name }} &middot; <x-time :value="$enrollment->created_at" />

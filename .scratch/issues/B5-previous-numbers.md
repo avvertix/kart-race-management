@@ -12,7 +12,8 @@ Organizers keep returning drivers on their number with little work.
 ## Scope
 
 - "Previous numbers" panel on each Enrollment: Participants in past championships matched by licence number hash, by driver name and birth date, or by the claiming/adding User; shows number, championship, race count. Actions: confirm the pending number, or change it to one found (if free).
-- ACI-only "Copy reservations from championship X": extend the existing `CopyChampionshipBibReservations` to create confirmed reservations by licence hash, only for 1–999. A Licence that later enrolls with the same number hash sees "Number N is reserved for you" in the picker.
+- ACI-only "Copy reservations from championship X": the existing `CopyChampionshipBibReservations` already creates confirmed reservations (B2 default) by licence hash, only for 1–999, skipping and reporting conflicts. A Licence that later enrolls with the same number hash sees "Number N is reserved for <driver>" in the picker, and keeps it (B4).
+- Confirming the pending number from the enrollment returns to the enrollment; "Use number N" reuses the organizer pick of B4.
 - Hidden for ASI championships.
 
 ## Acceptance criteria

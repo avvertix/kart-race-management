@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\GenerateRaceNumber;
 use App\Models\BibReservation;
 use App\Models\Championship;
@@ -15,6 +16,7 @@ use App\Support\RaceNumberAvailability;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -127,8 +129,18 @@ class RaceNumberPicker extends Component
             'numbers' => range($from, $to),
             'suggestions' => collect($generateRaceNumber($this->championship, 6))->filter(fn (int $bib) => $availability->isFree($bib))->values(),
             'previousNumbers' => $previousNumbers,
+            'heldNumbers' => $this->heldNumbers(),
             'championshipTitles' => Championship::query()->whereKey($previousNumbers->pluck('championship_id'))->pluck('title', 'id'),
         ]);
+    }
+
+    /**
+     * The Enrollment changing its pick, loaded once per request.
+     */
+    #[Computed]
+    public function enrollment(): ?Enrollment
+    {
+        return $this->enrollmentId === null ? null : Enrollment::query()->with('licence')->find($this->enrollmentId);
     }
 
     private function availability(): RaceNumberAvailability
@@ -136,7 +148,7 @@ class RaceNumberPicker extends Component
         return RaceNumberAvailability::in(
             $this->championship,
             $this->ownLicenceHashes(),
-            $this->enrollmentId === null ? null : Enrollment::query()->find($this->enrollmentId),
+            $this->enrollment(),
         );
     }
 
@@ -149,7 +161,7 @@ class RaceNumberPicker extends Component
     private function ownLicenceHashes(): array
     {
         if ($this->enrollmentId !== null) {
-            return array_filter([Enrollment::query()->find($this->enrollmentId)?->licence?->number_hash]);
+            return array_filter([$this->enrollment()?->licence?->number_hash]);
         }
 
         $user = auth()->user();
@@ -159,6 +171,33 @@ class RaceNumberPicker extends Component
         }
 
         return Licence::query()->managedBy($user)->pluck('number_hash')->all();
+    }
+
+    /**
+     * The numbers already reserved for the licences in play, e.g. copied from last season: the Enrollment's Licence when
+     * changing a pick, otherwise the driver licences the User manages that can enroll.
+     *
+     * @return Collection<int, string>
+     */
+    private function heldNumbers(): Collection
+    {
+        $enrollment = $this->enrollment();
+        $user = auth()->user();
+
+        $licences = match (true) {
+            $enrollment !== null => collect([$enrollment->licence])->filter(),
+            $user instanceof User && ! $this->showHolders => Licence::query()->managedBy($user)->enrollableIn($this->championship)->get(),
+            default => collect(),
+        };
+
+        return $licences
+            ->map(fn (Licence $licence) => [
+                'licence' => $licence,
+                'reservation' => PickRaceNumber::reservationHeldBy($this->championship, $licence, $enrollment),
+            ])
+            ->filter(fn (array $held) => $held['reservation'] !== null)
+            ->map(fn (array $held) => (string) __('Number :bib is reserved for :driver.', ['bib' => $held['reservation']->bib, 'driver' => $held['licence']->holder->fullName()]))
+            ->values();
     }
 
     /**

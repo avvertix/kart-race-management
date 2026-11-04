@@ -47,6 +47,16 @@ class EnrollmentPolicy
     }
 
     /**
+     * Determine whether the user can pick or change the race number as the driver: their own enrollment, while
+     * submitted, when the championship reserves a number with enrollment.
+     */
+    public function pickRaceNumber(User $user, Enrollment $enrollment): bool
+    {
+        return $this->withdraw($user, $enrollment)
+            && $enrollment->championship->enrollment->grants_bib_reservation;
+    }
+
+    /**
      * Determine whether the user can withdraw the enrollment as its driver: only their own, while submitted.
      */
     public function withdraw(User $user, Enrollment $enrollment): bool

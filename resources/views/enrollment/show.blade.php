@@ -100,6 +100,15 @@
                     @endif
                 </div>
 
+                @if ($championship->enrollment->grants_bib_reservation)
+                    <form method="POST" action="{{ route('enrollments.race-number.update', $enrollment) }}" class="space-y-3 rounded-md border border-zinc-200 bg-white p-4">
+                        @csrf
+                        @method('PUT')
+                        <livewire:race-number-picker :championship="$championship" :enrollment="$enrollment" :show-holders="true" />
+                        <x-secondary-button type="submit">{{ __('Save race number') }}</x-secondary-button>
+                    </form>
+                @endif
+
                 <form method="POST" action="{{ route('enrollments.reject', $enrollment) }}" class="space-y-2">
                     @csrf
                     <x-label for="reason" value="{{ __('Rejection reason') }}" />

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Data\LicenceSettingsData;
+use App\Enums\LicenceProvider;
 use App\Models\Championship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
 class ChampionshipController extends Controller
@@ -58,17 +61,21 @@ class ChampionshipController extends Controller
             'end' => 'nullable|date|after:start',
             'title' => 'nullable|string|max:250|unique:'.Championship::class.',title',
             'description' => 'nullable|string|max:1000',
+            'licence_provider' => ['nullable', 'string', new Enum(LicenceProvider::class)],
         ]);
 
         $start_date = Carbon::parse($validated['start']);
         $end_date = $validated['end'] ? Carbon::parse($validated['end']) : null;
 
-        $championship = Championship::create([
+        $championship = new Championship([
             'title' => $validated['title'] ?? __(':year Championship', ['year' => $start_date->year]),
             'description' => $validated['description'],
             'start_at' => $start_date,
             'end_at' => $end_date,
         ]);
+
+        $championship->licences = new LicenceSettingsData(provider: $request->enum('licence_provider', LicenceProvider::class));
+        $championship->save();
 
         return to_route('championships.index')
             ->with('flash.banner', __(':championship created.', [

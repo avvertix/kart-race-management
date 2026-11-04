@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Data\BonusSettingsData;
+use App\Data\EnrollmentSettingsData;
 use App\Data\LicenceSettingsData;
 use App\Data\PaymentSettingsData;
 use App\Data\RegistrationSettingsData;
 use App\Data\WildcardSettingsData;
+use App\Enums\LicenceProvider;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property LicenceSettingsData $licences
+ * @property EnrollmentSettingsData $enrollment
+ */
 class Championship extends Model
 {
     use HasFactory;
@@ -126,6 +132,24 @@ class Championship extends Model
         return $this->hasMany(ChampionshipPenalty::class)->orderBy('title');
     }
 
+    /**
+     * The name of who issues the licences, as shown in licence descriptions and the race rules: the championship's
+     * Licence Provider, or the platform-wide provider when none is chosen.
+     */
+    public function licenceProviderName(): string
+    {
+        return $this->licences->provider?->label() ?? config('races.licence.provider');
+    }
+
+    /**
+     * Whether the ACI promotion export applies: to ACI championships, and to those without a provider, as before
+     * providers could be chosen.
+     */
+    public function offersAciExport(): bool
+    {
+        return in_array($this->licences->provider, [null, LicenceProvider::Aci], true);
+    }
+
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
@@ -146,6 +170,7 @@ class Championship extends Model
             'payment' => PaymentSettingsData::class.':default',
             'bonuses' => BonusSettingsData::class.':default',
             'licences' => LicenceSettingsData::class.':default',
+            'enrollment' => EnrollmentSettingsData::class.':default',
             'registration_form' => RegistrationForm::class,
             'bonus_enabled' => 'boolean',
             'registration_settings' => RegistrationSettingsData::class.':default',

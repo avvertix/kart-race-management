@@ -39,8 +39,8 @@ use App\Http\Controllers\MyLicenceController;
 use App\Http\Controllers\MyOrderController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrbitsBackupController;
-use App\Http\Controllers\ParticipantFederationAuthorizationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ParticipantFederationAuthorizationController;
 use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
 use App\Http\Controllers\ParticipantTiresController;
@@ -52,6 +52,7 @@ use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PublicChampionshipAwardController;
+use App\Http\Controllers\PublicChampionshipEnrollmentController;
 use App\Http\Controllers\PublicProductController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceCombinedResultController;
@@ -71,6 +72,7 @@ use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBibSettingsController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
+use App\Http\Controllers\UpdateChampionshipEnrollmentSettingsController;
 use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use App\Http\Controllers\UpdateChampionshipRegistrationFormController;
@@ -249,6 +251,9 @@ Route::middleware([
         Route::resource('users', UserController::class)->except(['show']);
 
         Route::middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))->group(function () {
+            Route::get('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'edit'])->name('championships.enrollment-settings.edit');
+            Route::put('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'update'])->name('championships.enrollment-settings.update');
+
             Route::resource('products', ProductController::class)->except(['show', 'destroy']);
 
             Route::resource('licences', LicenceController::class)->only(['index', 'show']);
@@ -266,6 +271,10 @@ Route::middleware([
     });
 
 // Products, open to everyone, and the licences and orders of the signed-in user, while in early access (see App\Features\LicencesAndProducts)
+
+Route::get('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'show'])
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
+    ->name('public.championships.enrollment');
 
 Route::get('products', [PublicProductController::class, 'index'])
     ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))

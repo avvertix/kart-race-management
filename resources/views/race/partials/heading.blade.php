@@ -47,7 +47,7 @@
                                     <flux:menu.separator />
                                 @endcan
 
-                                @if ($race->isNationalOrInternational())
+                                @if ($race->isNationalOrInternational() && $race->championship->offersAciExport())
                                     <x-menu-item :href="route('races.export.aci', $race)" :description="__('Export confirmed participants as requested by ACI Karting')">
                                         <x-slot:icon><x-ri-table-2 /></x-slot:icon>
                                         {{ __('Export for ACI Italian Cup') }}

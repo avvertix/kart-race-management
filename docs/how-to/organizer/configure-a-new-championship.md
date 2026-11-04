@@ -10,10 +10,10 @@ Use this guide when creating a championship that uses enrollment, a specific lic
 ## Steps
 
 1. **Create the championship** with its title and dates.
-2. **Choose the licence provider** (ACI or ASI) and, if needed, restrict the accepted driver and competitor licences.
+2. **Choose the licence provider** (ACI or ASI) when creating it, or later from **Accepted licences**, and, if needed, restrict the accepted driver and competitor licences. Without a choice the championship uses the platform-wide provider, as before.
 3. **Choose the registration form.** Use *complete* for kart, which asks for vehicle and mechanic. Use *standard* or *minimal* for moto.
-4. **Set up enrollment**, if drivers should enroll:
-   - turn enrollment on and set when it opens and closes;
+4. **Set up enrollment** from **Enrollment** on the championship page, if drivers should enroll:
+   - turn enrollment on and set when it opens and closes, in the races' timezone;
    - pick the enrollment Product, or leave it empty for free enrollment;
    - turn on *grants race number reservation* if enrolled drivers pick their number;
    - keep *competitor required when underage* on unless the rules say otherwise.
@@ -25,7 +25,7 @@ Use this guide when creating a championship that uses enrollment, a specific lic
 
 ## Check
 
-- Open the public championship page. It shows enrollment as open in the configured period.
+- Open the public championship page, linked from the enrollment settings. It shows enrollment as open in the configured period, and the price. While in early access, only users with early access can open it.
 - Start an enrollment with a test account and check that the race number picker appears, if you turned it on.
 
 See [Championship settings](../../reference/championship-settings.md) for every setting and its default.

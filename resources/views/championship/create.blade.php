@@ -18,6 +18,14 @@
 
             @include('championship.partials.form')
 
+            @feature(\App\Features\LicencesAndProducts::class)
+                <div class="mt-4">
+                    <p class="block font-medium text-sm text-zinc-700">{{ __('Licence provider') }}</p>
+                    <p class="mb-2 text-sm text-zinc-500">{{ __('Who issues the licences. It sets the wording of the registration form and which exports are offered.') }}</p>
+                    @include('championship.partials.licence-provider', ['championship' => null])
+                </div>
+            @endfeature
+
             <div class="flex items-center justify-end mt-4">
                 <x-button class="ml-4">
                     {{ __('Create') }}

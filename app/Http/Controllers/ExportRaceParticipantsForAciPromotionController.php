@@ -23,6 +23,8 @@ class ExportRaceParticipantsForAciPromotionController extends Controller
         $this->authorize('view', $race);
         $this->authorize('create', Transponder::class);
 
+        abort_unless($race->championship()->sole()->offersAciExport(), 404);
+
         $filename = Str::slug('ACI-'.$race->title.'-'.$race->event_start_at->toDateString());
 
         return Excel::download(new AciParticipantPromotionExport($race), "{$filename}.xlsx");

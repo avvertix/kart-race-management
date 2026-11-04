@@ -23,6 +23,11 @@
             <x-button-link href="{{ route('championships.licence-settings.edit', $championship) }}">
                 {{ __('Accepted licences') }}
             </x-button-link>
+            @feature(\App\Features\LicencesAndProducts::class)
+                <x-button-link href="{{ route('championships.enrollment-settings.edit', $championship) }}">
+                    {{ __('Enrollment') }}
+                </x-button-link>
+            @endfeature
             <x-button-link href="{{ route('championships.edit', $championship) }}">
                 {{ __('Edit championship') }}
             </x-button-link>

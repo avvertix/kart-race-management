@@ -1546,5 +1546,12 @@
     ":count race|:count races": ":count gara|:count gare",
     ":changed of :total participants changed wildcard status.": ":changed partecipanti su :total hanno cambiato stato wildcard.",
     "Evaluate again who races as a wildcard, also when the race has results.": "Valuta di nuovo chi corre come wildcard, anche se la gara ha già i risultati.",
-    "Recalculate wildcards": "Ricalcola wildcard"
+    "Recalculate wildcards": "Ricalcola wildcard",
+    "Fill in from your licences": "Compila con le tue licenze",
+    "Pick the licences valid for :year: the form is filled in with their details, which you can still change.": "Scegli le licenze valide per il :year: il modulo viene compilato con i loro dati, che puoi ancora modificare.",
+    "Someone else (fill in the form)": "Un altro pilota (compila il modulo)",
+    "No competitor licence": "Nessuna licenza concorrente",
+    "No mechanic licence": "Nessuna licenza meccanico",
+    "Fill in the form": "Compila il modulo",
+    "As in the previous registration": "Come nell'iscrizione precedente"
 }

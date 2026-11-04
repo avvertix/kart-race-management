@@ -5,7 +5,7 @@ You can register with or without an account.
 ## With an account
 
 1. Sign in and open the race.
-2. Pick the licence of the driver who races. The form is pre-filled with the driver's details from the licence. Only licences valid in the race's year are listed.
+2. Under *Fill in from your licences*, pick the licence of the driver who races, and optionally the competitor and mechanic, then choose *Fill in the form*. The form is pre-filled with their details from the licences. Only licences valid in the race's year are listed.
 3. Choose the category, which can differ from previous races.
 4. Check the Competitor: the one from the previous race is pre-filled. Pick another of your competitor licences or change it by hand if needed.
 5. Fill in vehicle and mechanic, if the race asks for them. You can pick the mechanic from your mechanic licences.

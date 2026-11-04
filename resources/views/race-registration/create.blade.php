@@ -78,8 +78,15 @@
 
         @include('race-registration.partials.participant-limit-banner')
         
+        @if ($licencePickers)
+            @include('race-registration.partials.licence-pickers')
+        @endif
+
         <form method="POST" action="{{ route('races.registration.store', $race) }}">
             @csrf
+            @if ($licencePickers['driver'] ?? null)
+                <input type="hidden" name="licence" value="{{ $licencePickers['driver']->ulid }}">
+            @endif
 
             {{-- Honeypot field to catch bots --}}
             <div aria-hidden="true" class="hidden">

@@ -589,6 +589,19 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
+     * Only the requests an Enrollment in the championship can wait for: submitted, not emitted nor rejected, and of
+     * the championship's provider when it names one.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeEnrollableIn(Builder $query, Championship $championship): void
+    {
+        $query->open()
+            ->where('status', '!=', LicenceRequestStatus::Draft)
+            ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));
+    }
+
+    /**
      * Only the requests whose documents are past the retention period and not deleted yet: emitted ones once the year
      * after the Licence's validity year ends, in the races' timezone, and rejected ones 12 months after rejection.
      *

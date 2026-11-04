@@ -39,6 +39,98 @@
                 </section>
 
                 <p class="text-sm text-zinc-600">{{ __('Enrollment is optional: you can always register for single races.') }}</p>
+
+                @auth
+                    @if ($myEnrollments->isNotEmpty())
+                        <section class="space-y-2">
+                            <h3 class="font-semibold text-zinc-900">{{ __('Your enrollments') }}</h3>
+                            <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200 bg-white">
+                                @foreach ($myEnrollments as $item)
+                                    <li class="flex flex-wrap items-center justify-between gap-3 p-4">
+                                        <div>
+                                            <p class="font-medium text-zinc-900">{{ $item->holder()?->fullName() }}</p>
+                                            <p class="text-sm text-zinc-600">
+                                                @if ($item->licence)
+                                                    {{ $item->licence->licenceTypeLabel() }} &middot; <span class="font-mono">{{ $item->licence->number }}</span>
+                                                @else
+                                                    {{ __('Waiting for the licence request') }}
+                                                @endif
+                                                &middot; {{ $item->status->label() }}
+                                            </p>
+                                            @if ($item->rejection_reason)
+                                                <p class="text-sm text-zinc-600">{{ $item->rejection_reason }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="flex flex-wrap items-center gap-3">
+                                            @if ($item->order && $item->status->isActive())
+                                                <a href="{{ route('my-orders.show', $item->order) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Payment') }}: {{ $item->order->status->label() }}</a>
+                                            @endif
+                                            @can('withdraw', $item)
+                                                <form method="POST" action="{{ route('my-enrollments.withdraw', $item) }}">
+                                                    @csrf
+                                                    <x-secondary-button type="submit">{{ __('Withdraw') }}</x-secondary-button>
+                                                </form>
+                                            @endcan
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </section>
+                    @endif
+
+                    @if ($isOpen)
+                        <form method="POST" action="{{ route('public.championships.enrollment.store', $championship) }}" class="space-y-4 rounded-md border border-zinc-200 bg-white p-4">
+                            @csrf
+                            <h3 class="font-semibold text-zinc-900">{{ __('Enroll a licence') }}</h3>
+
+                            <x-validation-errors />
+
+                            @if ($licences->isEmpty() && $licenceRequests->isEmpty())
+                                <p class="text-sm text-zinc-600">
+                                    {{ __('You have no driver licence valid for :year.', ['year' => $championship->start_at->year]) }}
+                                    <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('Add or request a licence') }}</a>
+                                </p>
+                            @else
+                                <fieldset class="space-y-2">
+                                    <legend class="text-sm font-medium text-zinc-900">{{ __('Licence') }}</legend>
+                                    @foreach ($licences as $licence)
+                                        <label class="flex items-start gap-3">
+                                            <input type="radio" name="subject" value="licence:{{ $licence->ulid }}" @checked(old('subject') === 'licence:'.$licence->ulid) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                            <span class="text-sm text-zinc-900">{{ $licence->holder->fullName() }} &middot; {{ $licence->licenceTypeLabel() }} &middot; <span class="font-mono">{{ $licence->number }}</span></span>
+                                        </label>
+                                    @endforeach
+                                    @foreach ($licenceRequests as $licenceRequest)
+                                        <label class="flex items-start gap-3">
+                                            <input type="radio" name="subject" value="licence_request:{{ $licenceRequest->ulid }}" @checked(old('subject') === 'licence_request:'.$licenceRequest->ulid) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                            <span class="text-sm text-zinc-900">{{ $licenceRequest->holder?->fullName() }} &middot; {{ $licenceRequest->licenceTypeLabel() }} &middot; {{ __('Licence request: the enrollment waits for the licence') }}</span>
+                                        </label>
+                                    @endforeach
+                                </fieldset>
+
+                                @if ($competitorLicences->isNotEmpty())
+                                    <div>
+                                        <x-label for="competitor_licence" value="{{ __('Competitor') }}" />
+                                        <select id="competitor_licence" name="competitor_licence" class="mt-1 rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
+                                            <option value="">{{ __('No competitor') }}</option>
+                                            @foreach ($competitorLicences as $competitor)
+                                                <option value="{{ $competitor->ulid }}" @selected(old('competitor_licence') === $competitor->ulid)>{{ $competitor->holder->fullName() }} &middot; {{ $competitor->number }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if ($settings->requires_competitor_when_underage)
+                                            <p class="mt-1 text-sm text-zinc-600">{{ __('Required for underage drivers.') }}</p>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                <x-button type="submit">{{ $settings->isFree() ? __('Submit enrollment') : __('Submit and pay') }}</x-button>
+                            @endif
+                        </form>
+                    @endif
+                @else
+                    @if ($isOpen)
+                        <p><a href="{{ route('login') }}" class="text-orange-600 hover:text-orange-900">{{ __('Sign in to enroll') }}</a></p>
+                    @endif
+                @endauth
             </div>
 
             <aside>

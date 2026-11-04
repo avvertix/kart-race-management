@@ -64,10 +64,7 @@ class LicenceController extends Controller
     {
         $this->authorize('verify', $licence);
 
-        $licence->update([
-            'verified_at' => now(),
-            'verified_by' => $request->user()->getKey(),
-        ]);
+        $licence->markVerifiedBy($request->user());
 
         return redirect()->route('licences.show', $licence)
             ->with('flash.banner', __('Licence verified.'));

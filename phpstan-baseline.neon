@@ -4841,11 +4841,6 @@ parameters:
 			count: 1
 			path: app/Models/Category.php
 
-		-
-			message: '#^Cannot call method toDateString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/Championship.php
 
 		-
 			message: '#^Class App\\Models\\Championship uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'

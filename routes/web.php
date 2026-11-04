@@ -13,6 +13,7 @@ use App\Http\Controllers\ChampionshipBonusImportController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipDuplicateDriverController;
+use App\Http\Controllers\ChampionshipEnrollmentController;
 use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ChampionshipPenaltyController;
 use App\Http\Controllers\ChampionshipPenaltyImportController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\ConfirmParticipantPaymentController;
 use App\Http\Controllers\CopyChampionshipBibReservationsController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
 use App\Http\Controllers\CopyChampionshipTiresController;
+use App\Http\Controllers\EnrollmentReviewController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
 use App\Http\Controllers\ExportRaceHeatGridController;
 use App\Http\Controllers\ExportRaceParticipantsController;
@@ -36,6 +38,7 @@ use App\Http\Controllers\LicenceController;
 use App\Http\Controllers\LicenceRequestController;
 use App\Http\Controllers\LicenceRequestReviewController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\MyEnrollmentController;
 use App\Http\Controllers\MyLicenceController;
 use App\Http\Controllers\MyOrderController;
 use App\Http\Controllers\NotificationController;
@@ -258,6 +261,15 @@ Route::middleware([
             Route::post('bib-reservations/{bib_reservation}/confirm', [BibReservationStatusController::class, 'confirm'])->name('bib-reservations.confirm');
             Route::post('bib-reservations/{bib_reservation}/release', [BibReservationStatusController::class, 'release'])->name('bib-reservations.release');
 
+            Route::get('championships/{championship}/enrollments', [ChampionshipEnrollmentController::class, 'index'])->name('championships.enrollments.index');
+            Route::get('championships/{championship}/enrollments/create', [ChampionshipEnrollmentController::class, 'create'])->name('championships.enrollments.create');
+            Route::post('championships/{championship}/enrollments', [ChampionshipEnrollmentController::class, 'store'])->name('championships.enrollments.store');
+            Route::get('enrollments/{enrollment}', [EnrollmentReviewController::class, 'show'])->name('enrollments.show');
+            Route::post('enrollments/{enrollment}/verify-licence', [EnrollmentReviewController::class, 'verifyLicence'])->name('enrollments.verify-licence');
+            Route::post('enrollments/{enrollment}/confirm', [EnrollmentReviewController::class, 'confirm'])->name('enrollments.confirm');
+            Route::post('enrollments/{enrollment}/reject', [EnrollmentReviewController::class, 'reject'])->name('enrollments.reject');
+            Route::post('enrollments/{enrollment}/withdraw', [EnrollmentReviewController::class, 'withdraw'])->name('enrollments.withdraw');
+
             Route::resource('products', ProductController::class)->except(['show', 'destroy']);
 
             Route::resource('licences', LicenceController::class)->only(['index', 'show']);
@@ -302,6 +314,9 @@ Route::middleware([
     Route::get('products/{product}/continue', [PublicProductController::class, 'continue'])->name('public.products.continue');
 
     Route::post('products/{product}/order', [PublicProductController::class, 'order'])->name('public.products.order');
+
+    Route::post('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'store'])->name('public.championships.enrollment.store');
+    Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
 
     Route::get('orders/{order}', [MyOrderController::class, 'show'])->name('my-orders.show');
 

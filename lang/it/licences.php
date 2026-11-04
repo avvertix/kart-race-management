@@ -66,6 +66,13 @@ return [
         'rejected' => 'Respinta',
     ],
 
+    'enrollment_status' => [
+        'submitted' => 'Inviata',
+        'confirmed' => 'Confermata',
+        'rejected' => 'Respinta',
+        'withdrawn' => 'Ritirata',
+    ],
+
     'bib_reservation_status' => [
         'pending' => 'In attesa',
         'confirmed' => 'Confermata',

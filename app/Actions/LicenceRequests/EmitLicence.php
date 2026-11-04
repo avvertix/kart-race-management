@@ -8,6 +8,7 @@ use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceSource;
 use App\Models\BibReservation;
 use App\Models\Enrollment;
+use App\Models\Entitlement;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\User;
@@ -89,6 +90,8 @@ class EmitLicence
                     'emitted_at' => now(),
                     'licence_id' => $licence->getKey(),
                 ]);
+
+                Entitlement::linkTo($licence);
 
                 $waiting = Enrollment::query()
                     ->where('licence_request_id', $locked->getKey())

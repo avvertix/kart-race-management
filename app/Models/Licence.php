@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 /**
@@ -138,14 +139,18 @@ class Licence extends Model
     }
 
     /**
-     * The organizer verified the declared licence.
+     * The organizer verified the declared licence. Entitlements claimed by its number move to it.
      */
     public function markVerifiedBy(User $organizer): void
     {
-        $this->update([
-            'verified_at' => now(),
-            'verified_by' => $organizer->getKey(),
-        ]);
+        DB::transaction(function () use ($organizer) {
+            $this->update([
+                'verified_at' => now(),
+                'verified_by' => $organizer->getKey(),
+            ]);
+
+            Entitlement::linkTo($this);
+        });
     }
 
     public function isVerified(): bool

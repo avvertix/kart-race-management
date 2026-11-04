@@ -13,7 +13,9 @@ use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\LicenceRequest;
 use App\Models\Order;
+use App\Models\OrderLine;
 use App\Models\Participant;
+use App\Models\PromoCode;
 use App\Models\Race;
 use App\Models\RegistrationForm;
 use App\Models\User;
@@ -73,6 +75,8 @@ class AppServiceProvider extends ServiceProvider
             'championship' => Championship::class,
             'race' => Race::class,
             'order' => Order::class,
+            'promo_code' => PromoCode::class,
+            'order_line' => OrderLine::class,
             'licence_request' => LicenceRequest::class,
         ]);
 

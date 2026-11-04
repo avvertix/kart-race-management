@@ -56,6 +56,7 @@ use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PromoCodeClaimController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicChampionshipEnrollmentController;
 use App\Http\Controllers\PublicProductController;
@@ -333,6 +334,13 @@ Route::middleware([
 
     Route::post('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'store'])->name('public.championships.enrollment.store');
     Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
+
+    Route::post('promo-codes/find', [PromoCodeClaimController::class, 'find'])
+        ->middleware('throttle:20,1')
+        ->name('promo-codes.find');
+    Route::post('promo-codes/{promoCode}/claim', [PromoCodeClaimController::class, 'claim'])
+        ->middleware('throttle:10,1')
+        ->name('promo-codes.claim');
     Route::get('my-enrollments/{enrollment}/race-number', [MyEnrollmentController::class, 'editRaceNumber'])->name('my-enrollments.race-number.edit');
     Route::put('my-enrollments/{enrollment}/race-number', [MyEnrollmentController::class, 'updateRaceNumber'])
         ->middleware('throttle:30,1')

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Actions\PromoCodes\ClaimPromoCode;
 use App\Events\ParticipantRegistered;
 use App\Listeners\ApplyBonusToParticipant;
+use App\Listeners\ApplyEntitlementToParticipant;
 use App\Listeners\CheckParticipantForWildcard;
 use App\Models\Category;
 use App\Models\CompetitorLicence;
@@ -19,6 +21,7 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -61,6 +64,8 @@ class RegisterParticipant
             ...$this->getVehicleValidationRules($race),
 
             'consent_privacy' => ['sometimes', 'required', 'accepted'],
+
+            'promo_code' => ['nullable', 'string', 'max:30'],
         ])->validate();
 
         $category = Category::whereUlid($validatedInput['category'])->firstOrFail();
@@ -73,8 +78,10 @@ class RegisterParticipant
 
             $pickedLicenceId = $this->pickedLicenceId($input['licence'] ?? null, $user, $licenceHash);
 
+            $promoCode = filled($validatedInput['promo_code'] ?? null) ? ClaimPromoCode::forRace($validatedInput['promo_code'], $race) : null;
+
             $participant = Cache::lock($this->getLockKey($race, $validatedInput['bib']), 10)
-                ->block(5, function () use ($race, $validatedInput, $user, $category, $licenceHash, $pickedLicenceId) {
+                ->block(5, fn () => DB::transaction(function () use ($race, $validatedInput, $user, $category, $licenceHash, $pickedLicenceId, $promoCode) {
 
                     // Check if participants is below race limit
 
@@ -145,12 +152,17 @@ class RegisterParticipant
                         'locale' => App::currentLocale(),
                     ]);
 
+                    if ($promoCode !== null) {
+                        app(ClaimPromoCode::class)($promoCode, $licenceHash, Licence::query()->find($pickedLicenceId), $user);
+                    }
+
                     return $participant;
-                });
+                }));
 
             Pipeline::send(new ParticipantRegistered($participant, $race))
                 ->through([
                     ApplyBonusToParticipant::class,
+                    ApplyEntitlementToParticipant::class,
                     CalculateParticipationCost::class,
                     DetermineParticipantZone::class,
                     CheckParticipantForWildcard::class,

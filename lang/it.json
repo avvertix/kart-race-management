@@ -1583,5 +1583,18 @@
     "This code was revoked and can no longer be claimed.": "Questo codice è stato revocato e non può più essere riscattato.",
     "Claim it for one of your licences, or type it in a race registration of the championship.": "Riscattalo per una delle tue licenze, oppure inseriscilo nell'iscrizione a una gara del campionato.",
     ":count race fee|:count race fees": ":count quota di iscrizione|:count quote di iscrizione",
-    ":count promo code issued.|:count promo codes issued.": ":count codice promozionale emesso.|:count codici promozionali emessi."
+    ":count promo code issued.|:count promo codes issued.": ":count codice promozionale emesso.|:count codici promozionali emessi.",
+    "The championship doesn't accept promo codes.": "Il campionato non accetta codici promozionali.",
+    "The promo code is not valid for this championship.": "Il codice promozionale non è valido per questo campionato.",
+    "This code has already been claimed.": "Questo codice è già stato riscattato.",
+    "There is no promo code :code.": "Non esiste il codice promozionale :code.",
+    "Promo code claimed for :driver. It is applied automatically when registering for races of the championship.": "Codice promozionale riscattato per :driver. Si applica automaticamente nelle iscrizioni alle gare del campionato.",
+    "Used": "Usato",
+    ":used of :amount used": "Usati :used su :amount",
+    "You have no driver licence valid for :year to claim it for.": "Non hai una licenza pilota valida per il :year per cui riscattarlo.",
+    "Claim it for": "Riscattalo per",
+    "Once claimed, the code belongs to that licence and nobody else can claim it.": "Una volta riscattato, il codice appartiene a quella licenza e nessun altro può riscattarlo.",
+    "Claim the code": "Riscatta il codice",
+    "A new promo code is claimed for the driver licence number of this registration. Codes claimed before apply automatically.": "Un nuovo codice promozionale viene riscattato per il numero di licenza del pilota di questa iscrizione. I codici riscattati in precedenza si applicano automaticamente.",
+    "Have a promo code?": "Hai un codice promozionale?"
 }

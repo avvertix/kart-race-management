@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -186,6 +187,18 @@ class Participant extends Model implements HasLocalePreference
     public function bonuses()
     {
         return $this->belongsToMany(Bonus::class, 'participant_bonus')
+            ->withPivot('amount')
+            ->withTimestamps();
+    }
+
+    /**
+     * The Entitlements that discounted the race fee, with the discount in the pivot `amount`.
+     *
+     * @return BelongsToMany<Entitlement, $this>
+     */
+    public function entitlements(): BelongsToMany
+    {
+        return $this->belongsToMany(Entitlement::class, 'participant_entitlement')
             ->withPivot('amount')
             ->withTimestamps();
     }
@@ -419,6 +432,8 @@ class Participant extends Model implements HasLocalePreference
 
             $totalBonusDiscount = $bonusMode === BonusMode::BALANCE ? $this->bonuses->sum('pivot.amount') : ($this->bonuses->count() * $fixedBonusAmount);
         }
+
+        $totalBonusDiscount += (int) $this->entitlements()->sum('participant_entitlement.amount');
 
         $tire = $this->racingCategory->tire;
 

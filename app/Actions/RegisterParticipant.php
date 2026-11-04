@@ -10,6 +10,7 @@ use App\Listeners\CheckParticipantForWildcard;
 use App\Models\Category;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
+use App\Models\Licence;
 use App\Models\Race;
 use App\Models\Sex;
 use App\Models\User;
@@ -70,8 +71,10 @@ class RegisterParticipant
 
             $licenceHash = hash('sha512', $validatedInput['driver_licence_number']);
 
+            $pickedLicenceId = $this->pickedLicenceId($input['licence'] ?? null, $user, $licenceHash);
+
             $participant = Cache::lock($this->getLockKey($race, $validatedInput['bib']), 10)
-                ->block(5, function () use ($race, $validatedInput, $user, $category, $licenceHash) {
+                ->block(5, function () use ($race, $validatedInput, $user, $category, $licenceHash, $pickedLicenceId) {
 
                     // Check if participants is below race limit
 
@@ -97,6 +100,7 @@ class RegisterParticipant
                         'added_by' => $user?->getKey(),
                         'championship_id' => $race->championship_id,
                         'driver_licence' => $licenceHash,
+                        'licence_id' => $pickedLicenceId,
                         'competitor_licence' => isset($validatedInput['competitor_licence_number']) ? hash('sha512', $validatedInput['competitor_licence_number']) : null,
                         'licence_type' => $validatedInput['driver_licence_type'] ?? DriverLicence::LOCAL_NATIONAL->value,
                         'driver' => [
@@ -173,6 +177,23 @@ class RegisterParticipant
                 'bib' => __('The race number has already been taken.'),
             ]);
         }
+    }
+
+    /**
+     * The Licence picked to fill the registration, when the User manages it and the registration kept its number.
+     * Informative only: the licence number hash stays the matching key.
+     */
+    protected function pickedLicenceId(mixed $ulid, ?User $user, string $licenceHash): ?int
+    {
+        if ($user === null || ! is_string($ulid) || $ulid === '') {
+            return null;
+        }
+
+        return Licence::query()
+            ->managedBy($user)
+            ->where('ulid', $ulid)
+            ->where('number_hash', $licenceHash)
+            ->value('id');
     }
 
     protected function getLockKey(Race $race, $seed)

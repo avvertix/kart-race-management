@@ -51,6 +51,7 @@ class Participant extends Model implements HasLocalePreference
         'last_name',
         'added_by',
         'claimed_by',
+        'licence_id',
         'confirmed_at',
         'consents',
         'race_id',

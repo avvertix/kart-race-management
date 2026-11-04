@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\PrepareRegistrationLicencePickers;
 use App\Actions\RegisterParticipant;
 use App\Data\PaymentSettingsData;
 use App\Exceptions\InvalidParticipantSignatureException;
+use App\Features\LicencesAndProducts;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Models\Participant;
@@ -15,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Laravel\Pennant\Feature;
 
 class RaceRegistrationController extends Controller
 {
@@ -49,7 +52,7 @@ class RaceRegistrationController extends Controller
             : array_values(array_filter(CompetitorLicence::cases(), fn ($l) => in_array($l->value, $acceptedCompetitorLicences)));
 
         $participant = null;
-        $templateDriver = null;
+        $licencePickers = null;
 
         if (auth()->check()) {
             $user = auth()->user();
@@ -72,6 +75,13 @@ class RaceRegistrationController extends Controller
                 // ignore invalid from param
             }
 
+            if (Feature::active(LicencesAndProducts::class)) {
+                $licencePickers = app(PrepareRegistrationLicencePickers::class)($user, $race, $request->only(['driver_licence', 'competitor_licence', 'mechanic_licence']));
+
+                if ($licencePickers['template'] !== null) {
+                    $participant = null;
+                }
+            }
         }
 
         return view('race-registration.create', [
@@ -84,6 +94,8 @@ class RaceRegistrationController extends Controller
             'driverLicences' => $driverLicences,
             'competitorLicences' => $competitorLicences,
             'participant' => $participant,
+            'licencePickers' => $licencePickers,
+            'templateDriver' => $licencePickers['template'] ?? null,
         ]);
     }
 

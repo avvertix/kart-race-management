@@ -217,6 +217,34 @@
 
         <x-section-border />
 
+        @feature(\App\Features\LicencesAndProducts::class)
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                <x-section-title>
+                    <x-slot name="title">{{ __('Promo codes and packages') }}</x-slot>
+                    <x-slot name="description">
+                        {{ __('Let promo codes and promotional packages reduce the race fees. A championship uses either these or bonuses: disable bonuses first. Each race can opt out.') }}
+                    </x-slot>
+                </x-section-title>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    <form method="POST" action="{{ route('championships.entitlement-settings.update', $championship) }}" class="px-4 py-5 space-y-4">
+                        @csrf
+                        @method('PUT')
+
+                        <label class="flex items-start gap-3">
+                            <x-checkbox name="entitlements_enabled" value="1" :checked="old('entitlements_enabled', $championship->entitlements_enabled)" />
+                            <span class="text-sm font-medium text-zinc-900">{{ __('Promo codes and packages reduce race fees') }}</span>
+                        </label>
+                        <x-input-error for="entitlements_enabled" class="mt-2" />
+
+                        <x-button type="submit">{{ __('Save') }}</x-button>
+                    </form>
+                </div>
+            </div>
+
+            <x-section-border />
+        @endfeature
+
         <div class="md:grid md:grid-cols-3 md:gap-6">
             <x-section-title>
                 <x-slot name="title">{{ __('Registration form') }}</x-slot>

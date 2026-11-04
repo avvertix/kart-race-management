@@ -98,6 +98,7 @@ class RaceController extends Controller
             'registration_closes_at' => ['nullable', 'date', 'after:registration_opens_at'],
             'registration_form' => ['nullable', new Enum(RegistrationForm::class)],
             'bonus_enabled' => ['nullable', 'in:true,false'],
+            'entitlements_enabled' => ['nullable', 'in:false'],
             'zone_regions' => ['nullable', 'array'],
             'zone_regions.*' => ['string', new Enum(ItalianRegion::class)],
         ]);
@@ -127,6 +128,7 @@ class RaceController extends Controller
             'type' => $validated['race_type'] ?? RaceType::LOCAL,
             'registration_form' => blank($validated['registration_form'] ?? null) ? null : RegistrationForm::from($validated['registration_form']),
             'bonus_enabled' => blank($validated['bonus_enabled'] ?? null) ? null : ($validated['bonus_enabled'] === 'true'),
+            'entitlements_enabled' => ($validated['entitlements_enabled'] ?? null) === 'false' ? false : null,
             'zone_regions' => filled($validated['zone_regions'] ?? null) ? $validated['zone_regions'] : null,
         ]);
 

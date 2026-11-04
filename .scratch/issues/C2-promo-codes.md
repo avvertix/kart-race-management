@@ -13,7 +13,8 @@ Organizers issue codes for a championship and share them by link and QR code.
 
 - `promo_codes`: ulid, `code` (unique), `championship_id`, `mode` (`Credit` | `Balance`), `amount`, `status` (`Unclaimed` | `Claimed` | `Revoked`), `claimed_at`, `claimed_by_user_id`, `licence_id` nullable, `licence_hash` nullable, `created_by`.
 - Organizer: create one (random 8 characters or custom) or N at once (random); list per championship with status and usage; revoke an unclaimed code.
-- Public page per code (unguessable URL): code, QR (BaconQrCode, as in `Participant::qrCodeSvg`), championship, what it gives, used or remaining. No personal data.
+- Public page per code (unguessable URL): code, QR (BaconQrCode, as in `Participant::qrCodeSvg`), championship, what it gives, used or remaining. No personal data. Usage comes with C3.
+- `mode` is `EntitlementMode`, shared with Entitlements (C3). Credits store a number of race fees, balances cents. Codes are stored uppercase; custom codes are 4–20 letters, digits or dashes. Everything is in early access.
 
 ## Out of scope
 

@@ -66,6 +66,12 @@ return [
         'rejected' => 'Rejected',
     ],
 
+    'promo_code_status' => [
+        'unclaimed' => 'Unclaimed',
+        'claimed' => 'Claimed',
+        'revoked' => 'Revoked',
+    ],
+
     'enrollment_status' => [
         'submitted' => 'Submitted',
         'confirmed' => 'Confirmed',

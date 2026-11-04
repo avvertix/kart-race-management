@@ -18,6 +18,7 @@ use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ChampionshipPenaltyController;
 use App\Http\Controllers\ChampionshipPenaltyImportController;
 use App\Http\Controllers\ChampionshipPointSchemeController;
+use App\Http\Controllers\ChampionshipPromoCodeController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfigureRacePenaltySheetController;
@@ -58,6 +59,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicChampionshipEnrollmentController;
 use App\Http\Controllers\PublicProductController;
+use App\Http\Controllers\PublicPromoCodeController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceCombinedResultController;
 use App\Http\Controllers\RaceCommunicationImportController;
@@ -262,6 +264,11 @@ Route::middleware([
             Route::put('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'update'])->name('championships.enrollment-settings.update');
             Route::put('championships/{championship}/entitlement-settings', UpdateChampionshipEntitlementSettingsController::class)->name('championships.entitlement-settings.update');
 
+            Route::get('championships/{championship}/promo-codes', [ChampionshipPromoCodeController::class, 'index'])->name('championships.promo-codes.index');
+            Route::get('championships/{championship}/promo-codes/create', [ChampionshipPromoCodeController::class, 'create'])->name('championships.promo-codes.create');
+            Route::post('championships/{championship}/promo-codes', [ChampionshipPromoCodeController::class, 'store'])->name('championships.promo-codes.store');
+            Route::post('promo-codes/{promoCode}/revoke', [ChampionshipPromoCodeController::class, 'revoke'])->name('promo-codes.revoke');
+
             Route::post('bib-reservations/{bib_reservation}/confirm', [BibReservationStatusController::class, 'confirm'])->name('bib-reservations.confirm');
             Route::post('bib-reservations/{bib_reservation}/release', [BibReservationStatusController::class, 'release'])->name('bib-reservations.release');
 
@@ -296,6 +303,10 @@ Route::middleware([
 Route::get('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'show'])
     ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
     ->name('public.championships.enrollment');
+
+Route::get('promo-codes/{promoCode}', [PublicPromoCodeController::class, 'show'])
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
+    ->name('public.promo-codes.show');
 
 Route::get('products', [PublicProductController::class, 'index'])
     ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))

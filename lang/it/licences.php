@@ -66,6 +66,12 @@ return [
         'rejected' => 'Respinta',
     ],
 
+    'promo_code_status' => [
+        'unclaimed' => 'Da riscattare',
+        'claimed' => 'Riscattato',
+        'revoked' => 'Revocato',
+    ],
+
     'enrollment_status' => [
         'submitted' => 'Inviata',
         'confirmed' => 'Confermata',

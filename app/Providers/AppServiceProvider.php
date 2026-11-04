@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Events\EnrollmentConfirmed;
+use App\Events\EnrollmentRevoked;
 use App\Listeners\LogNotification;
+use App\Listeners\ReevaluateWildcardsForEnrollment;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
@@ -130,6 +133,7 @@ class AppServiceProvider extends ServiceProvider
     private function configureEvents(): void
     {
         Event::listen(NotificationSent::class, LogNotification::class);
+        Event::listen([EnrollmentConfirmed::class, EnrollmentRevoked::class], ReevaluateWildcardsForEnrollment::class);
     }
 
     /**

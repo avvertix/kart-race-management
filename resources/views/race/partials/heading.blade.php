@@ -69,6 +69,15 @@
                     </flux:dropdown>
 
                     
+                    @if ($championship->wildcard?->enabled)
+                        @can('update', $race)
+                            <form method="POST" action="{{ route('races.wildcards.recalculate', $race) }}">
+                                @csrf
+                                <x-secondary-button type="submit" title="{{ __('Evaluate again who races as a wildcard, also when the race has results.') }}">{{ __('Recalculate wildcards') }}</x-secondary-button>
+                            </form>
+                        @endcan
+                    @endif
+
                     @can('update', $race)
                         <x-button-link href="{{ route('races.edit', $race) }}">
                             {{ __('Edit race') }}

@@ -51,7 +51,7 @@ The organizer always confirms an Enrollment by hand. Free enrollments only skip 
 | Confirmed | Confirmed with the Enrollment, or created by the organizer. Only the organizer can change it | Released |
 | Released | Freed by the organizer | — |
 
-Pending reservations don't expire. Reservations created by the organizer may have an expiry date.
+Pending reservations don't expire. Reservations created by the organizer may have an expiry date. Reservations created before statuses existed are confirmed. A released reservation can't be changed.
 
 ## Order
 

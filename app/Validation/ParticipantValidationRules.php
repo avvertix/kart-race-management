@@ -329,6 +329,7 @@ trait ParticipantValidationRules
 
             $reservedBibWithSameLicence = BibReservation::query()
                 ->notExpired()
+                ->notReleased()
                 ->inChamphionship($championship_id)
                 ->licenceHash($input['driver_licence_number'])
                 ->first()?->bib;
@@ -352,6 +353,7 @@ trait ParticipantValidationRules
 
             $reservedBib = BibReservation::query()
                 ->notExpired()
+                ->notReleased()
                 ->inChamphionship($championship_id)
                 ->raceNumber($input['bib'])
                 ->first();

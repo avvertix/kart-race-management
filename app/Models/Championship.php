@@ -110,6 +110,8 @@ class Championship extends Model
 
     /**
      * Get the BIB reservations.
+     *
+     * @return HasMany<BibReservation, $this>
      */
     public function reservations(): HasMany
     {

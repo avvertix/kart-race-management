@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Features\LicencesAndProducts;
 use App\Http\Controllers\BibReservationController;
 use App\Http\Controllers\BibReservationImportController;
+use App\Http\Controllers\BibReservationStatusController;
 use App\Http\Controllers\ChampionshipAwardController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
@@ -253,6 +254,9 @@ Route::middleware([
         Route::middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))->group(function () {
             Route::get('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'edit'])->name('championships.enrollment-settings.edit');
             Route::put('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'update'])->name('championships.enrollment-settings.update');
+
+            Route::post('bib-reservations/{bib_reservation}/confirm', [BibReservationStatusController::class, 'confirm'])->name('bib-reservations.confirm');
+            Route::post('bib-reservations/{bib_reservation}/release', [BibReservationStatusController::class, 'release'])->name('bib-reservations.release');
 
             Route::resource('products', ProductController::class)->except(['show', 'destroy']);
 

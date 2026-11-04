@@ -25,7 +25,7 @@ class BibReservationController extends Controller
     public function index(Championship $championship)
     {
 
-        $areThereSomeReservationNotEnforced = $championship->reservations()->withoutLicence()->exists();
+        $areThereSomeReservationNotEnforced = $championship->reservations()->notReleased()->withoutLicence()->exists();
 
         return view('bib-reservation.index', [
             'championship' => $championship,
@@ -49,7 +49,7 @@ class BibReservationController extends Controller
      */
     public function store(Championship $championship, Request $request, CreateBibReservation $createBibReservation)
     {
-        $reservation = $createBibReservation($championship, $request->all());
+        $reservation = $createBibReservation($championship, $request->all(), $request->user());
 
         return redirect()->route('championships.bib-reservations.index', $championship)
             ->with('flash.banner', __('Race number :bib reserved.', [
@@ -81,7 +81,8 @@ class BibReservationController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage. A legacy reservation above BibReservation::MAX_BIB keeps its number,
+     * but can't be moved to another number above it.
      */
     public function update(Request $request, BibReservation $bibReservation)
     {
@@ -94,20 +95,15 @@ class BibReservationController extends Controller
                 'required',
                 'integer',
                 'min:'.BibReservation::MIN_BIB,
-                'max:'.BibReservation::MAX_BIB,
-                // TODO: can I change the bib number?
-                Rule::unique((new BibReservation())->getTable(), 'bib')->ignore($bibReservation)->where(function ($query) use ($championship) {
-                    return $query->where('championship_id', $championship->getKey());
-                }),
+                Rule::when((int) $request->input('bib') !== (int) $bibReservation->bib, 'max:'.BibReservation::MAX_BIB),
+                BibReservation::uniqueAmongHolding($championship, 'bib')->ignore($bibReservation),
 
             ],
             'driver' => [
                 'required',
                 'string',
                 'max:250',
-                Rule::unique((new BibReservation())->getTable(), 'driver')->ignore($bibReservation)->where(function ($query) use ($championship) {
-                    return $query->where('championship_id', $championship->getKey());
-                }),
+                BibReservation::uniqueAmongHolding($championship, 'driver')->ignore($bibReservation),
             ],
 
             'driver_licence_number' => ['required', 'string', 'max:250'],

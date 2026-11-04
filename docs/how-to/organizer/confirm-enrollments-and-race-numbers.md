@@ -13,8 +13,8 @@ Race numbers are first confirmed, first served. Confirm enrollments in the order
 
 ## Keep last season's numbers
 
-- **ACI championships**: before opening enrollment, copy the reservations from last season's championship. They are matched by licence number and confirmed straight away.
-- **Any championship**: on each Enrollment, open *Previous numbers* to see what the Driver used in past championships, then confirm the picked number or change it.
+- **ACI championships**: before opening enrollment, copy the reservations from last season's championship. They are matched by licence number and confirmed straight away. Championships with ASI as licence provider don't offer the copy.
+- **Any championship**: on each Enrollment, *Previous numbers* lists what the Driver used in past championships, with how each was matched. Choose *Confirm number* for the picked one, or *Use number* for one that is still free.
 
 ## Enroll a driver yourself
 

@@ -11,6 +11,10 @@
         </ul>
     </div>
 
+    @foreach ($heldNumbers as $held)
+        <p class="rounded-md border border-lime-300 bg-lime-50 p-2 text-sm text-lime-900">{{ $held }} {{ __('No need to pick another one.') }}</p>
+    @endforeach
+
     <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
         @foreach ($hundreds as $item)
             <button type="button" wire:click="zoom({{ $item['hundred'] }})" aria-pressed="{{ $hundred === $item['hundred'] ? 'true' : 'false' }}" @class([

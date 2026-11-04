@@ -1533,5 +1533,15 @@
     "Save race number": "Salva il numero di gara",
     "Change race number": "Cambia numero di gara",
     "Pick a race number": "Scegli un numero di gara",
-    "Reserved": "Prenotato"
+    "Reserved": "Prenotato",
+    "same licence number": "stesso numero di licenza",
+    "same name and birth date": "stesso nome e data di nascita",
+    "registered by the same user": "registrato dallo stesso utente",
+    "Number :bib is reserved for :driver.": "Il numero :bib è prenotato per :driver.",
+    "No need to pick another one.": "Non serve sceglierne un altro.",
+    "Confirm number :bib": "Conferma il numero :bib",
+    "Previous numbers": "Numeri precedenti",
+    "Use number :bib": "Usa il numero :bib",
+    "No numbers found in past championships.": "Nessun numero trovato nei campionati passati.",
+    ":count race|:count races": ":count gara|:count gare"
 }

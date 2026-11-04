@@ -78,6 +78,16 @@ class BibReservation extends Model
     }
 
     /**
+     * The Enrollment that picked the number, if any.
+     *
+     * @return BelongsTo<Enrollment, $this>
+     */
+    public function enrollment(): BelongsTo
+    {
+        return $this->belongsTo(Enrollment::class);
+    }
+
+    /**
      * The user who created the reservation.
      *
      * @return BelongsTo<User, $this>

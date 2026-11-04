@@ -192,6 +192,15 @@ class Championship extends Model
     }
 
     /**
+     * Whether reservations can be copied from a past championship by licence number: not for ASI, whose licence numbers
+     * change every year.
+     */
+    public function allowsReservationCopy(): bool
+    {
+        return $this->licences->provider !== LicenceProvider::Asi;
+    }
+
+    /**
      * Whether the ACI promotion export applies: to ACI championships, and to those without a provider, as before
      * providers could be chosen.
      */

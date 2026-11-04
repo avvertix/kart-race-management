@@ -1,3 +1,7 @@
+@php
+    $licenceProviderName = $race->championship->licenceProviderName();
+@endphp
+
 <x-section-border />
             
 <div class="md:grid md:grid-cols-3 md:gap-6">
@@ -20,8 +24,8 @@
                             <li>{{ __('to take part in the race director briefing and/or read the written briefing') }}</li>
                             @useCompleteRegistrationForm()
                             <li>{{ __('to hold a valid licence, in addition to the federation’s starting permission, which permit participation in competitions in Italy, thereby relieving the organiser of any civil or criminal liability in sporting matters') }}</li>
-                            <li>{{ __('to make use of the assistance of an :provider licenced mechanic', ['provider' => config('races.licence.provider')]) }}</li>
-                            <li>{{ __('to have read and accepted the :provider Karting regulations', ['provider' => config('races.licence.provider')]) }}</li>
+                            <li>{{ __('to make use of the assistance of an :provider licenced mechanic', ['provider' => $licenceProviderName]) }}</li>
+                            <li>{{ __('to have read and accepted the :provider Karting regulations', ['provider' => $licenceProviderName]) }}</li>
                             @enduseCompleteRegistrationForm
                             <li>{{ __('to reimburse 250,00 Euro to the time keeping service in case of loss of the assigned transponder') }}</li>
                         </ul>

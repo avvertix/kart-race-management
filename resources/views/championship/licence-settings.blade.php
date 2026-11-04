@@ -9,6 +9,25 @@
         @csrf
         @method('PUT')
 
+        @feature(\App\Features\LicencesAndProducts::class)
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                <x-section-title>
+                    <x-slot name="title">{{ __('Licence provider') }}</x-slot>
+                    <x-slot name="description">
+                        {{ __('Who issues the licences. It sets the wording of the registration form and which exports are offered.') }}
+                    </x-slot>
+                </x-section-title>
+
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    <div class="px-4 py-5">
+                        @include('championship.partials.licence-provider', ['championship' => $championship])
+                    </div>
+                </div>
+            </div>
+
+            <x-section-border />
+        @endfeature
+
         <div class="md:grid md:grid-cols-3 md:gap-6">
             <x-section-title>
                 <x-slot name="title">{{ __('Driver licences') }}</x-slot>
@@ -28,7 +47,7 @@
                             />
                             <div>
                                 <span class="text-sm font-medium text-zinc-900">{{ $licence->localizedName() }}</span>
-                                <p class="text-sm text-zinc-500">{{ $licence->description() }}</p>
+                                <p class="text-sm text-zinc-500">{{ $licence->description($championship->licenceProviderName()) }}</p>
                             </div>
                         </label>
                     @endforeach
@@ -58,7 +77,7 @@
                             />
                             <div>
                                 <span class="text-sm font-medium text-zinc-900">{{ $licence->localizedName() }}</span>
-                                <p class="text-sm text-zinc-500">{{ $licence->description() }}</p>
+                                <p class="text-sm text-zinc-500">{{ $licence->description($championship->licenceProviderName()) }}</p>
                             </div>
                         </label>
                     @endforeach

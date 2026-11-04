@@ -1,6 +1,6 @@
 # Championship settings
 
-Settings chosen when creating a championship. Settings marked **new** are off by default and stay off for championships created before they existed.
+Settings of a championship, chosen when creating it or later from its page. Settings marked **new** are off by default and stay off for championships created before they existed. While licences and products are in early access, only users with early access see the new settings and the public enrollment page.
 
 ## Licences
 
@@ -10,15 +10,15 @@ Settings chosen when creating a championship. Settings marked **new** are off by
 | Accepted driver licences | Any of: national, international, foreign, easy race, daily | All |
 | Accepted competitor licences | Any of: local, foreign | All |
 
-The licence provider decides the wording on the registration form and rules, and which exports are offered (the ACI promotion export only for ACI championships).
+The licence provider decides the wording on the registration form and rules, and which exports are offered (the ACI promotion export only for ACI championships). Without a provider, the championship uses the platform-wide one and offers the ACI promotion export on national and international races, as before.
 
 ## Enrollment (**new**)
 
 | Setting | Meaning | Default |
 |---|---|---|
 | Enabled | Drivers can enroll in the championship | Off |
-| Opens / closes | Period in which enrollment is accepted | — |
-| Product | What is sold for enrolling; none means free | None |
+| Opens / closes | Period in which enrollment is accepted, in the races' timezone. Both are required to turn enrollment on | — |
+| Product | What is sold for enrolling, one of the championship's enrollment Products; none means free | None |
 | Grants race number reservation | Enrolling lets the Driver reserve a Championship BIB | Off |
 | Competitor required when underage | An underage Driver must name a Competitor to enroll | On |
 

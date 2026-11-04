@@ -13,7 +13,7 @@ New championships choose their Licence Provider and whether, when and how driver
 
 - `LicenceSettingsData::$provider` nullable, falling back to `races.licence.provider`. Licence descriptions (`DriverLicence`, `CompetitorLicence`) and the ACI promotion export read the championship's provider; the export is offered only for ACI championships.
 - `EnrollmentSettingsData` on `championships.enrollment` (JSON, nullable): `enabled`, `opens_at`, `closes_at`, `product_id` (enrollment Product; none means free), `grants_bib_reservation`, `requires_competitor_when_underage` (default on).
-- Organizer UI on the championship edit page, plus the provider choice on create.
+- Organizer UI on its own Enrollment settings page, linked from the championship page; the provider choice on create and on the Accepted licences page.
 - Public championship page shows enrollment open/closed in the configured period.
 
 ## Acceptance criteria

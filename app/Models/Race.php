@@ -258,8 +258,19 @@ class Race extends Model
         return ! is_null($this->canceled_at);
     }
 
+    /**
+     * Whether legacy Bonuses apply to the race fees: never when the championship uses Entitlements instead, see
+     * docs/adr/0003-entitlements-separate-from-bonuses.md.
+     */
     public function isBonusEnabled(): bool
     {
+        /** @var Championship|null $championship */
+        $championship = $this->getRelationValue('championship');
+
+        if ($championship !== null && $championship->entitlements_enabled) {
+            return false;
+        }
+
         if ($this->bonus_enabled !== null) {
             return $this->bonus_enabled;
         }

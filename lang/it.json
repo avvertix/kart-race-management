@@ -1543,5 +1543,8 @@
     "Previous numbers": "Numeri precedenti",
     "Use number :bib": "Usa il numero :bib",
     "No numbers found in past championships.": "Nessun numero trovato nei campionati passati.",
-    ":count race|:count races": ":count gara|:count gare"
+    ":count race|:count races": ":count gara|:count gare",
+    ":changed of :total participants changed wildcard status.": ":changed partecipanti su :total hanno cambiato stato wildcard.",
+    "Evaluate again who races as a wildcard, also when the race has results.": "Valuta di nuovo chi corre come wildcard, anche se la gara ha già i risultati.",
+    "Recalculate wildcards": "Ricalcola wildcard"
 }

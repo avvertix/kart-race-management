@@ -72,6 +72,7 @@ use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\RaceTranspondersImportController;
+use App\Http\Controllers\RecalculateRaceWildcardsController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBibSettingsController;
@@ -118,6 +119,7 @@ Route::middleware([
         Route::resource('races', RaceController::class)->only(['show', 'edit', 'update', 'destroy']);
 
         Route::put('races/{race}/scoring', UpdateRaceScoringController::class)->name('races.scoring.update');
+        Route::post('races/{race}/wildcards/recalculate', RecalculateRaceWildcardsController::class)->name('races.wildcards.recalculate');
 
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
 

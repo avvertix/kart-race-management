@@ -39,6 +39,7 @@ class Race extends Model
         'red_flag',
         'registration_form',
         'bonus_enabled',
+        'entitlements_enabled',
         'zone_regions',
     ];
 
@@ -271,6 +272,18 @@ class Race extends Model
         return true;
     }
 
+    /**
+     * Whether Entitlements from promo codes and packages apply to the race fees: when the championship enables them,
+     * unless the race opts out.
+     */
+    public function isEntitlementEnabled(): bool
+    {
+        /** @var Championship|null $championship */
+        $championship = $this->getRelationValue('championship');
+
+        return $championship !== null && $championship->entitlements_enabled && $this->entitlements_enabled !== false;
+    }
+
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
@@ -347,6 +360,7 @@ class Race extends Model
             'red_flag' => 'boolean',
             'registration_form' => RegistrationForm::class,
             'bonus_enabled' => 'boolean',
+            'entitlements_enabled' => 'boolean',
             'zone_regions' => AsCollection::class,
         ];
     }

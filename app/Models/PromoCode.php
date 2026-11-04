@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * A code that gives Entitlements to race fees in one championship once claimed, see
@@ -123,6 +124,16 @@ class PromoCode extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * The Entitlement the code became once claimed.
+     *
+     * @return MorphOne<Entitlement, $this>
+     */
+    public function entitlement(): MorphOne
+    {
+        return $this->morphOne(Entitlement::class, 'source');
     }
 
     /**

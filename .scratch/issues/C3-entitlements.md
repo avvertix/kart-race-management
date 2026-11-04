@@ -17,6 +17,8 @@ Claimed codes reduce race fees automatically, for signed-in Users and guests ali
 - Pipeline stage `ApplyEntitlementToParticipant` next to `ApplyBonusToParticipant`, skipped unless `Race::isEntitlementEnabled()`: at most one Entitlement per registration, oldest first, credits before balance; a credit covers the full race fee of the chosen category, a balance up to what's left; never tyres. A matching remove stage releases usage on deletion, race cancellation or fee change. `Participant::calculateParticipationCost()` includes it; `RegistrationCostData` unchanged.
 - When a Licence with a matching `number_hash` is emitted or verified, Entitlements claimed by hash move to it.
 - Code page shows usage from the pivot.
+- Typing a code in the account: a "Have a promo code?" field on My licences leads to the code's page, where it is claimed. Claims in the account need a driver Licence valid in the championship year, of its provider when set.
+- Entitlements match participants by `licence_hash` (the same key as `participants.driver_licence`); the pivot `amount` is the discount in cents. Releasing gives back one credit, or the discounted amount for a balance. Race cancellation releases the usage of all its participants.
 
 ## Acceptance criteria
 

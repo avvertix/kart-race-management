@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\ReleaseEntitlements;
 use App\Enums\ItalianRegion;
+use App\Models\Participant;
 use App\Models\Race;
 use App\Models\RaceType;
 use App\Models\RegistrationForm;
@@ -143,10 +145,18 @@ class RaceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Race $race)
+    public function destroy(Race $race, ReleaseEntitlements $releaseEntitlements)
     {
-        $race->canceled_at = now();
-        $race->save();
+        DB::transaction(function () use ($race, $releaseEntitlements) {
+            $race->canceled_at = now();
+            $race->save();
+
+            $race->participants()->whereHas('entitlements')->get()->each(function (Participant $participant) use ($releaseEntitlements) {
+                $releaseEntitlements($participant);
+
+                $participant->forceFill(['cost' => $participant->calculateParticipationCost()])->save();
+            });
+        });
 
         return to_route('races.show', $race)
             ->with('flash.banner', __(':race canceled.', [

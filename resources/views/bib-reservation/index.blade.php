@@ -47,12 +47,17 @@
                         <p><span class="font-mono">{{ $item->driver_licence }}</span> <span class="text-zinc-600">{{ $item->contact_email }}</span></p>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                        @if ($item->isExpired())
+                        @if (! $item->status->holdsTheNumber())
+                            <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{{ $item->status->label() }}</span>
+                        @elseif ($item->isExpired())
                             <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{{ __('expired') }}</span>
                         @elseif($item->isEnforcedUsingLicence())
                             <span class="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">{{ __('enforced') }}</span>
                         @else
                             <span class="inline-flex items-center rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700">{{ __('licence required') }}</span>
+                        @endif
+                        @if ($item->status === \App\Enums\BibReservationStatus::Pending)
+                            <span class="inline-flex items-center rounded-md bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">{{ $item->status->label() }}</span>
                         @endif
                         
                     </td>

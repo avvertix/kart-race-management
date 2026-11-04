@@ -66,6 +66,12 @@ return [
         'rejected' => 'Respinta',
     ],
 
+    'bib_reservation_status' => [
+        'pending' => 'In attesa',
+        'confirmed' => 'Confermata',
+        'released' => 'Liberata',
+    ],
+
     'request_section' => [
         'licence' => 'Licenza',
         'holder' => 'Titolare',

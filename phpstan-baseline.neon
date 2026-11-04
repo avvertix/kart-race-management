@@ -246,17 +246,7 @@ parameters:
 			count: 1
 			path: app/Actions/CopyChampionshipBibReservations.php
 
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:notExpired\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Actions/CopyChampionshipBibReservations.php
 
-		-
-			message: '#^Method App\\Actions\\CopyChampionshipBibReservations\:\:__invoke\(\) should return array\{copied\: Illuminate\\Support\\Collection\<int, App\\Models\\BibReservation\>, skipped\: Illuminate\\Support\\Collection\<int, int\>\} but returns array\{copied\: Illuminate\\Support\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>, skipped\: Illuminate\\Support\\Collection\<int, mixed\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Actions/CopyChampionshipBibReservations.php
 
 		-
 			message: '#^Method App\\Actions\\CopyChampionshipBibReservations\:\:candidatesFromParticipants\(\) should return Illuminate\\Support\\Collection\<int, array\{bib\: int, driver\: string, driver_licence\: string\|null, driver_licence_hash\: string\|null, contact_email\: string\|null, licence_type\: mixed\}\> but returns Illuminate\\Support\\Collection\<int, array\{bib\: int\<0, max\>, driver\: mixed, driver_licence\: null, driver_licence_hash\: string, contact_email\: null, licence_type\: int\<0, max\>\|null\}\>\.$#'
@@ -312,11 +302,6 @@ parameters:
 			count: 1
 			path: app/Actions/CopyChampionshipTires.php
 
-		-
-			message: '#^Method App\\Actions\\CreateBibReservation\:\:__invoke\(\) should return App\\Models\\BibReservation but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Actions/CreateBibReservation.php
 
 		-
 			message: '#^Offset ''driver_licence…'' on array\{bib\: int, driver\: string, driver_licence_number\: string, contact_email\: string\|null, reservation_expiration_date\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
@@ -1488,11 +1473,6 @@ parameters:
 			count: 1
 			path: app/Http/Controllers/BibReservationController.php
 
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:withoutLicence\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/BibReservationController.php
 
 		-
 			message: '#^Method App\\Http\\Controllers\\BibReservationController\:\:create\(\) has no return type specified\.$#'
@@ -3001,18 +2981,6 @@ parameters:
 			path: app/Http/Controllers/RaceParticipantController.php
 
 		-
-			message: '#^Cannot access property \$accepted_competitor_licences on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
-			message: '#^Cannot access property \$accepted_driver_licences on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
 			message: '#^Cannot call method copy\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -3563,18 +3531,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/UpdateChampionshipBonusSettingsController.php
-
-		-
-			message: '#^Cannot access property \$accepted_competitor_licences on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/UpdateChampionshipLicenceSettingsController.php
-
-		-
-			message: '#^Cannot access property \$accepted_driver_licences on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/UpdateChampionshipLicenceSettingsController.php
 
 		-
 			message: '#^Method App\\Http\\Controllers\\UpdateChampionshipLicenceSettingsController\:\:edit\(\) has no return type specified\.$#'
@@ -4560,11 +4516,6 @@ parameters:
 			count: 1
 			path: app/Livewire/WildcardSettings.php
 
-		-
-			message: '#^Cannot call method lessThanOrEqualTo\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/BibReservation.php
 
 		-
 			message: '#^Class App\\Models\\BibReservation uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -4944,11 +4895,6 @@ parameters:
 			count: 1
 			path: app/Models/Championship.php
 
-		-
-			message: '#^Method App\\Models\\Championship\:\:reservations\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Championship.php
 
 		-
 			message: '#^Method App\\Models\\Championship\:\:tires\(\) has no return type specified\.$#'

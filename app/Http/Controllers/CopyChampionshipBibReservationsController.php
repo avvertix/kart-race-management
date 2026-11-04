@@ -63,6 +63,7 @@ class CopyChampionshipBibReservationsController extends Controller
             $championship,
             $validated['source'],
             $request->date('reservation_expiration_date')?->endOfDay(),
+            $request->user(),
         );
 
         $message = $result['skipped']->isEmpty()

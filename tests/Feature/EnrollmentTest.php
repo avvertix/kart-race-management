@@ -65,7 +65,7 @@ class EnrollmentTest extends TestCase
 
         $this->actingAs($driver)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$licence->ulid])
-            ->assertRedirect(route('public.championships.enrollment', $championship));
+            ->assertRedirect(route('my-enrollments.show', $championship->enrollments()->sole()));
 
         $enrollment = $championship->enrollments()->sole();
 
@@ -96,7 +96,7 @@ class EnrollmentTest extends TestCase
 
         $enrollment = $championship->enrollments()->sole();
 
-        $response->assertRedirect(route('my-orders.show', $enrollment->order));
+        $response->assertRedirect(route('my-enrollments.show', $enrollment));
         $this->assertSame(OrderStatus::AwaitingPayment, $enrollment->order->status);
         $this->assertTrue($enrollment->order->user->is($driver));
         $this->assertSame(15000, $enrollment->order->total);
@@ -198,7 +198,7 @@ class EnrollmentTest extends TestCase
 
         $this->actingAs($driver)
             ->post(route('my-enrollments.withdraw', $enrollment))
-            ->assertRedirect(route('public.championships.enrollment', $enrollment->championship));
+            ->assertRedirect(route('my-enrollments.show', $enrollment));
 
         $this->assertSame(EnrollmentStatus::Withdrawn, $enrollment->fresh()->status);
         $this->assertSame(OrderStatus::Cancelled, $order->fresh()->status);

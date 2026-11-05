@@ -1680,5 +1680,10 @@
     "Add the competitor's licence to your account first.": "Aggiungi prima la licenza del concorrente al tuo account.",
     "You can withdraw once the organizer reviews your payment proof.": "Potrai ritirarti dopo che l'organizzatore avrà verificato la ricevuta di pagamento.",
     "A payment proof waits for review: confirm or reject it before rejecting the enrollment.": "Una ricevuta di pagamento attende la verifica: confermala o respingila prima di respingere l'iscrizione.",
-    "Enrolled in a championship: ask the organizer to correct it.": "Iscritta a un campionato: chiedi all'organizzatore di correggerla."
+    "Enrolled in a championship: ask the organizer to correct it.": "Iscritta a un campionato: chiedi all'organizzatore di correggerla.",
+    "To confirm": "Da confermare",
+    "Not verified yet": "Non ancora verificata",
+    "Ready to confirm": "Pronta da confermare",
+    "No payment": "Nessun pagamento",
+    "Confirm it on its own at any time, also before the payment; confirming the enrollment confirms it too.": "Confermalo a parte in qualsiasi momento, anche prima del pagamento; confermando l'iscrizione si conferma anche il numero."
 }

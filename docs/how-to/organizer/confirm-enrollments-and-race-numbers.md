@@ -2,14 +2,14 @@
 
 Race numbers are first confirmed, first served. Confirm enrollments in the order they were submitted.
 
-1. **Open the championship's enrollments** and filter by *submitted*.
-2. **For each enrollment, check:**
-   - the Licence is valid for the championship year. If the enrollment still waits for a Licence Request, wait;
+1. **Open the championship's enrollments** and filter by *submitted*. Each row shows the licence and whether it is verified, the Competitor, the race number, the payment and *To confirm*: either *Ready to confirm* or what is still missing.
+2. **Open an enrollment and check:**
+   - the Licence is a driver licence valid for the championship year. If the enrollment still waits for a Licence Request, wait;
    - a Declared Licence is verified. Verify it from the same screen;
-   - the Competitor is named, if the Driver is underage;
-   - the payment is confirmed, if enrollment is paid.
-3. **Confirm the enrollment.** The race number the Driver picked is confirmed with it. The Driver's registrations for races without results are re-evaluated for points eligibility.
-4. **Otherwise, reject it** with a reason, which releases the race number and cancels an unpaid order. The enrollment page lists what is still missing, and offers *Confirm enrollment* only when nothing is.
+   - the Competitor is named, if the Driver is underage. You can name or change it from the same screen;
+   - the payment is confirmed, if enrollment is paid. The payment proof shows on the same screen: *Confirm payment* or *Reject payment*, so the Driver uploads a new one.
+3. **Confirm the enrollment.** A race number the Driver picked and still pending is confirmed with it. You can also confirm the number on its own beforehand, e.g. before the payment arrives; it is released if the enrollment is withdrawn or rejected. The Driver's registrations for races without results are re-evaluated for points eligibility.
+4. **Otherwise, reject it** with a reason, which releases the race number and cancels an unpaid order. While a payment proof waits for review, confirm or reject the payment first. The enrollment page lists what is still missing, and offers *Confirm enrollment* only when nothing is.
 
 ## Keep last season's numbers
 

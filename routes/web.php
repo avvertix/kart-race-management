@@ -284,6 +284,8 @@ Route::middleware([
             Route::post('enrollments/{enrollment}/withdraw', [EnrollmentReviewController::class, 'withdraw'])->name('enrollments.withdraw');
             Route::put('enrollments/{enrollment}/race-number', [EnrollmentReviewController::class, 'raceNumber'])->name('enrollments.race-number.update');
             Route::put('enrollments/{enrollment}/competitor', [EnrollmentReviewController::class, 'competitor'])->name('enrollments.competitor.update');
+            Route::post('enrollments/{enrollment}/payment/confirm', [EnrollmentReviewController::class, 'confirmPayment'])->name('enrollments.payment.confirm');
+            Route::post('enrollments/{enrollment}/payment/reject', [EnrollmentReviewController::class, 'rejectPayment'])->name('enrollments.payment.reject');
 
             Route::resource('products', ProductController::class)->except(['show', 'destroy']);
             Route::post('products/{product}/grants', [ProductGrantController::class, 'store'])->name('products.grants.store');

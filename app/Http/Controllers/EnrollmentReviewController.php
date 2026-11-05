@@ -10,6 +10,8 @@ use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\RejectEnrollment;
 use App\Actions\Enrollments\SetEnrollmentCompetitor;
 use App\Actions\Enrollments\WithdrawEnrollment;
+use App\Actions\Orders\ConfirmOrderPayment;
+use App\Actions\Orders\RejectOrderPayment;
 use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
 use App\Support\RaceNumberAvailability;
@@ -30,7 +32,7 @@ class EnrollmentReviewController extends Controller
     {
         $this->authorize('review', Enrollment::class);
 
-        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'user', 'order', 'reservations']);
+        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'user', 'order.lines', 'order.latestPayment', 'reservations']);
 
         return view('enrollment.show', [
             'enrollment' => $enrollment,
@@ -40,6 +42,40 @@ class EnrollmentReviewController extends Controller
             'canPickNumber' => $enrollment->status === EnrollmentStatus::Submitted && $enrollment->grantsBibReservation(),
             'competitorLicences' => $enrollment->status === EnrollmentStatus::Submitted ? Enrollment::competitorCandidates($enrollment->championship, null, $enrollment->holder())->push(...array_filter([$enrollment->competitorLicence]))->unique('id') : collect(),
         ]);
+    }
+
+    /**
+     * Confirm the Enrollment's payment proof, without leaving the review.
+     */
+    public function confirmPayment(Request $request, Enrollment $enrollment, ConfirmOrderPayment $confirmOrderPayment): RedirectResponse
+    {
+        $this->authorize('review', Enrollment::class);
+
+        abort_if($enrollment->order === null, 404);
+
+        $this->authorize('update', $enrollment->order);
+
+        $confirmOrderPayment($enrollment->order, $request->user());
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', __('Payment confirmed.'));
+    }
+
+    /**
+     * Reject the Enrollment's payment proof, so the driver uploads a new one, without leaving the review.
+     */
+    public function rejectPayment(Enrollment $enrollment, RejectOrderPayment $rejectOrderPayment): RedirectResponse
+    {
+        $this->authorize('review', Enrollment::class);
+
+        abort_if($enrollment->order === null, 404);
+
+        $this->authorize('update', $enrollment->order);
+
+        $rejectOrderPayment($enrollment->order);
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', __('Payment rejected.'));
     }
 
     /**

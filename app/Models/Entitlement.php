@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $remaining
  * @property ?string $source_type
  * @property ?int $source_id
+ * @property ?int $product_grant_id
  * @property CarbonImmutable $created_at
  * @property-read Championship $championship
  * @property-read ?Licence $licence
@@ -44,6 +45,7 @@ class Entitlement extends Model
         'remaining',
         'source_type',
         'source_id',
+        'product_grant_id',
     ];
 
     /**

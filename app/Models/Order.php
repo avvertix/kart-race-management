@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Enums\ProductGrantKind;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -89,6 +91,29 @@ class Order extends Model implements Payable
     public function lines(): HasMany
     {
         return $this->hasMany(OrderLine::class);
+    }
+
+    /**
+     * The grants of the kind in the Packages of the Order.
+     *
+     * @return Collection<int, ProductGrant>
+     */
+    public function grantsOf(ProductGrantKind $kind): Collection
+    {
+        return $this->lines()->with('product.grants')->get()
+            ->flatMap(fn (OrderLine $line) => $line->product->grants->where('kind', $kind))
+            ->values();
+    }
+
+    /**
+     * Whether the buyer can start the licence renewal the Order covers: paid, with a licence renewal in a Package, and
+     * not used by a request yet.
+     */
+    public function canStartLicenceRenewal(): bool
+    {
+        return $this->status === OrderStatus::Paid
+            && $this->grantsOf(ProductGrantKind::LicenceEmission)->isNotEmpty()
+            && ! LicenceRequest::query()->where('covering_order_id', $this->getKey())->exists();
     }
 
     /**

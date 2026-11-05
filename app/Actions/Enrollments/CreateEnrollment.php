@@ -10,6 +10,7 @@ use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -19,17 +20,18 @@ class CreateEnrollment
     public function __construct(private PlaceOrder $placeOrder) {}
 
     /**
-     * Create a submitted Enrollment for the Licence, or for the Licence Request it waits for. When `$pays` is true and the
-     * enrollment is not free, it also places the Order for the enrollment Product, owned by the User. A Licence Request is
-     * locked and checked again, so that an Enrollment never waits for a request emitted meanwhile.
+     * Create a submitted Enrollment for the Licence, or for the Licence Request it waits for. When `$pays` is true it also
+     * places the Order, owned by the User, for the chosen Package including the enrollment, or else for the enrollment
+     * Product when not free. A Licence Request is locked and checked again, so that an Enrollment never waits for a
+     * request emitted meanwhile.
      *
      * @throws ValidationException when the Licence or request is already enrolled, or the enrollment Product can't be ordered
      */
-    public function __invoke(User $user, Championship $championship, ?Licence $licence, ?LicenceRequest $licenceRequest, ?Licence $competitorLicence, bool $pays): Enrollment
+    public function __invoke(User $user, Championship $championship, ?Licence $licence, ?LicenceRequest $licenceRequest, ?Licence $competitorLicence, bool $pays, ?Product $package = null): Enrollment
     {
-        $product = $pays ? $championship->enrollmentProduct() : null;
+        $product = $pays ? ($package ?? $championship->enrollmentProduct()) : null;
 
-        if ($pays && ! $championship->enrollment->isFree() && $product === null) {
+        if ($pays && $package === null && ! $championship->enrollment->isFree() && $product === null) {
             throw ValidationException::withMessages(['enrollment' => __('The enrollment is not available at the moment.')]);
         }
 

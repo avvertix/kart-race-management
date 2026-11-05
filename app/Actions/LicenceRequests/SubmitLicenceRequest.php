@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\LicenceRequests;
 
+use App\Actions\Enrollments\EnrollPackagedRequest;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\NotificationType;
 use App\Models\LicenceRequest;
@@ -17,7 +18,8 @@ use Illuminate\Validation\ValidationException;
 class SubmitLicenceRequest
 {
     /**
-     * Send a complete draft to the organizer. Paying is not required to submit.
+     * Send a complete draft to the organizer. Paying is not required to submit. A request covered by a Package with an
+     * Enrollment is enrolled in its championships, see EnrollPackagedRequest.
      *
      * @throws ValidationException when the request is not a draft or something is missing
      */
@@ -35,6 +37,8 @@ class SubmitLicenceRequest
 
             return $locked;
         });
+
+        app(EnrollPackagedRequest::class)($submitted);
 
         $submitted->user->notify(new LicenceRequestReceived($submitted));
 

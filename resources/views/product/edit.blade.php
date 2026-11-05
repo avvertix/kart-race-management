@@ -31,6 +31,10 @@
                 </div>
             </form>
 
+            @if ($product->kind === \App\Enums\ProductKind::Package)
+                @include('product.partials.grants')
+            @endif
+
         </div>
     </div>
 </x-app-layout>

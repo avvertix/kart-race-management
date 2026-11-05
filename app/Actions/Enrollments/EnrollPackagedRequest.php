@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Actions\Enrollments;
+
+use App\Enums\ProductGrantKind;
+use App\Models\LicenceRequest;
+use App\Models\ProductGrant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
+class EnrollPackagedRequest
+{
+    public function __construct(private CreateEnrollment $createEnrollment) {}
+
+    /**
+     * When a Licence Request covered by a Package with Enrollment grants is submitted, enroll it in each championship: a
+     * submitted Enrollment waiting for the request, paid by the Package's Order. A championship it is already enrolled
+     * in, or not open to the request, is skipped and logged.
+     */
+    public function __invoke(LicenceRequest $licenceRequest): void
+    {
+        $order = $licenceRequest->coveringOrder;
+
+        if ($order === null) {
+            return;
+        }
+
+        $order->grantsOf(ProductGrantKind::Enrollment)->each(function (ProductGrant $grant) use ($licenceRequest, $order) {
+            if ($grant->championship === null) {
+                return;
+            }
+
+            try {
+                DB::transaction(function () use ($grant, $licenceRequest, $order) {
+                    $enrollment = ($this->createEnrollment)($licenceRequest->user, $grant->championship, null, $licenceRequest, null, pays: false);
+
+                    $enrollment->update(['order_id' => $order->getKey()]);
+                });
+            } catch (ValidationException $exception) {
+                logs()->warning('Packaged enrollment skipped', [
+                    'licence_request' => $licenceRequest->getKey(),
+                    'championship' => $grant->championship_id,
+                    'reason' => $exception->getMessage(),
+                ]);
+            }
+        });
+    }
+}

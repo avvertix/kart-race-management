@@ -60,8 +60,8 @@
                                         </div>
                                         <p class="text-sm text-zinc-700">
                                             {{ $item->status->label() }}
-                                            @if ($item->order && $item->status->isActive() && $item->order->status !== \App\Enums\OrderStatus::Paid)
-                                                &middot; {{ __('Payment') }}: {{ $item->order->status->label() }}
+                                            @if ($item->status->isActive() && ! $item->payment_status->isSettled())
+                                                &middot; {{ __('Payment') }}: {{ $item->payment_status->label() }}
                                             @endif
                                         </p>
                                     </li>
@@ -72,19 +72,20 @@
 
                     @if ($isOpen)
                         @php
-                            $paysByDefault = (bool) ($paymentOptions->firstWhere('value', old('product', ''))['pays'] ?? ! $settings->isFree());
+                            $paysByDefault = (bool) ($paymentOptions->firstWhere('value', old('option', ''))['pays'] ?? $paymentOptions->contains('pays', true));
                         @endphp
                         <form method="POST" action="{{ route('public.championships.enrollment.store', $championship) }}" class="space-y-6 rounded-md border border-zinc-200 bg-white p-4"
                             x-data="{
                                 subjects: {{ Js::from($subjects) }},
                                 paymentOptions: {{ Js::from($paymentOptions) }},
                                 subject: {{ Js::from(old('subject', '')) }},
-                                product: {{ Js::from(old('product', '')) }},
+                                option: {{ Js::from(old('option', $paymentOptions->count() === 1 ? $paymentOptions->first()['value'] : '')) }},
                                 get chosen() { return this.subjects.find((item) => item.value === this.subject) ?? null },
-                                offered(option) { return option.for === 'any' || option.for === (this.chosen?.kind ?? 'licence') },
-                                get payment() { return this.paymentOptions.find((item) => item.value === this.product && this.offered(item)) ?? this.paymentOptions[0] },
+                                offered(item) { return item.categories.length === 0 || this.chosen?.category == null || item.categories.includes(this.chosen.category) },
+                                get offeredOptions() { return this.paymentOptions.filter((item) => this.offered(item)) },
+                                get payment() { return this.paymentOptions.find((item) => item.value === this.option && this.offered(item)) ?? (this.offeredOptions.length === 1 ? this.offeredOptions[0] : null) },
                                 get needsCompetitor() { return this.chosen !== null && this.chosen.underage },
-                                get showsNumber() { return this.chosen !== null && this.payment.grantsNumber },
+                                get showsNumber() { return this.chosen !== null && this.payment !== null && this.payment.grantsNumber },
                             }">
                             @csrf
                             <h3 class="font-semibold text-zinc-900">{{ __('Enroll a licence') }}</h3>
@@ -127,7 +128,7 @@
                                         <legend class="text-sm font-medium text-zinc-900">{{ __('What you are buying') }}</legend>
                                         @foreach ($paymentOptions as $option)
                                             <label class="flex items-start gap-3" x-show="offered({{ Js::from($option) }})">
-                                                <input type="radio" name="product" value="{{ $option['value'] }}" x-model="product" x-bind:disabled="!offered({{ Js::from($option) }})" @checked(old('product', '') === $option['value']) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                                <input type="radio" name="option" value="{{ $option['value'] }}" x-model="option" x-bind:disabled="!offered({{ Js::from($option) }})" @checked(old('option', '') === $option['value']) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
                                                 <span class="text-sm text-zinc-900">{{ $option['label'] }}</span>
                                             </label>
                                         @endforeach
@@ -148,13 +149,15 @@
                                 <div class="space-y-2 border-t border-zinc-200 pt-4" x-show="chosen" x-cloak aria-live="polite">
                                     <p class="text-sm font-medium text-zinc-900">{{ __('Review') }}</p>
                                     <p class="text-sm text-zinc-700" x-text="chosen ? chosen.label : ''"></p>
-                                    <p class="text-sm text-zinc-700" x-text="payment.label"></p>
+                                    <p class="text-sm text-zinc-700" x-text="payment ? payment.label : ''"></p>
                                 </div>
 
                                 <p class="text-sm text-zinc-600" x-show="!chosen">{{ __('Choose the licence to enroll.') }}</p>
 
-                                <x-button type="submit" x-bind:disabled="!chosen">
-                                    <span x-text="payment.pays ? {{ Js::from(__('Submit and pay')) }} : {{ Js::from(__('Submit enrollment')) }}">{{ $paysByDefault ? __('Submit and pay') : __('Submit enrollment') }}</span>
+                                <input type="hidden" name="option" x-bind:value="payment ? payment.value : ''" x-bind:disabled="{{ $paymentOptions->count() > 1 ? 'true' : 'false' }}">
+
+                                <x-button type="submit" x-bind:disabled="!chosen || payment === null">
+                                    <span x-text="payment?.pays ? {{ Js::from(__('Submit and pay')) }} : {{ Js::from(__('Submit enrollment')) }}">{{ $paysByDefault ? __('Submit and pay') : __('Submit enrollment') }}</span>
                                 </x-button>
                             @endif
                         </form>
@@ -168,17 +171,25 @@
 
             <aside>
                 <div class="rounded-md border border-zinc-200 bg-white p-4 space-y-2">
-                    <h3 class="text-sm text-zinc-500">{{ __('Price') }}</h3>
-                    @if ($settings->isFree())
-                        <p class="text-2xl">{{ __('Free') }}</p>
-                    @elseif ($price === null)
+                    <h3 class="text-sm text-zinc-500">{{ __('Enrollment options') }}</h3>
+                    @forelse ($options as $option)
+                        <div class="border-t border-zinc-100 pt-2 first-of-type:border-t-0 first-of-type:pt-0">
+                            <p class="font-medium text-zinc-900">{{ $option->title }} &middot; <span class="font-mono tabular-nums">{{ $option->amountLabel() }}</span></p>
+                            @if ($option->description)
+                                <p class="text-sm text-zinc-600 whitespace-pre-line">{{ $option->description }}</p>
+                            @endif
+                            <p class="text-sm text-zinc-600">
+                                {{ collect([
+                                    $option->covers_licence_renewal ? __('Covers the licence renewal') : null,
+                                    $option->reserves_race_number ? __('Reserves a race number') : null,
+                                    $option->entitlement_mode?->describe((int) $option->entitlement_amount),
+                                    $option->licenceCategories() === [] ? null : collect($option->licenceCategories())->map->localizedName()->join(', '),
+                                ])->filter()->join(' · ') }}
+                            </p>
+                        </div>
+                    @empty
                         <p class="text-zinc-700">{{ __('Not available at the moment') }}</p>
-                    @else
-                        <p class="text-2xl font-mono tabular-nums">{{ $price->label() }}</p>
-                        @if ($settings->fee_covers_licence_renewal)
-                            <p class="text-sm text-zinc-600">{{ __('It also covers the renewal of your licence, when you enroll with a licence request.') }}</p>
-                        @endif
-                    @endif
+                    @endforelse
                 </div>
             </aside>
         </div>

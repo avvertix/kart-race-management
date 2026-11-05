@@ -7,11 +7,13 @@ namespace App\Models;
 use App\Actions\Orders\CancelOrder;
 use App\Data\HolderData;
 use App\Enums\BibReservationStatus;
+use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceRole;
 use App\Enums\OrderStatus;
 use App\Enums\ProductGrantKind;
+use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,6 +22,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -34,6 +38,12 @@ use Illuminate\Validation\ValidationException;
  * @property int $user_id
  * @property EnrollmentStatus $status
  * @property ?int $order_id
+ * @property ?int $enrollment_option_id
+ * @property int $amount
+ * @property Currency $currency
+ * @property EnrollmentPaymentStatus $payment_status
+ * @property ?CarbonImmutable $paid_at
+ * @property ?int $payment_confirmed_by
  * @property ?CarbonImmutable $confirmed_at
  * @property ?int $confirmed_by
  * @property ?string $rejection_reason
@@ -44,13 +54,20 @@ use Illuminate\Validation\ValidationException;
  * @property-read ?Licence $competitorLicence
  * @property-read User $user
  * @property-read ?Order $order
+ * @property-read ?EnrollmentOption $option
  */
-class Enrollment extends Model
+class Enrollment extends Model implements Payable
 {
     /** @use HasFactory<\Database\Factories\EnrollmentFactory> */
     use HasFactory;
 
     use HasUlids;
+
+    protected $attributes = [
+        'amount' => 0,
+        'currency' => 'EUR',
+        'payment_status' => 'not_due',
+    ];
 
     protected $fillable = [
         'championship_id',
@@ -63,6 +80,12 @@ class Enrollment extends Model
         'confirmed_at',
         'confirmed_by',
         'rejection_reason',
+        'enrollment_option_id',
+        'amount',
+        'currency',
+        'payment_status',
+        'paid_at',
+        'payment_confirmed_by',
     ];
 
     /**
@@ -218,6 +241,62 @@ class Enrollment extends Model
     }
 
     /**
+     * The Enrollment Option the driver chose, null when enrolled by the organizer.
+     *
+     * @return BelongsTo<EnrollmentOption, $this>
+     */
+    public function option(): BelongsTo
+    {
+        return $this->belongsTo(EnrollmentOption::class, 'enrollment_option_id');
+    }
+
+    /**
+     * The payment proofs, including the rejected ones.
+     *
+     * @return MorphMany<Payment, $this>
+     */
+    public function payments(): MorphMany
+    {
+        return $this->morphMany(Payment::class, 'payable');
+    }
+
+    /**
+     * @return MorphOne<Payment, $this>
+     */
+    public function latestPayment(): MorphOne
+    {
+        return $this->morphOne(Payment::class, 'payable')->latestOfMany();
+    }
+
+    /**
+     * @throws ValidationException when the Enrollment is closed or not awaiting a payment
+     */
+    public function lockAwaitingPayment(string $errorKey): self
+    {
+        $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
+
+        if ($locked->payment_status !== EnrollmentPaymentStatus::AwaitingPayment || ! $locked->status->isActive()) {
+            throw ValidationException::withMessages([$errorKey => __('The enrollment is not awaiting a payment.')]);
+        }
+
+        return $locked;
+    }
+
+    public function markPaymentSubmitted(): void
+    {
+        $this->update(['payment_status' => EnrollmentPaymentStatus::PaymentSubmitted]);
+    }
+
+    /**
+     * Whether the Enrollment's payment is settled: nothing due or paid, and its Order paid for an Enrollment made with
+     * a Package bought on its own.
+     */
+    public function isPaymentSettled(): bool
+    {
+        return $this->payment_status->isSettled() && ($this->order === null || $this->order->status === OrderStatus::Paid);
+    }
+
+    /**
      * The race number reservations picked with the Enrollment.
      *
      * @return HasMany<BibReservation, $this>
@@ -233,7 +312,7 @@ class Enrollment extends Model
      */
     public function grantsBibReservation(): bool
     {
-        if ($this->championship->enrollment->grants_bib_reservation) {
+        if ($this->option?->reserves_race_number) {
             return true;
         }
 
@@ -242,11 +321,11 @@ class Enrollment extends Model
     }
 
     /**
-     * Whether a payment proof of the Enrollment's Order waits for the organizer.
+     * Whether a payment proof of the Enrollment, or of its Order, waits for the organizer.
      */
     public function hasPaymentUnderReview(): bool
     {
-        return $this->order?->status === OrderStatus::PaymentSubmitted;
+        return $this->payment_status === EnrollmentPaymentStatus::PaymentSubmitted || $this->order?->status === OrderStatus::PaymentSubmitted;
     }
 
     /**
@@ -298,7 +377,7 @@ class Enrollment extends Model
             $this->licence !== null && ! $this->licence->isVerifiedOrEmitted() ? (string) __('The declared licence is not verified yet.') : null,
             $this->licence !== null && $this->licence->role !== LicenceRole::Driver ? (string) __('The licence is not a driver licence.') : null,
             $this->licence !== null && $this->licence->validity_year !== $this->championship->start_at->year ? (string) __('The licence is not valid in the championship year.') : null,
-            $this->order !== null && $this->order->status !== OrderStatus::Paid ? (string) __('The payment is not confirmed yet.') : null,
+            ! $this->isPaymentSettled() ? (string) __('The payment is not confirmed yet.') : null,
             $this->requiresCompetitor() && $this->competitor_licence_id === null ? (string) __('The driver is underage and no competitor is named.') : null,
         ]));
     }
@@ -322,8 +401,10 @@ class Enrollment extends Model
     }
 
     /**
-     * Free what a rejected or withdrawn Enrollment held: release its race numbers and cancel its Order when not paid nor
-     * with a payment proof to review. Paid enrollments are refunded outside the platform.
+     * Free what a rejected or withdrawn Enrollment held: release its race numbers, return the open Licence Requests it
+     * covered to their own payment, and cancel its Order when not paid nor with a payment proof to review. Paid
+     * enrollments are refunded outside the platform, and a request they covered then asks for its own payment. A race
+     * fee discount already granted stays with the Licence.
      */
     public function releaseNumbersAndCancelUnpaidOrder(): void
     {
@@ -331,6 +412,12 @@ class Enrollment extends Model
             'status' => BibReservationStatus::Released,
             'released_at' => now(),
         ]);
+
+        LicenceRequest::query()
+            ->where('covering_enrollment_id', $this->getKey())
+            ->open()
+            ->get()
+            ->each(fn (LicenceRequest $licenceRequest) => $licenceRequest->uncover());
 
         if ($this->order !== null && in_array($this->order->status, [OrderStatus::AwaitingPrice, OrderStatus::AwaitingPayment], true)) {
             app(CancelOrder::class)($this->order);
@@ -357,6 +444,10 @@ class Enrollment extends Model
         return [
             'status' => EnrollmentStatus::class,
             'confirmed_at' => 'datetime',
+            'amount' => 'integer',
+            'currency' => Currency::class,
+            'payment_status' => EnrollmentPaymentStatus::class,
+            'paid_at' => 'datetime',
         ];
     }
 }

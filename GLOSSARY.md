@@ -59,7 +59,7 @@ _Avoid_: Entry, registration (when referring to the record)
 A race registration form that was started but not yet submitted.
 
 **Enrollment**:
-A Driver's Licence enrolled in a championship, optionally with a Competitor (required for underage Drivers, who cannot be their own Competitor). A Driver has at most one active Enrollment per championship, while one User can enroll each Driver whose Licence they manage. It can wait for the Licence Request that will give the Licence; when that request is rejected, the User picks another Licence for it. It is free or costs a fixed Enrollment Fee, the same whatever the Licence; a Promotional Package including the Enrollment replaces the fee. It is optional for racing and does not fix the category or the Competitor, which a Participant can change between races. Each championship is isolated: enrollments do not carry over to other championships.
+A Driver's Licence enrolled in a championship, optionally with a Competitor (required for underage Drivers, who cannot be their own Competitor). A Driver has at most one active Enrollment per championship, while one User can enroll each Driver whose Licence they manage. It can wait for the Licence Request that will give the Licence; when that request is rejected, the User picks another Licence for it. It is made with one of the championship's Enrollment Options, free or at a fixed amount, and carries its own payment. It is optional for racing and does not fix the category or the Competitor, which a Participant can change between races. Each championship is isolated: enrollments do not carry over to other championships.
 _Avoid_: Championship registration, subscription, promotional registration
 
 **Enrollment Fee**:
@@ -97,7 +97,7 @@ A request by a User to buy one or more Products. It is paid by uploading a payme
 _Avoid_: Purchase, transaction
 
 **Entitlement**:
-A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code or by a promotional package. It belongs to one Licence.
+A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code or by an Enrollment Option. It belongs to one Licence.
 _Avoid_: Voucher
 
 **Bonus**:

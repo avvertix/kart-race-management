@@ -6,6 +6,7 @@ namespace App\Actions\Enrollments;
 
 use App\Actions\LicenceRequests\StartLicenceRenewal;
 use App\Enums\EnrollmentStatus;
+use App\Enums\LicenceRequestStatus;
 use App\Enums\OrderStatus;
 use App\Models\BibReservation;
 use App\Models\Championship;
@@ -20,13 +21,16 @@ use Illuminate\Validation\ValidationException;
 
 class ChangeEnrollmentLicence
 {
-    public function __construct(private StartLicenceRenewal $startLicenceRenewal) {}
+    public function __construct(
+        private StartLicenceRenewal $startLicenceRenewal,
+        private GrantEnrollmentEntitlements $grantEnrollmentEntitlements,
+    ) {}
 
     /**
      * Give a submitted Enrollment whose Licence Request was rejected another Licence: one of the User, an open request,
-     * or a renewal started now for the championship's year. The Enrollment keeps its Order and race number; an Order
-     * paying a renewal (a Package including one, or a fee covering it) that no other request uses covers the new or
-     * chosen request. A Licence already holding a race number in the championship can't take one more.
+     * or a renewal started now for the championship's year. The Enrollment keeps its payment and race number; when its
+     * option covers the renewal, or a Package bought on its own does, the new or chosen request is covered too, unless
+     * another request already uses that cover. A Licence already holding a race number in the championship can't take one more.
      *
      * @param  array{licence?: ?string, licence_request?: ?string, renew?: ?string}  $input  ULIDs, or `new` to renew a licence not on the platform
      *
@@ -38,7 +42,7 @@ class ChangeEnrollmentLicence
 
         $validated = Validator::make($input, SubmitEnrollment::subjectRules($user, $championship))->validate();
 
-        return DB::transaction(function () use ($enrollment, $user, $championship, $validated) {
+        $changed = DB::transaction(function () use ($enrollment, $user, $championship, $validated) {
             Championship::query()->whereKey($championship->getKey())->lockForUpdate()->firstOrFail();
 
             $locked = $enrollment->lockInStatus([EnrollmentStatus::Submitted], 'enrollment', __('Only a submitted enrollment can change licence.'));
@@ -49,6 +53,8 @@ class ChangeEnrollmentLicence
 
             $order = $locked->order_id === null ? null : Order::query()->whereKey($locked->order_id)->lockForUpdate()->first();
             $renewalOrder = $order !== null && $order->status !== OrderStatus::Cancelled && $order->hasUnusedRenewal() ? $order : null;
+            $coversRenewal = $locked->option?->covers_licence_renewal === true
+                && LicenceRequest::query()->where('covering_enrollment_id', $locked->getKey())->where('status', '!=', LicenceRequestStatus::Rejected)->doesntExist();
 
             $licence = Licence::findByUlid($validated['licence'] ?? null);
             $licenceRequest = null;
@@ -68,8 +74,10 @@ class ChangeEnrollmentLicence
                     $renewalOrder,
                     $championship->start_at->year,
                 );
-            } elseif ($licenceRequest !== null && $renewalOrder !== null) {
-                $licenceRequest->coverWith($renewalOrder);
+            }
+
+            if ($licenceRequest !== null && $coversRenewal) {
+                $licenceRequest->coverWith($locked);
             }
 
             Enrollment::ensureNotEnrolled($championship, $licence, $licenceRequest, except: $locked);
@@ -97,5 +105,9 @@ class ChangeEnrollmentLicence
 
             return $locked;
         });
+
+        ($this->grantEnrollmentEntitlements)($changed);
+
+        return $changed;
     }
 }

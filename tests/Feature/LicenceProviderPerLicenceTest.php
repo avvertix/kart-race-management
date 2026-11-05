@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Data\EnrollmentSettingsData;
 use App\Enums\LicenceProvider;
 use App\Models\Championship;
 use App\Models\Licence;
@@ -77,14 +76,8 @@ class LicenceProviderPerLicenceTest extends TestCase
 
     private function championship(?LicenceProvider $provider): Championship
     {
-        $championship = Championship::factory()->create();
+        $championship = Championship::factory()->openForEnrollment()->create();
         $championship->licences->provider = $provider;
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            requires_competitor_when_underage: false,
-        );
         $championship->save();
 
         return $championship;

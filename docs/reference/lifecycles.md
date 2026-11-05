@@ -23,7 +23,7 @@ A Licence Request is a renewal and is paid on its own, not through an Order:
 | To pay | The amount is set; no payment proof yet. The organizer can still change it | Proof uploaded, Paid |
 | Proof uploaded | A payment proof is uploaded | Paid, To pay |
 | Paid | The organizer confirmed the bank transfer proof, or recorded a cash or credit card payment at the office | — |
-| Covered | An Order pays the renewal: a Promotional Package including it, or an enrollment fee covering it. It counts as paid once that Order is paid; if the request is rejected, the Order covers a new one | — |
+| Covered | The Enrollment the request waits for pays the renewal, as its option covers it, or a Promotional Package bought on its own does. It counts as paid once that Enrollment (or Order) is paid; if the request is rejected, it covers a new one. Withdrawing or rejecting the Enrollment, or moving it to an option that doesn't cover the renewal, returns the request to its own payment | — |
 
 ## Licence
 
@@ -42,7 +42,18 @@ A Licence Request is a renewal and is paid on its own, not through an Order:
 | Rejected | Not accepted | — |
 | Withdrawn | Cancelled by the driver while submitted, or by the organizer at any time, but not while a payment proof waits for review | — |
 
-The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Driver has at most one submitted or confirmed Enrollment per championship, matched by licence number or by the holder (fiscal code, or name and birth date). Only a driver Licence valid in the championship's year, or a driver Licence Request for that year, can be enrolled. Underage is judged on the championship start date; the Competitor of an underage Driver is an adult other than the Driver, and can be named until confirmation. An Enrollment can't be withdrawn while a payment proof of its Order waits for review, and its declared Licences can't be changed or removed while it is active. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Licence must be for the request's year, and the Enrollment moves to the new Licence, unless the Driver is already enrolled in that championship, which rejects it; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence or starts a new request, keeping its Order and race number; an Order that covered the rejected request covers the new one. An Enrollment can also wait for a draft request, started while enrolling. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
+The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Driver has at most one submitted or confirmed Enrollment per championship, matched by licence number or by the holder (fiscal code, or name and birth date). Only a driver Licence valid in the championship's year, or a driver Licence Request for that year, can be enrolled. Underage is judged on the championship start date; the Competitor of an underage Driver is an adult other than the Driver, and can be named until confirmation. An Enrollment can't be withdrawn or rejected while a payment proof waits for review, and its declared Licences can't be changed or removed while it is active. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Licence must be for the request's year, and the Enrollment moves to the new Licence, unless the Driver is already enrolled in that championship, which rejects it; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence or starts a new request, keeping its payment and race number; an option that covered the rejected request covers the new one. An Enrollment can also wait for a draft request, started while enrolling. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
+
+### Enrollment payment
+
+| Status | Meaning |
+|---|---|
+| Nothing to pay | A free option, or enrolled by the organizer |
+| To pay | The amount of the option chosen, by bank transfer with the Enrollment as reason |
+| Proof uploaded | Waiting for the organizer to confirm or reject it |
+| Paid | Confirmed by the organizer; a Licence Request the option covers counts as paid, and the option's race fee discount is granted once the Licence exists |
+
+The organizer can move a submitted Enrollment to another option until its payment is confirmed; the amount follows.
 
 ## BIB Reservation
 

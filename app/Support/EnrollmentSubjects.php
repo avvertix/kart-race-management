@@ -22,7 +22,7 @@ class EnrollmentSubjects
      * yet, then the renewal of their earlier Licences of the Drivers not among those, and of a licence not on the
      * platform. Each with whether the Driver is underage and the race number the Licence already holds.
      *
-     * @return Collection<int, array{value: string, label: string, kind: string, underage: bool, heldBib: ?int}>
+     * @return Collection<int, array{value: string, label: string, kind: string, category: ?int, underage: bool, heldBib: ?int}>
      */
     public static function for(User $user, Championship $championship): Collection
     {
@@ -38,6 +38,7 @@ class EnrollmentSubjects
                 'value' => 'licence:'.$licence->ulid,
                 'label' => $licence->holder->fullName().' · '.$licence->licenceTypeLabel().' · '.$licence->number,
                 'kind' => 'licence',
+                'category' => $licence->race_licence_category?->value,
                 'underage' => $championship->requiresCompetitorFor($licence->holder),
                 'heldBib' => PickRaceNumber::reservationHeldBy($championship, $licence)?->bib,
             ]);
@@ -52,6 +53,7 @@ class EnrollmentSubjects
                 'value' => 'licence_request:'.$licenceRequest->ulid,
                 'label' => collect([$licenceRequest->holder?->fullName(), $licenceRequest->licenceTypeLabel(), (string) __('Licence request: the enrollment waits for the licence')])->filter()->join(' · '),
                 'kind' => 'licence',
+                'category' => $licenceRequest->licenceTypeData()?->raceLicenceCategory?->value,
                 'underage' => $licenceRequest->holder !== null && $championship->requiresCompetitorFor($licenceRequest->holder),
                 'heldBib' => null,
             ]);
@@ -76,6 +78,7 @@ class EnrollmentSubjects
                 'value' => 'renew:'.$licence->ulid,
                 'label' => __('Renew for :year', ['year' => $year]).' · '.$licence->holder->fullName().' · '.$licence->licenceTypeLabel().' · '.$licence->number,
                 'kind' => 'renewal',
+                'category' => $licence->race_licence_category?->value,
                 'underage' => $championship->requiresCompetitorFor($licence->holder),
                 'heldBib' => null,
             ]);
@@ -86,6 +89,7 @@ class EnrollmentSubjects
                 'value' => 'renew:'.SubmitEnrollment::RENEW_NEW,
                 'label' => __('Renew for :year', ['year' => $year]).' · '.__('a licence that is not in your account'),
                 'kind' => 'renewal',
+                'category' => null,
                 'underage' => false,
                 'heldBib' => null,
             ])

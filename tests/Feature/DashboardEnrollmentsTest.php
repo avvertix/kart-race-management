@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Data\EnrollmentSettingsData;
 use App\Features\LicencesAndProducts;
 use App\Models\Championship;
 use App\Models\Enrollment;
@@ -72,13 +71,14 @@ class DashboardEnrollmentsTest extends TestCase
 
     private function championship(string $title, int $opensInDays, int $closesInDays, bool $enabled = true): Championship
     {
-        $championship = Championship::factory()->create(['title' => $title]);
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: $enabled,
-            opens_at: now()->addDays($opensInDays),
-            closes_at: now()->addDays($closesInDays),
-        );
-        $championship->save();
+        $championship = Championship::factory()
+            ->openForEnrollment(opensAt: now()->addDays($opensInDays), closesAt: now()->addDays($closesInDays))
+            ->create(['title' => $title]);
+
+        if (! $enabled) {
+            $championship->enrollment->enabled = false;
+            $championship->save();
+        }
 
         return $championship;
     }

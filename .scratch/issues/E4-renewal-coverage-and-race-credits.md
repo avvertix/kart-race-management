@@ -19,6 +19,11 @@ An option covering the licence renewal pays the Licence Request through the Enro
 - My licences no longer lists paid Packages with a renewal to start (there are none); the D4 "Renewal covered by" card is removed.
 - Port the D2 and D4 tests on coverage and rejected requests to Enrollments.
 
+- Implementation notes:
+  - `covering_enrollment_id` is added next to `covering_order_id`, which E5 removes with Packages.
+  - Race fee discounts are granted once the Enrollment is active and settled (paid or nothing due) and its Licence verified or emitted: on submit, payment confirmation, licence verification and emission, and licence change. They stay with the Licence if the Enrollment is later withdrawn or rejected.
+  - A request covered by a free option counts as paid.
+
 ## Out of scope
 
 Removing the products surface (E5).

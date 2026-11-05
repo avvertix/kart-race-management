@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\LicenceRequests\EmitLicence;
-use App\Data\EnrollmentSettingsData;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestPaymentStatus;
@@ -268,18 +267,6 @@ class RaceNumberPickerTest extends TestCase
 
     private function championship(bool $grantsReservation = true): Championship
     {
-        $championship = Championship::factory()->create();
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            grants_bib_reservation: $grantsReservation,
-            requires_competitor_when_underage: false,
-        );
-
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()->openForEnrollment(reservesRaceNumber: $grantsReservation)->create();
     }
 }

@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Enrollments\ChangeEnrollmentOption;
 use App\Actions\Enrollments\ConfirmEnrollment;
 use App\Actions\Enrollments\FindPreviousNumbers;
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\RejectEnrollment;
+use App\Actions\Enrollments\ReviewEnrollmentPayment;
 use App\Actions\Enrollments\SetEnrollmentCompetitor;
 use App\Actions\Enrollments\WithdrawEnrollment;
-use App\Actions\Orders\ConfirmOrderPayment;
-use App\Actions\Orders\RejectOrderPayment;
 use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
 use App\Support\RaceNumberAvailability;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
@@ -32,7 +33,7 @@ class EnrollmentReviewController extends Controller
     {
         $this->authorize('review', Enrollment::class);
 
-        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'user', 'order.lines', 'order.latestPayment', 'reservations']);
+        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'user', 'option', 'latestPayment', 'reservations']);
 
         return view('enrollment.show', [
             'enrollment' => $enrollment,
@@ -40,6 +41,7 @@ class EnrollmentReviewController extends Controller
             'previousNumbers' => $findPreviousNumbers($enrollment),
             'availability' => RaceNumberAvailability::in($enrollment->championship, array_filter([$enrollment->licence?->number_hash]), $enrollment),
             'canPickNumber' => $enrollment->status === EnrollmentStatus::Submitted && $enrollment->grantsBibReservation(),
+            'options' => $enrollment->championship->enrollmentOptions()->get(),
             'competitorLicences' => $enrollment->status === EnrollmentStatus::Submitted ? Enrollment::competitorCandidates($enrollment->championship, null, $enrollment->holder())->push(...array_filter([$enrollment->competitorLicence]))->unique('id') : collect(),
         ]);
     }
@@ -47,15 +49,11 @@ class EnrollmentReviewController extends Controller
     /**
      * Confirm the Enrollment's payment proof, without leaving the review.
      */
-    public function confirmPayment(Request $request, Enrollment $enrollment, ConfirmOrderPayment $confirmOrderPayment): RedirectResponse
+    public function confirmPayment(Request $request, Enrollment $enrollment, ReviewEnrollmentPayment $reviewEnrollmentPayment): RedirectResponse
     {
         $this->authorize('review', Enrollment::class);
 
-        abort_if($enrollment->order === null, 404);
-
-        $this->authorize('update', $enrollment->order);
-
-        $confirmOrderPayment($enrollment->order, $request->user());
+        $reviewEnrollmentPayment($enrollment, $request->user(), confirm: true);
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Payment confirmed.'));
@@ -64,18 +62,33 @@ class EnrollmentReviewController extends Controller
     /**
      * Reject the Enrollment's payment proof, so the driver uploads a new one, without leaving the review.
      */
-    public function rejectPayment(Enrollment $enrollment, RejectOrderPayment $rejectOrderPayment): RedirectResponse
+    public function rejectPayment(Request $request, Enrollment $enrollment, ReviewEnrollmentPayment $reviewEnrollmentPayment): RedirectResponse
     {
         $this->authorize('review', Enrollment::class);
 
-        abort_if($enrollment->order === null, 404);
-
-        $this->authorize('update', $enrollment->order);
-
-        $rejectOrderPayment($enrollment->order);
+        $reviewEnrollmentPayment($enrollment, $request->user(), confirm: false);
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Payment rejected.'));
+    }
+
+    /**
+     * Move the Enrollment to another option of the championship until its payment is confirmed.
+     */
+    public function option(Request $request, Enrollment $enrollment, ChangeEnrollmentOption $changeEnrollmentOption): RedirectResponse
+    {
+        $this->authorize('review', Enrollment::class);
+
+        $option = $enrollment->championship->enrollmentOptions()->where('ulid', (string) $request->input('option'))->first();
+
+        if ($option === null) {
+            throw ValidationException::withMessages(['option' => __('The enrollment option is not available.')]);
+        }
+
+        $changeEnrollmentOption($enrollment, $option);
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', __('Enrollment option changed.'));
     }
 
     /**

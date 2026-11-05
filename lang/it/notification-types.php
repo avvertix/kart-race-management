@@ -16,6 +16,8 @@ return [
         'enrollment_confirmed' => 'Iscrizione confermata',
         'enrollment_rejected' => 'Iscrizione respinta',
         'enrollment_needs_action' => 'Iscrizione da completare',
+        'enrollment_payment_confirmed' => 'Pagamento dell\'iscrizione confermato',
+        'enrollment_payment_rejected' => 'Ricevuta di pagamento dell\'iscrizione non accettata',
         'licence_request_submitted' => 'Richiesta di licenza da verificare',
     ],
 
@@ -31,6 +33,8 @@ return [
         'enrollment_confirmed' => 'Quando l\'organizzatore conferma la tua iscrizione a un campionato.',
         'enrollment_rejected' => 'Quando l\'organizzatore respinge la tua iscrizione.',
         'enrollment_needs_action' => 'Quando la tua iscrizione richiede un\'altra licenza o un concorrente.',
+        'enrollment_payment_confirmed' => 'Quando l\'organizzatore conferma il pagamento della tua iscrizione.',
+        'enrollment_payment_rejected' => 'Quando l\'organizzatore non può confermare la ricevuta di pagamento della tua iscrizione.',
         'licence_request_submitted' => 'Quando un pilota invia una richiesta di licenza, anche dopo averla corretta.',
     ],
 

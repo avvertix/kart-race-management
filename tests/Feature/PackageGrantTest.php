@@ -11,7 +11,6 @@ use App\Actions\LicenceRequests\SubmitLicenceRequest;
 use App\Actions\Orders\ConfirmOrderPayment;
 use App\Actions\Orders\GrantPackages;
 use App\Actions\Orders\PlaceOrder;
-use App\Data\EnrollmentSettingsData;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\EntitlementMode;
@@ -173,31 +172,6 @@ class PackageGrantTest extends TestCase
         $this->assertSame(Licence::hashNumber('A777001'), Entitlement::query()->sole()->licence_hash);
     }
 
-    public function test_an_enrollment_package_is_ordered_only_when_enrolling(): void
-    {
-        $championship = $this->championship();
-        $package = Product::factory()->create(['title' => 'Enrollment only package']);
-        Price::factory()->for($package)->create();
-        ProductGrant::factory()->for($package)->create(['kind' => ProductGrantKind::Enrollment, 'championship_id' => $championship->getKey(), 'mode' => null, 'amount' => null]);
-        $renewalPackage = Product::factory()->create(['title' => 'Renewal and enrollment']);
-        Price::factory()->for($renewalPackage)->create();
-        ProductGrant::factory()->for($renewalPackage)->create(['kind' => ProductGrantKind::LicenceEmission, 'championship_id' => null, 'mode' => null, 'amount' => null]);
-        ProductGrant::factory()->for($renewalPackage)->create(['kind' => ProductGrantKind::Enrollment, 'championship_id' => $championship->getKey(), 'mode' => null, 'amount' => null]);
-        $user = User::factory()->create();
-        Licence::factory()->for($user)->create();
-
-        $this->actingAs($user)
-            ->post(route('public.products.order', $package))
-            ->assertRedirect(route('public.championships.enrollment', $championship));
-
-        $this->assertSame(0, Order::query()->count());
-
-        $this->actingAs($user)
-            ->get(route('public.championships.enrollment', $championship))
-            ->assertSee('Enrollment only package')
-            ->assertSee('Renewal and enrollment');
-    }
-
     public function test_a_rejected_packaged_request_leaves_the_enrollment_waiting_and_grants_nothing(): void
     {
         $championship = $this->championship();
@@ -218,36 +192,6 @@ class PackageGrantTest extends TestCase
         $this->assertSame(BibReservationStatus::Pending, $reservation->fresh()->status);
         $this->assertTrue($order->fresh()->canStartLicenceRenewal());
         $this->assertSame(0, Entitlement::query()->count());
-    }
-
-    public function test_an_enrollment_package_grants_once_paid_and_with_a_licence(): void
-    {
-        $championship = $this->championship();
-        $package = Product::factory()->create(['title' => 'Enrollment and two races']);
-        Price::factory()->for($package)->create();
-        $package->grants()->create(['kind' => ProductGrantKind::Enrollment, 'championship_id' => $championship->getKey()]);
-        $package->grants()->create(['kind' => ProductGrantKind::Entitlement, 'championship_id' => $championship->getKey(), 'mode' => EntitlementMode::Credit, 'amount' => 2]);
-
-        $driver = User::factory()->create();
-        $licence = Licence::factory()->for($driver)->create();
-
-        $this->actingAs($driver)
-            ->get(route('public.championships.enrollment', $championship))
-            ->assertSee('Enrollment and two races');
-
-        $this->actingAs($driver)
-            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$licence->ulid, 'product' => $package->ulid])
-            ->assertSessionHasNoErrors();
-
-        $order = $championship->enrollments()->sole()->order;
-        $this->assertTrue($order->lines->first()->product->is($package));
-
-        $order->update(['status' => OrderStatus::PaymentSubmitted]);
-        app(ConfirmOrderPayment::class)($order, User::factory()->organizer()->create());
-
-        $entitlement = Entitlement::query()->sole();
-        $this->assertSame($licence->getKey(), $entitlement->licence_id);
-        $this->assertSame($licence->number_hash, $entitlement->licence_hash);
     }
 
     /**
@@ -283,17 +227,8 @@ class PackageGrantTest extends TestCase
 
     private function championship(bool $grantsReservation = true): Championship
     {
-        $championship = Championship::factory()->create(['bonus_enabled' => false, 'entitlements_enabled' => true]);
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            grants_bib_reservation: $grantsReservation,
-            requires_competitor_when_underage: false,
-        );
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()
+            ->openForEnrollment(reservesRaceNumber: $grantsReservation)
+            ->create(['bonus_enabled' => false, 'entitlements_enabled' => true]);
     }
 }

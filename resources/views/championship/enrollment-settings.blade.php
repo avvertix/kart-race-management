@@ -9,7 +9,6 @@
         $settings = $championship->enrollment;
         $timezone = config('races.timezone');
         $localInput = fn (?\Carbon\CarbonInterface $value) => $value?->setTimezone($timezone)->format('Y-m-d\TH:i');
-        $selectedProduct = old('product', $products->firstWhere('id', $settings->product_id)?->ulid ?? '');
     @endphp
 
     <form method="POST" action="{{ route('championships.enrollment-settings.update', $championship) }}">
@@ -52,51 +51,6 @@
 
         <div class="md:grid md:grid-cols-3 md:gap-6">
             <x-section-title>
-                <x-slot name="title">{{ __('Price') }}</x-slot>
-                <x-slot name="description">
-                    {{ __('The enrollment fee, a fixed amount the same for every licence. Without a fee, enrolling is free.') }}
-                </x-slot>
-            </x-section-title>
-
-            <div class="mt-5 md:mt-0 md:col-span-2">
-                <div class="px-4 py-5 space-y-3">
-                    <label class="flex items-start gap-3">
-                        <input type="radio" name="product" value="" @checked($selectedProduct === '') class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
-                        <span class="text-sm font-medium text-zinc-900">{{ __('Free') }}</span>
-                    </label>
-                    @foreach ($products as $product)
-                        <label class="flex items-start gap-3">
-                            <input type="radio" name="product" value="{{ $product->ulid }}" @checked($selectedProduct === $product->ulid) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
-                            <div>
-                                <span class="text-sm font-medium text-zinc-900">{{ $product->title }}</span>
-                                <p class="text-sm text-zinc-500">{{ $product->currentPrice()?->label() ?? __('No current price') }}{{ $product->active ? '' : ' · '.__('Inactive') }}</p>
-                            </div>
-                        </label>
-                    @endforeach
-                    @if ($products->isEmpty())
-                        <p class="text-sm text-zinc-500">
-                            {{ __('No enrollment products for this championship yet.') }}
-                            @can('create', \App\Models\Product::class)
-                                <a href="{{ route('products.create') }}" class="underline hover:text-zinc-900">{{ __('Create one') }}</a>
-                            @endcan
-                        </p>
-                    @endif
-                    <x-input-error for="product" class="mt-2" />
-                    <label class="flex items-start gap-3 pt-2">
-                        <x-checkbox name="fee_covers_licence_renewal" value="1" :checked="old('fee_covers_licence_renewal', $settings->fee_covers_licence_renewal)" />
-                        <div>
-                            <span class="text-sm font-medium text-zinc-900">{{ __('The fee covers the licence renewal') }}</span>
-                            <p class="text-sm text-zinc-500">{{ __('A driver enrolling with a licence request pays only the fee. A driver with a valid licence pays the same.') }}</p>
-                        </div>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <x-section-border />
-
-        <div class="md:grid md:grid-cols-3 md:gap-6">
-            <x-section-title>
                 <x-slot name="title">{{ __('Rules') }}</x-slot>
                 <x-slot name="description">
                     {{ __('What enrolling gives and asks for.') }}
@@ -105,13 +59,6 @@
 
             <div class="mt-5 md:mt-0 md:col-span-2">
                 <div class="px-4 py-5 space-y-3">
-                    <label class="flex items-start gap-3">
-                        <x-checkbox name="grants_bib_reservation" value="1" :checked="old('grants_bib_reservation', $settings->grants_bib_reservation)" />
-                        <div>
-                            <span class="text-sm font-medium text-zinc-900">{{ __('Grants race number reservation') }}</span>
-                            <p class="text-sm text-zinc-500">{{ __('Enrolling lets the driver reserve a race number for the whole championship.') }}</p>
-                        </div>
-                    </label>
                     <label class="flex items-start gap-3">
                         <x-checkbox name="requires_competitor_when_underage" value="1" :checked="old('requires_competitor_when_underage', $settings->requires_competitor_when_underage)" />
                         <div>

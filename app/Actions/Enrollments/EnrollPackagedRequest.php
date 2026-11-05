@@ -43,7 +43,7 @@ class EnrollPackagedRequest
 
             try {
                 DB::transaction(function () use ($grant, $licenceRequest, $order) {
-                    $enrollment = ($this->createEnrollment)($licenceRequest->user, $grant->championship, null, $licenceRequest, null, pays: false);
+                    $enrollment = ($this->createEnrollment)($licenceRequest->user, $grant->championship, null, $licenceRequest, null);
 
                     $enrollment->update(['order_id' => $order->getKey()]);
 

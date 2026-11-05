@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\OrderStatus;
 use App\Enums\ProductGrantKind;
-use App\Enums\ProductKind;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -91,16 +90,11 @@ class Order extends Model implements Payable
     }
 
     /**
-     * Whether the Order pays a licence renewal: a Package including one, or an enrollment fee covering it.
+     * Whether the Order pays a licence renewal: a Package including one.
      */
     public function coversLicenceRenewal(): bool
     {
-        if ($this->grantsOf(ProductGrantKind::LicenceEmission)->isNotEmpty()) {
-            return true;
-        }
-
-        return $this->lines()->with('product.championship')->get()->contains(fn (OrderLine $line) => $line->product->kind === ProductKind::Enrollment
-            && $line->product->championship?->enrollment->fee_covers_licence_renewal === true);
+        return $this->grantsOf(ProductGrantKind::LicenceEmission)->isNotEmpty();
     }
 
     /**

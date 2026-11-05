@@ -127,7 +127,7 @@ class EnrollmentOptionTest extends TestCase
 
         $this->assertSame(['Free', 'Promo Easyrace'], $offered(DriverLicence::EASYRACE));
         $this->assertSame(['Free', 'Promo National'], $offered(DriverLicence::LOCAL_INTERNATIONAL));
-        $this->assertSame(['Free'], $offered(null));
+        $this->assertSame(['Free', 'Promo Easyrace', 'Promo National'], $offered(null));
     }
 
     public function test_only_organizers_manage_options(): void

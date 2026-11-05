@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Data\EnrollmentSettingsData;
 use App\Models\BonusMode;
+use App\Models\Championship;
+use App\Models\EnrollmentOption;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -28,6 +32,36 @@ class ChampionshipFactory extends Factory
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
         ];
+    }
+
+    /**
+     * A championship accepting enrollments in a period around now, with one enrollment option: free unless an amount
+     * is given, optionally reserving a race number or covering the licence renewal. Tests needing more options create
+     * them on top.
+     */
+    public function openForEnrollment(
+        bool $reservesRaceNumber = false,
+        bool $requiresCompetitor = false,
+        int $amount = 0,
+        bool $coversRenewal = false,
+        ?CarbonImmutable $opensAt = null,
+        ?CarbonImmutable $closesAt = null,
+    ): static {
+        return $this
+            ->state(fn (array $attributes) => [
+                'enrollment' => new EnrollmentSettingsData(
+                    enabled: true,
+                    opens_at: $opensAt ?? now()->subDay(),
+                    closes_at: $closesAt ?? now()->addMonth(),
+                    requires_competitor_when_underage: $requiresCompetitor,
+                ),
+            ])
+            ->afterCreating(fn (Championship $championship) => EnrollmentOption::factory()->for($championship)->create([
+                'title' => $amount === 0 ? 'Free enrollment' : 'Enrollment',
+                'amount' => $amount,
+                'reserves_race_number' => $reservesRaceNumber,
+                'covers_licence_renewal' => $coversRenewal,
+            ]));
     }
 
     /**

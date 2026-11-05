@@ -24,7 +24,7 @@ The driver chooses an option while enrolling, and the Enrollment holds its own p
 
 ## Out of scope
 
-Renewal coverage and race credits (E4).
+Nothing: E3 and E4 are built together, because once Enrollments stop placing Orders the renewal coverage and race credits of D2 and D4 must move to the Enrollment in the same step to keep the app working.
 
 ## Acceptance criteria
 

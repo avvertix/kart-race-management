@@ -14,6 +14,7 @@ use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipDuplicateDriverController;
 use App\Http\Controllers\ChampionshipEnrollmentController;
+use App\Http\Controllers\ChampionshipEnrollmentOptionController;
 use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ChampionshipPenaltyController;
 use App\Http\Controllers\ChampionshipPenaltyImportController;
@@ -264,6 +265,10 @@ Route::middleware([
         Route::middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))->group(function () {
             Route::get('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'edit'])->name('championships.enrollment-settings.edit');
             Route::put('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'update'])->name('championships.enrollment-settings.update');
+            Route::get('championships/{championship}/enrollment-options/create', [ChampionshipEnrollmentOptionController::class, 'create'])->name('championships.enrollment-options.create');
+            Route::post('championships/{championship}/enrollment-options', [ChampionshipEnrollmentOptionController::class, 'store'])->name('championships.enrollment-options.store');
+            Route::get('enrollment-options/{enrollmentOption}/edit', [ChampionshipEnrollmentOptionController::class, 'edit'])->name('enrollment-options.edit');
+            Route::put('enrollment-options/{enrollmentOption}', [ChampionshipEnrollmentOptionController::class, 'update'])->name('enrollment-options.update');
             Route::put('championships/{championship}/entitlement-settings', UpdateChampionshipEntitlementSettingsController::class)->name('championships.entitlement-settings.update');
 
             Route::get('championships/{championship}/promo-codes', [ChampionshipPromoCodeController::class, 'index'])->name('championships.promo-codes.index');

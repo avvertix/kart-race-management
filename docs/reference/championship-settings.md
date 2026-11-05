@@ -18,10 +18,23 @@ The licence provider only decides the wording of local licences on the registrat
 |---|---|---|
 | Enabled | Drivers can enroll in the championship | Off |
 | Opens / closes | Period in which enrollment is accepted, in the races' timezone. Both are required to turn enrollment on | — |
-| Fee | The Enrollment Fee, one of the championship's enrollment Products with fixed prices only; the same whatever the Licence. None means free. A Package including the Enrollment replaces it | None |
-| Fee covers the licence renewal | The fee also pays the Licence Request an Enrollment waits for, while that request isn't paid yet | Off |
-| Grants race number reservation | Enrolling lets the Driver reserve a Championship BIB | Off |
+| Fee (being replaced by enrollment options) | The Enrollment Fee, one of the championship's enrollment Products with fixed prices only; the same whatever the Licence. None means free. A Package including the Enrollment replaces it | None |
+| Fee covers the licence renewal (being replaced by enrollment options) | The fee also pays the Licence Request an Enrollment waits for, while that request isn't paid yet | Off |
+| Grants race number reservation (being replaced by enrollment options) | Enrolling lets the Driver reserve a Championship BIB | Off |
 | Competitor required when underage | An underage Driver must name a Competitor to enroll | On |
+
+### Enrollment options
+
+Each championship lists the options drivers enroll with, in the order set by the organizer. An inactive option is no longer offered.
+
+| Field | Meaning |
+|---|---|
+| Title, description | Shown to drivers when choosing |
+| Amount | Fixed, in euro; 0 is free. The same whatever the licence |
+| Covers the licence renewal | The amount also pays the Licence Request the Enrollment waits for |
+| Reserves a race number | The Driver picks a Championship BIB while enrolling |
+| Race fee discount | Race fees or a balance granted with the Enrollment; only when the championship uses promo codes and packages instead of bonuses |
+| Licence categories | Offered only to licences of these categories; none means any |
 
 ## Wildcards
 

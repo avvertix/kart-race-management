@@ -30,6 +30,12 @@ A championship offers one or more enrollment options instead of an enrollment fe
 - Turning enrollment on requires at least one active option.
 - `EnrollmentOption::isFor(?DriverLicence $category)` and a scope listing the active options for a category.
 
+- Implementation notes:
+  - The fee Product, `fee_covers_licence_renewal` and `grants_bib_reservation` settings stay until E3, as enrollment still reads them; the reference doc marks them as being replaced. Requiring an active option to turn enrollment on also moves to E3.
+  - Options are deactivated, not deleted; deleting an unused one comes with E3, once Enrollments reference options.
+  - `EnrollmentOption::scopeOfferedFor(?DriverLicence)` filters by category in SQL; a licence of unknown category is offered only the options for any licence.
+  - A race fee discount is kept on edit when the championship stopped using Entitlements.
+
 ## Out of scope
 
 Enrollments using options (E3).

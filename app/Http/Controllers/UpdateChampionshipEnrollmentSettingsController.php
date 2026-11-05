@@ -29,6 +29,7 @@ class UpdateChampionshipEnrollmentSettingsController extends Controller
         return view('championship.enrollment-settings', [
             'championship' => $championship,
             'products' => $this->enrollmentProducts($championship)->get(),
+            'options' => $championship->enrollmentOptions()->get(),
         ]);
     }
 

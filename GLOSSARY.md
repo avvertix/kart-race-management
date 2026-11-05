@@ -63,8 +63,12 @@ A Driver's Licence enrolled in a championship, optionally with a Competitor (req
 _Avoid_: Championship registration, subscription, promotional registration
 
 **Enrollment Fee**:
-The fixed amount a championship charges for an Enrollment. The championship may make it cover the Licence Request renewing the Driver's Licence for its year; a Driver who already holds a valid Licence pays the same.
+Being replaced by the amount of an Enrollment Option (ADR 0006). The fixed amount a championship charges for an Enrollment. The championship may make it cover the Licence Request renewing the Driver's Licence for its year; a Driver who already holds a valid Licence pays the same.
 _Avoid_: Subscription fee
+
+**Enrollment Option**:
+What a Driver enrolls in a championship with: free or a fixed amount, optionally covering the Licence renewal, reserving a Championship BIB and granting a race fee discount, possibly offered only to some licence categories. A championship offers one or more; see ADR 0006.
+_Avoid_: Plan, tier, package
 
 **Wildcard**:
 A Participant who races but does not score championship points, as decided by the championship's wildcard configuration (e.g. because they are not enrolled).

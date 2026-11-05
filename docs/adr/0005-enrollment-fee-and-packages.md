@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0006
 ---
 
 # An Enrollment is free or has a fixed fee, Packages are optional offers, and Orders stay behind the Enrollment

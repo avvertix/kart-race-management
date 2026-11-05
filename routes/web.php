@@ -336,7 +336,11 @@ Route::middleware([
     Route::post('products/{product}/order', [PublicProductController::class, 'order'])->name('public.products.order');
 
     Route::post('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'store'])->name('public.championships.enrollment.store');
+    Route::get('my-enrollments/{enrollment}', [MyEnrollmentController::class, 'show'])->name('my-enrollments.show');
     Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
+    Route::post('my-enrollments/{enrollment}/payment', [MyEnrollmentController::class, 'pay'])
+        ->middleware('throttle:10,10')
+        ->name('my-enrollments.payment.store');
 
     Route::post('promo-codes/find', [PromoCodeClaimController::class, 'find'])
         ->middleware('throttle:20,1')

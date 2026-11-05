@@ -6,7 +6,7 @@ namespace App\Actions\Enrollments;
 
 use App\Actions\Orders\PlaceOrder;
 use App\Enums\EnrollmentStatus;
-use App\Enums\LicenceRequestPaymentStatus;
+use App\Enums\ProductGrantKind;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
@@ -24,8 +24,8 @@ class CreateEnrollment
     /**
      * Create a submitted Enrollment for the Licence, or for the Licence Request it waits for, in a championship accepting
      * enrollments. When `$pays` is true it also places the Order, owned by the User, for the chosen Package including the
-     * enrollment, or else for the fixed enrollment fee when not free. A fee covering the licence renewal pays the Licence
-     * Request too, while it is not paid nor covered yet. A Licence Request is locked and checked again, so that an Enrollment never waits for a
+     * enrollment, or else for the fixed enrollment fee when not free. A fee covering the licence renewal, or a Package
+     * including one, pays the Licence Request too, while it is not paid nor covered yet. A Licence Request is locked and checked again, so that an Enrollment never waits for a
      * request emitted meanwhile.
      *
      * @throws ValidationException when the Licence or request is already enrolled, or the enrollment Product can't be ordered
@@ -42,7 +42,9 @@ class CreateEnrollment
             throw ValidationException::withMessages(['enrollment' => __('The enrollment is not available at the moment.')]);
         }
 
-        $coversRenewal = $package === null && $product !== null && $championship->enrollment->fee_covers_licence_renewal;
+        $coversRenewal = $package === null
+            ? $product !== null && $championship->enrollment->fee_covers_licence_renewal
+            : $package->grants()->where('kind', ProductGrantKind::LicenceEmission)->exists();
 
         return DB::transaction(function () use ($user, $championship, $licence, $licenceRequest, $competitorLicence, $product, $coversRenewal) {
             Championship::query()->whereKey($championship->getKey())->lockForUpdate()->firstOrFail();
@@ -59,8 +61,8 @@ class CreateEnrollment
 
             $order = $product === null ? null : ($this->placeOrder)($user, $product);
 
-            if ($coversRenewal && $licence === null && $licenceRequest !== null) {
-                $this->coverRenewal($licenceRequest, $order);
+            if ($coversRenewal && $order !== null && $licence === null && $licenceRequest !== null) {
+                $licenceRequest->coverWith($order);
             }
 
             return $championship->enrollments()->create([
@@ -72,23 +74,5 @@ class CreateEnrollment
                 'order_id' => $order?->getKey(),
             ]);
         });
-    }
-
-    /**
-     * Let the Order of the fee pay the Licence Request the Enrollment waits for, when its own payment is not made nor
-     * covered yet. Call it inside the transaction, with the request locked.
-     */
-    private function coverRenewal(LicenceRequest $licenceRequest, Order $order): void
-    {
-        $locked = LicenceRequest::query()->whereKey($licenceRequest->getKey())->lockForUpdate()->firstOrFail();
-
-        if ($locked->covering_order_id !== null || ! in_array($locked->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true)) {
-            return;
-        }
-
-        $locked->update([
-            'covering_order_id' => $order->getKey(),
-            'payment_status' => LicenceRequestPaymentStatus::Covered,
-        ]);
     }
 }

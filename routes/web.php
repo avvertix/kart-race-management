@@ -338,6 +338,7 @@ Route::middleware([
     Route::post('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'store'])->name('public.championships.enrollment.store');
     Route::get('my-enrollments/{enrollment}', [MyEnrollmentController::class, 'show'])->name('my-enrollments.show');
     Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
+    Route::put('my-enrollments/{enrollment}/licence', [MyEnrollmentController::class, 'updateLicence'])->name('my-enrollments.licence.update');
     Route::post('my-enrollments/{enrollment}/payment', [MyEnrollmentController::class, 'pay'])
         ->middleware('throttle:10,10')
         ->name('my-enrollments.payment.store');

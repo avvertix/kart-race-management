@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\LicenceRequests;
 
-use App\Actions\Enrollments\RejectEnrollment;
-use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
-use App\Models\Enrollment;
 use App\Models\LicenceRequest;
 use App\Models\User;
 use App\Notifications\LicenceRequestRejected;
@@ -19,7 +16,8 @@ class RejectLicenceRequest
 {
     /**
      * Close the request without a licence, with a reason shown to the requester. Refunds are settled by email. The
-     * Enrollments packaged with the request are rejected too, releasing their race numbers; nothing is granted.
+     * Enrollments waiting for the request stay submitted: the User picks another Licence for them, and the Order that
+     * covered the request covers a new one.
      *
      * @throws ValidationException when the reason is missing or the request cannot be rejected
      */
@@ -42,14 +40,6 @@ class RejectLicenceRequest
 
             return $locked;
         });
-
-        Enrollment::query()
-            ->where('licence_request_id', $reviewed->getKey())
-            ->whereNotNull('order_id')
-            ->where('order_id', $reviewed->covering_order_id)
-            ->where('status', EnrollmentStatus::Submitted)
-            ->get()
-            ->each(fn (Enrollment $enrollment) => app(RejectEnrollment::class)($enrollment, __('The licence request paid together with it was rejected.')));
 
         $reviewed->user->notify(new LicenceRequestRejected($reviewed));
 

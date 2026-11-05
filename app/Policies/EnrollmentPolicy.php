@@ -57,6 +57,15 @@ class EnrollmentPolicy
     }
 
     /**
+     * Determine whether the user can give the enrollment another licence as its driver: their own, while submitted, once
+     * the licence request it waited for was rejected.
+     */
+    public function changeLicence(User $user, Enrollment $enrollment): bool
+    {
+        return $this->withdraw($user, $enrollment) && $enrollment->needsLicence();
+    }
+
+    /**
      * Determine whether the user can withdraw the enrollment as its driver: only their own, while submitted.
      */
     public function withdraw(User $user, Enrollment $enrollment): bool

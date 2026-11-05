@@ -111,6 +111,22 @@ class Product extends Model
     }
 
     /**
+     * The active Packages offered when renewing while enrolling in the championship: those including an Enrollment in it
+     * and a licence renewal, which covers the Licence Request started.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeEnrollingWithRenewalIn(Builder $query, Championship $championship): void
+    {
+        $query->active()
+            ->where('kind', ProductKind::Package)
+            ->whereHas('grants', fn (Builder $query) => $query
+                ->where('kind', ProductGrantKind::Enrollment)
+                ->where('championship_id', $championship->getKey()))
+            ->whereHas('grants', fn (Builder $query) => $query->where('kind', ProductGrantKind::LicenceEmission));
+    }
+
+    /**
      * The championship whose enrollment page sells the Product: its own for an enrollment fee, or the one of a Package
      * including an Enrollment and no licence renewal. Ordered elsewhere, nothing would say which Licence it enrolls.
      */

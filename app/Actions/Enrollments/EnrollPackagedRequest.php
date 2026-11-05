@@ -15,20 +15,28 @@ class EnrollPackagedRequest
     public function __construct(private CreateEnrollment $createEnrollment) {}
 
     /**
-     * When a Licence Request covered by a Package with Enrollment grants is submitted, enroll it in each championship: a
-     * submitted Enrollment waiting for the request, paid by the Package's Order. A championship it is already enrolled
-     * in, or not open to the request, is skipped and logged.
+     * When a Licence Request covered by a Package with Enrollment grants is started or submitted, enroll it in each
+     * championship: a submitted Enrollment waiting for the request, paid by the Package's Order. A championship it is
+     * already enrolled in is skipped; one not open to the request is skipped, logged and returned.
+     *
+     * @return array<int, string> Why an Enrollment couldn't be created, by championship
      */
-    public function __invoke(LicenceRequest $licenceRequest): void
+    public function __invoke(LicenceRequest $licenceRequest): array
     {
         $order = $licenceRequest->coveringOrder;
 
         if ($order === null) {
-            return;
+            return [];
         }
 
-        $order->grantsOf(ProductGrantKind::Enrollment)->each(function (ProductGrant $grant) use ($licenceRequest, $order) {
+        $skipped = [];
+
+        $order->grantsOf(ProductGrantKind::Enrollment)->each(function (ProductGrant $grant) use ($licenceRequest, $order, &$skipped) {
             if ($grant->championship === null) {
+                return;
+            }
+
+            if ($licenceRequest->enrollments()->active()->where('championship_id', $grant->championship_id)->exists()) {
                 return;
             }
 
@@ -44,7 +52,11 @@ class EnrollPackagedRequest
                     'championship' => $grant->championship_id,
                     'reason' => $exception->getMessage(),
                 ]);
+
+                $skipped[] = __('Not enrolled in :championship: :reason', ['championship' => $grant->championship->title, 'reason' => $exception->getMessage()]);
             }
         });
+
+        return $skipped;
     }
 }

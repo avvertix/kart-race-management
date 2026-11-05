@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Enrollments\EnrollPackagedRequest;
 use App\Actions\LicenceRequests\DeleteLicenceRequestDraft;
 use App\Actions\LicenceRequests\StartLicenceRenewal;
 use App\Actions\SubmitPaymentProof;
 use App\Data\RequiredDocument;
+use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceDocument;
 use App\Enums\LicenceDocumentKind;
+use App\Models\Championship;
+use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestDocument;
@@ -33,7 +37,7 @@ class LicenceRequestController extends Controller
      * Start a renewal: empty, or pre-filled from one of the user's licences, and covered by a paid Package when started
      * from its Order.
      */
-    public function store(Request $request, StartLicenceRenewal $startRenewal): RedirectResponse
+    public function store(Request $request, StartLicenceRenewal $startRenewal, EnrollPackagedRequest $enrollPackagedRequest): RedirectResponse
     {
         $this->authorize('create', LicenceRequest::class);
 
@@ -62,8 +66,22 @@ class LicenceRequestController extends Controller
                 }
             }
 
-            return $startRenewal($request->user(), $previous, $coveringOrder, $validityYear);
+            $started = $startRenewal($request->user(), $previous, $coveringOrder, $validityYear);
+
+            if ($coveringOrder !== null) {
+                $this->moveWaitingEnrollments($coveringOrder, $started);
+            }
+
+            return $started;
         });
+
+        $skipped = $coveringOrder === null ? [] : $enrollPackagedRequest($licenceRequest);
+
+        if ($skipped !== []) {
+            return redirect()->route('licence-requests.edit', $licenceRequest)
+                ->with('flash.banner', implode(' ', $skipped))
+                ->with('flash.bannerStyle', 'warning');
+        }
 
         return redirect()->route('licence-requests.edit', $licenceRequest);
     }
@@ -148,5 +166,28 @@ class LicenceRequestController extends Controller
             'holder' => $licenceRequest->holder,
             'parents' => $licenceRequest->parentHolders(),
         ])->stream(Str::slug($document->label()).'.pdf');
+    }
+
+    /**
+     * Move the Enrollments paid by the Order whose request was rejected to the new request it covers. Call it inside the
+     * transaction, with the Order locked.
+     */
+    private function moveWaitingEnrollments(Order $order, LicenceRequest $licenceRequest): void
+    {
+        $waiting = Enrollment::query()->where('order_id', $order->getKey())->where('status', EnrollmentStatus::Submitted)->whereNull('licence_id')->get();
+
+        Championship::query()->whereKey($waiting->pluck('championship_id')->unique()->all())->orderBy('id')->lockForUpdate()->get();
+
+        Enrollment::query()
+            ->whereKey($waiting->modelKeys())
+            ->lockForUpdate()
+            ->with(['licenceRequest', 'championship'])
+            ->get()
+            ->filter(fn (Enrollment $enrollment) => $enrollment->needsLicence())
+            ->each(function (Enrollment $enrollment) use ($licenceRequest) {
+                Enrollment::ensureNotEnrolled($enrollment->championship, null, $licenceRequest, except: $enrollment);
+
+                $enrollment->update(['licence_request_id' => $licenceRequest->getKey()]);
+            });
     }
 }

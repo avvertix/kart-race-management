@@ -202,6 +202,19 @@ class Licence extends Model
     }
 
     /**
+     * Only the driver licences of an earlier year than the championship that can be renewed for it: of the championship's
+     * provider when it names one.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeRenewableFor(Builder $query, Championship $championship): void
+    {
+        $query->where('role', LicenceRole::Driver)
+            ->where('validity_year', '<', $championship->start_at->year)
+            ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));
+    }
+
+    /**
      * Only the licences that can name the Competitor in the championship: including a competitor licence, valid in its
      * year.
      *

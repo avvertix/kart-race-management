@@ -200,6 +200,36 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
+     * Let the Order pay the request, e.g. an enrollment fee covering the renewal, when its own payment is not made nor
+     * covered yet. Call it inside a transaction.
+     */
+    public function coverWith(Order $order): void
+    {
+        $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
+
+        if ($locked->covering_order_id !== null || ! in_array($locked->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true)) {
+            return;
+        }
+
+        $locked->update([
+            'covering_order_id' => $order->getKey(),
+            'payment_status' => LicenceRequestPaymentStatus::Covered,
+        ]);
+
+        $this->setRawAttributes($locked->getAttributes(), true);
+    }
+
+    /**
+     * The Enrollments waiting for the request, or that did.
+     *
+     * @return HasMany<Enrollment, $this>
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    /**
      * The payment proofs, including the rejected ones.
      *
      * @return MorphMany<Payment, $this>
@@ -620,7 +650,7 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Only the requests an Enrollment in the championship can wait for: submitted, not emitted nor rejected, for a
+     * Only the requests an Enrollment in the championship can wait for: drafts included, not emitted nor rejected, for a
      * driver licence valid in its year and of the championship's provider when it names one.
      *
      * @param  Builder<self>  $query
@@ -628,7 +658,6 @@ class LicenceRequest extends Model implements Payable
     public function scopeEnrollableIn(Builder $query, Championship $championship): void
     {
         $query->open()
-            ->where('status', '!=', LicenceRequestStatus::Draft)
             ->where('validity_year', $championship->start_at->year)
             ->where(fn (Builder $query) => $query->whereNull('licence_type')->orWhere(fn (Builder $query) => $query->forDriverLicence()))
             ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));

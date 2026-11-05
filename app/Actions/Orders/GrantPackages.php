@@ -71,7 +71,7 @@ class GrantPackages
             return $order->licence;
         }
 
-        $licenceRequest = LicenceRequest::query()->where('covering_order_id', $order->getKey())->latest('id')->first();
+        $licenceRequest = LicenceRequest::query()->where('covering_order_id', $order->getKey())->where('status', '!=', LicenceRequestStatus::Rejected)->latest('id')->first();
 
         if ($licenceRequest !== null) {
             return $licenceRequest->status === LicenceRequestStatus::Emitted ? $licenceRequest->licence : null;

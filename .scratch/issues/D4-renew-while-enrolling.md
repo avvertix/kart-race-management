@@ -26,6 +26,13 @@ A driver without a valid Licence chooses "renew" in the enrollment form. The Enr
 - A covering Order (Package or fee) is freed for a new request once the request it covered is rejected. `Order::canStartLicenceRenewal` ignores rejected requests.
 - My licences shows a paid Package with an unused renewal as "Renewal covered by {package}: start it".
 
+- Implementation notes:
+  - Renew is offered for the newest earlier Licence of each Driver without a valid Licence or open request, and for a licence not in the account (the championship's provider is set on the draft). The server accepts only the renewals the form offers.
+  - A draft an Enrollment waits for can't be deleted, and submitting it checks that it still fits the championship's year, provider and driver role.
+  - Packaged Enrollments are no longer rejected with their request. Starting the freed renewal, from the Enrollment page or from My licences, moves the waiting Enrollment to the new request.
+  - Switching to an existing open request lets a freed renewal Order cover it. A Licence already holding a race number in the championship can't take the Enrollment's number.
+  - The competitor isn't checked again on switch or on renew of a licence not in the account; D5 lets the driver and organizer set it before confirmation, which requires it.
+
 ## Out of scope
 
 Notifications (D7).

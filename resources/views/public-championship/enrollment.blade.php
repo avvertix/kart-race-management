@@ -81,7 +81,8 @@
                                 subject: {{ Js::from(old('subject', '')) }},
                                 product: {{ Js::from(old('product', '')) }},
                                 get chosen() { return this.subjects.find((item) => item.value === this.subject) ?? null },
-                                get payment() { return this.paymentOptions.find((item) => item.value === this.product) ?? this.paymentOptions[0] },
+                                offered(option) { return option.for === 'any' || option.for === (this.chosen?.kind ?? 'licence') },
+                                get payment() { return this.paymentOptions.find((item) => item.value === this.product && this.offered(item)) ?? this.paymentOptions[0] },
                                 get needsCompetitor() { return this.chosen !== null && this.chosen.underage },
                                 get showsNumber() { return this.chosen !== null && this.payment.grantsNumber },
                             }">
@@ -125,8 +126,8 @@
                                     <fieldset class="space-y-2">
                                         <legend class="text-sm font-medium text-zinc-900">{{ __('What you are buying') }}</legend>
                                         @foreach ($paymentOptions as $option)
-                                            <label class="flex items-start gap-3">
-                                                <input type="radio" name="product" value="{{ $option['value'] }}" x-model="product" @checked(old('product', '') === $option['value']) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                            <label class="flex items-start gap-3" x-show="offered({{ Js::from($option) }})">
+                                                <input type="radio" name="product" value="{{ $option['value'] }}" x-model="product" x-bind:disabled="!offered({{ Js::from($option) }})" @checked(old('product', '') === $option['value']) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
                                                 <span class="text-sm text-zinc-900">{{ $option['label'] }}</span>
                                             </label>
                                         @endforeach

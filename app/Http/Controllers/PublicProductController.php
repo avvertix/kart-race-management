@@ -32,7 +32,7 @@ class PublicProductController extends Controller
      */
     public function show(Request $request, Product $product): View
     {
-        $product->load(['prices', 'championship']);
+        $product->load(['prices', 'championship', 'grants.championship']);
 
         return view('public-product.show', [
             'product' => $product,
@@ -62,10 +62,18 @@ class PublicProductController extends Controller
     }
 
     /**
-     * Place the order for the product.
+     * Place the order for the product. A Package including an Enrollment and no licence renewal is ordered from the
+     * championship's enrollment page instead.
      */
     public function order(Request $request, Product $product, PlaceOrder $placeOrder): RedirectResponse
     {
+        $enrollmentChampionship = $product->enrollmentChampionship();
+
+        if ($enrollmentChampionship !== null) {
+            return to_route('public.championships.enrollment', $enrollmentChampionship)
+                ->with('flash.banner', __('Choose the package when enrolling, together with the licence to enroll.'));
+        }
+
         $order = $placeOrder($request->user(), $product);
 
         return redirect()->route('my-orders.show', $order);

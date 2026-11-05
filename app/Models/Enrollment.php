@@ -9,6 +9,7 @@ use App\Data\HolderData;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\OrderStatus;
+use App\Enums\ProductGrantKind;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -158,6 +159,20 @@ class Enrollment extends Model
     public function reservations(): HasMany
     {
         return $this->hasMany(BibReservation::class);
+    }
+
+    /**
+     * Whether the driver can reserve a race number with the Enrollment: when the championship grants it with enrollment,
+     * or when the Package paying the Enrollment does.
+     */
+    public function grantsBibReservation(): bool
+    {
+        if ($this->championship->enrollment->grants_bib_reservation) {
+            return true;
+        }
+
+        return $this->order !== null && $this->order->grantsOf(ProductGrantKind::Enrollment)
+            ->contains(fn (ProductGrant $grant) => $grant->championship_id === $this->championship_id && $grant->grants_bib_reservation);
     }
 
     /**

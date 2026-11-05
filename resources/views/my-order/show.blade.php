@@ -14,6 +14,17 @@
     <div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8">
         <div class="grid gap-8 lg:grid-cols-3">
             <div class="lg:col-span-2 space-y-4 prose prose-zinc">
+                @if ($order->canStartLicenceRenewal())
+                    <div class="not-prose rounded-md border border-lime-300 bg-lime-50 p-4 space-y-2">
+                        <p class="text-sm text-lime-900">{{ __('Your order includes a licence renewal. Start it now: the request is covered by this order and asks for no payment.') }}</p>
+                        <form method="POST" action="{{ route('licence-requests.store') }}">
+                            @csrf
+                            <input type="hidden" name="order" value="{{ $order->ulid }}">
+                            <x-button type="submit">{{ __('Start your licence renewal') }}</x-button>
+                        </form>
+                        <x-input-error for="order" class="mt-2" />
+                    </div>
+                @endif
                 @switch($order->status)
                     @case(\App\Enums\OrderStatus::AwaitingPrice)
                         <p>{{ __('The organizer sets the final price after reviewing your request. You will receive an email once it is set, then you can pay.') }}</p>

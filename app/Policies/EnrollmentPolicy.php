@@ -53,7 +53,7 @@ class EnrollmentPolicy
     public function pickRaceNumber(User $user, Enrollment $enrollment): bool
     {
         return $this->withdraw($user, $enrollment)
-            && $enrollment->championship->enrollment->grants_bib_reservation;
+            && $enrollment->grantsBibReservation();
     }
 
     /**

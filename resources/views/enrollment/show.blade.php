@@ -130,7 +130,7 @@
                     @endif
                 </div>
 
-                @if ($championship->enrollment->grants_bib_reservation)
+                @if ($canPickNumber)
                     <form method="POST" action="{{ route('enrollments.race-number.update', $enrollment) }}" class="space-y-3 rounded-md border border-zinc-200 bg-white p-4">
                         @csrf
                         @method('PUT')

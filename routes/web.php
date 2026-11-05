@@ -56,6 +56,7 @@ use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductGrantController;
 use App\Http\Controllers\PromoCodeClaimController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicChampionshipEnrollmentController;
@@ -284,6 +285,8 @@ Route::middleware([
             Route::put('enrollments/{enrollment}/race-number', [EnrollmentReviewController::class, 'raceNumber'])->name('enrollments.race-number.update');
 
             Route::resource('products', ProductController::class)->except(['show', 'destroy']);
+            Route::post('products/{product}/grants', [ProductGrantController::class, 'store'])->name('products.grants.store');
+            Route::delete('product-grants/{productGrant}', [ProductGrantController::class, 'destroy'])->name('product-grants.destroy');
 
             Route::resource('licences', LicenceController::class)->only(['index', 'show']);
             Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');

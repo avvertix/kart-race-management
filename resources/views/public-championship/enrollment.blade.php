@@ -128,7 +128,29 @@
                                     </div>
                                 @endif
 
-                                @if ($settings->grants_bib_reservation)
+                                @if ($packages->isNotEmpty())
+                                    <fieldset class="space-y-2">
+                                        <legend class="text-sm font-medium text-zinc-900">{{ __('What you are buying') }}</legend>
+                                        <label class="flex items-start gap-3">
+                                            <input type="radio" name="product" value="" @checked(blank(old('product'))) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                            <span class="text-sm text-zinc-900">{{ __('The enrollment on its own') }} &middot; {{ $settings->isFree() ? __('Free') : $price?->label() }}</span>
+                                        </label>
+                                        @foreach ($packages as $package)
+                                            <label class="flex items-start gap-3">
+                                                <input type="radio" name="product" value="{{ $package->ulid }}" @checked(old('product') === $package->ulid) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                                <span class="text-sm text-zinc-900">{{ $package->title }} &middot; {{ $package->orderablePrice()?->label() }}</span>
+                                            </label>
+                                        @endforeach
+                                    </fieldset>
+                                @endif
+
+                                @php
+                                    $packagesGrantingNumber = $packages->filter(fn ($package) => $package->grants->contains(fn ($grant) => $grant->kind === \App\Enums\ProductGrantKind::Enrollment && $grant->championship_id === $championship->getKey() && $grant->grants_bib_reservation));
+                                @endphp
+                                @if ($settings->grants_bib_reservation || $packagesGrantingNumber->isNotEmpty())
+                                    @unless ($settings->grants_bib_reservation)
+                                        <p class="text-sm text-zinc-600">{{ __('The race number is reserved only with: :packages.', ['packages' => $packagesGrantingNumber->pluck('title')->join(', ')]) }}</p>
+                                    @endunless
                                     <livewire:race-number-picker :championship="$championship" />
                                 @endif
 

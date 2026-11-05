@@ -46,7 +46,9 @@
                             <p class="text-sm text-zinc-600">{{ __('This price applies until :date.', ['date' => $currentPrice->ends_at->setTimezone(config('races.timezone'))->isoFormat('D MMMM YYYY')]) }}</p>
                         @endif
 
-                        @if ($user?->hasVerifiedEmail())
+                        @if ($product->enrollmentChampionship())
+                            <x-button-link href="{{ route('public.championships.enrollment', $product->enrollmentChampionship()) }}" class="w-full">{{ __('Order it when enrolling') }}</x-button-link>
+                        @elseif ($user?->hasVerifiedEmail())
                             <form method="POST" action="{{ route('public.products.order', $product) }}">
                                 @csrf
                                 <x-button type="submit" class="w-full">{{ __('Order') }}</x-button>

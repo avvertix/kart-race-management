@@ -6,6 +6,8 @@ namespace App\Providers;
 
 use App\Events\EnrollmentConfirmed;
 use App\Events\EnrollmentRevoked;
+use App\Events\OrderPaid;
+use App\Listeners\GrantPackagesWhenOrderPaid;
 use App\Listeners\LogNotification;
 use App\Listeners\ReevaluateWildcardsForEnrollment;
 use App\Models\Category;
@@ -138,6 +140,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Event::listen(NotificationSent::class, LogNotification::class);
         Event::listen([EnrollmentConfirmed::class, EnrollmentRevoked::class], ReevaluateWildcardsForEnrollment::class);
+        Event::listen(OrderPaid::class, GrantPackagesWhenOrderPaid::class);
     }
 
     /**

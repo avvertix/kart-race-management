@@ -26,7 +26,7 @@ class LicenceCatalogueTest extends TestCase
                 'mechanic' => ['name' => 'Mechanic', 'role' => LicenceRole::Mechanic],
             ],
             'asi' => [
-                'driver' => ['name' => 'Driver', 'role' => LicenceRole::Driver, 'race_licence_category' => DriverLicence::LOCAL_NATIONAL],
+                'ma' => ['name' => 'MA', 'role' => LicenceRole::Driver, 'race_licence_category' => DriverLicence::LOCAL_NATIONAL],
             ],
         ]]);
     }
@@ -61,7 +61,7 @@ class LicenceCatalogueTest extends TestCase
     {
         $this->assertTrue(LicenceCatalogue::find(LicenceProvider::Aci, 'naz-e')->allowsCompetitor());
         $this->assertFalse(LicenceCatalogue::find(LicenceProvider::Aci, 'mechanic')->allowsCompetitor());
-        $this->assertFalse(LicenceCatalogue::find(LicenceProvider::Asi, 'driver')->allowsCompetitor());
+        $this->assertFalse(LicenceCatalogue::find(LicenceProvider::Asi, 'ma')->allowsCompetitor());
     }
 
     public function test_a_form_published_by_the_provider_replaces_the_pre_filled_one(): void

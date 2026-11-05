@@ -116,7 +116,7 @@ class LicenceRequestFormTest extends TestCase
         Livewire::actingAs($user)
             ->test(LicenceRequestForm::class, ['licenceRequest' => $licenceRequest])
             ->set('provider', 'asi')
-            ->set('licenceType', 'driver')
+            ->set('licenceType', 'ma')
             ->set('previousLicenceNumber', 'ASI-1')
             ->call('saveLicence')
             ->assertHasNoErrors();

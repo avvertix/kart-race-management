@@ -298,8 +298,6 @@
     "Mechanic Licence Number": "Numero di licenza (meccanico)",
     "Export participants": "Esporta concorrenti",
     "Export all registered participants": "Esporta tutti i concorrenti iscritti",
-    "Export for ACI Italian Cup": "Esporta per Coppa Italia ACI",
-    "Export confirmed participants as requested by ACI Karting": "Esporta concorrenti confermati come richiesto da ACI Karting",
     "Export transponders": "Esporta transponder",
     "Export drivers and transponder for MyLaps Orbits": "Esporta piloti e transponder per MyLaps Orbits",
     "Export briefing signature module": "Esporta modulo firme briefing",
@@ -1698,5 +1696,7 @@
     "Your payment proof was not accepted": "La tua ricevuta di pagamento non è stata accettata",
     "The organizer could not confirm the payment proof of :order. Upload a new one.": "L'organizzatore non ha potuto confermare la ricevuta di pagamento di :order. Caricane una nuova.",
     "Choose another licence": "Scegli un'altra licenza",
-    "The enrollment of :driver in :championship was rejected.": "L'iscrizione di :driver a :championship è stata respinta."
+    "The enrollment of :driver in :championship was rejected.": "L'iscrizione di :driver a :championship è stata respinta.",
+    "Export verified drivers": "Esporta i piloti verificati",
+    "Export the confirmed participants with a transponder": "Esporta i partecipanti confermati con un trasponder"
 }

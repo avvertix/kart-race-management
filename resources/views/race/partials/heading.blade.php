@@ -47,10 +47,10 @@
                                     <flux:menu.separator />
                                 @endcan
 
-                                @if ($race->isNationalOrInternational() && $race->championship->offersAciExport())
-                                    <x-menu-item :href="route('races.export.aci', $race)" :description="__('Export confirmed participants as requested by ACI Karting')">
+                                @if ($race->isNationalOrInternational())
+                                    <x-menu-item :href="route('races.export.verified-drivers', $race)" :description="__('Export the confirmed participants with a transponder')">
                                         <x-slot:icon><x-ri-table-2 /></x-slot:icon>
-                                        {{ __('Export for ACI Italian Cup') }}
+                                        {{ __('Export verified drivers') }}
                                     </x-menu-item>
 
                                     <flux:menu.separator />

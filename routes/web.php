@@ -31,10 +31,10 @@ use App\Http\Controllers\EnrollmentReviewController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
 use App\Http\Controllers\ExportRaceHeatGridController;
 use App\Http\Controllers\ExportRaceParticipantsController;
-use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ExportRacePrefinaleGridController;
+use App\Http\Controllers\ExportRaceVerifiedDriversController;
 use App\Http\Controllers\LicenceController;
 use App\Http\Controllers\LicenceRequestController;
 use App\Http\Controllers\LicenceRequestReviewController;
@@ -243,7 +243,7 @@ Route::middleware([
 
         Route::get('races/{race}/export-transponders', ExportRaceParticipantsForTimingController::class)->name('races.export.transponders');
 
-        Route::get('races/{race}/export-aci', ExportRaceParticipantsForAciPromotionController::class)->name('races.export.aci');
+        Route::get('races/{race}/export-verified-drivers', ExportRaceVerifiedDriversController::class)->name('races.export.verified-drivers');
 
         Route::get('races/{race}/export-signature', ExportRaceParticipantsForSigningController::class)->name('races.export.signature');
 

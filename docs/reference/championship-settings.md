@@ -10,7 +10,7 @@ Settings of a championship, chosen when creating it or later from its page. Sett
 | Accepted driver licences | Any of: national, international, foreign, easy race, daily | All |
 | Accepted competitor licences | Any of: local, foreign | All |
 
-The licence provider decides the wording on the registration form and rules, and which exports are offered (the ACI promotion export only for ACI championships). Without a provider, the championship uses the platform-wide one and offers the ACI promotion export on national and international races, as before.
+The licence provider only decides the wording of local licences on the registration form and rules; without a provider, the championship uses the platform-wide one, as before. It doesn't restrict which licences can be enrolled: licences from every provider are accepted, e.g. ACI and ASI in the same championship. The verified drivers export is offered on national and international races whatever the provider.
 
 ## Enrollment (**new**)
 

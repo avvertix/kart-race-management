@@ -10,11 +10,9 @@
             <x-button-link href="{{ route('championships.bib-reservations.import.create', $championship) }}">
                 {{ __('Import reservations') }}
             </x-button-link>
-            @if ($championship->allowsReservationCopy())
-                <x-button-link href="{{ route('championships.bib-reservations.copy', $championship) }}">
-                    {{ __('Copy from championship') }}
-                </x-button-link>
-            @endif
+            <x-button-link href="{{ route('championships.bib-reservations.copy', $championship) }}">
+                {{ __('Copy from championship') }}
+            </x-button-link>
         @endcan
     </x-slot>
 

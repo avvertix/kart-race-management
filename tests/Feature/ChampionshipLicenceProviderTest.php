@@ -39,7 +39,7 @@ class ChampionshipLicenceProviderTest extends TestCase
 
         $this->actingAs(User::factory()->organizer()->create())
             ->get(route('races.show', $race))
-            ->assertSee('Export for ACI Italian Cup');
+            ->assertSee('Export verified drivers');
     }
 
     public function test_the_registration_uses_the_championship_provider(): void
@@ -56,24 +56,6 @@ class ChampionshipLicenceProviderTest extends TestCase
             ->assertSuccessful()
             ->assertSee('Licence issued by ASI in')
             ->assertDontSee('Licence issued by ACI Sport');
-    }
-
-    public function test_the_aci_export_is_offered_only_for_aci_championships(): void
-    {
-        $organizer = User::factory()->organizer()->create();
-        $championship = Championship::factory()->create();
-        $championship->licences->provider = LicenceProvider::Asi;
-        $championship->save();
-
-        $race = Race::factory()->national()->recycle($championship)->create();
-
-        $this->actingAs($organizer)
-            ->get(route('races.show', $race))
-            ->assertDontSee('Export for ACI Italian Cup');
-
-        $this->actingAs($organizer)
-            ->get(route('races.export.aci', $race))
-            ->assertNotFound();
     }
 
     public function test_the_provider_is_chosen_when_creating_the_championship(): void

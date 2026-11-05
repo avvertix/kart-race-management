@@ -651,7 +651,7 @@ class LicenceRequest extends Model implements Payable
 
     /**
      * Only the requests an Enrollment in the championship can wait for: drafts included, not emitted nor rejected, for a
-     * driver licence valid in its year and of the championship's provider when it names one.
+     * driver licence valid in its year, from any provider.
      *
      * @param  Builder<self>  $query
      */
@@ -659,8 +659,7 @@ class LicenceRequest extends Model implements Payable
     {
         $query->open()
             ->where('validity_year', $championship->start_at->year)
-            ->where(fn (Builder $query) => $query->whereNull('licence_type')->orWhere(fn (Builder $query) => $query->forDriverLicence()))
-            ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));
+            ->where(fn (Builder $query) => $query->whereNull('licence_type')->orWhere(fn (Builder $query) => $query->forDriverLicence()));
     }
 
     /**

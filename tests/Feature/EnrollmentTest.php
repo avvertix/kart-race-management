@@ -9,7 +9,6 @@ use App\Actions\LicenceRequests\RejectLicenceRequest;
 use App\Data\EnrollmentSettingsData;
 use App\Data\HolderData;
 use App\Enums\EnrollmentStatus;
-use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\OrderStatus;
 use App\Models\Championship;
@@ -105,14 +104,11 @@ class EnrollmentTest extends TestCase
     public function test_only_own_licences_valid_in_the_championship_year_can_be_enrolled(): void
     {
         $championship = $this->openChampionship();
-        $championship->licences->provider = LicenceProvider::Aci;
-        $championship->save();
         $driver = User::factory()->create();
 
         foreach ([
             Licence::factory()->create(),
             Licence::factory()->for($driver)->create(['validity_year' => now()->year - 1]),
-            Licence::factory()->for($driver)->create(['provider' => LicenceProvider::Asi]),
         ] as $licence) {
             $this->actingAs($driver)
                 ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$licence->ulid])

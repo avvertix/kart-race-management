@@ -7,6 +7,10 @@
 
         <x-welcome-new-user class="md:col-span-12" />
 
+        @feature(\App\Features\LicencesAndProducts::class)
+            <x-driver-enrollments class="md:col-span-12" />
+        @endfeature
+
         @can('viewAny', \App\Models\Race::class)
             <x-next-races class="md:col-span-7 lg:col-span-8" />
         @else

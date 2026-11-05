@@ -1620,5 +1620,9 @@
     "The enrollment on its own": "Solo l'iscrizione",
     "Choose the package when enrolling, together with the licence to enroll.": "Scegli il pacchetto al momento dell'iscrizione, insieme alla licenza da iscrivere.",
     "Order it when enrolling": "Ordinalo al momento dell'iscrizione",
-    "The race number is reserved only with: :packages.": "Il numero di gara si prenota solo con: :packages."
+    "The race number is reserved only with: :packages.": "Il numero di gara si prenota solo con: :packages.",
+    "Open for enrollment": "Iscrizioni aperte",
+    "Enrollment open until :date": "Iscrizioni aperte fino al :date",
+    "Pending enrollments": "Iscrizioni in attesa",
+    "Waiting for the organizer to confirm": "In attesa della conferma dell'organizzatore"
 }

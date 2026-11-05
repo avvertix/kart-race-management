@@ -10,6 +10,7 @@ use App\Enums\NotificationType;
 use App\Models\Enrollment;
 use App\Models\LicenceRequest;
 use App\Models\User;
+use App\Notifications\EnrollmentNeedsAction;
 use App\Notifications\LicenceRequestReceived;
 use App\Notifications\LicenceRequestSubmitted;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,10 @@ class SubmitLicenceRequest
         });
 
         app(EnrollPackagedRequest::class)($submitted);
+
+        $submitted->enrollments()->active()->whereNull('competitor_licence_id')->with(['championship', 'user', 'licenceRequest'])->get()
+            ->filter(fn (Enrollment $enrollment) => $enrollment->requiresCompetitor())
+            ->each(fn (Enrollment $enrollment) => $enrollment->user->notify(new EnrollmentNeedsAction($enrollment, needsLicence: false)));
 
         $submitted->user->notify(new LicenceRequestReceived($submitted));
 

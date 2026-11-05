@@ -6,6 +6,7 @@ namespace App\Actions\Enrollments;
 
 use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
+use App\Notifications\EnrollmentRejected;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -24,7 +25,7 @@ class RejectEnrollment
             'reason' => ['required', 'string', 'max:2000'],
         ])->validate();
 
-        return DB::transaction(function () use ($enrollment, $reason) {
+        $rejected = DB::transaction(function () use ($enrollment, $reason) {
             $locked = $enrollment->lockInStatus([EnrollmentStatus::Submitted], 'enrollment', __('Only a submitted enrollment can be rejected.'));
 
             if ($locked->hasPaymentUnderReview()) {
@@ -40,5 +41,9 @@ class RejectEnrollment
 
             return $locked;
         });
+
+        $rejected->user->notify(new EnrollmentRejected($rejected));
+
+        return $rejected;
     }
 }

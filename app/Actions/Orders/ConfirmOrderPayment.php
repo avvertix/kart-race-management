@@ -8,6 +8,7 @@ use App\Enums\OrderStatus;
 use App\Events\OrderPaid;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\OrderPaymentConfirmed;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -33,6 +34,8 @@ class ConfirmOrderPayment
         });
 
         OrderPaid::dispatch($order);
+
+        $order->user->notify(new OrderPaymentConfirmed($order));
 
         return $order;
     }

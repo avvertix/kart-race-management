@@ -11,6 +11,11 @@ return [
         'licence_request_rejected' => 'Richiesta di licenza rifiutata',
         'licence_emitted' => 'Licenza emessa',
         'order_price_set' => 'Prezzo dell\'ordine definito',
+        'order_payment_confirmed' => 'Pagamento confermato',
+        'order_payment_rejected' => 'Ricevuta di pagamento non accettata',
+        'enrollment_confirmed' => 'Iscrizione confermata',
+        'enrollment_rejected' => 'Iscrizione respinta',
+        'enrollment_needs_action' => 'Iscrizione da completare',
         'licence_request_submitted' => 'Richiesta di licenza da verificare',
     ],
 
@@ -21,6 +26,11 @@ return [
         'licence_request_rejected' => 'Quando l\'organizzatore rifiuta la richiesta.',
         'licence_emitted' => 'Quando la tua licenza è pronta da scaricare.',
         'order_price_set' => 'Quando l\'organizzatore definisce il prezzo finale del tuo ordine.',
+        'order_payment_confirmed' => 'Quando l\'organizzatore conferma il tuo pagamento.',
+        'order_payment_rejected' => 'Quando l\'organizzatore non può confermare la ricevuta di pagamento.',
+        'enrollment_confirmed' => 'Quando l\'organizzatore conferma la tua iscrizione a un campionato.',
+        'enrollment_rejected' => 'Quando l\'organizzatore respinge la tua iscrizione.',
+        'enrollment_needs_action' => 'Quando la tua iscrizione richiede un\'altra licenza o un concorrente.',
         'licence_request_submitted' => 'Quando un pilota invia una richiesta di licenza, anche dopo averla corretta.',
     ],
 

@@ -9,6 +9,7 @@ use App\Enums\EnrollmentStatus;
 use App\Events\EnrollmentConfirmed;
 use App\Models\Enrollment;
 use App\Models\User;
+use App\Notifications\EnrollmentConfirmed as EnrollmentConfirmedNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -43,6 +44,8 @@ class ConfirmEnrollment
         });
 
         EnrollmentConfirmed::dispatch($enrollment);
+
+        $enrollment->user->notify(new EnrollmentConfirmedNotification($enrollment));
 
         return $enrollment;
     }

@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use App\Notifications\AccountNotification;
+use App\Notifications\EnrollmentConfirmed;
+use App\Notifications\EnrollmentNeedsAction;
+use App\Notifications\EnrollmentRejected;
 use App\Notifications\LicenceEmitted;
 use App\Notifications\LicenceRequestChangesRequested;
 use App\Notifications\LicenceRequestReceived;
 use App\Notifications\LicenceRequestRejected;
 use App\Notifications\LicenceRequestSubmitted;
 use App\Notifications\LicenceRequestVerified;
+use App\Notifications\OrderPaymentConfirmed;
+use App\Notifications\OrderPaymentRejected;
 use App\Notifications\OrderPriceSet;
 
 /**
@@ -29,6 +34,16 @@ enum NotificationType: string
     case LicenceEmitted = 'licence_emitted';
 
     case OrderPriceSet = 'order_price_set';
+
+    case OrderPaymentConfirmed = 'order_payment_confirmed';
+
+    case OrderPaymentRejected = 'order_payment_rejected';
+
+    case EnrollmentConfirmed = 'enrollment_confirmed';
+
+    case EnrollmentRejected = 'enrollment_rejected';
+
+    case EnrollmentNeedsAction = 'enrollment_needs_action';
 
     /**
      * Sent to the organizers when a request is submitted, also after changes.
@@ -55,6 +70,11 @@ enum NotificationType: string
             self::LicenceRequestRejected => LicenceRequestRejected::class,
             self::LicenceEmitted => LicenceEmitted::class,
             self::OrderPriceSet => OrderPriceSet::class,
+            self::OrderPaymentConfirmed => OrderPaymentConfirmed::class,
+            self::OrderPaymentRejected => OrderPaymentRejected::class,
+            self::EnrollmentConfirmed => EnrollmentConfirmed::class,
+            self::EnrollmentRejected => EnrollmentRejected::class,
+            self::EnrollmentNeedsAction => EnrollmentNeedsAction::class,
             self::LicenceRequestSubmitted => LicenceRequestSubmitted::class,
         };
     }

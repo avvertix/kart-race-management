@@ -43,7 +43,7 @@ One specific licence in a Licence Provider's fixed list, e.g. ACI "NAZ E", "INT 
 _Avoid_: Licence grade, qualification, category (for this meaning)
 
 **Licence Request**:
-An application submitted through the platform to have a Licence renewed by the organizer on behalf of a Licence Provider. First emissions are arranged with the organizer outside the platform. The organizer reviews it like a pull request: comments on what to fix, then either requests changes or marks it **Verified**, meaning every document was viewed and nothing needs fixing. Verified is the organizer's check, not the licence: the Licence Provider emits it.
+An application submitted through the platform to have a Licence renewed by the organizer on behalf of a Licence Provider, for one validity year chosen when it is created: the next year can be requested from December, or earlier while a championship of that year is open for enrollment. First emissions are arranged with the organizer outside the platform. The organizer reviews it like a pull request: comments on what to fix, then either requests changes or marks it **Verified**, meaning every document was viewed and nothing needs fixing. Verified is the organizer's check, not the licence: the Licence Provider emits it.
 _Avoid_: Licence application, renewal form; Approved, for a verified request
 
 **Renewal**:
@@ -59,14 +59,18 @@ _Avoid_: Entry, registration (when referring to the record)
 A race registration form that was started but not yet submitted.
 
 **Enrollment**:
-A Driver's Licence enrolled in a championship, optionally with a Competitor (required for underage Drivers). It is optional for racing and does not fix the category or the Competitor, which a Participant can change between races. Each championship is isolated: enrollments do not carry over to other championships.
-_Avoid_: Championship registration, subscription
+A Driver's Licence enrolled in a championship, optionally with a Competitor (required for underage Drivers, who cannot be their own Competitor). A Driver has at most one active Enrollment per championship, while one User can enroll each Driver whose Licence they manage. It can wait for the Licence Request that will give the Licence; when that request is rejected, the User picks another Licence for it. It is free or costs a fixed Enrollment Fee, the same whatever the Licence; a Promotional Package including the Enrollment replaces the fee. It is optional for racing and does not fix the category or the Competitor, which a Participant can change between races. Each championship is isolated: enrollments do not carry over to other championships.
+_Avoid_: Championship registration, subscription, promotional registration
+
+**Enrollment Fee**:
+The fixed amount a championship charges for an Enrollment. The championship may make it cover the Licence Request renewing the Driver's Licence for its year; a Driver who already holds a valid Licence pays the same.
+_Avoid_: Subscription fee
 
 **Wildcard**:
 A Participant who races but does not score championship points, as decided by the championship's wildcard configuration (e.g. because they are not enrolled).
 
 **BIB Reservation**:
-A Championship BIB held for a Driver's Licence in a championship. It is pending until the organizer confirms it or releases it; first confirmed, first served.
+A Championship BIB held for a Driver's Licence in a championship. It is pending until the organizer confirms it or releases it; first confirmed, first served. The organizer may confirm it before the Enrollment it belongs to, which releases it when withdrawn or rejected.
 _Avoid_: Booking, hold
 
 **Championship BIB**:
@@ -79,13 +83,13 @@ A race number of 1000 or above, used for Participants of special categories that
 ### Commerce
 
 **Product**:
-Something the organizer sells, such as a championship enrollment, a race fee or a Promotional Package. Licence renewals are not Products: a Licence Request is not bought through an Order.
+Something the organizer sells, such as an Enrollment Fee, a race fee or a Promotional Package. An Enrollment Fee, or a Package including an Enrollment, is bought only while enrolling. Licence renewals are not Products: a Licence Request is not bought through an Order.
 
 **Price**:
 The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a package's cost depends on what the buyer picks.
 
 **Order**:
-A request by a User to buy one or more Products. It is paid by uploading a payment proof that the organizer confirms.
+A request by a User to buy one or more Products. It is paid by uploading a payment proof that the organizer confirms. When it pays for an Enrollment, the User sees it only as the Enrollment's payment.
 _Avoid_: Purchase, transaction
 
 **Entitlement**:

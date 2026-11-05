@@ -35,16 +35,20 @@ class ChampionshipEnrollmentController extends Controller
 
         $status = $request->enum('status', EnrollmentStatus::class) ?? EnrollmentStatus::Submitted;
 
+        $enrollments = $championship->enrollments()
+            ->with(['licence', 'licenceRequest', 'competitorLicence', 'order', 'reservations'])
+            ->where('status', $status)
+            ->oldest()
+            ->oldest('id')
+            ->paginate(50)
+            ->withQueryString();
+
+        $enrollments->each(fn (Enrollment $enrollment) => $enrollment->setRelation('championship', $championship));
+
         return view('enrollment.index', [
             'championship' => $championship,
             'status' => $status,
-            'enrollments' => $championship->enrollments()
-                ->with(['licence', 'licenceRequest', 'order'])
-                ->where('status', $status)
-                ->oldest()
-                ->oldest('id')
-                ->paginate(50)
-                ->withQueryString(),
+            'enrollments' => $enrollments,
         ]);
     }
 

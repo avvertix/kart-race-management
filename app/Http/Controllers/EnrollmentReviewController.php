@@ -36,7 +36,7 @@ class EnrollmentReviewController extends Controller
             'missing' => $enrollment->missingForConfirmation(),
             'previousNumbers' => $findPreviousNumbers($enrollment),
             'availability' => RaceNumberAvailability::in($enrollment->championship, array_filter([$enrollment->licence?->number_hash]), $enrollment),
-            'canPickNumber' => $enrollment->status === EnrollmentStatus::Submitted && $enrollment->championship->enrollment->grants_bib_reservation,
+            'canPickNumber' => $enrollment->status === EnrollmentStatus::Submitted && $enrollment->grantsBibReservation(),
         ]);
     }
 

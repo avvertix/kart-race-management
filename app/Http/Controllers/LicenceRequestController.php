@@ -13,20 +13,24 @@ use App\Enums\LicenceDocumentKind;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestDocument;
+use App\Models\Order;
 use App\Support\LicenceCatalogue;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LicenceRequestController extends Controller
 {
     /**
-     * Start a renewal: empty, or pre-filled from one of the user's licences.
+     * Start a renewal: empty, or pre-filled from one of the user's licences, and covered by a paid Package when started
+     * from its Order.
      */
     public function store(Request $request, StartLicenceRenewal $startRenewal): RedirectResponse
     {
@@ -34,13 +38,28 @@ class LicenceRequestController extends Controller
 
         $request->validate([
             'licence' => ['nullable', 'string'],
+            'order' => ['nullable', 'string'],
         ]);
 
         $previous = $request->filled('licence')
             ? Licence::query()->managedBy($request->user())->where('ulid', $request->input('licence'))->firstOrFail()
             : null;
 
-        $licenceRequest = $startRenewal($request->user(), $previous);
+        $coveringOrder = $request->filled('order')
+            ? Order::query()->where('user_id', $request->user()->getKey())->where('ulid', $request->input('order'))->firstOrFail()
+            : null;
+
+        $licenceRequest = DB::transaction(function () use ($request, $startRenewal, $previous, $coveringOrder) {
+            if ($coveringOrder !== null) {
+                $locked = Order::query()->whereKey($coveringOrder->getKey())->lockForUpdate()->firstOrFail();
+
+                if (! $locked->canStartLicenceRenewal()) {
+                    throw ValidationException::withMessages(['order' => __('This order doesn\'t cover a licence renewal, or it was already started.')]);
+                }
+            }
+
+            return $startRenewal($request->user(), $previous, $coveringOrder);
+        });
 
         return redirect()->route('licence-requests.edit', $licenceRequest);
     }

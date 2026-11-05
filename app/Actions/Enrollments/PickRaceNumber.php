@@ -102,7 +102,7 @@ class PickRaceNumber
 
         $championship = $locked->championship;
 
-        if (! $championship->enrollment->grants_bib_reservation) {
+        if (! $locked->grantsBibReservation()) {
             throw ValidationException::withMessages(['bib' => __('Enrolling in this championship does not reserve a race number.')]);
         }
 

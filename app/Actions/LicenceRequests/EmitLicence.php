@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\LicenceRequests;
 
+use App\Actions\Orders\GrantPackages;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceSource;
 use App\Models\BibReservation;
@@ -11,6 +12,7 @@ use App\Models\Enrollment;
 use App\Models\Entitlement;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Order;
 use App\Models\User;
 use App\Notifications\LicenceEmitted;
 use App\Rules\LicenseNumberValidationRule;
@@ -28,7 +30,8 @@ class EmitLicence
     /**
      * Create the Licence the provider emitted for a verified request, paid or covered by a package, with its temporary licence
      * PDF. The Licence takes the request's holder, Licence Type and competitor licence, and is managed by the requester.
-     * The Enrollments waiting for the request move to the new Licence, and their race numbers are bound to it.
+     * The Enrollments waiting for the request move to the new Licence, and their race numbers are bound to it. Paid
+     * Packages of the request and of those Enrollments are granted.
      *
      * @throws ValidationException when the request is not verified or paid, the input is not valid or the number is already registered
      */
@@ -126,8 +129,26 @@ class EmitLicence
             throw $exception;
         }
 
+        $this->grantPackagesOf($licence);
+
         $licence->user->notify(new LicenceEmitted($licence));
 
         return $licence;
+    }
+
+    /**
+     * Grant the paid Packages waiting for the Licence: the one covering its request, and those paying the Enrollments
+     * that moved to it.
+     */
+    private function grantPackagesOf(Licence $licence): void
+    {
+        $grantPackages = app(GrantPackages::class);
+
+        $orders = Order::query()
+            ->whereIn('id', LicenceRequest::query()->whereKey($licence->licence_request_id)->whereNotNull('covering_order_id')->select('covering_order_id'))
+            ->orWhereIn('id', Enrollment::query()->where('licence_id', $licence->getKey())->whereNotNull('order_id')->select('order_id'))
+            ->get();
+
+        $orders->each(fn (Order $order) => $grantPackages($order));
     }
 }

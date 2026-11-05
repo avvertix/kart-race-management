@@ -9,6 +9,7 @@ use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -33,6 +34,7 @@ class PublicChampionshipEnrollmentController extends Controller
             'championship' => $championship,
             'settings' => $settings,
             'price' => $championship->enrollmentProduct()?->orderablePrice(),
+            'packages' => Product::query()->enrollingIn($championship)->with(['prices', 'grants'])->orderBy('title')->get()->filter(fn (Product $package) => $package->orderablePrice() !== null)->values(),
             'myEnrollments' => $user === null ? collect() : $championship->enrollments()
                 ->where('user_id', $user->getKey())
                 ->with(['licence', 'licenceRequest', 'order', 'reservations'])
@@ -60,6 +62,7 @@ class PublicChampionshipEnrollmentController extends Controller
             'licence' => $kind === 'licence' ? $ulid : null,
             'licence_request' => $kind === 'licence_request' ? $ulid : null,
             'competitor_licence' => $request->input('competitor_licence'),
+            'product' => $request->input('product'),
             'bib' => $request->input('bib'),
         ]);
 

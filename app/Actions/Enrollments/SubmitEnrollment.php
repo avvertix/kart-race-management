@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\Enrollments;
 
+use App\Enums\ProductGrantKind;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +28,7 @@ class SubmitEnrollment
      * for the enrollment Product when not free, and reserves the picked race number when the championship grants one,
      * unless the Licence already holds a reservation in the championship: it keeps that number.
      *
-     * @param  array{licence?: ?string, licence_request?: ?string, competitor_licence?: ?string, bib?: mixed}  $input  ULIDs and the race number
+     * @param  array{licence?: ?string, licence_request?: ?string, competitor_licence?: ?string, product?: ?string, bib?: mixed}  $input  ULIDs and the race number
      *
      * @throws ValidationException
      */
@@ -52,7 +54,13 @@ class SubmitEnrollment
                 'nullable',
                 Rule::in(Licence::query()->managedBy($user)->competitorIn($championship)->pluck('ulid')),
             ],
+            'product' => [
+                'nullable',
+                Rule::in(Product::query()->enrollingIn($championship)->pluck('ulid')),
+            ],
         ])->validate();
+
+        $package = isset($validated['product']) ? Product::query()->where('ulid', $validated['product'])->sole() : null;
 
         $licence = Licence::findByUlid($validated['licence'] ?? null);
         $licenceRequest = isset($validated['licence_request']) ? LicenceRequest::query()->where('ulid', $validated['licence_request'])->sole() : null;
@@ -64,9 +72,15 @@ class SubmitEnrollment
             throw ValidationException::withMessages(['competitor_licence' => __('The driver is underage: name the competitor.')]);
         }
 
-        $createEnrollment = fn () => ($this->createEnrollment)($user, $championship, $licence, $licenceRequest, $competitorLicence, pays: true);
+        $createEnrollment = fn () => ($this->createEnrollment)($user, $championship, $licence, $licenceRequest, $competitorLicence, pays: true, package: $package);
 
-        if (! $championship->enrollment->grants_bib_reservation
+        $packageGrantsNumber = $package !== null && $package->grants()
+            ->where('kind', ProductGrantKind::Enrollment)
+            ->where('championship_id', $championship->getKey())
+            ->where('grants_bib_reservation', true)
+            ->exists();
+
+        if (! ($championship->enrollment->grants_bib_reservation || $packageGrantsNumber)
             || blank($input['bib'] ?? null)
             || PickRaceNumber::reservationHeldBy($championship, $licence) !== null) {
             return $createEnrollment();

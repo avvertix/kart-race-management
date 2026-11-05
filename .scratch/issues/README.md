@@ -39,5 +39,10 @@ Rules for every slice (see [backward compatibility](../../docs/explanation/backw
 | [D5](D5-competitor-and-changes-after-submitting.md) | Competitor rules and changes after submitting | D3 | 2027 season |
 | [D6](D6-organizer-enrollment-review.md) | Organizer enrollment review and race number confirmation | D3 | 2027 season |
 | [D7](D7-enrollment-notifications-and-dashboard.md) | Enrollment notifications and dashboard | D3, D4 | 2027 season |
+| [E1](E1-licence-provider-per-licence.md) | Licence provider per licence | D1 | 2027 season |
+| [E2](E2-enrollment-options.md) | Enrollment options | D7 | 2027 season |
+| [E3](E3-enrollment-carries-its-option-and-payment.md) | The Enrollment carries its option and payment | E2 | 2027 season |
+| [E4](E4-renewal-coverage-and-race-credits.md) | Renewal coverage and race credits from the Enrollment | E3 | 2027 season |
+| [E5](E5-remove-products-and-orders.md) | Remove Products, Packages and Orders | E4 | 2027 season |
 
 Until C4 ships, packages are sold as plain Products and their extras are applied by hand.

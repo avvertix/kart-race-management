@@ -80,7 +80,7 @@ class LicenceRequestReview extends Component
         $this->licenceRequest = $licenceRequest;
         $this->amount = $licenceRequest->amount === null ? '' : number_format($licenceRequest->amount / 100, 2, '.', '');
         $this->number = $licenceRequest->provider === LicenceProvider::Aci ? ($licenceRequest->previous_licence_number ?? '') : '';
-        $this->validityYear = (string) LicenceRequest::validityYearFor($licenceRequest->submitted_at ?? now());
+        $this->validityYear = (string) $licenceRequest->validity_year;
     }
 
     public function selectDocument(int $documentId): void

@@ -1629,5 +1629,21 @@
     "The licence is not a driver licence.": "La licenza non è una licenza conduttore.",
     "The licence is not valid in the championship year.": "La licenza non è valida nell'anno del campionato.",
     "Enrollments wait for this request in a championship of :year.": "Delle iscrizioni attendono questa richiesta in un campionato del :year.",
-    "For :year": "Per il :year"
+    "For :year": "Per il :year",
+    "The enrollment fee, a fixed amount the same for every licence. Without a fee, enrolling is free.": "La quota di iscrizione, un importo fisso uguale per ogni licenza. Senza quota, l'iscrizione è gratuita.",
+    "The fee covers the licence renewal": "La quota copre il rinnovo della licenza",
+    "A driver enrolling with a licence request pays only the fee. A driver with a valid licence pays the same.": "Chi si iscrive con una richiesta di licenza paga solo la quota. Chi ha già una licenza valida paga lo stesso importo.",
+    "The discounts are for a driver licence valid in the championship year, and you have none.": "Gli sconti sono per una licenza conduttore valida nell'anno del campionato, e non ne hai.",
+    "For the licence": "Per la licenza",
+    "Choose it when enrolling, together with the licence to enroll.": "Sceglilo al momento dell'iscrizione, insieme alla licenza da iscrivere.",
+    "Choose one of your licences valid in the championship year.": "Scegli una delle tue licenze valide nell'anno del campionato.",
+    "Turn on enrollment in the championship before adding an enrollment.": "Attiva le iscrizioni nel campionato prima di aggiungere un'iscrizione.",
+    "The enrollment fee must be a fixed amount.": "La quota di iscrizione deve essere un importo fisso.",
+    "The championship does not accept enrollments.": "Il campionato non accetta iscrizioni.",
+    "The licence request paid together with it was rejected.": "La richiesta di licenza pagata insieme è stata respinta.",
+    "Covered by an order": "Coperta da un ordine",
+    "A package or an enrollment fee covers the request: nothing to pay.": "Un pacchetto o una quota di iscrizione copre la richiesta: nulla da pagare.",
+    "Covered by your order": "Coperta dal tuo ordine",
+    "It is covered by your order: there is nothing to pay. The organizer now requests your licence from :provider.": "È inclusa nel tuo ordine: non c'è nulla da pagare. L'organizzatore ora richiede la tua licenza a :provider.",
+    "It also covers the renewal of your licence, when you enroll with a licence request.": "Copre anche il rinnovo della licenza, se ti iscrivi con una richiesta di licenza."
 }

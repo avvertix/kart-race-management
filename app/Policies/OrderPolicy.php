@@ -30,6 +30,14 @@ class OrderPolicy
     }
 
     /**
+     * Determine whether the user can order a Product.
+     */
+    public function create(User $user): bool
+    {
+        return $user->hasPermission('order:create');
+    }
+
+    /**
      * Determine whether the user can set the price and confirm or reject the payment.
      */
     public function update(User $user, Order $order): bool

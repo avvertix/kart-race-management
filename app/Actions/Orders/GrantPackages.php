@@ -62,10 +62,15 @@ class GrantPackages
     }
 
     /**
-     * The Licence the Packages of the Order are for, null while it is not known yet.
+     * The Licence the Packages of the Order are for, null while it is not known yet: the one chosen when ordering, emitted
+     * from the request the Order covers, or of the Enrollment the Order pays.
      */
     private function licenceOf(Order $order): ?Licence
     {
+        if ($order->licence_id !== null) {
+            return $order->licence;
+        }
+
         $licenceRequest = LicenceRequest::query()->where('covering_order_id', $order->getKey())->latest('id')->first();
 
         if ($licenceRequest !== null) {

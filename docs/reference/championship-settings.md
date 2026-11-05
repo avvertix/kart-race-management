@@ -18,7 +18,8 @@ The licence provider decides the wording on the registration form and rules, and
 |---|---|---|
 | Enabled | Drivers can enroll in the championship | Off |
 | Opens / closes | Period in which enrollment is accepted, in the races' timezone. Both are required to turn enrollment on | — |
-| Product | What is sold for enrolling, one of the championship's enrollment Products; none means free | None |
+| Fee | The Enrollment Fee, one of the championship's enrollment Products with fixed prices only; the same whatever the Licence. None means free. A Package including the Enrollment replaces it | None |
+| Fee covers the licence renewal | The fee also pays the Licence Request an Enrollment waits for, while that request isn't paid yet | Off |
 | Grants race number reservation | Enrolling lets the Driver reserve a Championship BIB | Off |
 | Competitor required when underage | An underage Driver must name a Competitor to enroll | On |
 

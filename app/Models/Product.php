@@ -97,16 +97,61 @@ class Product extends Model
     }
 
     /**
-     * The championship whose enrollment page sells the Package, when it includes an Enrollment and no licence renewal:
-     * ordered elsewhere, nothing would say which Licence it enrolls.
+     * Only the Products sold on their own, see enrollmentChampionship(): not enrollment fees, nor Packages including an
+     * Enrollment and no licence renewal.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeSoldOnTheirOwn(Builder $query): void
+    {
+        $query->where('kind', '!=', ProductKind::Enrollment)
+            ->where(fn (Builder $query) => $query
+                ->whereDoesntHave('grants', fn (Builder $query) => $query->where('kind', ProductGrantKind::Enrollment))
+                ->orWhereHas('grants', fn (Builder $query) => $query->where('kind', ProductGrantKind::LicenceEmission)));
+    }
+
+    /**
+     * The championship whose enrollment page sells the Product: its own for an enrollment fee, or the one of a Package
+     * including an Enrollment and no licence renewal. Ordered elsewhere, nothing would say which Licence it enrolls.
      */
     public function enrollmentChampionship(): ?Championship
     {
-        if ($this->kind !== ProductKind::Package || $this->grants->contains('kind', ProductGrantKind::LicenceEmission)) {
+        if ($this->kind === ProductKind::Enrollment) {
+            return $this->championship;
+        }
+
+        if ($this->grants->contains('kind', ProductGrantKind::LicenceEmission)) {
             return null;
         }
 
         return $this->grants->firstWhere('kind', ProductGrantKind::Enrollment)?->championship;
+    }
+
+    /**
+     * Whether ordering the Product on its own asks which Licence it is for: a Package granting race fee discounts with
+     * no licence renewal nor Enrollment to give the Licence.
+     */
+    public function needsLicenceWhenOrdered(): bool
+    {
+        return $this->kind === ProductKind::Package
+            && $this->grants->contains('kind', ProductGrantKind::Entitlement)
+            && ! $this->grants->contains(fn (ProductGrant $grant) => in_array($grant->kind, [ProductGrantKind::LicenceEmission, ProductGrantKind::Enrollment], true));
+    }
+
+    /**
+     * The years of the championships the Product's race fee discounts are for.
+     *
+     * @return array<int, int>
+     */
+    public function entitlementYears(): array
+    {
+        return $this->grants
+            ->where('kind', ProductGrantKind::Entitlement)
+            ->map(fn (ProductGrant $grant) => $grant->championship?->start_at->year)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**

@@ -14,7 +14,8 @@ use Spatie\LaravelData\Data;
 class EnrollmentSettingsData extends Data
 {
     /**
-     * @param  ?int  $product_id  The enrollment Product sold; none means enrolling is free
+     * @param  ?int  $product_id  The enrollment Product sold for a fixed fee; none means enrolling is free
+     * @param  bool  $fee_covers_licence_renewal  Whether the fee also pays the Licence Request an Enrollment waits for
      */
     public function __construct(
         public bool $enabled = false,
@@ -23,6 +24,7 @@ class EnrollmentSettingsData extends Data
         public ?int $product_id = null,
         public bool $grants_bib_reservation = false,
         public bool $requires_competitor_when_underage = true,
+        public bool $fee_covers_licence_renewal = false,
     ) {}
 
     /**

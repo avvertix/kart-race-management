@@ -46,11 +46,31 @@
                             <p class="text-sm text-zinc-600">{{ __('This price applies until :date.', ['date' => $currentPrice->ends_at->setTimezone(config('races.timezone'))->isoFormat('D MMMM YYYY')]) }}</p>
                         @endif
 
-                        @if ($product->enrollmentChampionship())
+                        @if ($product->enrollmentChampionship() && ! $product->enrollmentChampionship()->enrollment->enabled)
+                            <p class="text-zinc-700">{{ __('Not available at the moment') }}</p>
+                        @elseif ($product->enrollmentChampionship())
                             <x-button-link href="{{ route('public.championships.enrollment', $product->enrollmentChampionship()) }}" class="w-full">{{ __('Order it when enrolling') }}</x-button-link>
                         @elseif ($user?->hasVerifiedEmail())
-                            <form method="POST" action="{{ route('public.products.order', $product) }}">
+                            <form method="POST" action="{{ route('public.products.order', $product) }}" class="space-y-3">
                                 @csrf
+                                @if ($product->needsLicenceWhenOrdered())
+                                    @if ($licences->isEmpty())
+                                        <p class="text-sm text-zinc-700">
+                                            {{ __('The discounts are for a driver licence valid in the championship year, and you have none.') }}
+                                            <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('Add or request a licence') }}</a>
+                                        </p>
+                                    @else
+                                        <div>
+                                            <x-label for="licence" value="{{ __('For the licence') }}" />
+                                            <select id="licence" name="licence" class="mt-1 w-full rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
+                                                @foreach ($licences as $licence)
+                                                    <option value="{{ $licence->ulid }}" @selected(old('licence') === $licence->ulid)>{{ $licence->holder->fullName() }} &middot; {{ $licence->number }}</option>
+                                                @endforeach
+                                            </select>
+                                            <x-input-error for="licence" class="mt-2" />
+                                        </div>
+                                    @endif
+                                @endif
                                 <x-button type="submit" class="w-full">{{ __('Order') }}</x-button>
                             </form>
                         @elseif ($user)

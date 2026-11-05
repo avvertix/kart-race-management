@@ -1645,5 +1645,11 @@
     "A package or an enrollment fee covers the request: nothing to pay.": "Un pacchetto o una quota di iscrizione copre la richiesta: nulla da pagare.",
     "Covered by your order": "Coperta dal tuo ordine",
     "It is covered by your order: there is nothing to pay. The organizer now requests your licence from :provider.": "È inclusa nel tuo ordine: non c'è nulla da pagare. L'organizzatore ora richiede la tua licenza a :provider.",
-    "It also covers the renewal of your licence, when you enroll with a licence request.": "Copre anche il rinnovo della licenza, se ti iscrivi con una richiesta di licenza."
+    "It also covers the renewal of your licence, when you enroll with a licence request.": "Copre anche il rinnovo della licenza, se ti iscrivi con una richiesta di licenza.",
+    "You have no driver licence valid for :year that is not enrolled yet.": "Non hai licenze conduttore valide per il :year non ancora iscritte.",
+    "The driver is underage: add the competitor's licence to your account first.": "Il pilota è minorenne: aggiungi prima la licenza del concorrente al tuo account.",
+    "This licence already holds race number :bib. No need to pick another one.": "Questa licenza ha già il numero di gara :bib. Non serve sceglierne un altro.",
+    "Not picked yet": "Non ancora scelto",
+    "Choose the licence to enroll.": "Scegli la licenza da iscrivere.",
+    "For a refund, email the organizer.": "Per un rimborso, scrivi all'organizzatore."
 }

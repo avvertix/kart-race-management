@@ -26,6 +26,12 @@ Drivers enroll through a stepped form on the championship enrollment page. Each 
 - After submitting, the driver lands on this page. The redirect to `my-orders.show` is removed.
 - Policy: the Enrollment's User only.
 
+- Implementation notes:
+  - The stepped form is Alpine on the existing POST, not a Livewire component. The race number picker and server validation stay as they are, and steps show or hide as choices are made.
+  - The Competitor select shows whenever the account has competitor licences, as before. It is marked required for an underage driver.
+  - Organizers can open an Enrollment page, but only its User sees the payment upload.
+  - A notification about an Order paying an Enrollment opens the Enrollment page.
+
 ## Out of scope
 
 Rules on competitors and withdrawal (D5). Organizer pages (D6).

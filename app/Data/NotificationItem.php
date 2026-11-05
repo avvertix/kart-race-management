@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\NotificationType;
+use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\Order;
@@ -101,12 +102,20 @@ final readonly class NotificationItem
     }
 
     /**
+     * The Order's page, or the Enrollment's page when the Order pays an Enrollment: drivers see it as its payment.
+     *
      * @return array{0: ?string, 1: ?string}
      */
     private static function describeOrder(?Order $order): array
     {
         if ($order === null) {
             return [null, null];
+        }
+
+        $enrollment = Enrollment::query()->where('order_id', $order->getKey())->with('championship')->latest('id')->first();
+
+        if ($enrollment !== null) {
+            return [__('Enrollment in :championship', ['championship' => $enrollment->championship->title]), route('my-enrollments.show', $enrollment)];
         }
 
         return [__('Order :order', ['order' => $order->ulid]), route('my-orders.show', $order)];

@@ -27,7 +27,7 @@
             <ul class="-mx-2 sm:mx-0 space-y-3">
                 @foreach ($pendingEnrollments as $enrollment)
                     <li class="p-2 md:p-4 bg-white rounded-sm group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 space-y-1">
-                        <a href="{{ route('public.championships.enrollment', $enrollment->championship) }}" class="font-bold group-hover:text-orange-900 focus:outline-hidden">
+                        <a href="{{ route('my-enrollments.show', $enrollment) }}" class="font-bold group-hover:text-orange-900 focus:outline-hidden">
                             <span class="z-10 absolute inset-0"></span>{{ $enrollment->championship->title }}
                         </a>
                         <p class="text-sm text-zinc-700">

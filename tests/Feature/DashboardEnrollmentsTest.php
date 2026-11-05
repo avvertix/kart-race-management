@@ -41,7 +41,7 @@ class DashboardEnrollmentsTest extends TestCase
     {
         $user = User::factory()->create();
         $closed = $this->championship('Closed championship', opensInDays: -10, closesInDays: -1);
-        Enrollment::factory()->for($closed)->for($user)->create();
+        $pending = Enrollment::factory()->for($closed)->for($user)->create();
         $confirmed = $this->championship('Confirmed championship', -10, -1);
         Enrollment::factory()->for($confirmed)->for($user)->confirmed()->create();
         $someoneElse = $this->championship('Someone else championship', -10, -1);
@@ -52,7 +52,7 @@ class DashboardEnrollmentsTest extends TestCase
             ->assertOk()
             ->assertSee('Pending enrollments')
             ->assertSee('Closed championship')
-            ->assertSee(route('public.championships.enrollment', $closed))
+            ->assertSee(route('my-enrollments.show', $pending))
             ->assertDontSee(route('public.championships.enrollment', $confirmed))
             ->assertDontSee(route('public.championships.enrollment', $someoneElse));
     }

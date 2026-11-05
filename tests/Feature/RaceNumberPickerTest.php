@@ -152,7 +152,7 @@ class RaceNumberPickerTest extends TestCase
 
         $this->actingAs($driver)
             ->put(route('my-enrollments.race-number.update', $enrollment), ['bib' => '12'])
-            ->assertRedirect(route('public.championships.enrollment', $championship));
+            ->assertRedirect(route('my-enrollments.show', $enrollment));
 
         $this->actingAs($driver)
             ->put(route('my-enrollments.race-number.update', $enrollment), ['bib' => '13'])

@@ -42,6 +42,13 @@ class RaceNumberPicker extends Component
     #[Locked]
     public bool $showHolders = false;
 
+    /**
+     * Whether to tell the numbers the User's Licences already hold: off where the surrounding form shows it for the chosen
+     * Licence.
+     */
+    #[Locked]
+    public bool $showHeld = true;
+
     public ?int $selected = null;
 
     public int $hundred = 0;
@@ -51,8 +58,9 @@ class RaceNumberPicker extends Component
     #[Locked]
     public ?string $notice = null;
 
-    public function mount(Championship $championship, ?Enrollment $enrollment = null, bool $showHolders = false): void
+    public function mount(Championship $championship, ?Enrollment $enrollment = null, bool $showHolders = false, bool $showHeld = true): void
     {
+        $this->showHeld = $showHeld;
         $this->championship = $championship;
         $this->enrollmentId = $enrollment?->getKey();
         $this->showHolders = $showHolders && (auth()->user()?->can('review', Enrollment::class) ?? false);
@@ -129,7 +137,7 @@ class RaceNumberPicker extends Component
             'numbers' => range($from, $to),
             'suggestions' => collect($generateRaceNumber($this->championship, 6))->filter(fn (int $bib) => $availability->isFree($bib))->values(),
             'previousNumbers' => $previousNumbers,
-            'heldNumbers' => $this->heldNumbers(),
+            'heldNumbers' => $this->showHeld ? $this->heldNumbers() : collect(),
             'championshipTitles' => Championship::query()->whereKey($previousNumbers->pluck('championship_id'))->pluck('title', 'id'),
         ]);
     }

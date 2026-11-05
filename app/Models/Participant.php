@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -31,6 +32,10 @@ use Illuminate\Support\Facades\URL;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
+/**
+ * @property ?DriverLicence $licence_type
+ * @property ?array<string, mixed> $driver
+ */
 class Participant extends Model implements HasLocalePreference
 {
     use HasFactory;
@@ -155,8 +160,10 @@ class Participant extends Model implements HasLocalePreference
 
     /**
      * Get the federation authorizations linked to the participation
+     *
+     * @return HasMany<FederationAuthorization, $this>
      */
-    public function federationAuthorizations()
+    public function federationAuthorizations(): HasMany
     {
         return $this->hasMany(FederationAuthorization::class);
     }

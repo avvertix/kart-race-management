@@ -80,7 +80,7 @@ class ResultRaceController extends Controller
 
         return view('race-result.create', [
             'race' => $race,
-            'championship' => $race->championship,
+            'championship' => $race->getRelationValue('championship'),
         ]);
     }
 

@@ -213,7 +213,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$filter of method App\\Actions\\CalculateAwardRanking\:\:applyWildcardFilter\(\) expects App\\Models\\WildcardFilter, string given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 1
 			path: app/Actions/CalculateAwardRanking.php
 
 		-
@@ -225,7 +225,7 @@ parameters:
 		-
 			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardRankingMode\:\:BestN will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
-			count: 2
+			count: 1
 			path: app/Actions/CalculateAwardRanking.php
 
 		-
@@ -243,38 +243,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$full_name\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Actions/CopyChampionshipBibReservations.php
-
-
-
-		-
-			message: '#^Method App\\Actions\\CopyChampionshipBibReservations\:\:candidatesFromParticipants\(\) should return Illuminate\\Support\\Collection\<int, array\{bib\: int, driver\: string, driver_licence\: string\|null, driver_licence_hash\: string\|null, contact_email\: string\|null, licence_type\: mixed\}\> but returns Illuminate\\Support\\Collection\<int, array\{bib\: int\<0, max\>, driver\: mixed, driver_licence\: null, driver_licence_hash\: string, contact_email\: null, licence_type\: int\<0, max\>\|null\}\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Actions/CopyChampionshipBibReservations.php
-
-		-
-			message: '#^Offset ''email'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/CopyChampionshipBibReservations.php
-
-		-
-			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/CopyChampionshipBibReservations.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Participant\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Actions/CopyChampionshipBibReservations.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Participant\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Actions/CopyChampionshipBibReservations.php
 
@@ -301,7 +269,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Actions/CopyChampionshipTires.php
-
 
 		-
 			message: '#^Offset ''driver_licence…'' on array\{bib\: int, driver\: string, driver_licence_number\: string, contact_email\: string\|null, reservation_expiration_date\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
@@ -334,32 +301,8 @@ parameters:
 			path: app/Actions/DetermineParticipantZone.php
 
 		-
-			message: '#^Offset ''postal_code'' on array\{\} on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/DetermineParticipantZone.php
-
-		-
-			message: '#^Offset ''province'' on array\{\} on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/DetermineParticipantZone.php
-
-		-
-			message: '#^Offset ''residence_address'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/DetermineParticipantZone.php
-
-		-
 			message: '#^Property App\\Models\\Participant\:\:\$region \(string\|null\) does not accept App\\Enums\\ItalianRegion\|null\.$#'
 			identifier: assign.propertyType
-			count: 1
-			path: app/Actions/DetermineParticipantZone.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between int\<0, max\>\|null and App\\Models\\DriverLicence\:\:FOREIGN will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: app/Actions/DetermineParticipantZone.php
 
@@ -372,18 +315,6 @@ parameters:
 		-
 			message: '#^Method App\\Actions\\FindDuplicateDrivers\:\:__invoke\(\) should return Illuminate\\Support\\Collection\<int, array\{participants\: Illuminate\\Support\\Collection\<int, App\\Models\\Participant\>, same_name\: bool, same_birth_date\: bool, same_licence\: bool\}\> but returns Illuminate\\Support\\Collection\<int, array\{participants\: Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Participant\>, same_name\: bool, same_birth_date\: bool, same_licence\: bool\}\>\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Actions/FindDuplicateDrivers.php
-
-		-
-			message: '#^Offset ''birth_date'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/FindDuplicateDrivers.php
-
-		-
-			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Actions/FindDuplicateDrivers.php
 
@@ -434,24 +365,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Actions/GenerateRaceNumber.php
-
-		-
-			message: '#^Offset ''licence_number'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Actions/MergeDuplicateDrivers.php
-
-		-
-			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/MergeDuplicateDrivers.php
-
-		-
-			message: '#^Only iterables can be unpacked, string given\.$#'
-			identifier: arrayUnpacking.nonIterable
-			count: 1
-			path: app/Actions/MergeDuplicateDrivers.php
 
 		-
 			message: '#^Method App\\Actions\\ProcessMyLapsResult\:\:groupResultsByCategory\(\) has parameter \$rows with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
@@ -784,12 +697,6 @@ parameters:
 			path: app/Actions/UpdateParticipantRegistration.php
 
 		-
-			message: '#^Offset ''email'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Actions/UpdateParticipantRegistration.php
-
-		-
 			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\BibReservation\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 4
@@ -945,9 +852,6 @@ parameters:
 			count: 1
 			path: app/Console/Commands/RecalculateParticipantWildcard.php
 
-
-
-
 		-
 			message: '#^Cannot call method setTimezone\(\) on string\.$#'
 			identifier: method.nonObject
@@ -987,18 +891,6 @@ parameters:
 		-
 			message: '#^Method App\\Console\\Commands\\VerifyParticipantsOutOfZone\:\:resolveExpectedOutOfZone\(\) should return array\{bool, App\\Enums\\ItalianRegion\|null, string\|null, string\|null, string\|null, string\|null\} but returns array\{bool, App\\Enums\\ItalianRegion\|string\|null, ''cap''\|''city''\|''province''\|null, mixed, mixed, mixed\}\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Console/Commands/VerifyParticipantsOutOfZone.php
-
-		-
-			message: '#^Offset ''nationality'' on array\{bib\: mixed, participant_uuid\: string, name\: string, category\: mixed, nationality\: null, participant_matched_by\: string\|null, stored_licence_number\: mixed, national_body_licence_number\: mixed, \.\.\.\} on left side of \?\? always exists and is always null\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Console/Commands/VerifyParticipantsOutOfZone.php
-
-		-
-			message: '#^Offset ''nationality'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Console/Commands/VerifyParticipantsOutOfZone.php
 
@@ -1165,12 +1057,6 @@ parameters:
 			path: app/Exports/RaceParticipantsExport.php
 
 		-
-			message: '#^Cannot call method localizedName\(\) on int\<0, max\>\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
 			message: '#^Method App\\Exports\\RaceParticipantsExport\:\:map\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1183,20 +1069,8 @@ parameters:
 			path: app/Exports/RaceParticipantsExport.php
 
 		-
-			message: '#^Offset ''birth_date'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
 			message: '#^Offset ''birth_date'' on string\|null on left side of \?\? does not exist\.$#'
 			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
-			message: '#^Offset ''birth_place'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
 			count: 1
 			path: app/Exports/RaceParticipantsExport.php
 
@@ -1267,12 +1141,6 @@ parameters:
 			path: app/Exports/RaceParticipantsExport.php
 
 		-
-			message: '#^Offset ''licence_number'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
 			message: '#^Offset ''licence_number'' on string\|null on left side of \?\? does not exist\.$#'
 			identifier: nullCoalesce.offset
 			count: 2
@@ -1285,20 +1153,8 @@ parameters:
 			path: app/Exports/RaceParticipantsExport.php
 
 		-
-			message: '#^Offset ''medical_certificate_expiration_date'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
 			message: '#^Offset ''name'' on string\|null on left side of \?\? does not exist\.$#'
 			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
-			message: '#^Offset ''nationality'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
 			count: 1
 			path: app/Exports/RaceParticipantsExport.php
 
@@ -1327,21 +1183,9 @@ parameters:
 			path: app/Exports/RaceParticipantsExport.php
 
 		-
-			message: '#^Offset ''residence_address'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 4
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
 			message: '#^Offset ''residence_address'' on string\|null on left side of \?\? does not exist\.$#'
 			identifier: nullCoalesce.offset
 			count: 4
-			path: app/Exports/RaceParticipantsExport.php
-
-		-
-			message: '#^Offset ''sex'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
 			path: app/Exports/RaceParticipantsExport.php
 
 		-
@@ -1370,12 +1214,6 @@ parameters:
 
 		-
 			message: '#^Cannot call method __toString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Exports/RaceParticipantsForTimingExport.php
-
-		-
-			message: '#^Cannot call method localizedName\(\) on int\<0, max\>\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Exports/RaceParticipantsForTimingExport.php
@@ -1423,12 +1261,6 @@ parameters:
 			path: app/Exports/RaceParticipantsForTimingExport.php
 
 		-
-			message: '#^Offset ''phone'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Exports/RaceParticipantsForTimingExport.php
-
-		-
 			message: '#^Offset ''phone'' on string\|null on left side of \?\? does not exist\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
@@ -1457,7 +1289,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/BibReservationController.php
-
 
 		-
 			message: '#^Method App\\Http\\Controllers\\BibReservationController\:\:create\(\) has no return type specified\.$#'
@@ -1534,13 +1365,13 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:categories\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 1
 			path: app/Http/Controllers/ChampionshipAwardController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:races\(\)\.$#'
 			identifier: method.notFound
-			count: 3
+			count: 2
 			path: app/Http/Controllers/ChampionshipAwardController.php
 
 		-
@@ -1600,12 +1431,6 @@ parameters:
 		-
 			message: '#^Method App\\Http\\Controllers\\ChampionshipAwardController\:\:update\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/ChampionshipAwardController.php
-
-		-
-			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, ''ASC'' given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/ChampionshipAwardController.php
 
@@ -2696,12 +2521,6 @@ parameters:
 			path: app/Http/Controllers/PublicChampionshipAwardController.php
 
 		-
-			message: '#^Cannot call method localizedName\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/PublicChampionshipAwardController.php
-
-		-
 			message: '#^Method App\\Http\\Controllers\\PublicChampionshipAwardController\:\:index\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -2714,20 +2533,8 @@ parameters:
 			path: app/Http/Controllers/PublicChampionshipAwardController.php
 
 		-
-			message: '#^Parameter \#1 \$groupBy of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:groupBy\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: \(int\|string\|Stringable\|UnitEnum\)\)\|list\<Closure\|string\>\|string, Closure\(App\\Models\\ChampionshipAward\)\: mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/PublicChampionshipAwardController.php
-
-		-
 			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardRankingMode\:\:SpecificRaces will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Http/Controllers/PublicChampionshipAwardController.php
-
-		-
-			message: '#^Unable to resolve the template type TGroupKey in call to method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:groupBy\(\)$#'
-			identifier: argument.templateType
 			count: 1
 			path: app/Http/Controllers/PublicChampionshipAwardController.php
 
@@ -3890,36 +3697,6 @@ parameters:
 			path: app/Livewire/DriverSearch.php
 
 		-
-			message: '#^Offset ''email'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Livewire/DriverSearch.php
-
-		-
-			message: '#^Offset ''first_name'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Livewire/DriverSearch.php
-
-		-
-			message: '#^Offset ''fiscal_code'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Livewire/DriverSearch.php
-
-		-
-			message: '#^Offset ''last_name'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: app/Livewire/DriverSearch.php
-
-		-
-			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Livewire/DriverSearch.php
-
-		-
 			message: '#^Property App\\Livewire\\DriverSearch\:\:\$participants with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
@@ -4423,9 +4200,6 @@ parameters:
 			count: 5
 			path: app/Livewire/WildcardSettings.php
 
-
-
-
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
@@ -4437,7 +4211,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/WildcardSettings.php
-
 
 		-
 			message: '#^Method App\\Livewire\\WildcardSettings\:\:render\(\) has no return type specified\.$#'
@@ -4463,7 +4236,6 @@ parameters:
 			count: 1
 			path: app/Livewire/WildcardSettings.php
 
-
 		-
 			message: '#^Using nullsafe property access "\?\-\>requiredBonusAmount" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
@@ -4475,7 +4247,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Livewire/WildcardSettings.php
-
 
 		-
 			message: '#^Class App\\Models\\BibReservation uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -4801,15 +4572,8 @@ parameters:
 			count: 1
 			path: app/Models/Category.php
 
-
 		-
 			message: '#^Class App\\Models\\Championship uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Championship.php
-
-		-
-			message: '#^Method App\\Models\\Championship\:\:awards\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Championship.php
@@ -4849,7 +4613,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Models/Championship.php
-
 
 		-
 			message: '#^Method App\\Models\\Championship\:\:tires\(\) has no return type specified\.$#'
@@ -4920,18 +4683,6 @@ parameters:
 		-
 			message: '#^Method App\\Models\\ChampionshipAward\:\:uniqueIds\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/ChampionshipAward.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardType\:\:Category will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Models/ChampionshipAward.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardType\:\:Overall will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: app/Models/ChampionshipAward.php
 
@@ -5464,18 +5215,6 @@ parameters:
 			path: app/Models/Participant.php
 
 		-
-			message: '#^Offset ''email'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 4
-			path: app/Models/Participant.php
-
-		-
-			message: '#^Offset ''email'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Models/Participant.php
-
-		-
 			message: '#^Offset ''email'' on string\|null on left side of \?\? does not exist\.$#'
 			identifier: nullCoalesce.offset
 			count: 3
@@ -5494,27 +5233,9 @@ parameters:
 			path: app/Models/Participant.php
 
 		-
-			message: '#^Offset ''fiscal_code'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Models/Participant.php
-
-		-
 			message: '#^Offset ''last_name'' does not exist on non\-falsy\-string\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
-			path: app/Models/Participant.php
-
-		-
-			message: '#^Offset ''licence_number'' on string on left side of \?\? does not exist\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Models/Participant.php
-
-		-
-			message: '#^Offset ''nationality'' does not exist on string\.$#'
-			identifier: offsetAccess.notFound
-			count: 2
 			path: app/Models/Participant.php
 
 		-

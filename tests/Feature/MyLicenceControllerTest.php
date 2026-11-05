@@ -95,7 +95,7 @@ class MyLicenceControllerTest extends TestCase
         $this->actingAs($user)
             ->post(route('my-licences.store'), [
                 'provider' => 'asi',
-                'licence_type' => 'driver',
+                'licence_type' => 'ma',
                 'number' => 'ASI-12345',
                 'validity_year' => now()->year,
                 'holder' => $this->holderInput(),

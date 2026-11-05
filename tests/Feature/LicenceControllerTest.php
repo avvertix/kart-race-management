@@ -38,7 +38,7 @@ class LicenceControllerTest extends TestCase
         Licence::factory()->create([
             'holder' => LicenceFactory::holder('Anna', 'Neri'),
             'provider' => LicenceProvider::Asi,
-            'licence_type' => 'driver',
+            'licence_type' => 'ma',
             'validity_year' => $year - 1,
         ]);
 

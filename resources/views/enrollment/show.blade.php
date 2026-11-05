@@ -35,7 +35,7 @@
                 <span class="block text-zinc-500">{{ __('Licence') }}</span>
                 @if ($licence)
                     {{ $licence->provider->label() }} &middot; {{ $licence->licenceTypeLabel() }} &middot; <span class="font-mono">{{ $licence->number }}</span> &middot; {{ $licence->validity_year }}
-                    <span class="block text-sm text-zinc-600">{{ $licence->source->label() }}{{ $licence->isVerified() ? ' · '.__('Verified') : '' }}</span>
+                    <span class="block text-sm text-zinc-600">{{ $licence->source->label() }}{{ $licence->isVerifiedOrEmitted() ? ' · '.__('Verified') : '' }}</span>
                 @elseif ($enrollment->licenceRequest)
                     {{ __('Waiting for the licence request') }} &middot; {{ $enrollment->licenceRequest->status->label() }}
                 @endif
@@ -63,17 +63,48 @@
                     <span class="block text-sm text-zinc-600">{{ __('The driver is underage.') }}</span>
                 @endif
             </p>
-            <p>
+            <div>
                 <span class="block text-zinc-500">{{ __('Payment') }}</span>
                 @if ($enrollment->order)
-                    <a href="{{ route('orders.show', $enrollment->order) }}" class="text-orange-600 hover:text-orange-900">{{ $enrollment->order->status->label() }}</a>
+                    <p>
+                        {{ $enrollment->order->lines->pluck('description')->join(', ') }}
+                        &middot; {{ $enrollment->order->total === null ? __('to be set') : $enrollment->order->currency->format($enrollment->order->total) }}
+                        &middot; {{ $enrollment->order->status->label() }}
+                        &middot; <a href="{{ route('orders.show', $enrollment->order) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Order :order', ['order' => $enrollment->order->ulid]) }}</a>
+                    </p>
+                    @if ($enrollment->order->latestPayment)
+                        @php($proofUrl = $enrollment->order->latestPayment->downloadUrl)
+                        <p class="text-sm text-zinc-600">
+                            {{ __('Uploaded on') }} <x-time :value="$enrollment->order->latestPayment->created_at" />
+                            &middot; <a href="{{ $proofUrl }}" target="_blank" class="text-orange-600 hover:text-orange-900">{{ __('Open in a new tab') }}</a>
+                        </p>
+                        @if ($enrollment->order->status === \App\Enums\OrderStatus::PaymentSubmitted)
+                            <iframe src="{{ $proofUrl }}" class="mt-2 w-full h-96 rounded-sm border border-zinc-200" title="{{ __('Payment proof') }}"></iframe>
+                        @endif
+                    @endif
+                    @if ($enrollment->order->status === \App\Enums\OrderStatus::PaymentSubmitted)
+                        @can('update', $enrollment->order)
+                            <div class="mt-2 flex gap-2">
+                                <form method="POST" action="{{ route('enrollments.payment.confirm', $enrollment) }}">
+                                    @csrf
+                                    <x-button type="submit">{{ __('Confirm payment') }}</x-button>
+                                </form>
+                                <form method="POST" action="{{ route('enrollments.payment.reject', $enrollment) }}">
+                                    @csrf
+                                    <x-secondary-button type="submit">{{ __('Reject payment') }}</x-secondary-button>
+                                </form>
+                            </div>
+                            <x-input-error for="order" class="mt-1" />
+                        @endcan
+                    @endif
                 @else
-                    {{ __('No order') }}
+                    <p>{{ __('No payment') }}</p>
                 @endif
-            </p>
+            </div>
             @if ($enrollment->reservations->isNotEmpty())
                 <p>
                     <span class="block text-zinc-500">{{ __('Race number') }}</span>
+                    <span class="block text-sm text-zinc-600">{{ __('Confirm it on its own at any time, also before the payment; confirming the enrollment confirms it too.') }}</span>
                     @foreach ($enrollment->reservations as $reservation)
                         <span class="font-mono">{{ $reservation->bib }}</span> &middot; {{ $reservation->status->label() }}
                         @can('confirm', $reservation)

@@ -25,6 +25,11 @@ The organizer reviews and confirms an Enrollment from one page: what is missing,
 - The race number keeps its own confirmation, at any time, even before payment. Withdrawing or rejecting the Enrollment releases it, as today. The page states that the number is confirmed separately.
 - The championship page is clear on every organizer page (title and year in the heading).
 
+- Implementation notes:
+  - Confirming the Enrollment still confirms a pending race number. The organizer can confirm the number earlier on its own, and the page says so.
+  - The championship heading already shows the title, with the period on the line below; unchanged.
+  - Setting the price of a range-priced Package Order still happens on the order page, linked from the Enrollment.
+
 ## Out of scope
 
 Bulk confirmation.

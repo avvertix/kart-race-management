@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\LicenceRequestStatus;
 use App\Enums\OrderStatus;
 use App\Enums\ProductGrantKind;
+use App\Enums\ProductKind;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -89,6 +91,19 @@ class Order extends Model implements Payable
     }
 
     /**
+     * Whether the Order pays a licence renewal: a Package including one, or an enrollment fee covering it.
+     */
+    public function coversLicenceRenewal(): bool
+    {
+        if ($this->grantsOf(ProductGrantKind::LicenceEmission)->isNotEmpty()) {
+            return true;
+        }
+
+        return $this->lines()->with('product.championship')->get()->contains(fn (OrderLine $line) => $line->product->kind === ProductKind::Enrollment
+            && $line->product->championship?->enrollment->fee_covers_licence_renewal === true);
+    }
+
+    /**
      * The Licence a Package of race fee discounts ordered on its own is for.
      *
      * @return BelongsTo<Licence, $this>
@@ -120,13 +135,21 @@ class Order extends Model implements Payable
 
     /**
      * Whether the buyer can start the licence renewal the Order covers: paid, with a licence renewal in a Package, and
-     * not used by a request yet.
+     * not used by a request yet, a rejected one apart.
      */
     public function canStartLicenceRenewal(): bool
     {
         return $this->status === OrderStatus::Paid
             && $this->grantsOf(ProductGrantKind::LicenceEmission)->isNotEmpty()
-            && ! LicenceRequest::query()->where('covering_order_id', $this->getKey())->exists();
+            && ! $this->coversARequest();
+    }
+
+    /**
+     * Whether the Order pays a licence renewal that no Licence Request uses yet, a rejected one apart.
+     */
+    public function hasUnusedRenewal(): bool
+    {
+        return $this->coversLicenceRenewal() && ! $this->coversARequest();
     }
 
     /**
@@ -214,5 +237,13 @@ class Order extends Model implements Payable
             'priced_at' => 'datetime',
             'paid_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Whether a Licence Request not rejected is covered by the Order.
+     */
+    private function coversARequest(): bool
+    {
+        return LicenceRequest::query()->where('covering_order_id', $this->getKey())->where('status', '!=', LicenceRequestStatus::Rejected)->exists();
     }
 }

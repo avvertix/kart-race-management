@@ -41,6 +41,9 @@
         {{ $licenceRequest->status->label() }}
         &middot; {{ $isChangesRequested ? __('Fix the flagged parts, everything else is accepted.') : __('Each section is saved when you continue. You can come back any time.') }}
     </p>
+    <div class="mt-2">
+        @include('partials.waiting-enrollments', ['licenceRequest' => $licenceRequest])
+    </div>
 </x-slot>
 
 <div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8 max-w-3xl">

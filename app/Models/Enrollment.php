@@ -8,6 +8,7 @@ use App\Actions\Orders\CancelOrder;
 use App\Data\HolderData;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentStatus;
+use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceRole;
 use App\Enums\OrderStatus;
 use App\Enums\ProductGrantKind;
@@ -69,11 +70,12 @@ class Enrollment extends Model
      *
      * @throws ValidationException
      */
-    public static function ensureNotEnrolled(Championship $championship, ?Licence $licence, ?LicenceRequest $licenceRequest): void
+    public static function ensureNotEnrolled(Championship $championship, ?Licence $licence, ?LicenceRequest $licenceRequest, ?self $except = null): void
     {
         $isEnrolled = self::query()
             ->where('championship_id', $championship->getKey())
             ->active()
+            ->when($except, fn (Builder $query) => $query->whereKeyNot($except->getKey()))
             ->where(fn (Builder $query) => $query
                 ->when($licence, fn (Builder $query) => $query->orWhere('licence_id', $licence->getKey()))
                 ->when($licenceRequest, fn (Builder $query) => $query->orWhere('licence_request_id', $licenceRequest->getKey())))
@@ -83,7 +85,7 @@ class Enrollment extends Model
             throw ValidationException::withMessages(['licence' => __('This licence is already enrolled in the championship.')]);
         }
 
-        if (self::isDriverEnrolled($championship, $licence?->number_hash, $licence->holder ?? $licenceRequest?->holder)) {
+        if (self::isDriverEnrolled($championship, $licence?->number_hash, $licence->holder ?? $licenceRequest?->holder, $except)) {
             throw ValidationException::withMessages(['licence' => __('The driver is already enrolled in the championship.')]);
         }
     }
@@ -207,6 +209,15 @@ class Enrollment extends Model
 
         return $this->order !== null && $this->order->grantsOf(ProductGrantKind::Enrollment)
             ->contains(fn (ProductGrant $grant) => $grant->championship_id === $this->championship_id && $grant->grants_bib_reservation);
+    }
+
+    /**
+     * Whether the Enrollment has nothing to enroll anymore: the Licence Request it waited for was rejected, so the User
+     * picks another Licence.
+     */
+    public function needsLicence(): bool
+    {
+        return $this->licence_id === null && ($this->licenceRequest === null || $this->licenceRequest->status === LicenceRequestStatus::Rejected);
     }
 
     /**

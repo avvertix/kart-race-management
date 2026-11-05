@@ -18,6 +18,28 @@
     <div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8">
         <div class="grid gap-8 lg:grid-cols-3">
             <div class="lg:col-span-2 space-y-6">
+                @can('changeLicence', $enrollment)
+                    <form method="POST" action="{{ route('my-enrollments.licence.update', $enrollment) }}" class="space-y-3 rounded-md border border-amber-400 bg-amber-50 p-4">
+                        @csrf
+                        @method('PUT')
+                        <p class="text-sm font-medium text-amber-900">{{ __('The licence request was rejected: choose another licence.') }}</p>
+                        @if ($enrollment->licenceRequest?->rejection_reason)
+                            <p class="text-sm text-amber-900">{{ $enrollment->licenceRequest->rejection_reason }}</p>
+                        @endif
+                        <x-validation-errors />
+                        <fieldset class="space-y-2">
+                            <legend class="sr-only">{{ __('Licence') }}</legend>
+                            @foreach ($subjects as $item)
+                                <label class="flex items-start gap-3">
+                                    <input type="radio" name="subject" value="{{ $item['value'] }}" @checked(old('subject') === $item['value']) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
+                                    <span class="text-sm text-zinc-900">{{ $item['label'] }}</span>
+                                </label>
+                            @endforeach
+                        </fieldset>
+                        <x-button type="submit">{{ __('Use this licence') }}</x-button>
+                    </form>
+                @endcan
+
                 @if ($enrollment->rejection_reason)
                     <p class="rounded-md border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900">{{ $enrollment->rejection_reason }}</p>
                 @endif
@@ -30,6 +52,10 @@
                     <dd class="sm:col-span-2 text-zinc-900">
                         @if ($enrollment->licence)
                             {{ $enrollment->licence->licenceTypeLabel() }} &middot; <span class="font-mono">{{ $enrollment->licence->number }}</span>
+                        @elseif ($enrollment->licenceRequest?->status === \App\Enums\LicenceRequestStatus::Draft)
+                            <a href="{{ route('licence-requests.edit', $enrollment->licenceRequest) }}" class="text-orange-600 hover:text-orange-900">{{ __('Licence request to complete') }}</a>
+                        @elseif ($enrollment->needsLicence())
+                            {{ __('The licence request was rejected') }}
                         @elseif ($enrollment->licenceRequest)
                             <a href="{{ route('licence-requests.show', $enrollment->licenceRequest) }}" class="text-orange-600 hover:text-orange-900">{{ __('Waiting for the licence request') }}</a>
                         @else

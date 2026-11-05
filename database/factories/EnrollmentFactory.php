@@ -6,6 +6,8 @@ namespace Database\Factories;
 
 use App\Enums\EnrollmentStatus;
 use App\Models\Championship;
+use App\Models\Enrollment;
+use App\Models\EnrollmentOption;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\User;
@@ -16,6 +18,19 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class EnrollmentFactory extends Factory
 {
+    /**
+     * Enrollments made without an option take the first one of their championship, when it has one, as if the driver
+     * had chosen it; nothing is due unless a test says so.
+     */
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Enrollment $enrollment) {
+            if ($enrollment->enrollment_option_id === null) {
+                $enrollment->enrollment_option_id = EnrollmentOption::query()->where('championship_id', $enrollment->championship_id)->orderBy('id')->value('id');
+            }
+        });
+    }
+
     /**
      * Define the model's default state: a submitted Enrollment of a verified Licence.
      *

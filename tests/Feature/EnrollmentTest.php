@@ -6,8 +6,8 @@ namespace Tests\Feature;
 
 use App\Actions\LicenceRequests\EmitLicence;
 use App\Actions\LicenceRequests\RejectLicenceRequest;
-use App\Data\EnrollmentSettingsData;
 use App\Data\HolderData;
+use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\OrderStatus;
@@ -16,10 +16,7 @@ use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\Order;
-use App\Models\Price;
-use App\Models\Product;
 use App\Models\User;
-use Carbon\CarbonImmutable;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
@@ -80,12 +77,9 @@ class EnrollmentTest extends TestCase
         $this->assertSame(1, $championship->enrollments()->count());
     }
 
-    public function test_a_paid_enrollment_places_the_order(): void
+    public function test_a_paid_option_asks_the_enrollment_to_pay_its_amount(): void
     {
-        $championship = Championship::factory()->create();
-        $product = Product::factory()->enrollment()->recycle($championship)->create();
-        Price::factory()->for($product)->create(['amount' => 15000]);
-        $this->openEnrollment($championship, productId: $product->getKey());
+        $championship = Championship::factory()->openForEnrollment(amount: 15000)->create();
 
         $driver = User::factory()->create();
         $licence = Licence::factory()->for($driver)->create();
@@ -96,9 +90,10 @@ class EnrollmentTest extends TestCase
         $enrollment = $championship->enrollments()->sole();
 
         $response->assertRedirect(route('my-enrollments.show', $enrollment));
-        $this->assertSame(OrderStatus::AwaitingPayment, $enrollment->order->status);
-        $this->assertTrue($enrollment->order->user->is($driver));
-        $this->assertSame(15000, $enrollment->order->total);
+        $this->assertNull($enrollment->order_id);
+        $this->assertSame(EnrollmentPaymentStatus::AwaitingPayment, $enrollment->payment_status);
+        $this->assertSame(15000, $enrollment->amount);
+        $this->assertTrue($enrollment->option->is($championship->enrollmentOptions()->sole()));
     }
 
     public function test_only_own_licences_valid_in_the_championship_year_can_be_enrolled(): void
@@ -120,8 +115,7 @@ class EnrollmentTest extends TestCase
 
     public function test_enrollment_is_refused_outside_the_period(): void
     {
-        $championship = Championship::factory()->create();
-        $this->openEnrollment($championship, opensAt: now()->addDay());
+        $championship = Championship::factory()->openForEnrollment(opensAt: now()->addDay())->create();
         $driver = User::factory()->create();
 
         $this->actingAs($driver)
@@ -218,24 +212,7 @@ class EnrollmentTest extends TestCase
 
     private function openChampionship(bool $requiresCompetitor = false): Championship
     {
-        $championship = Championship::factory()->create();
-
-        $this->openEnrollment($championship, requiresCompetitor: $requiresCompetitor);
-
-        return $championship;
-    }
-
-    private function openEnrollment(Championship $championship, ?CarbonImmutable $opensAt = null, ?int $productId = null, bool $requiresCompetitor = false): void
-    {
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: $opensAt ?? now()->subDay(),
-            closes_at: now()->addMonth(),
-            product_id: $productId,
-            requires_competitor_when_underage: $requiresCompetitor,
-        );
-
-        $championship->save();
+        return Championship::factory()->openForEnrollment(requiresCompetitor: $requiresCompetitor)->create();
     }
 
     private function holderBornYearsAgo(int $years): HolderData

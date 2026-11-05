@@ -6,18 +6,14 @@ namespace Tests\Feature;
 
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\RejectEnrollment;
-use App\Actions\Orders\PlaceOrder;
 use App\Actions\SubmitPaymentProof;
-use App\Data\EnrollmentSettingsData;
 use App\Enums\BibReservationStatus;
+use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
-use App\Enums\OrderStatus;
 use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
-use App\Models\Price;
-use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -48,7 +44,7 @@ class EnrollmentReviewPaymentTest extends TestCase
             ->post(route('enrollments.payment.confirm', $enrollment))
             ->assertRedirect(route('enrollments.show', $enrollment));
 
-        $this->assertSame(OrderStatus::Paid, $enrollment->order->fresh()->status);
+        $this->assertSame(EnrollmentPaymentStatus::Paid, $enrollment->fresh()->payment_status);
 
         $this->actingAs($organizer)
             ->post(route('enrollments.confirm', $enrollment))
@@ -66,7 +62,7 @@ class EnrollmentReviewPaymentTest extends TestCase
             ->post(route('enrollments.payment.reject', $enrollment))
             ->assertRedirect(route('enrollments.show', $enrollment));
 
-        $this->assertSame(OrderStatus::AwaitingPayment, $enrollment->order->fresh()->status);
+        $this->assertSame(EnrollmentPaymentStatus::AwaitingPayment, $enrollment->fresh()->payment_status);
     }
 
     public function test_only_organizers_review_the_enrollment_payment(): void
@@ -78,7 +74,7 @@ class EnrollmentReviewPaymentTest extends TestCase
             ->post(route('enrollments.payment.confirm', $enrollment))
             ->assertForbidden();
 
-        $this->assertSame(OrderStatus::PaymentSubmitted, $enrollment->order->fresh()->status);
+        $this->assertSame(EnrollmentPaymentStatus::PaymentSubmitted, $enrollment->fresh()->payment_status);
 
         $this->actingAs(User::factory()->organizer()->create())
             ->get(route('championships.enrollments.index', [$enrollment->championship, 'status' => EnrollmentStatus::Confirmed->value]))
@@ -121,33 +117,20 @@ class EnrollmentReviewPaymentTest extends TestCase
      */
     private function paidEnrollmentWithProof(): array
     {
-        $championship = $this->championship();
-        $fee = Product::factory()->enrollment()->recycle($championship)->create();
-        Price::factory()->for($fee)->create(['amount' => 18000]);
+        $championship = Championship::factory()->openForEnrollment(amount: 18000)->create();
         $user = User::factory()->create();
-        $order = app(PlaceOrder::class)($user, $fee);
         $enrollment = Enrollment::factory()->for($championship)->for($user)->create([
             'licence_id' => Licence::factory()->verified()->for($user)->create(),
-            'order_id' => $order->getKey(),
+            'amount' => 18000,
+            'payment_status' => EnrollmentPaymentStatus::AwaitingPayment,
         ]);
-        $payment = app(SubmitPaymentProof::class)($order, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
+        $payment = app(SubmitPaymentProof::class)($enrollment, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));
 
         return [$enrollment, $payment];
     }
 
     private function championship(): Championship
     {
-        $championship = Championship::factory()->create();
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            grants_bib_reservation: true,
-            requires_competitor_when_underage: false,
-        );
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()->openForEnrollment(reservesRaceNumber: true)->create();
     }
 }

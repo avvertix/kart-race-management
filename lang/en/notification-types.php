@@ -16,6 +16,8 @@ return [
         'enrollment_confirmed' => 'Enrollment confirmed',
         'enrollment_rejected' => 'Enrollment rejected',
         'enrollment_needs_action' => 'Enrollment needs your attention',
+        'enrollment_payment_confirmed' => 'Enrollment payment confirmed',
+        'enrollment_payment_rejected' => 'Enrollment payment proof not accepted',
         'licence_request_submitted' => 'Licence request to review',
     ],
 
@@ -31,6 +33,8 @@ return [
         'enrollment_confirmed' => 'When the organizer confirms your enrollment in a championship.',
         'enrollment_rejected' => 'When the organizer rejects your enrollment.',
         'enrollment_needs_action' => 'When your enrollment needs another licence or a competitor.',
+        'enrollment_payment_confirmed' => 'When the organizer confirms the payment of your enrollment.',
+        'enrollment_payment_rejected' => 'When the organizer can\'t confirm the payment proof of your enrollment.',
         'licence_request_submitted' => 'When a driver submits a licence request, also after fixing it.',
     ],
 

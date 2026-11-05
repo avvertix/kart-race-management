@@ -1717,5 +1717,22 @@
     "Offer the option only to licences of these categories. None selected means any licence.": "Offri l'opzione solo alle licenze di queste categorie. Nessuna selezionata vale per ogni licenza.",
     "Offered to drivers": "Offerta ai piloti",
     "Display order": "Ordine di visualizzazione",
-    "Not offered": "Non offerta"
+    "Not offered": "Non offerta",
+    "The enrollment option is not available.": "L'opzione di iscrizione non è disponibile.",
+    "Only a submitted enrollment can change option.": "Solo un'iscrizione inviata può cambiare opzione.",
+    "The payment is already confirmed or waits for review: the option can't change.": "Il pagamento è già confermato o attende la verifica: l'opzione non può cambiare.",
+    "The enrollment has no payment proof to review.": "L'iscrizione non ha ricevute di pagamento da verificare.",
+    "No enrollment option is available for this licence.": "Nessuna opzione di iscrizione è disponibile per questa licenza.",
+    "Choose one of the enrollment options offered for this licence.": "Scegli una delle opzioni di iscrizione offerte per questa licenza.",
+    "Enrollment option changed.": "Opzione di iscrizione cambiata.",
+    "Add an enrollment option before letting drivers enroll.": "Aggiungi un'opzione di iscrizione prima di aprire le iscrizioni.",
+    "The enrollment is not awaiting a payment.": "L'iscrizione non attende un pagamento.",
+    "The organizer confirmed the payment of the enrollment of :driver in :championship.": "L'organizzatore ha confermato il pagamento dell'iscrizione di :driver a :championship.",
+    "The organizer could not confirm the payment proof of the enrollment of :driver in :championship. Upload a new one.": "L'organizzatore non ha potuto confermare la ricevuta di pagamento dell'iscrizione di :driver a :championship. Caricane una nuova.",
+    "Enrolled by the organizer": "Iscritto dall'organizzatore",
+    "Enrollment option": "Opzione di iscrizione",
+    "Change option": "Cambia opzione",
+    "Covered by your enrollment": "Inclusa nella tua iscrizione",
+    "Covered by your enrollment in :championship.": "Inclusa nella tua iscrizione a :championship.",
+    "Covered by an enrollment": "Inclusa in un'iscrizione"
 }

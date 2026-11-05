@@ -11,7 +11,6 @@ use App\Data\LicenceSettingsData;
 use App\Data\PaymentSettingsData;
 use App\Data\RegistrationSettingsData;
 use App\Data\WildcardSettingsData;
-use App\Enums\ProductKind;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -124,22 +123,6 @@ class Championship extends Model
     public function awards(): HasMany
     {
         return $this->hasMany(ChampionshipAward::class);
-    }
-
-    /**
-     * The Product paying for the enrollment, null when enrollment is free or the Product is no longer an enrollment of
-     * the championship.
-     */
-    public function enrollmentProduct(): ?Product
-    {
-        if ($this->enrollment->isFree()) {
-            return null;
-        }
-
-        return Product::query()
-            ->where('kind', ProductKind::Enrollment->value)
-            ->where('championship_id', $this->getKey())
-            ->find($this->enrollment->product_id);
     }
 
     /**

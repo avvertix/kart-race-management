@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\Enrollments\GrantEnrollmentEntitlements;
 use App\Concerns\HasLicenceType;
 use App\Data\HolderData;
 use App\Enums\LicenceProvider;
@@ -151,6 +152,11 @@ class Licence extends Model
 
             Entitlement::linkTo($this);
         });
+
+        $grantEnrollmentEntitlements = app(GrantEnrollmentEntitlements::class);
+
+        Enrollment::query()->where('licence_id', $this->getKey())->active()->get()
+            ->each(fn (Enrollment $enrollment) => $grantEnrollmentEntitlements($enrollment));
     }
 
     public function isVerified(): bool

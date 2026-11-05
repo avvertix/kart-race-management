@@ -37,8 +37,8 @@
                                 {{ $enrollment->status->label() }}
                             @elseif ($enrollment->needsLicence())
                                 {{ __('Choose another licence') }}
-                            @elseif ($enrollment->order && ! in_array($enrollment->order->status, [\App\Enums\OrderStatus::Paid, \App\Enums\OrderStatus::Cancelled], true))
-                                {{ __('Payment') }}: {{ $enrollment->order->status->label() }}
+                            @elseif (! $enrollment->payment_status->isSettled())
+                                {{ __('Payment') }}: {{ $enrollment->payment_status->label() }}
                             @elseif ($enrollment->licence === null)
                                 {{ __('Waiting for the licence request') }}
                             @else

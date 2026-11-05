@@ -54,6 +54,7 @@ use Spatie\LaravelData\DataCollection;
  * @property ?int $payment_confirmed_by
  * @property ?CarbonImmutable $paid_at
  * @property ?int $covering_order_id
+ * @property ?int $covering_enrollment_id
  * @property ?int $licence_id
  * @property ?CarbonImmutable $submitted_at
  * @property ?CarbonImmutable $changes_requested_at
@@ -118,6 +119,7 @@ class LicenceRequest extends Model implements Payable
         'payment_confirmed_by',
         'paid_at',
         'covering_order_id',
+        'covering_enrollment_id',
         'licence_id',
         'submitted_at',
         'changes_requested_at',
@@ -200,23 +202,50 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Let the Order pay the request, e.g. an enrollment fee covering the renewal, when its own payment is not made nor
-     * covered yet. Call it inside a transaction.
+     * Let the Enrollment pay the request, as its option covers the licence renewal, when the request's own payment is
+     * not made nor covered yet, by the Enrollment or by a Package bought on its own (`covering_order_id`). Call it
+     * inside a transaction.
      */
-    public function coverWith(Order $order): void
+    public function coverWith(Enrollment $enrollment): void
     {
         $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
 
-        if ($locked->covering_order_id !== null || ! in_array($locked->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true)) {
+        if ($locked->covering_order_id !== null || $locked->covering_enrollment_id !== null || ! in_array($locked->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true)) {
             return;
         }
 
         $locked->update([
-            'covering_order_id' => $order->getKey(),
+            'covering_enrollment_id' => $enrollment->getKey(),
             'payment_status' => LicenceRequestPaymentStatus::Covered,
         ]);
 
         $this->setRawAttributes($locked->getAttributes(), true);
+    }
+
+    /**
+     * Return the request to its own payment when the Enrollment covering it no longer does: to be priced by the
+     * organizer, or paid at the amount already set. Call it inside a transaction.
+     */
+    public function uncover(): void
+    {
+        $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
+
+        $locked->update([
+            'covering_enrollment_id' => null,
+            'payment_status' => $locked->amount === null ? LicenceRequestPaymentStatus::AwaitingPrice : LicenceRequestPaymentStatus::AwaitingPayment,
+        ]);
+
+        $this->setRawAttributes($locked->getAttributes(), true);
+    }
+
+    /**
+     * The Enrollment whose option covers the renewal.
+     *
+     * @return BelongsTo<Enrollment, $this>
+     */
+    public function coveringEnrollment(): BelongsTo
+    {
+        return $this->belongsTo(Enrollment::class, 'covering_enrollment_id');
     }
 
     /**
@@ -566,14 +595,18 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Whether nothing is left to pay: the organizer confirmed the payment, or a paid Order (a package, or an enrollment
-     * fee covering the renewal) covers the request.
+     * Whether nothing is left to pay: the organizer confirmed the payment, or it is covered by a paid Order (a Package
+     * bought on its own) or by an Enrollment whose option covers the renewal, once that Enrollment is paid.
      */
     public function isPaymentSettled(): bool
     {
         return match ($this->payment_status) {
             LicenceRequestPaymentStatus::Paid => true,
-            LicenceRequestPaymentStatus::Covered => $this->covering_order_id === null || $this->coveringOrder?->status === OrderStatus::Paid,
+            LicenceRequestPaymentStatus::Covered => match (true) {
+                $this->covering_enrollment_id !== null => $this->coveringEnrollment?->isPaymentSettled() === true,
+                $this->covering_order_id !== null => $this->coveringOrder?->status === OrderStatus::Paid,
+                default => true,
+            },
             default => false,
         };
     }

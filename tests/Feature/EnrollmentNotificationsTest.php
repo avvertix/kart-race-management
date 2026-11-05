@@ -11,7 +11,6 @@ use App\Actions\LicenceRequests\SubmitLicenceRequest;
 use App\Actions\Orders\ConfirmOrderPayment;
 use App\Actions\Orders\PlaceOrder;
 use App\Actions\Orders\RejectOrderPayment;
-use App\Data\EnrollmentSettingsData;
 use App\Enums\EnrollmentStatus;
 use App\Enums\OrderStatus;
 use App\Enums\ProductGrantKind;
@@ -134,16 +133,8 @@ class EnrollmentNotificationsTest extends TestCase
 
     private function championship(bool $open = true, bool $requiresCompetitor = false): Championship
     {
-        $championship = Championship::factory()->create();
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subMonth(),
-            closes_at: $open ? now()->addMonth() : now()->subDay(),
-            requires_competitor_when_underage: $requiresCompetitor,
-        );
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()
+            ->openForEnrollment(requiresCompetitor: $requiresCompetitor, opensAt: now()->subMonth(), closesAt: $open ? now()->addMonth() : now()->subDay())
+            ->create();
     }
 }

@@ -44,7 +44,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_search_users_by_name(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = User::factory()->admin()->create(['name' => 'Admin', 'email' => 'admin@example.com']);
 
         $user1 = User::factory()->create(['name' => 'John Doe']);
         $user2 = User::factory()->create(['name' => 'Jane Smith']);
@@ -58,7 +58,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_search_users_by_email(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = User::factory()->admin()->create(['name' => 'Admin', 'email' => 'admin@example.com']);
 
         $user1 = User::factory()->create(['email' => 'john@example.com']);
         $user2 = User::factory()->create(['email' => 'jane@example.com']);

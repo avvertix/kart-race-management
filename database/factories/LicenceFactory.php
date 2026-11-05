@@ -22,6 +22,18 @@ class LicenceFactory extends Factory
     /**
      * A holder with plausible details.
      */
+    /**
+     * The default holder with a fiscal code of its own, so that Licences made by the factory belong to different people
+     * unless a test passes the same holder on purpose.
+     */
+    public static function distinctHolder(): HolderData
+    {
+        $holder = self::holder();
+        $holder->fiscal_code = mb_strtoupper(fake()->unique()->bothify('RSSMRA##?##?###?'));
+
+        return $holder;
+    }
+
     public static function holder(string $firstName = 'Mario', string $lastName = 'Rossi'): HolderData
     {
         return new HolderData(
@@ -59,7 +71,7 @@ class LicenceFactory extends Factory
             'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
             'number' => (string) fake()->unique()->numberBetween(100000, 999999),
             'validity_year' => now()->year,
-            'holder' => self::holder(),
+            'holder' => self::distinctHolder(),
             'source' => LicenceSource::Declared,
         ];
     }

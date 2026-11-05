@@ -126,7 +126,7 @@ class PublicRaceResultControllerTest extends TestCase
         $response = $this->get(route('public.results.show', $runResult));
 
         $response->assertSuccessful();
-        $response->assertDontSee(__('OZ'));
+        $response->assertDontSee('data-out-of-zone', false);
     }
 
     public function test_can_download_pdf_of_published_result(): void

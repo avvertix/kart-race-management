@@ -113,7 +113,7 @@ class EnrollmentNotificationsTest extends TestCase
         app(ConfirmOrderPayment::class)($order, User::factory()->organizer()->create());
 
         $this->actingAs($user)
-            ->get(route('notifications.open', $user->notifications()->latest()->first()->getKey()))
+            ->get(route('notifications.open', $user->notifications()->where('type', OrderPaymentConfirmed::class)->sole()->getKey()))
             ->assertRedirect(route('my-licences.index'));
     }
 

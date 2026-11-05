@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+Reviewing a diff: apply `CODING_STANDARDS.md`. Files may have CRLF line endings: edit them with the Edit tool rather than `sed`.
+
 ## Project Overview
 
 Kart Race Management (KRM) is a Laravel-based web application designed to help race organizers manage kart racing championships and events. The application handles participant registrations, race number assignments, category management, tire tracking, transponder assignments, payment tracking, and exports data for MyLaps Orbits timekeeping systems.

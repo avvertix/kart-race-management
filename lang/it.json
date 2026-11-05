@@ -1685,5 +1685,18 @@
     "Not verified yet": "Non ancora verificata",
     "Ready to confirm": "Pronta da confermare",
     "No payment": "Nessun pagamento",
-    "Confirm it on its own at any time, also before the payment; confirming the enrollment confirms it too.": "Confermalo a parte in qualsiasi momento, anche prima del pagamento; confermando l'iscrizione si conferma anche il numero."
+    "Confirm it on its own at any time, also before the payment; confirming the enrollment confirms it too.": "Confermalo a parte in qualsiasi momento, anche prima del pagamento; confermando l'iscrizione si conferma anche il numero.",
+    "Your enrollment is confirmed": "La tua iscrizione è confermata",
+    "The organizer confirmed the enrollment of :driver in :championship.": "L'organizzatore ha confermato l'iscrizione di :driver a :championship.",
+    "Your enrollment was rejected": "La tua iscrizione è stata respinta",
+    "The licence request it waited for was rejected: choose another licence or renew again.": "La richiesta di licenza che attendeva è stata respinta: scegli un'altra licenza o rinnova di nuovo.",
+    "Your enrollment needs your attention": "La tua iscrizione richiede la tua attenzione",
+    "The enrollment of :driver in :championship can't be confirmed yet.": "L'iscrizione di :driver a :championship non può ancora essere confermata.",
+    "Your payment is confirmed": "Il tuo pagamento è confermato",
+    "The organizer confirmed the payment of :order.": "L'organizzatore ha confermato il pagamento di :order.",
+    "It includes a licence renewal: start the licence request, it asks for no payment.": "Include un rinnovo di licenza: avvia la richiesta di licenza, non chiede alcun pagamento.",
+    "Your payment proof was not accepted": "La tua ricevuta di pagamento non è stata accettata",
+    "The organizer could not confirm the payment proof of :order. Upload a new one.": "L'organizzatore non ha potuto confermare la ricevuta di pagamento di :order. Caricane una nuova.",
+    "Choose another licence": "Scegli un'altra licenza",
+    "The enrollment of :driver in :championship was rejected.": "L'iscrizione di :driver a :championship è stata respinta."
 }

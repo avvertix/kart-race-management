@@ -11,6 +11,11 @@ return [
         'licence_request_rejected' => 'Licence request rejected',
         'licence_emitted' => 'Licence emitted',
         'order_price_set' => 'Order price set',
+        'order_payment_confirmed' => 'Payment confirmed',
+        'order_payment_rejected' => 'Payment proof not accepted',
+        'enrollment_confirmed' => 'Enrollment confirmed',
+        'enrollment_rejected' => 'Enrollment rejected',
+        'enrollment_needs_action' => 'Enrollment needs your attention',
         'licence_request_submitted' => 'Licence request to review',
     ],
 
@@ -21,6 +26,11 @@ return [
         'licence_request_rejected' => 'When the organizer rejects your request.',
         'licence_emitted' => 'When your licence is ready to download.',
         'order_price_set' => 'When the organizer sets the final price of your order.',
+        'order_payment_confirmed' => 'When the organizer confirms your payment.',
+        'order_payment_rejected' => 'When the organizer can\'t confirm your payment proof.',
+        'enrollment_confirmed' => 'When the organizer confirms your enrollment in a championship.',
+        'enrollment_rejected' => 'When the organizer rejects your enrollment.',
+        'enrollment_needs_action' => 'When your enrollment needs another licence or a competitor.',
         'licence_request_submitted' => 'When a driver submits a licence request, also after fixing it.',
     ],
 

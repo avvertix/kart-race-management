@@ -22,6 +22,12 @@ Drivers learn what happened to their Enrollments without looking for them, and f
   - keeps the "Open for enrollment" list;
   - shows to anyone allowed to enroll.
 
+- Implementation notes:
+  - "Needs action" is sent when the request is rejected, and when a missing Competitor shows up: an underage driver enrolled by a Package, or found when the request is submitted. It records which of the two it is about.
+  - Rejecting a request sends both its rejection and one "needs action" per waiting Enrollment.
+  - A packaged Enrollment that can't be created when the request is submitted is only logged; when the renewal is started, the failure shows as a warning.
+  - The dashboard lists up to 10 Enrollments of this season's and future championships, newest first.
+
 ## Out of scope
 
 A My orders list and products navigation (later).

@@ -6,6 +6,7 @@ namespace App\Actions\Orders;
 
 use App\Enums\OrderStatus;
 use App\Models\Order;
+use App\Notifications\OrderPaymentRejected;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -18,12 +19,16 @@ class RejectOrderPayment
      */
     public function __invoke(Order $order): Order
     {
-        return DB::transaction(function () use ($order) {
+        $rejected = DB::transaction(function () use ($order) {
             $locked = $order->lockInStatus([OrderStatus::PaymentSubmitted], 'order', __('The order has no payment to reject.'));
 
             $locked->update(['status' => OrderStatus::AwaitingPayment]);
 
             return $locked;
         });
+
+        $rejected->user->notify(new OrderPaymentRejected($rejected));
+
+        return $rejected;
     }
 }

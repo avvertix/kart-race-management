@@ -37,7 +37,7 @@ class DashboardEnrollmentsTest extends TestCase
             ->assertDontSee(route('public.championships.enrollment', $disabled));
     }
 
-    public function test_the_dashboard_lists_the_pending_enrollments_of_the_user(): void
+    public function test_the_dashboard_lists_the_enrollments_of_the_user(): void
     {
         $user = User::factory()->create();
         $closed = $this->championship('Closed championship', opensInDays: -10, closesInDays: -1);
@@ -50,10 +50,10 @@ class DashboardEnrollmentsTest extends TestCase
         $this->actingAs($user)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Pending enrollments')
+            ->assertSee('Your enrollments')
             ->assertSee('Closed championship')
             ->assertSee(route('my-enrollments.show', $pending))
-            ->assertDontSee(route('public.championships.enrollment', $confirmed))
+            ->assertSee(route('my-enrollments.show', $confirmed->enrollments()->sole()))
             ->assertDontSee(route('public.championships.enrollment', $someoneElse));
     }
 

@@ -43,17 +43,19 @@ final readonly class NotificationItem
         $licenceRequests = LicenceRequest::query()->whereIn('ulid', $ulidsOf('licence_request'))->get()->keyBy('ulid');
         $licences = Licence::query()->whereIn('ulid', $ulidsOf('licence'))->get()->keyBy('ulid');
         $orders = Order::query()->whereIn('ulid', $ulidsOf('order'))->get()->keyBy('ulid');
+        $enrollments = Enrollment::query()->whereIn('ulid', $ulidsOf('enrollment'))->with(['championship', 'licence', 'licenceRequest'])->get()->keyBy('ulid');
 
-        return $notifications->map(function (DatabaseNotification $notification) use ($licenceRequests, $licences, $orders) {
+        return $notifications->map(function (DatabaseNotification $notification) use ($licenceRequests, $licences, $orders, $enrollments) {
             $type = NotificationType::fromNotificationClass($notification->type);
 
-            /** @var array{licence_request?: string, licence?: string, order?: string} $data */
+            /** @var array{licence_request?: string, licence?: string, order?: string, enrollment?: string} $data */
             $data = $notification->data;
 
             [$detail, $url] = match (true) {
                 isset($data['licence_request']) => self::describeLicenceRequest($licenceRequests->get($data['licence_request']), $type),
                 isset($data['licence']) => self::describeLicence($licences->get($data['licence'])),
-                isset($data['order']) => self::describeOrder($orders->get($data['order'])),
+                isset($data['order']) => self::describeOrder($orders->get($data['order']), $type),
+                isset($data['enrollment']) => self::describeEnrollment($enrollments->get($data['enrollment'])),
                 default => [null, null],
             };
 
@@ -102,14 +104,31 @@ final readonly class NotificationItem
     }
 
     /**
-     * The Order's page, or the Enrollment's page when the Order pays an Enrollment: drivers see it as its payment.
+     * @return array{0: ?string, 1: ?string}
+     */
+    private static function describeEnrollment(?Enrollment $enrollment): array
+    {
+        if ($enrollment === null) {
+            return [null, null];
+        }
+
+        return [collect([$enrollment->championship->title, $enrollment->holder()?->fullName()])->filter()->join(' · '), route('my-enrollments.show', $enrollment)];
+    }
+
+    /**
+     * The Order's page, or the Enrollment's page when the Order pays an Enrollment: drivers see it as its payment. A paid
+     * renewal still to start leads to My licences.
      *
      * @return array{0: ?string, 1: ?string}
      */
-    private static function describeOrder(?Order $order): array
+    private static function describeOrder(?Order $order, ?NotificationType $type): array
     {
         if ($order === null) {
             return [null, null];
+        }
+
+        if ($type === NotificationType::OrderPaymentConfirmed && $order->canStartLicenceRenewal()) {
+            return [__('Order :order', ['order' => $order->ulid]), route('my-licences.index')];
         }
 
         $enrollment = Enrollment::query()->where('order_id', $order->getKey())->with('championship')->latest('id')->first();

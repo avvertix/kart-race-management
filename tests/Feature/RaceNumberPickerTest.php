@@ -19,6 +19,7 @@ use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\Participant;
 use App\Models\User;
+use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
@@ -132,7 +133,7 @@ class RaceNumberPickerTest extends TestCase
         $driver = User::factory()->create();
 
         $this->actingAs($driver)
-            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.Licence::factory()->for($driver)->create()->ulid, 'bib' => '77'])
+            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.Licence::factory()->for($driver)->create(['holder' => LicenceFactory::holder('Luca', 'Bianchi')])->ulid, 'bib' => '77'])
             ->assertSessionHasErrors(['bib' => __('Race number :bib is not available anymore, pick another one.', ['bib' => 77])]);
 
         $this->assertSame(1, $championship->enrollments()->count());
@@ -227,7 +228,7 @@ class RaceNumberPickerTest extends TestCase
             ->assertDontSeeLivewire(RaceNumberPicker::class);
 
         $this->actingAs($driver)
-            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.Licence::factory()->for($driver)->create()->ulid, 'bib' => '77'])
+            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.Licence::factory()->for($driver)->create(['holder' => LicenceFactory::holder('Luca', 'Bianchi')])->ulid, 'bib' => '77'])
             ->assertSessionHasNoErrors();
 
         $this->assertSame(0, BibReservation::query()->count());

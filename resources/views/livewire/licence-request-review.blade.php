@@ -85,6 +85,7 @@
     <p class="text-sm text-zinc-500 flex flex-wrap items-center gap-x-2">
         <span class="inline-block px-2 rounded-full bg-zinc-100 text-xs font-medium text-zinc-700">{{ $status->label() }}</span>
         <span>{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }}</span>
+        <span>&middot; {{ __('For :year', ['year' => $licenceRequest->validity_year]) }}</span>
         <span>&middot; {{ __('Account: :user', ['user' => $licenceRequest->user->name]) }}</span>
         @if ($licenceRequest->submitted_at)
             <span>&middot; {{ __('Submitted') }} <x-time :value="$licenceRequest->submitted_at" /></span>

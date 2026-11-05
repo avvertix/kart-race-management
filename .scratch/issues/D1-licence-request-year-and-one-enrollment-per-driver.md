@@ -23,6 +23,12 @@ A Licence Request is for an explicit validity year, so an Enrollment can only wa
   - across the Licences and Licence Requests of active Enrollments.
 - When `EmitLicence` relinks an Enrollment to a Licence that already has an active Enrollment in the same championship, the relinked one is rejected with a reason.
 
+- Implementation notes:
+  - `LicenceRequestController::store` accepts `validity_year` among `LicenceRequest::requestableYears()`. No form offers the next year yet; the enrollment page will (D4).
+  - The year shows on the request pages and the review.
+  - The fiscal-code match loads the championship's active Enrollments in PHP, because holders are encrypted.
+  - The holder of a request found at emission is matched with `HolderData::identityKey()`, so a request edited to the same holder after enrolling is caught.
+
 ## Out of scope
 
 Creating the request from the enrollment page (D4).

@@ -283,6 +283,7 @@ Route::middleware([
             Route::post('enrollments/{enrollment}/reject', [EnrollmentReviewController::class, 'reject'])->name('enrollments.reject');
             Route::post('enrollments/{enrollment}/withdraw', [EnrollmentReviewController::class, 'withdraw'])->name('enrollments.withdraw');
             Route::put('enrollments/{enrollment}/race-number', [EnrollmentReviewController::class, 'raceNumber'])->name('enrollments.race-number.update');
+            Route::put('enrollments/{enrollment}/competitor', [EnrollmentReviewController::class, 'competitor'])->name('enrollments.competitor.update');
 
             Route::resource('products', ProductController::class)->except(['show', 'destroy']);
             Route::post('products/{product}/grants', [ProductGrantController::class, 'store'])->name('products.grants.store');
@@ -339,6 +340,7 @@ Route::middleware([
     Route::get('my-enrollments/{enrollment}', [MyEnrollmentController::class, 'show'])->name('my-enrollments.show');
     Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
     Route::put('my-enrollments/{enrollment}/licence', [MyEnrollmentController::class, 'updateLicence'])->name('my-enrollments.licence.update');
+    Route::put('my-enrollments/{enrollment}/competitor', [MyEnrollmentController::class, 'updateCompetitor'])->name('my-enrollments.competitor.update');
     Route::post('my-enrollments/{enrollment}/payment', [MyEnrollmentController::class, 'pay'])
         ->middleware('throttle:10,10')
         ->name('my-enrollments.payment.store');

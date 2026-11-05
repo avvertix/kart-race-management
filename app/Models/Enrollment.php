@@ -14,6 +14,7 @@ use App\Enums\OrderStatus;
 use App\Enums\ProductGrantKind;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -120,6 +121,35 @@ class Enrollment extends Model
     }
 
     /**
+     * The Licences that can be the Competitor of the driver in the championship, among those the User manages when given:
+     * see isValidCompetitor().
+     *
+     * @return Collection<int, Licence>
+     */
+    public static function competitorCandidates(Championship $championship, ?User $user, ?HolderData $driver): Collection
+    {
+        return Licence::query()
+            ->when($user, fn (Builder $query, User $user) => $query->managedBy($user))
+            ->competitorIn($championship)
+            ->orderBy('id')
+            ->get()
+            ->filter(fn (Licence $licence) => self::isValidCompetitor($championship, $licence, $driver))
+            ->values();
+    }
+
+    /**
+     * Whether the Licence can be the Competitor of the driver: including the competitor licence, valid in the
+     * championship's year, of an adult at the championship start, and not the driver's own.
+     */
+    public static function isValidCompetitor(Championship $championship, Licence $competitor, ?HolderData $driver): bool
+    {
+        return $competitor->includes_competitor
+            && $competitor->validity_year === $championship->start_at->year
+            && ! $championship->isUnderageAtStart($competitor->holder)
+            && ($driver === null || $competitor->holder->identityKey() !== $driver->identityKey());
+    }
+
+    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array<int, string>
@@ -209,6 +239,14 @@ class Enrollment extends Model
 
         return $this->order !== null && $this->order->grantsOf(ProductGrantKind::Enrollment)
             ->contains(fn (ProductGrant $grant) => $grant->championship_id === $this->championship_id && $grant->grants_bib_reservation);
+    }
+
+    /**
+     * Whether a payment proof of the Enrollment's Order waits for the organizer.
+     */
+    public function hasPaymentUnderReview(): bool
+    {
+        return $this->order?->status === OrderStatus::PaymentSubmitted;
     }
 
     /**

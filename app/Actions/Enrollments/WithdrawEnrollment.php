@@ -13,8 +13,8 @@ use Illuminate\Validation\ValidationException;
 class WithdrawEnrollment
 {
     /**
-     * Withdraw the Enrollment: the driver while it is submitted, the organizer also once confirmed. Releases its race
-     * numbers and cancels its unpaid Order.
+     * Withdraw the Enrollment: the driver while it is submitted, the organizer also once confirmed, while no payment proof
+     * waits for review. Releases its race numbers and cancels its unpaid Order.
      *
      * @throws ValidationException when the Enrollment can't be withdrawn
      */
@@ -28,6 +28,10 @@ class WithdrawEnrollment
 
         [$enrollment, $wasConfirmed] = DB::transaction(function () use ($enrollment, $statuses, $message) {
             $locked = $enrollment->lockInStatus($statuses, 'enrollment', $message);
+
+            if ($locked->hasPaymentUnderReview()) {
+                throw ValidationException::withMessages(['enrollment' => __('A payment proof waits for review: confirm or reject it before withdrawing.')]);
+            }
 
             $wasConfirmed = $locked->status === EnrollmentStatus::Confirmed;
 

@@ -20,6 +20,12 @@ An underage Driver always gets a valid Competitor, which can be set later. Nothi
 - Withdrawing is refused while a payment proof is waiting for review. A refund after withdrawing a paid Enrollment happens outside the platform, and the Enrollment page says so.
 - Picking or changing the race number follows the enrollment window. The organizer can still change it at any time.
 
+- Implementation notes:
+  - The adult and not-the-driver rules are checked in `CreateEnrollment` and `SetEnrollmentCompetitor` (`Enrollment::isValidCompetitor`), not in `Licence::scopeCompetitorIn`, because holders are encrypted.
+  - The driver picks among the Licences they manage, the organizer among all. The current Competitor is always listed, so saving never clears it by accident. Removing the Competitor is allowed; confirmation requires it when the driver is underage.
+  - While a payment proof waits for review, the organizer can't reject the Enrollment either, so a proof confirmed later can't pay a rejected one.
+  - An enrolled declared Licence shows "ask the organizer to correct it" instead of the Modify button.
+
 ## Out of scope
 
 Organizer review layout (D6).

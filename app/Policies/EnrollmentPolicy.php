@@ -48,11 +48,12 @@ class EnrollmentPolicy
 
     /**
      * Determine whether the user can pick or change the race number as the driver: their own enrollment, while
-     * submitted, when the championship reserves a number with enrollment.
+     * submitted and enrollment is open, when the championship or the Package reserves a number.
      */
     public function pickRaceNumber(User $user, Enrollment $enrollment): bool
     {
-        return $this->withdraw($user, $enrollment)
+        return $this->ownsSubmitted($user, $enrollment)
+            && $enrollment->championship->enrollment->isOpen()
             && $enrollment->grantsBibReservation();
     }
 
@@ -62,13 +63,36 @@ class EnrollmentPolicy
      */
     public function changeLicence(User $user, Enrollment $enrollment): bool
     {
-        return $this->withdraw($user, $enrollment) && $enrollment->needsLicence();
+        return $this->ownsSubmitted($user, $enrollment) && $enrollment->needsLicence();
     }
 
     /**
-     * Determine whether the user can withdraw the enrollment as its driver: only their own, while submitted.
+     * Determine whether the user can name or change the Competitor: the driver of their own enrollment, or the
+     * organizer, while it is submitted.
+     */
+    public function changeCompetitor(User $user, Enrollment $enrollment): bool
+    {
+        if ($this->review($user)) {
+            return $enrollment->status === EnrollmentStatus::Submitted;
+        }
+
+        return $this->ownsSubmitted($user, $enrollment);
+    }
+
+    /**
+     * Determine whether the user can withdraw the enrollment as its driver: only their own, while submitted and no
+     * payment proof waits for the organizer.
      */
     public function withdraw(User $user, Enrollment $enrollment): bool
+    {
+        return $this->ownsSubmitted($user, $enrollment)
+            && ! $enrollment->hasPaymentUnderReview();
+    }
+
+    /**
+     * Whether the enrollment is the user's own, still submitted.
+     */
+    private function ownsSubmitted(User $user, Enrollment $enrollment): bool
     {
         return $user->hasPermission('enrollment:update')
             && $enrollment->user_id === $user->getKey()

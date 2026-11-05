@@ -57,7 +57,7 @@ class PublicChampionshipEnrollmentController extends Controller
                 ->get(),
             'subjects' => $user === null ? collect() : EnrollmentSubjects::for($user, $championship),
             'paymentOptions' => $this->paymentOptions($championship, $packages),
-            'competitorLicences' => $user === null ? collect() : Licence::query()->managedBy($user)->competitorIn($championship)->orderBy('id')->get(),
+            'competitorLicences' => $user === null ? collect() : Enrollment::competitorCandidates($championship, $user, null),
         ]);
     }
 

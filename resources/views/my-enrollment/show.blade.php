@@ -63,9 +63,33 @@
                         @endif
                     </dd>
 
-                    @if ($enrollment->competitorLicence)
+                    @if ($enrollment->competitorLicence || $enrollment->requiresCompetitor() || $competitorLicences->isNotEmpty())
                         <dt class="text-sm text-zinc-500">{{ __('Competitor') }}</dt>
-                        <dd class="sm:col-span-2 text-zinc-900">{{ $enrollment->competitorLicence->holder->fullName() }} &middot; <span class="font-mono">{{ $enrollment->competitorLicence->number }}</span></dd>
+                        <dd class="sm:col-span-2 text-zinc-900 space-y-2">
+                            @if ($enrollment->competitorLicence)
+                                <p>{{ $enrollment->competitorLicence->holder->fullName() }} &middot; <span class="font-mono">{{ $enrollment->competitorLicence->number }}</span></p>
+                            @elseif ($enrollment->requiresCompetitor())
+                                <p class="text-amber-800">{{ __('The driver is underage: name the competitor before the organizer confirms.') }}</p>
+                            @endif
+                            @can('changeCompetitor', $enrollment)
+                                @if ($competitorLicences->isNotEmpty())
+                                    <form method="POST" action="{{ route('my-enrollments.competitor.update', $enrollment) }}" class="flex flex-wrap items-end gap-2">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="competitor_licence" aria-label="{{ __('Competitor') }}" class="rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
+                                            <option value="">{{ __('No competitor') }}</option>
+                                            @foreach ($competitorLicences as $competitor)
+                                                <option value="{{ $competitor->ulid }}" @selected($enrollment->competitor_licence_id === $competitor->getKey())>{{ $competitor->holder->fullName() }} &middot; {{ $competitor->number }}</option>
+                                            @endforeach
+                                        </select>
+                                        <x-secondary-button type="submit">{{ __('Save competitor') }}</x-secondary-button>
+                                    </form>
+                                    <x-input-error for="competitor_licence" />
+                                @elseif ($enrollment->requiresCompetitor())
+                                    <p class="text-sm text-zinc-600">{{ __('Add the competitor\'s licence to your account first.') }} <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('My licences') }}</a></p>
+                                @endif
+                            @endcan
+                        </dd>
                     @endif
 
                     @if ($heldReservations->isNotEmpty() || $enrollment->grantsBibReservation())
@@ -101,6 +125,10 @@
                             &middot; {{ __('For a refund, email the organizer.') }}
                         @endif
                     </p>
+                @endif
+
+                @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && $enrollment->hasPaymentUnderReview())
+                    <p class="text-sm text-zinc-600">{{ __('You can withdraw once the organizer reviews your payment proof.') }}</p>
                 @endif
 
                 @can('withdraw', $enrollment)

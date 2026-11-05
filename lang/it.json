@@ -1670,5 +1670,15 @@
     "An enrollment waits for this request: withdraw the enrollment first.": "Un'iscrizione attende questa richiesta: ritira prima l'iscrizione.",
     "The request no longer fits :championship, where it is enrolled: check the licence type and the year.": "La richiesta non è più adatta a :championship, dove è iscritta: controlla il tipo di licenza e l'anno.",
     "This licence already holds a race number in the championship.": "Questa licenza ha già un numero di gara nel campionato.",
-    "The licence request was rejected": "La richiesta di licenza è stata respinta"
+    "The licence request was rejected": "La richiesta di licenza è stata respinta",
+    "Only a submitted enrollment can change competitor.": "Solo un'iscrizione inviata può cambiare concorrente.",
+    "The competitor must be an adult other than the driver.": "Il concorrente deve essere maggiorenne e diverso dal pilota.",
+    "A payment proof waits for review: confirm or reject it before withdrawing.": "Una ricevuta di pagamento attende la verifica: confermala o respingila prima del ritiro.",
+    "Competitor of the enrollment saved.": "Concorrente dell'iscrizione salvato.",
+    "The driver is underage: name the competitor before the organizer confirms.": "Il pilota è minorenne: indica il concorrente prima della conferma dell'organizzatore.",
+    "Save competitor": "Salva concorrente",
+    "Add the competitor's licence to your account first.": "Aggiungi prima la licenza del concorrente al tuo account.",
+    "You can withdraw once the organizer reviews your payment proof.": "Potrai ritirarti dopo che l'organizzatore avrà verificato la ricevuta di pagamento.",
+    "A payment proof waits for review: confirm or reject it before rejecting the enrollment.": "Una ricevuta di pagamento attende la verifica: confermala o respingila prima di respingere l'iscrizione.",
+    "Enrolled in a championship: ask the organizer to correct it.": "Iscritta a un campionato: chiedi all'organizzatore di correggerla."
 }

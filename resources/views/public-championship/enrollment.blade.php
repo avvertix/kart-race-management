@@ -113,7 +113,7 @@
                                         <select id="competitor_licence" name="competitor_licence" class="mt-1 rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
                                             <option value="">{{ __('No competitor') }}</option>
                                             @foreach ($competitorLicences as $competitor)
-                                                <option value="{{ $competitor->ulid }}" @selected(old('competitor_licence') === $competitor->ulid)>{{ $competitor->holder->fullName() }} &middot; {{ $competitor->number }}</option>
+                                                <option value="{{ $competitor->ulid }}" @selected(old('competitor_licence') === $competitor->ulid) x-bind:hidden="subject === {{ Js::from('licence:'.$competitor->ulid) }}">{{ $competitor->holder->fullName() }} &middot; {{ $competitor->number }}</option>
                                             @endforeach
                                         </select>
                                         <p class="mt-1 text-sm text-zinc-600" x-show="needsCompetitor" x-cloak>{{ __('Required for underage drivers.') }}</p>

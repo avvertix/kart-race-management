@@ -22,12 +22,12 @@ class StartLicenceRenewal
      * Start a draft renewal, empty or pre-filled from a Licence the User manages: provider, Licence Type while still offered,
      * competitor licence, holder, previous number and, for a licence emitted on the platform, the parents entered then.
      * A request started from a paid Package covering the renewal asks for no payment. It is for the given year, by default
-     * the year of the championship the Package enrolls in, or else the one renewals are open for. A request for a
-     * licence not on the platform takes the given provider, e.g. the one of the championship it is enrolled in.
+     * the year of the championship the Package enrolls in, or else the one renewals are open for. For a licence not on
+     * the platform the requester chooses the provider, pre-selected only when one provider has Licence Types.
      *
      * @throws AuthorizationException when the Licence is managed by another User
      */
-    public function __invoke(User $user, ?Licence $previous = null, ?Order $coveringOrder = null, ?int $validityYear = null, ?LicenceProvider $provider = null): LicenceRequest
+    public function __invoke(User $user, ?Licence $previous = null, ?Order $coveringOrder = null, ?int $validityYear = null): LicenceRequest
     {
         if ($previous !== null && $previous->user_id !== $user->getKey()) {
             throw new AuthorizationException;
@@ -42,7 +42,7 @@ class StartLicenceRenewal
             'status' => LicenceRequestStatus::Draft,
             'payment_status' => $coveringOrder === null ? LicenceRequestPaymentStatus::AwaitingPrice : LicenceRequestPaymentStatus::Covered,
             'covering_order_id' => $coveringOrder?->getKey(),
-            'provider' => $previous->provider ?? $provider ?? $this->onlyProvider(),
+            'provider' => $previous->provider ?? $this->onlyProvider(),
             'validity_year' => $validityYear ?? $this->packagedYear($coveringOrder) ?? LicenceRequest::validityYearFor(now()),
             'licence_type' => $isOffered ? $licenceType->code : null,
             'includes_competitor' => $isOffered && $previous->includes_competitor,

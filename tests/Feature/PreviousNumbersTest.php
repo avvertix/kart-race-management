@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Data\EnrollmentSettingsData;
 use App\Enums\BibReservationStatus;
-use App\Enums\LicenceProvider;
 use App\Livewire\RaceNumberPicker;
 use App\Models\BibReservation;
 use App\Models\Championship;
@@ -89,29 +88,6 @@ class PreviousNumbersTest extends TestCase
             ->assertRedirect(route('enrollments.show', $enrollment));
 
         $this->assertSame(BibReservationStatus::Confirmed, $reservation->fresh()->status);
-    }
-
-    public function test_asi_championships_cannot_copy_reservations(): void
-    {
-        $organizer = User::factory()->organizer()->create();
-        $championship = Championship::factory()->create();
-        $championship->licences->provider = LicenceProvider::Asi;
-        $championship->save();
-
-        $this->actingAs($organizer)
-            ->get(route('championships.bib-reservations.index', $championship))
-            ->assertDontSee(route('championships.bib-reservations.copy', $championship));
-
-        $this->actingAs($organizer)
-            ->get(route('championships.bib-reservations.copy', $championship))
-            ->assertNotFound();
-
-        $this->actingAs($organizer)
-            ->post(route('championships.bib-reservations.store-copy', $championship), [
-                'source_championship' => Championship::factory()->create()->getKey(),
-                'source' => 'reservations',
-            ])
-            ->assertNotFound();
     }
 
     public function test_a_licence_with_a_copied_reservation_sees_its_number(): void

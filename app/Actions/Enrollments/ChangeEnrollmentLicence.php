@@ -67,7 +67,6 @@ class ChangeEnrollmentLicence
                     Licence::findByUlid($validated['renew'] === SubmitEnrollment::RENEW_NEW ? null : $validated['renew']),
                     $renewalOrder,
                     $championship->start_at->year,
-                    $championship->licences->provider,
                 );
             } elseif ($licenceRequest !== null && $renewalOrder !== null) {
                 $licenceRequest->coverWith($renewalOrder);

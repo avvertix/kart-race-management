@@ -10,7 +10,7 @@ Use this guide when creating a championship that uses enrollment, a specific lic
 ## Steps
 
 1. **Create the championship** with its title and dates.
-2. **Choose the licence provider** (ACI or ASI) when creating it, or later from **Accepted licences**, and, if needed, restrict the accepted driver and competitor licences. Without a choice the championship uses the platform-wide provider, as before.
+2. **Choose the licence provider** (ACI or ASI) when creating it, or later from **Accepted licences**, and, if needed, restrict the accepted driver and competitor licences. The provider only names who issues local licences on the forms; drivers can enroll licences from any provider. Without a choice the championship uses the platform-wide provider's name, as before.
 3. **Choose the registration form.** Use *complete* for kart, which asks for vehicle and mechanic. Use *standard* or *minimal* for moto.
 4. **Set up enrollment** from **Enrollment** on the championship page, if drivers should enroll:
    - turn enrollment on and set when it opens and closes, in the races' timezone;

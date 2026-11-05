@@ -28,6 +28,11 @@ The Licence Provider belongs to each Licence, not to the championship. Fourstrok
 - Label wording: where `licenceProviderName()` is shown, a championship without a provider shows the platform-wide one as today.
 - A submitted request still has to fit the championship's year and driver role (D1); only the provider check goes.
 
+- Implementation notes:
+  - The championship's provider is still read only for wording: `licenceProviderName()` on the race registration form and rules, and the licence descriptions in the licence settings. A championship accepting ACI and ASI, like Fourstroke, shows the platform-wide provider's name there unless one is chosen; open question whether to name both.
+  - The verified drivers export keeps the ACI "Coppa Italia di Zona" banner in the spreadsheet.
+  - The B5 test refusing the copy for ASI championships is removed, replaced by the copy test of this slice.
+
 ## Out of scope
 
 Enrollment options (E2 onwards).

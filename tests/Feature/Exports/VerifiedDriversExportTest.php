@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Exports;
 
-use App\Exports\AciParticipantPromotionExport;
+use App\Exports\VerifiedDriversExport;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\RaceType;
@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
-class AciParticipantPromotionExportTest extends TestCase
+class VerifiedDriversExportTest extends TestCase
 {
     use FastRefreshDatabase;
 
@@ -24,7 +24,7 @@ class AciParticipantPromotionExportTest extends TestCase
     {
         $race = Race::factory()->create();
 
-        $response = $this->get(route('races.export.aci', $race));
+        $response = $this->get(route('races.export.verified-drivers', $race));
 
         $response->assertRedirect(route('login'));
     }
@@ -37,12 +37,12 @@ class AciParticipantPromotionExportTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get(route('races.export.aci', $race));
+            ->get(route('races.export.verified-drivers', $race));
 
         $response->assertForbidden();
     }
 
-    public function test_aci_export_lists_participants()
+    public function test_the_verified_drivers_export_lists_participants()
     {
         $user = User::factory()->organizer()->create();
 
@@ -67,11 +67,11 @@ class AciParticipantPromotionExportTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get(route('races.export.aci', $race));
+            ->get(route('races.export.verified-drivers', $race));
 
-        $expected_filename = Str::slug('ACI-'.$race->title.'-'.$race->event_start_at->toDateString()).'.xlsx';
+        $expected_filename = Str::slug('verified-drivers-'.$race->title.'-'.$race->event_start_at->toDateString()).'.xlsx';
 
-        Excel::assertDownloaded($expected_filename, function (AciParticipantPromotionExport $export) use ($race, $participant) {
+        Excel::assertDownloaded($expected_filename, function (VerifiedDriversExport $export) use ($race, $participant) {
 
             $view = $export->view();
 

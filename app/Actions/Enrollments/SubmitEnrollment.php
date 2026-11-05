@@ -76,7 +76,7 @@ class SubmitEnrollment
 
         $createEnrollment = fn () => DB::transaction(function () use ($user, $championship, $licence, $licenceRequest, $renews, $previous, $competitorLicence, $package) {
             $waitedFor = $renews
-                ? ($this->startLicenceRenewal)($user, $previous, validityYear: $championship->start_at->year, provider: $championship->licences->provider)
+                ? ($this->startLicenceRenewal)($user, $previous, validityYear: $championship->start_at->year)
                 : $licenceRequest;
 
             return ($this->createEnrollment)($user, $championship, $licence, $waitedFor, $competitorLicence, pays: true, package: $package);

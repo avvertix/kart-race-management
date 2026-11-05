@@ -141,7 +141,7 @@ The application is organized around three primary entities:
 - `RaceParticipantsForTimingExport` - MyLaps Orbits format
 - `RaceParticipantsExport` - General participant list
 - `ChampionshipParticipantsExport` - Championship-wide export
-- `AciParticipantPromotionExport` - ACI promotion export
+- `VerifiedDriversExport` - confirmed participants with a transponder, for national and international races
 - `PrintRaceReceipts` - PDF receipts generation
 - Uses Laravel Excel (Maatwebsite/Excel) package
 

@@ -8,6 +8,7 @@ use App\Actions\Enrollments\ConfirmEnrollment;
 use App\Actions\Enrollments\FindPreviousNumbers;
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\RejectEnrollment;
+use App\Actions\Enrollments\SetEnrollmentCompetitor;
 use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
@@ -37,7 +38,21 @@ class EnrollmentReviewController extends Controller
             'previousNumbers' => $findPreviousNumbers($enrollment),
             'availability' => RaceNumberAvailability::in($enrollment->championship, array_filter([$enrollment->licence?->number_hash]), $enrollment),
             'canPickNumber' => $enrollment->status === EnrollmentStatus::Submitted && $enrollment->grantsBibReservation(),
+            'competitorLicences' => $enrollment->status === EnrollmentStatus::Submitted ? Enrollment::competitorCandidates($enrollment->championship, null, $enrollment->holder())->push(...array_filter([$enrollment->competitorLicence]))->unique('id') : collect(),
         ]);
+    }
+
+    /**
+     * Name, change or remove the Competitor while the Enrollment is submitted, from any Licence that can be it.
+     */
+    public function competitor(Request $request, Enrollment $enrollment, SetEnrollmentCompetitor $setEnrollmentCompetitor): RedirectResponse
+    {
+        $this->authorize('changeCompetitor', $enrollment);
+
+        $setEnrollmentCompetitor($enrollment, $request->input('competitor_licence'), among: null);
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', __('Competitor of the enrollment saved.'));
     }
 
     /**

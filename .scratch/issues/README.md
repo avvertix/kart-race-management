@@ -32,5 +32,12 @@ Rules for every slice (see [backward compatibility](../../docs/explanation/backw
 | [C2](C2-promo-codes.md) | Promo codes | C1 | 2027 season |
 | [C3](C3-entitlements.md) | Entitlements: claim, apply, release | C2, A4, B7 | 2027 season |
 | [C4](C4-promotional-package-grants.md) | Promotional Package grants | A5, B3, B4, C3 | 2027 season |
+| [D1](D1-licence-request-year-and-one-enrollment-per-driver.md) | Licence Request year and one Enrollment per Driver | B3 | 2027 season |
+| [D2](D2-enrollment-fee.md) | Enrollment Fee and where enrollments are sold | B3, C4 | 2027 season |
+| [D3](D3-enrollment-pages.md) | Enrollment form and Enrollment page | D1, D2 | 2027 season |
+| [D4](D4-renew-while-enrolling.md) | Renew while enrolling, and rejected requests | D1, D3 | 2027 season |
+| [D5](D5-competitor-and-changes-after-submitting.md) | Competitor rules and changes after submitting | D3 | 2027 season |
+| [D6](D6-organizer-enrollment-review.md) | Organizer enrollment review and race number confirmation | D3 | 2027 season |
+| [D7](D7-enrollment-notifications-and-dashboard.md) | Enrollment notifications and dashboard | D3, D4 | 2027 season |
 
 Until C4 ships, packages are sold as plain Products and their extras are applied by hand.

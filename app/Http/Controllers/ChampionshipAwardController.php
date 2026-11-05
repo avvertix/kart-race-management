@@ -29,7 +29,7 @@ class ChampionshipAwardController extends Controller
     {
         return view('award.index', [
             'championship' => $championship,
-            'awards' => $championship->awards()->with(['category', 'races'])->orderBy('name', 'ASC')->get(),
+            'awards' => $championship->awards()->with(['category', 'races'])->orderBy('name')->get(),
         ]);
     }
 

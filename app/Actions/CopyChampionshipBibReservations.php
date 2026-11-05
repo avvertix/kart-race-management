@@ -116,7 +116,7 @@ class CopyChampionshipBibReservations
     /**
      * One candidate for each unique driver licence and bib pair, taking driver details from the most recent registration.
      *
-     * @return Collection<int, array{bib: int, driver: string, driver_licence: ?string, driver_licence_hash: ?string, contact_email: ?string, licence_type: mixed}>
+     * @return Collection<int, array{bib: int<0, max>, driver: string, driver_licence: ?string, driver_licence_hash: string, contact_email: ?string, licence_type: ?DriverLicence}>
      */
     protected function candidatesFromParticipants(Championship $championship): Collection
     {
@@ -130,10 +130,10 @@ class CopyChampionshipBibReservations
             ->values()
             ->map(fn (Participant $participant) => [
                 'bib' => (int) $participant->bib,
-                'driver' => $participant->full_name,
-                'driver_licence' => $participant->driver['licence_number'] ?? null,
+                'driver' => (string) $participant->full_name,
+                'driver_licence' => is_string($participant->driver['licence_number'] ?? null) ? $participant->driver['licence_number'] : null,
                 'driver_licence_hash' => $participant->driver_licence,
-                'contact_email' => $participant->driver['email'] ?? null,
+                'contact_email' => is_string($participant->driver['email'] ?? null) ? $participant->driver['email'] : null,
                 'licence_type' => $participant->licence_type,
             ]);
     }

@@ -109,6 +109,8 @@ class Championship extends Model
 
     /**
      * Get the awards.
+     *
+     * @return HasMany<ChampionshipAward, $this>
      */
     public function awards(): HasMany
     {

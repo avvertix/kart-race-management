@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Data\EnrollmentSettingsData;
 use App\Data\HolderData;
 use App\Enums\EnrollmentStatus;
 use App\Enums\OrderStatus;
@@ -137,18 +136,9 @@ class EnrollmentCompetitorTest extends TestCase
 
     private function championship(bool $grantsNumber = false): Championship
     {
-        $championship = Championship::factory()->create(['start_at' => today()->startOfYear()->addMonths(2)]);
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            grants_bib_reservation: $grantsNumber,
-            requires_competitor_when_underage: true,
-        );
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()
+            ->openForEnrollment(reservesRaceNumber: $grantsNumber, requiresCompetitor: true)
+            ->create(['start_at' => today()->startOfYear()->addMonths(2)]);
     }
 
     private function holder(string $firstName, int $age): HolderData

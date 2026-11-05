@@ -9,22 +9,16 @@ use Carbon\CarbonInterface;
 use Spatie\LaravelData\Data;
 
 /**
- * Whether, when and how drivers enroll in a championship, see the Enrollment section of docs/reference/championship-settings.md.
+ * Whether and when drivers enroll in a championship, see the Enrollment section of docs/reference/championship-settings.md.
+ * What they enroll with is the championship's Enrollment Options.
  */
 class EnrollmentSettingsData extends Data
 {
-    /**
-     * @param  ?int  $product_id  The enrollment Product sold for a fixed fee; none means enrolling is free
-     * @param  bool  $fee_covers_licence_renewal  Whether the fee also pays the Licence Request an Enrollment waits for
-     */
     public function __construct(
         public bool $enabled = false,
         public ?CarbonImmutable $opens_at = null,
         public ?CarbonImmutable $closes_at = null,
-        public ?int $product_id = null,
-        public bool $grants_bib_reservation = false,
         public bool $requires_competitor_when_underage = true,
-        public bool $fee_covers_licence_renewal = false,
     ) {}
 
     /**
@@ -49,13 +43,5 @@ class EnrollmentSettingsData extends Data
         $at ??= now();
 
         return $this->opens_at !== null && $at->lessThan($this->opens_at);
-    }
-
-    /**
-     * Whether enrolling is free, as no Product is sold for it.
-     */
-    public function isFree(): bool
-    {
-        return $this->product_id === null;
     }
 }

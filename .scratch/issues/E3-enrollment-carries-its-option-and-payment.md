@@ -22,6 +22,12 @@ The driver chooses an option while enrolling, and the Enrollment holds its own p
 - Withdrawal and rejection keep the D5 rule: refused while a proof waits for review. A paid one is refunded outside the platform.
 - Notifications: `OrderPaymentConfirmed` and `OrderPaymentRejected` become enrollment payment notifications linking to the Enrollment page.
 
+- Implementation notes:
+  - Built together with E4. A licence of unknown category (a request without a type, or the renewal of a licence not on the platform) is offered every option; the organizer moves the Enrollment to the right one before confirming its payment.
+  - Moving to another option covers or uncovers the waiting request and releases race numbers the new option doesn't reserve.
+  - Tests set championships up with `ChampionshipFactory::openForEnrollment()`, and `EnrollmentFactory` links Enrollments to their championship's first option.
+  - Left for E5: Enrollments created by Packages bought on the products page keep their Order (`order_id`), whose payment the Enrollment pages no longer show.
+
 ## Out of scope
 
 Nothing: E3 and E4 are built together, because once Enrollments stop placing Orders the renewal coverage and race credits of D2 and D4 must move to the Enrollment in the same step to keep the app working.

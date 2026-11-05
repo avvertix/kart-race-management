@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Data\EnrollmentSettingsData;
-use App\Enums\OrderStatus;
+use App\Actions\Enrollments\ReviewEnrollmentPayment;
+use App\Enums\EnrollmentPaymentStatus;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
-use App\Models\Price;
-use App\Models\Product;
 use App\Models\User;
-use App\Notifications\OrderPriceSet;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -45,9 +42,8 @@ class EnrollmentPagesTest extends TestCase
             ->assertSee($championship->title)
             ->assertSee($licence->number)
             ->assertSee('€180.00')
-            ->assertSee($enrollment->order->ulid)
-            ->assertSee(route('my-enrollments.payment.store', $enrollment))
-            ->assertDontSee(route('my-orders.show', $enrollment->order));
+            ->assertSee($enrollment->ulid)
+            ->assertSee(route('my-enrollments.payment.store', $enrollment));
 
         $this->actingAs($user)
             ->post(route('my-enrollments.payment.store', $enrollment), [
@@ -56,7 +52,8 @@ class EnrollmentPagesTest extends TestCase
             ->assertRedirect(route('my-enrollments.show', $enrollment))
             ->assertSessionHasNoErrors();
 
-        $this->assertSame(OrderStatus::PaymentSubmitted, $enrollment->order->fresh()->status);
+        $this->assertSame(EnrollmentPaymentStatus::PaymentSubmitted, $enrollment->fresh()->payment_status);
+        $this->assertNull($enrollment->fresh()->order_id);
     }
 
     public function test_a_notification_about_the_enrollment_payment_opens_the_enrollment_page(): void
@@ -68,7 +65,8 @@ class EnrollmentPagesTest extends TestCase
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.Licence::factory()->for($user)->create()->ulid]);
 
         $enrollment = $championship->enrollments()->sole();
-        $user->notify(new OrderPriceSet($enrollment->order));
+        $enrollment->update(['payment_status' => EnrollmentPaymentStatus::PaymentSubmitted]);
+        app(ReviewEnrollmentPayment::class)($enrollment, User::factory()->organizer()->create(), confirm: true);
 
         $this->actingAs($user)
             ->get(route('notifications.open', $user->notifications()->sole()->getKey()))
@@ -117,23 +115,6 @@ class EnrollmentPagesTest extends TestCase
 
     private function championship(bool $withFee = false): Championship
     {
-        $championship = Championship::factory()->create();
-        $fee = null;
-
-        if ($withFee) {
-            $fee = Product::factory()->enrollment()->recycle($championship)->create();
-            Price::factory()->for($fee)->create(['amount' => 18000]);
-        }
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            product_id: $fee?->getKey(),
-            requires_competitor_when_underage: false,
-        );
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()->openForEnrollment(amount: $withFee ? 18000 : 0)->create();
     }
 }

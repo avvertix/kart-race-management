@@ -13,6 +13,7 @@ use App\Listeners\ReevaluateWildcardsForEnrollment;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
+use App\Models\Enrollment;
 use App\Models\LicenceRequest;
 use App\Models\Order;
 use App\Models\OrderLine;
@@ -80,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
             'promo_code' => PromoCode::class,
             'order_line' => OrderLine::class,
             'licence_request' => LicenceRequest::class,
+            'enrollment' => Enrollment::class,
         ]);
 
         Blade::if('useStandardRegistrationForm', function (?Race $race = null): bool {

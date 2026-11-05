@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Data\EnrollmentSettingsData;
 use App\Enums\BibReservationStatus;
 use App\Livewire\RaceNumberPicker;
 use App\Models\BibReservation;
@@ -109,18 +108,6 @@ class PreviousNumbersTest extends TestCase
 
     private function championship(): Championship
     {
-        $championship = Championship::factory()->create();
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            grants_bib_reservation: true,
-            requires_competitor_when_underage: false,
-        );
-
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()->openForEnrollment(reservesRaceNumber: true)->create();
     }
 }

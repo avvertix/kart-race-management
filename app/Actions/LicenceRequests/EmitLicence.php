@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\LicenceRequests;
 
+use App\Actions\Enrollments\GrantEnrollmentEntitlements;
 use App\Actions\Enrollments\RejectEnrollment;
 use App\Actions\Orders\GrantPackages;
 use App\Enums\EnrollmentStatus;
@@ -171,8 +172,8 @@ class EmitLicence
     }
 
     /**
-     * Grant the paid Packages waiting for the Licence: the one covering its request, and those paying the active
-     * Enrollments that moved to it.
+     * Grant the paid Packages waiting for the Licence, the one covering its request and those paying the active
+     * Enrollments that moved to it, and the race fee discounts of those Enrollments' options.
      */
     private function grantPackagesOf(Licence $licence): void
     {
@@ -184,5 +185,10 @@ class EmitLicence
             ->get();
 
         $orders->each(fn (Order $order) => $grantPackages($order));
+
+        $grantEnrollmentEntitlements = app(GrantEnrollmentEntitlements::class);
+
+        Enrollment::query()->where('licence_id', $licence->getKey())->active()->get()
+            ->each(fn (Enrollment $enrollment) => $grantEnrollmentEntitlements($enrollment));
     }
 }

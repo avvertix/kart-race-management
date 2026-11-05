@@ -16,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 class SubmitPaymentProof
 {
     /**
-     * Store the payment proof of an Order or a Licence Request. Rejected proofs are kept.
+     * Store the payment proof of an Enrollment, a Licence Request or an Order. Rejected proofs are kept.
      *
      * @throws ValidationException when no payment is expected or the proof is not valid
      */

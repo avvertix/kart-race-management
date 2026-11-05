@@ -17,6 +17,8 @@ In the app, the bell next to the account menu shows how many notifications are u
 | The Licence is emitted | The applicant, with a link to the Licence |
 | The organizer confirms the payment proof of an order | The buyer, with a link to the Enrollment it pays, or to My licences when it includes a renewal still to start |
 | The organizer can't accept the payment proof | The buyer, with a link to upload a new one |
+| The organizer confirms the payment of an enrollment | The User who enrolled, with a link to the Enrollment |
+| The organizer can't accept the payment proof of an enrollment | The User who enrolled, with a link to upload a new one |
 | The organizer confirms an enrollment | The User who enrolled, with a link to the Enrollment |
 | The organizer rejects an enrollment | The User who enrolled, with the reason |
 | An enrollment needs something before it can be confirmed: another licence after its request was rejected, or the Competitor of an underage driver enrolled by a package | The User who enrolled, with a link to the Enrollment |

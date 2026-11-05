@@ -95,14 +95,15 @@ class EnrollmentOption extends Model
     }
 
     /**
-     * Whether the option is offered to a licence of the category; any category when the option names none, and a
-     * licence of unknown category (e.g. a request whose type isn't chosen yet) only then.
+     * Whether the option is offered to a licence of the category; any category when the option names none. A licence
+     * of unknown category (a request whose type isn't chosen yet, or the renewal of a licence not on the platform) is
+     * offered every option, and the organizer can move the Enrollment to the right one before confirming its payment.
      */
     public function isFor(?DriverLicence $category): bool
     {
         $categories = $this->licence_categories ?? [];
 
-        return $categories === [] || ($category !== null && in_array($category->value, $categories, true));
+        return $category === null || $categories === [] || in_array($category->value, $categories, true);
     }
 
     /**
@@ -140,10 +141,10 @@ class EnrollmentOption extends Model
      */
     public function scopeOfferedFor(Builder $query, ?DriverLicence $category): void
     {
-        $query->offered()->where(fn (Builder $query) => $query
+        $query->offered()->when($category, fn (Builder $query, DriverLicence $category) => $query->where(fn (Builder $query) => $query
             ->whereNull('licence_categories')
             ->orWhereJsonLength('licence_categories', 0)
-            ->when($category, fn (Builder $query, DriverLicence $category) => $query->orWhereJsonContains('licence_categories', $category->value)));
+            ->orWhereJsonContains('licence_categories', $category->value)));
     }
 
     /**

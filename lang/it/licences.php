@@ -101,6 +101,13 @@ return [
         'covered' => 'Inclusa in un pacchetto',
     ],
 
+    'enrollment_payment_status' => [
+        'not_due' => 'Nulla da pagare',
+        'awaiting_payment' => 'Da pagare',
+        'payment_submitted' => 'Ricevuta caricata',
+        'paid' => 'Pagata',
+    ],
+
     'request_document_status' => [
         'pending' => 'Da verificare',
         'accepted' => 'Visto',

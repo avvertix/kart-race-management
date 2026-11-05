@@ -6,7 +6,7 @@ namespace Tests\Feature;
 
 use App\Features\LicencesAndProducts;
 use App\Models\Championship;
-use App\Models\Product;
+use App\Models\EnrollmentOption;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Laravel\Pennant\Feature;
@@ -24,8 +24,6 @@ class UpdateChampionshipEnrollmentSettingsControllerTest extends TestCase
         $settings = Championship::factory()->create()->enrollment;
 
         $this->assertFalse($settings->enabled);
-        $this->assertNull($settings->product_id);
-        $this->assertFalse($settings->grants_bib_reservation);
         $this->assertTrue($settings->requires_competitor_when_underage);
         $this->assertFalse($settings->isOpen());
     }
@@ -48,26 +46,24 @@ class UpdateChampionshipEnrollmentSettingsControllerTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_the_organizer_enables_a_paid_enrollment(): void
+    public function test_the_organizer_enables_enrollment_with_an_option(): void
     {
         config(['races.timezone' => 'Europe/Rome']);
 
         $championship = Championship::factory()->create();
-        $product = Product::factory()->enrollment()->recycle($championship)->create();
+        $option = EnrollmentOption::factory()->for($championship)->create(['title' => 'BKQ enrollment']);
         $organizer = User::factory()->organizer()->create();
 
         $this->actingAs($organizer)
             ->get(route('championships.enrollment-settings.edit', $championship))
             ->assertSuccessful()
-            ->assertSee($product->title);
+            ->assertSee($option->title);
 
         $this->actingAs($organizer)
             ->put(route('championships.enrollment-settings.update', $championship), [
                 'enabled' => '1',
                 'opens_at' => '2027-01-10T09:00',
                 'closes_at' => '2027-02-28T23:59',
-                'product' => $product->ulid,
-                'grants_bib_reservation' => '1',
             ])
             ->assertRedirect(route('championships.show', $championship));
 
@@ -76,8 +72,6 @@ class UpdateChampionshipEnrollmentSettingsControllerTest extends TestCase
         $this->assertTrue($settings->enabled);
         $this->assertTrue($settings->opens_at->equalTo(CarbonImmutable::parse('2027-01-10 09:00', 'Europe/Rome')));
         $this->assertTrue($settings->closes_at->equalTo(CarbonImmutable::parse('2027-02-28 23:59', 'Europe/Rome')));
-        $this->assertSame($product->getKey(), $settings->product_id);
-        $this->assertTrue($settings->grants_bib_reservation);
         $this->assertFalse($settings->requires_competitor_when_underage);
 
         $this->assertFalse($settings->isOpen(CarbonImmutable::parse('2027-01-10 08:59', 'Europe/Rome')));
@@ -107,23 +101,20 @@ class UpdateChampionshipEnrollmentSettingsControllerTest extends TestCase
         $this->assertFalse($championship->fresh()->enrollment->enabled);
     }
 
-    public function test_the_product_must_be_an_enrollment_of_the_championship(): void
+    public function test_enrollment_needs_an_option_offered_to_drivers(): void
     {
         $championship = Championship::factory()->create();
-        $otherChampionshipEnrollment = Product::factory()->enrollment()->create();
-        $package = Product::factory()->create(['championship_id' => $championship->getKey()]);
-        $organizer = User::factory()->organizer()->create();
+        EnrollmentOption::factory()->for($championship)->create(['active' => false]);
 
-        foreach ([$otherChampionshipEnrollment, $package] as $product) {
-            $this->actingAs($organizer)
-                ->put(route('championships.enrollment-settings.update', $championship), [
-                    'enabled' => '1',
-                    'opens_at' => '2027-01-10T09:00',
-                    'closes_at' => '2027-02-28T23:59',
-                    'product' => $product->ulid,
-                ])
-                ->assertSessionHasErrors(['product']);
-        }
+        $this->actingAs(User::factory()->organizer()->create())
+            ->put(route('championships.enrollment-settings.update', $championship), [
+                'enabled' => '1',
+                'opens_at' => '2027-01-10T09:00',
+                'closes_at' => '2027-02-28T23:59',
+            ])
+            ->assertSessionHasErrors(['enabled']);
+
+        $this->assertFalse($championship->fresh()->enrollment->enabled);
     }
 
     public function test_disabling_keeps_the_rest_of_the_settings(): void

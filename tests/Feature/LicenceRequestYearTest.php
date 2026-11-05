@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Actions\LicenceRequests\EmitLicence;
 use App\Actions\Orders\PlaceOrder;
-use App\Data\EnrollmentSettingsData;
 use App\Data\HolderData;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceProvider;
@@ -225,20 +224,10 @@ class LicenceRequestYearTest extends TestCase
 
     private function openChampionship(int $year): Championship
     {
-        $championship = Championship::factory()->create([
+        return Championship::factory()->openForEnrollment()->create([
             'start_at' => now()->setDate($year, 3, 1)->startOfDay(),
             'end_at' => now()->setDate($year, 10, 31)->startOfDay(),
         ]);
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            requires_competitor_when_underage: false,
-        );
-        $championship->save();
-
-        return $championship;
     }
 
     private function holderWithFiscalCode(): HolderData

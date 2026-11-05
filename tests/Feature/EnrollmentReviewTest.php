@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Data\EnrollmentSettingsData;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\OrderStatus;
@@ -245,17 +244,6 @@ class EnrollmentReviewTest extends TestCase
 
     private function championshipWithEnrollment(bool $requiresCompetitor = false): Championship
     {
-        $championship = Championship::factory()->create();
-
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: now()->subDay(),
-            closes_at: now()->addMonth(),
-            requires_competitor_when_underage: $requiresCompetitor,
-        );
-
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()->openForEnrollment(requiresCompetitor: $requiresCompetitor)->create();
     }
 }

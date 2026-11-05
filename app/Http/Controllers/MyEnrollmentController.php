@@ -26,7 +26,7 @@ class MyEnrollmentController extends Controller
     {
         $this->authorize('view', $enrollment);
 
-        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'reservations', 'order.lines.price', 'order.latestPayment']);
+        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'reservations', 'option', 'latestPayment']);
 
         return view('my-enrollment.show', [
             'enrollment' => $enrollment,
@@ -79,17 +79,13 @@ class MyEnrollmentController extends Controller
      */
     public function pay(Request $request, Enrollment $enrollment, SubmitPaymentProof $submitPaymentProof): RedirectResponse
     {
-        $this->authorize('view', $enrollment);
-
-        abort_if($enrollment->order === null, 404);
-
-        $this->authorize('pay', $enrollment->order);
+        $this->authorize('pay', $enrollment);
 
         $request->validate([
             'proof' => 'required|file',
         ]);
 
-        $submitPaymentProof($enrollment->order, $request->file('proof'));
+        $submitPaymentProof($enrollment, $request->file('proof'));
 
         return to_route('my-enrollments.show', $enrollment)
             ->with('flash.banner', __('Payment proof uploaded. The organizer will confirm it.'));

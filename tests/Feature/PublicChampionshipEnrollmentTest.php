@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Data\EnrollmentSettingsData;
 use App\Features\LicencesAndProducts;
 use App\Models\Championship;
-use App\Models\Price;
-use App\Models\Product;
 use Carbon\CarbonImmutable;
 use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
@@ -60,28 +57,19 @@ class PublicChampionshipEnrollmentTest extends TestCase
     {
         $this->travelTo(CarbonImmutable::parse('2027-01-20 12:00', 'Europe/Rome'));
 
-        $product = Product::factory()->enrollment()->create();
-        $price = Price::factory()->for($product)->create();
-        $championship = $this->championship($product->championship, $product);
+        $championship = $this->championship(amount: 18000);
 
         $this->get(route('public.championships.enrollment', $championship))
             ->assertSuccessful()
-            ->assertSee($price->label());
+            ->assertSee('€180.00');
     }
 
-    private function championship(?Championship $championship = null, ?Product $product = null): Championship
+    private function championship(int $amount = 0): Championship
     {
         config(['races.timezone' => 'Europe/Rome']);
 
-        $championship ??= Championship::factory()->create();
-        $championship->enrollment = new EnrollmentSettingsData(
-            enabled: true,
-            opens_at: CarbonImmutable::parse('2027-01-10 09:00', 'Europe/Rome'),
-            closes_at: CarbonImmutable::parse('2027-02-28 23:59', 'Europe/Rome'),
-            product_id: $product?->getKey(),
-        );
-        $championship->save();
-
-        return $championship;
+        return Championship::factory()
+            ->openForEnrollment(amount: $amount, opensAt: CarbonImmutable::parse('2027-01-10 09:00', 'Europe/Rome'), closesAt: CarbonImmutable::parse('2027-02-28 23:59', 'Europe/Rome'))
+            ->create();
     }
 }

@@ -91,7 +91,6 @@ class ChampionshipEnrollmentController extends Controller
             $licence,
             null,
             Licence::findByUlid($validated['competitor_licence'] ?? null),
-            pays: false,
         );
 
         return to_route('enrollments.show', $enrollment)

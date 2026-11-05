@@ -90,6 +90,14 @@ class EnrollmentPolicy
     }
 
     /**
+     * Determine whether the user can upload the payment proof of their own enrollment.
+     */
+    public function pay(User $user, Enrollment $enrollment): bool
+    {
+        return $user->hasPermission('enrollment:view') && $enrollment->user_id === $user->getKey();
+    }
+
+    /**
      * Whether the enrollment is the user's own, still submitted.
      */
     private function ownsSubmitted(User $user, Enrollment $enrollment): bool

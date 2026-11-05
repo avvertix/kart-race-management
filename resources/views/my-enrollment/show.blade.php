@@ -107,24 +107,19 @@
                     @endif
                 </dl>
 
-                @if ($enrollment->order && $enrollment->status->isActive())
+                @if ($enrollment->option)
                     <section class="space-y-3">
-                        <h3 class="font-semibold text-zinc-900">{{ __('Payment') }} &middot; {{ $enrollment->order->status->label() }}</h3>
-                        @can('pay', $enrollment->order)
-                            <div class="prose prose-zinc">
-                                @include('partials.order-payment', ['order' => $enrollment->order, 'paymentAction' => route('my-enrollments.payment.store', $enrollment)])
-                            </div>
-                        @endcan
-                    </section>
-                @endif
-
-                @if ($enrollment->order && ! $enrollment->status->isActive())
-                    <p class="text-sm text-zinc-700">
-                        {{ __('Payment') }}: {{ $enrollment->order->status->label() }}
-                        @if (in_array($enrollment->order->status, [\App\Enums\OrderStatus::Paid, \App\Enums\OrderStatus::PaymentSubmitted], true))
-                            &middot; {{ __('For a refund, email the organizer.') }}
+                        <h3 class="font-semibold text-zinc-900">{{ $enrollment->option->title }} &middot; <span class="font-mono tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span> &middot; {{ $enrollment->payment_status->label() }}</h3>
+                        @if ($enrollment->status->isActive())
+                            @can('pay', $enrollment)
+                                <div class="prose prose-zinc">
+                                    @include('partials.enrollment-payment', ['enrollment' => $enrollment])
+                                </div>
+                            @endcan
+                        @elseif (in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::Paid, \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted], true))
+                            <p class="text-sm text-zinc-700">{{ __('For a refund, email the organizer.') }}</p>
                         @endif
-                    </p>
+                    </section>
                 @endif
 
                 @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && $enrollment->hasPaymentUnderReview())
@@ -139,21 +134,6 @@
                 @endcan
             </div>
 
-            @if ($enrollment->order)
-                <aside class="rounded-md border border-zinc-200 bg-white p-4 space-y-2 self-start">
-                    @foreach ($enrollment->order->lines as $line)
-                        <div class="flex justify-between gap-4">
-                            <span>{{ $line->description }}</span>
-                            <span class="font-mono tabular-nums">{{ $line->amount === null ? $line->price->label() : $enrollment->order->currency->format($line->amount) }}</span>
-                        </div>
-                    @endforeach
-
-                    <div class="flex justify-between gap-4 border-t border-zinc-200 pt-2 font-semibold">
-                        <span>{{ __('Total') }}</span>
-                        <span class="font-mono tabular-nums">{{ $enrollment->order->total === null ? __('to be set') : $enrollment->order->currency->format($enrollment->order->total) }}</span>
-                    </div>
-                </aside>
-            @endif
         </div>
     </div>
 </x-app-layout>

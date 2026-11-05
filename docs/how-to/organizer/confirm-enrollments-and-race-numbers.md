@@ -7,9 +7,9 @@ Race numbers are first confirmed, first served. Confirm enrollments in the order
    - the Licence is a driver licence valid for the championship year. If the enrollment still waits for a Licence Request, wait;
    - a Declared Licence is verified. Verify it from the same screen;
    - the Competitor is named, if the Driver is underage. You can name or change it from the same screen;
-   - the payment is confirmed, if enrollment is paid. The payment proof shows on the same screen: *Confirm payment* or *Reject payment*, so the Driver uploads a new one.
+   - the payment is confirmed, if the option chosen is paid. To change the option, e.g. when the licence category changed on renewal, choose *Change option* until the payment is confirmed: the amount follows, and the licence renewal cover and the race number follow what the new option includes. The payment proof shows on the same screen: *Confirm payment* or *Reject payment*, so the Driver uploads a new one.
 3. **Confirm the enrollment.** A race number the Driver picked and still pending is confirmed with it. You can also confirm the number on its own beforehand, e.g. before the payment arrives; it is released if the enrollment is withdrawn or rejected. The Driver's registrations for races without results are re-evaluated for points eligibility.
-4. **Otherwise, reject it** with a reason, which releases the race number and cancels an unpaid order. While a payment proof waits for review, confirm or reject the payment first. The enrollment page lists what is still missing, and offers *Confirm enrollment* only when nothing is.
+4. **Otherwise, reject it** with a reason, which releases the race number and returns a licence request the option covered to its own payment. While a payment proof waits for review, confirm or reject the payment first. The enrollment page lists what is still missing, and offers *Confirm enrollment* only when nothing is.
 
 ## Keep last season's numbers
 
@@ -18,7 +18,7 @@ Race numbers are first confirmed, first served. Confirm enrollments in the order
 
 ## Enroll a driver yourself
 
-You can create an Enrollment for any Licence at any time, also outside the enrollment period, e.g. for a driver who asked by email. Choose *Enroll a licence* from the championship's enrollments. No order is created: settle the payment with the driver.
+You can create an Enrollment for any Licence at any time, also outside the enrollment period, e.g. for a driver who asked by email. Choose *Enroll a licence* from the championship's enrollments. Nothing is due: settle any payment with the driver.
 
 ## Release or change a race number
 

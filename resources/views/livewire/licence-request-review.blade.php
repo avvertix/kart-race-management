@@ -46,7 +46,7 @@
                 LicenceRequestPaymentStatus::Paid => $licenceRequest->payment_channel
                     ? __('Paid by :channel, :amount', ['channel' => mb_strtolower($licenceRequest->payment_channel->localizedName()), 'amount' => $licenceRequest->amountLabel()])
                     : __('Paid, :amount', ['amount' => $licenceRequest->amountLabel()]),
-                LicenceRequestPaymentStatus::Covered => __('Covered by an order'),
+                LicenceRequestPaymentStatus::Covered => $licenceRequest->covering_enrollment_id ? __('Covered by an enrollment') : __('Covered by an order'),
             },
         ],
         [

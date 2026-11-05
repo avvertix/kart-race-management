@@ -101,6 +101,13 @@ return [
         'covered' => 'Covered by a package',
     ],
 
+    'enrollment_payment_status' => [
+        'not_due' => 'Nothing to pay',
+        'awaiting_payment' => 'To pay',
+        'payment_submitted' => 'Proof uploaded',
+        'paid' => 'Paid',
+    ],
+
     'request_document_status' => [
         'pending' => 'To review',
         'accepted' => 'Viewed',

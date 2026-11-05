@@ -20,8 +20,6 @@ class CopyChampionshipBibReservationsController extends Controller
     {
         $this->authorize('create', BibReservation::class);
 
-        abort_unless($championship->allowsReservationCopy(), 404);
-
         $sourceChampionships = Championship::query()
             ->where('id', '!=', $championship->id)
             ->where(fn ($query) => $query
@@ -43,8 +41,6 @@ class CopyChampionshipBibReservationsController extends Controller
     public function store(Request $request, Championship $championship, CopyChampionshipBibReservations $copyReservations)
     {
         $this->authorize('create', BibReservation::class);
-
-        abort_unless($championship->allowsReservationCopy(), 404);
 
         $validated = $request->validate([
             'source_championship' => [

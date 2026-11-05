@@ -200,29 +200,25 @@ class Licence extends Model
     }
 
     /**
-     * Only the driver licences that can be enrolled in the championship: valid in its year and, when it names a
-     * provider, emitted by it.
+     * Only the driver licences that can be enrolled in the championship: valid in its year, from any provider.
      *
      * @param  Builder<self>  $query
      */
     public function scopeEnrollableIn(Builder $query, Championship $championship): void
     {
         $query->where('role', LicenceRole::Driver)
-            ->where('validity_year', $championship->start_at->year)
-            ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));
+            ->where('validity_year', $championship->start_at->year);
     }
 
     /**
-     * Only the driver licences of an earlier year than the championship that can be renewed for it: of the championship's
-     * provider when it names one.
+     * Only the driver licences of an earlier year than the championship, that can be renewed for it.
      *
      * @param  Builder<self>  $query
      */
     public function scopeRenewableFor(Builder $query, Championship $championship): void
     {
         $query->where('role', LicenceRole::Driver)
-            ->where('validity_year', '<', $championship->start_at->year)
-            ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));
+            ->where('validity_year', '<', $championship->start_at->year);
     }
 
     /**

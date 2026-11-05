@@ -11,7 +11,6 @@ use App\Data\LicenceSettingsData;
 use App\Data\PaymentSettingsData;
 use App\Data\RegistrationSettingsData;
 use App\Data\WildcardSettingsData;
-use App\Enums\LicenceProvider;
 use App\Enums\ProductKind;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -203,24 +202,6 @@ class Championship extends Model
     public function licenceProviderName(): string
     {
         return $this->licences->provider?->label() ?? config('races.licence.provider');
-    }
-
-    /**
-     * Whether reservations can be copied from a past championship by licence number: not for ASI, whose licence numbers
-     * change every year.
-     */
-    public function allowsReservationCopy(): bool
-    {
-        return $this->licences->provider !== LicenceProvider::Asi;
-    }
-
-    /**
-     * Whether the ACI promotion export applies: to ACI championships, and to those without a provider, as before
-     * providers could be chosen.
-     */
-    public function offersAciExport(): bool
-    {
-        return in_array($this->licences->provider, [null, LicenceProvider::Aci], true);
     }
 
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute

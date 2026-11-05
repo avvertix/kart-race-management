@@ -943,18 +943,6 @@ parameters:
 			path: app/Data/Results/RunResultData.php
 
 		-
-			message: '#^Method App\\Exports\\AciParticipantPromotionExport\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Collection does not specify its types\: TKey, TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Exports/AciParticipantPromotionExport.php
-
-		-
-			message: '#^PHPDoc tag @return with type Illuminate\\Support\\Collection is not subtype of native type Illuminate\\Database\\Eloquent\\Collection\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: app/Exports/AciParticipantPromotionExport.php
-
-		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$invoice$#'
 			identifier: parameter.notFound
 			count: 1
@@ -2135,18 +2123,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: app/Http/Controllers/ExportRaceParticipantsController.php
-
-		-
-			message: '#^Cannot call method toDateString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/ExportRaceParticipantsForAciPromotionController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\ExportRaceParticipantsForAciPromotionController\:\:__invoke\(\) should return Illuminate\\Http\\Response but returns Symfony\\Component\\HttpFoundation\\BinaryFileResponse\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/ExportRaceParticipantsForAciPromotionController.php
 
 		-
 			message: '#^Cannot call method toDateString\(\) on string\.$#'

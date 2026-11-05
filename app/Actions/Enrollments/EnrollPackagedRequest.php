@@ -7,6 +7,7 @@ namespace App\Actions\Enrollments;
 use App\Enums\ProductGrantKind;
 use App\Models\LicenceRequest;
 use App\Models\ProductGrant;
+use App\Notifications\EnrollmentNeedsAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -45,6 +46,10 @@ class EnrollPackagedRequest
                     $enrollment = ($this->createEnrollment)($licenceRequest->user, $grant->championship, null, $licenceRequest, null, pays: false);
 
                     $enrollment->update(['order_id' => $order->getKey()]);
+
+                    if ($enrollment->competitor_licence_id === null && $enrollment->requiresCompetitor()) {
+                        $enrollment->user->notify(new EnrollmentNeedsAction($enrollment, needsLicence: false));
+                    }
                 });
             } catch (ValidationException $exception) {
                 logs()->warning('Packaged enrollment skipped', [

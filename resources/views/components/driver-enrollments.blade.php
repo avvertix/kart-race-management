@@ -20,12 +20,12 @@
         </section>
     @endif
 
-    @if ($pendingEnrollments->isNotEmpty())
+    @if ($enrollments->isNotEmpty())
         <section class="space-y-3">
-            <p data-section="true" class="font-mono text-xs/6 font-medium tracking-widest text-gray-600 uppercase">{{ __('Pending enrollments') }}</p>
+            <p data-section="true" class="font-mono text-xs/6 font-medium tracking-widest text-gray-600 uppercase">{{ __('Your enrollments') }}</p>
 
             <ul class="-mx-2 sm:mx-0 space-y-3">
-                @foreach ($pendingEnrollments as $enrollment)
+                @foreach ($enrollments as $enrollment)
                     <li class="p-2 md:p-4 bg-white rounded-sm group relative ring-0 hover:ring-2 focus-within:ring-2 ring-orange-500 space-y-1">
                         <a href="{{ route('my-enrollments.show', $enrollment) }}" class="font-bold group-hover:text-orange-900 focus:outline-hidden">
                             <span class="z-10 absolute inset-0"></span>{{ $enrollment->championship->title }}
@@ -33,7 +33,11 @@
                         <p class="text-sm text-zinc-700">
                             {{ $enrollment->holder()?->fullName() }}
                             &middot;
-                            @if ($enrollment->order && ! in_array($enrollment->order->status, [\App\Enums\OrderStatus::Paid, \App\Enums\OrderStatus::Cancelled], true))
+                            @if (! $enrollment->status->isActive() || $enrollment->status === \App\Enums\EnrollmentStatus::Confirmed)
+                                {{ $enrollment->status->label() }}
+                            @elseif ($enrollment->needsLicence())
+                                {{ __('Choose another licence') }}
+                            @elseif ($enrollment->order && ! in_array($enrollment->order->status, [\App\Enums\OrderStatus::Paid, \App\Enums\OrderStatus::Cancelled], true))
                                 {{ __('Payment') }}: {{ $enrollment->order->status->label() }}
                             @elseif ($enrollment->licence === null)
                                 {{ __('Waiting for the licence request') }}

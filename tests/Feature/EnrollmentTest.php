@@ -55,7 +55,7 @@ class EnrollmentTest extends TestCase
         $championship = $this->openChampionship();
         $driver = User::factory()->create();
         $licence = Licence::factory()->for($driver)->create();
-        Licence::factory()->for($driver)->create(['validity_year' => now()->year - 1, 'number' => 'OLD1']);
+        Licence::factory()->for($driver)->create(['validity_year' => now()->year - 1, 'number' => 'OLD1', 'holder' => $licence->holder]);
 
         $this->actingAs($driver)
             ->get(route('public.championships.enrollment', $championship))

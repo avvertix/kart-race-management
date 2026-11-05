@@ -76,8 +76,23 @@ return [
         ],
 
         'asi' => [
-            'driver' => [
-                'name' => 'Driver',
+            'ma' => [
+                'name' => 'MA',
+                'role' => LicenceRole::Driver,
+                'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
+            ],
+            'lkm' => [
+                'name' => 'LKM',
+                'role' => LicenceRole::Driver,
+                'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
+            ],
+            'k' => [
+                'name' => 'K',
+                'role' => LicenceRole::Driver,
+                'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
+            ],
+            'c1' => [
+                'name' => 'C1',
                 'role' => LicenceRole::Driver,
                 'race_licence_category' => DriverLicence::LOCAL_NATIONAL,
             ],
@@ -105,7 +120,7 @@ return [
     'forms' => [
         'aci' => [
             'privacy' => 'https://www.acisport.it/public_federazione/2019/pdf/Modulistica/informativa_privacy_licenziati_.pdf',
-            'parental_authorisation' => 'https://www.acisport.it/public_federazione/2017/pdf/Modulistica/autorizzazione_esercenti_potesta_genitoriale_kart.doc'
+            'parental_authorisation' => 'https://www.acisport.it/public_federazione/2017/pdf/Modulistica/autorizzazione_esercenti_potesta_genitoriale_kart.doc',
         ],
     ],
 

@@ -197,7 +197,7 @@ class LicenceRequestYearTest extends TestCase
             'licence_id' => Licence::factory()->verified()->create(['number' => 'A555001', 'holder' => LicenceFactory::holder('Anna', 'Verdi')]),
         ]);
         $user = User::factory()->create();
-        $sameNumber = Licence::factory()->for($user)->create(['provider' => LicenceProvider::Asi, 'licence_type' => 'driver', 'number' => 'A555001', 'holder' => LicenceFactory::holder('Anna', 'Verdini')]);
+        $sameNumber = Licence::factory()->for($user)->create(['provider' => LicenceProvider::Asi, 'licence_type' => 'ma', 'number' => 'A555001', 'holder' => LicenceFactory::holder('Anna', 'Verdini')]);
 
         $this->actingAs($user)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$sameNumber->ulid])

@@ -502,7 +502,7 @@ class LicenceRequestReviewTest extends TestCase
         $organizer = User::factory()->organizer()->create();
         $licenceRequest = LicenceRequest::factory()->verified()->create([
             'provider' => LicenceProvider::Asi,
-            'licence_type' => 'driver',
+            'licence_type' => 'ma',
             'previous_licence_number' => 'ASI-777',
         ]);
 

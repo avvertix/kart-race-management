@@ -14,6 +14,7 @@ use App\Models\WildcardFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use stdClass;
 
 class CalculateAwardRanking
 {
@@ -34,10 +35,11 @@ class CalculateAwardRanking
     /**
      * Calculate the ranking for a given award.
      *
-     * Day awards also include the `session_bonus` already added to `total_points`, the lap
+     * Each entry has `participant_id`, `racer_hash`, `first_name`, `last_name`, `bib`, `total_points`, `races_counted` and
+     * `points_per_race`. Day awards also include the `session_bonus` already added to `total_points`, the lap
      * times used as tie-breaks and, in `tie_breaks`, how ties with adjacent drivers were resolved.
      *
-     * @return Collection<int, array{participant_id: int, first_name: string, last_name: string, bib: int, total_points: float, races_counted: int, points_per_race: array<int, float>, session_bonus?: int}>
+     * @return Collection<int, array<string, mixed>>
      */
     public function __invoke(ChampionshipAward $award, bool $publishedOnly = true): Collection
     {
@@ -104,6 +106,8 @@ class CalculateAwardRanking
     /**
      * Build the query selecting the participant results in scope for the award: its races,
      * categories and wildcard filter. Day awards only consider qualifying and race sessions.
+     *
+     * @return Builder<ParticipantResult>
      */
     private function buildAwardQuery(ChampionshipAward $award, bool $publishedOnly): Builder
     {
@@ -123,6 +127,10 @@ class CalculateAwardRanking
         return $query;
     }
 
+    /**
+     * @param  Collection<int, stdClass>  $perRacePoints
+     * @return Collection<int, array<string, mixed>>
+     */
     private function rank(ChampionshipAward $award, Collection $perRacePoints): Collection
     {
         if ($award->isDayAward()) {
@@ -295,49 +303,75 @@ class CalculateAwardRanking
      * then by the faster best lap in race 1, in race 2 and finally in qualifying.
      * Race laps only count when the driver finished that race (no DNS or DNF);
      * a missing or not counted lap time ranks last.
+     *
+     * @param  Collection<int, stdClass>  $perRacePoints
+     * @return Collection<int, array<string, mixed>>
      */
     private function rankByDay(Collection $perRacePoints): Collection
     {
         $ranking = $perRacePoints
             ->groupBy('racer_hash')
-            ->map(function (Collection $raceRows) {
-                $first = $raceRows->first();
-                $pointsPerRace = $raceRows->mapWithKeys(fn ($row) => [$row->race_id => (float) $row->race_points]);
-                $sessionBonus = (int) $raceRows
-                    ->map(fn ($row) => $row->heats_session_size ?? $row->session_size)
-                    ->min();
-
-                return [
-                    'participant_id' => $first->participant_id,
-                    'uuid' => $first->uuid,
-                    'racer_hash' => $first->racer_hash,
-                    'first_name' => str()->title($first->first_name),
-                    'last_name' => str()->title($first->last_name),
-                    'bib' => $first->bib,
-                    'total_points' => $pointsPerRace->sum() + $sessionBonus,
-                    'races_counted' => $raceRows->count(),
-                    'points_per_race' => $pointsPerRace->all(),
-                    'session_bonus' => $sessionBonus,
-                    'race_1_best_lap_time' => $raceRows->pluck('race_1_best_lap_time')->filter()->first(),
-                    'race_2_best_lap_time' => $raceRows->pluck('race_2_best_lap_time')->filter()->first(),
-                    'qualifying_best_lap_time' => $raceRows->pluck('qualifying_best_lap_time')->filter()->first(),
-                ];
-            })
+            ->map(fn (Collection $raceRows) => $this->dayEntry($raceRows))
             ->sort(fn (array $a, array $b) => $this->dayRankingKey($a) <=> $this->dayRankingKey($b))
             ->values();
 
-        return $ranking->map(fn (array $entry, int $index) => [
+        return $ranking->map(fn (array $entry, int $index) => $this->withTieBreaks($entry, $ranking->get($index - 1), $ranking->get($index + 1)));
+    }
+
+    /**
+     * One driver's day award entry from their rows, one per race.
+     *
+     * @param  Collection<int, stdClass>  $raceRows
+     * @return array<string, mixed>
+     */
+    private function dayEntry(Collection $raceRows): array
+    {
+        $first = $raceRows->first();
+        $pointsPerRace = $raceRows->mapWithKeys(fn ($row) => [$row->race_id => (float) $row->race_points]);
+        $sessionBonus = (int) $raceRows
+            ->map(fn ($row) => $row->heats_session_size ?? $row->session_size)
+            ->min();
+
+        return [
+            'participant_id' => $first->participant_id,
+            'uuid' => $first->uuid,
+            'racer_hash' => $first->racer_hash,
+            'first_name' => str()->title($first->first_name),
+            'last_name' => str()->title($first->last_name),
+            'bib' => $first->bib,
+            'total_points' => $pointsPerRace->sum() + $sessionBonus,
+            'races_counted' => $raceRows->count(),
+            'points_per_race' => $pointsPerRace->all(),
+            'session_bonus' => $sessionBonus,
+            'race_1_best_lap_time' => $raceRows->pluck('race_1_best_lap_time')->filter()->first(),
+            'race_2_best_lap_time' => $raceRows->pluck('race_2_best_lap_time')->filter()->first(),
+            'qualifying_best_lap_time' => $raceRows->pluck('qualifying_best_lap_time')->filter()->first(),
+        ];
+    }
+
+    /**
+     * The entry with how its ties with the drivers above and below were resolved.
+     *
+     * @param  array<string, mixed>  $entry
+     * @param  ?array<string, mixed>  $above
+     * @param  ?array<string, mixed>  $below
+     * @return array<string, mixed>
+     */
+    private function withTieBreaks(array $entry, ?array $above, ?array $below): array
+    {
+        return [
             ...$entry,
             'tie_breaks' => array_values(array_filter([
-                $this->resolveTieBreak($entry, $ranking->get($index - 1), 'above'),
-                $this->resolveTieBreak($entry, $ranking->get($index + 1), 'below'),
+                $this->resolveTieBreak($entry, $above, 'above'),
+                $this->resolveTieBreak($entry, $below, 'below'),
             ])),
-        ]);
+        ];
     }
 
     /**
      * The values a day award ranking is sorted by, in order: points, then the tie-breaks.
      *
+     * @param  array<string, mixed>  $entry
      * @return array<int, float|int>
      */
     private function dayRankingKey(array $entry): array
@@ -355,6 +389,8 @@ class CalculateAwardRanking
      * Explain how a tie on points with an adjacent driver in the ranking was resolved:
      * the first tie-break whose values differ, or null as criterion when all are equal.
      *
+     * @param  array<string, mixed>  $entry
+     * @param  ?array<string, mixed>  $other
      * @return array{position: string, first_name: string, last_name: string, bib: int, criterion: ?string, value: int|string|null, other_value: int|string|null}|null
      */
     private function resolveTieBreak(array $entry, ?array $other, string $position): ?array

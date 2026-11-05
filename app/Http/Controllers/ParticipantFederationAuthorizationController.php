@@ -54,6 +54,12 @@ class ParticipantFederationAuthorizationController extends Controller
 
         $path = $request->file('authorization')->store('', 'federation-authorizations');
 
+        if ($path === false) {
+            throw ValidationException::withMessages([
+                'authorization' => __('The file could not be saved, please try again.'),
+            ]);
+        }
+
         $participant->federationAuthorizations()->create([
             'path' => $path,
             'hash' => hash_file('sha512', Storage::disk('federation-authorizations')->path($path)),

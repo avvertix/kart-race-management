@@ -15,6 +15,7 @@ use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceRole;
+use App\Enums\OrderStatus;
 use App\Support\LicenceCatalogue;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
@@ -535,11 +536,16 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Whether nothing is left to pay: the organizer confirmed the payment, or a package covers the request.
+     * Whether nothing is left to pay: the organizer confirmed the payment, or a paid Order (a package, or an enrollment
+     * fee covering the renewal) covers the request.
      */
     public function isPaymentSettled(): bool
     {
-        return in_array($this->payment_status, [LicenceRequestPaymentStatus::Paid, LicenceRequestPaymentStatus::Covered], true);
+        return match ($this->payment_status) {
+            LicenceRequestPaymentStatus::Paid => true,
+            LicenceRequestPaymentStatus::Covered => $this->covering_order_id === null || $this->coveringOrder?->status === OrderStatus::Paid,
+            default => false,
+        };
     }
 
     /**

@@ -209,6 +209,7 @@ enum Role: string
                 'enrollment:create',
                 'enrollment:view',
                 'enrollment:update',
+                'order:create',
                 'order:view',
                 'promo-code:claim',
             ],

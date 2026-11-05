@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Orders;
 
 use App\Enums\OrderStatus;
+use App\Models\Licence;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -14,11 +15,11 @@ use Illuminate\Validation\ValidationException;
 class PlaceOrder
 {
     /**
-     * Create an Order for the Product, locking the Price valid now.
+     * Create an Order for the Product, locking the Price valid now, optionally for the Licence its Packages grant to.
      *
      * @throws ValidationException when the user has no verified email or the product cannot be ordered
      */
-    public function __invoke(User $user, Product $product): Order
+    public function __invoke(User $user, Product $product, ?Licence $licence = null): Order
     {
         if (! $user->hasVerifiedEmail()) {
             throw ValidationException::withMessages([
@@ -34,9 +35,10 @@ class PlaceOrder
             ]);
         }
 
-        return DB::transaction(function () use ($user, $product, $price) {
+        return DB::transaction(function () use ($user, $product, $price, $licence) {
             $order = Order::create([
                 'user_id' => $user->getKey(),
+                'licence_id' => $licence?->getKey(),
                 'status' => $price->isRange() ? OrderStatus::AwaitingPrice : OrderStatus::AwaitingPayment,
                 'total' => $price->amount,
                 'currency' => $price->currency,

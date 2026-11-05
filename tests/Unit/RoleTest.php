@@ -86,6 +86,7 @@ class RoleTest extends TestCase
             'enrollment:create',
             'enrollment:view',
             'enrollment:update',
+            'order:create',
             'order:view',
             'promo-code:claim',
         ], $this->licencePermissions(Role::Driver));

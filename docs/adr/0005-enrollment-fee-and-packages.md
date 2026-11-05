@@ -9,7 +9,7 @@ The three championships planned for the next season share one shape. Kartsport e
 - An Enrollment is either free or costs a fixed Enrollment Fee, the same whatever the Licence. Fee ranges set by the organizer per Order are not allowed.
 - The fee can cover the Licence Request renewing the Driver's Licence for the championship's year, the same way a Package covers it. A Driver who already holds a valid Licence pays the same fee.
 - A Promotional Package including an Enrollment replaces the fee rather than adding to it.
-- The fee, and Packages including an Enrollment, are bought only while enrolling, never on their own.
+- The fee, and Packages including an Enrollment but no licence renewal, are bought only while enrolling, never on their own: nothing else would say which Licence they enroll. A Package with a renewal is also sold on its own, and enrolls the Licence Request started from its Order.
 
 The Order remains the record of what is owed and paid. Drivers see it only as the Enrollment's payment, on the Enrollment's page, so a driver never moves between enrollment and order pages.
 

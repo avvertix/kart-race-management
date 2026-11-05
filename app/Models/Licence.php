@@ -167,6 +167,17 @@ class Licence extends Model
     }
 
     /**
+     * Whether an active Enrollment names the Licence, as its driver or Competitor.
+     */
+    public function isEnrolled(): bool
+    {
+        return Enrollment::query()
+            ->active()
+            ->where(fn (Builder $query) => $query->where('licence_id', $this->getKey())->orWhere('competitor_licence_id', $this->getKey()))
+            ->exists();
+    }
+
+    /**
      * A link to download the temporary licence, valid for 15 minutes. Null when no temporary licence is attached.
      */
     public function temporaryLicenceUrl(): ?string

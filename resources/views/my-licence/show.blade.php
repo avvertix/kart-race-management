@@ -11,6 +11,8 @@
             </h2>
             @can('update', $licence)
                 <x-button-link href="{{ route('my-licences.edit', $licence) }}">{{ __('Modify') }}</x-button-link>
+            @elseif ($licence->isAwaitingVerification() && $licence->isEnrolled())
+                <p class="text-sm text-zinc-600">{{ __('Enrolled in a championship: ask the organizer to correct it.') }}</p>
             @endcan
         </div>
     </x-slot>

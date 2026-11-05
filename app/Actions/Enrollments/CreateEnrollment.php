@@ -59,6 +59,10 @@ class CreateEnrollment
 
             Enrollment::ensureNotEnrolled($championship, $licence, $licenceRequest);
 
+            if ($competitorLicence !== null && ! Enrollment::isValidCompetitor($championship, $competitorLicence, $licence->holder ?? $licenceRequest?->holder)) {
+                throw ValidationException::withMessages(['competitor_licence' => __('The competitor must be an adult other than the driver.')]);
+            }
+
             $order = $product === null ? null : ($this->placeOrder)($user, $product);
 
             if ($coversRenewal && $order !== null && $licence === null && $licenceRequest !== null) {

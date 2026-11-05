@@ -140,7 +140,7 @@ class EnrollmentTest extends TestCase
         $championship = $this->openChampionship(requiresCompetitor: true);
         $driver = User::factory()->create();
         $licence = Licence::factory()->for($driver)->create(['holder' => $this->holderBornYearsAgo(12)]);
-        $competitor = Licence::factory()->for($driver)->create(['includes_competitor' => true, 'holder' => LicenceFactory::holder('Paolo', 'Rossi')]);
+        $competitor = Licence::factory()->for($driver)->create(['includes_competitor' => true, 'holder' => $this->holderBornYearsAgo(45)]);
 
         $this->actingAs($driver)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$licence->ulid])

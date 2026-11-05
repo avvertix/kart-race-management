@@ -38,23 +38,27 @@ class LicencePolicy
     }
 
     /**
-     * Determine whether the user can change the licence: only declared licences they manage, before verification.
+     * Determine whether the user can change the licence: only declared licences they manage, before verification, and
+     * not enrolled.
      */
     public function update(User $user, Licence $licence): bool
     {
         return $user->hasPermission('licence:update')
             && $this->manages($user, $licence)
-            && $licence->isAwaitingVerification();
+            && $licence->isAwaitingVerification()
+            && ! $licence->isEnrolled();
     }
 
     /**
-     * Determine whether the user can remove the licence: only declared licences they manage, before verification.
+     * Determine whether the user can remove the licence: only declared licences they manage, before verification, and
+     * not enrolled.
      */
     public function delete(User $user, Licence $licence): bool
     {
         return $user->hasPermission('licence:delete')
             && $this->manages($user, $licence)
-            && $licence->isAwaitingVerification();
+            && $licence->isAwaitingVerification()
+            && ! $licence->isEnrolled();
     }
 
     /**

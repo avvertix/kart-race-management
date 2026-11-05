@@ -13,7 +13,8 @@ use Illuminate\Validation\ValidationException;
 class RejectEnrollment
 {
     /**
-     * Reject a submitted Enrollment with a reason the driver reads. Releases its race numbers and cancels its unpaid Order.
+     * Reject a submitted Enrollment with a reason the driver reads, while no payment proof waits for review. Releases its
+     * race numbers and cancels its unpaid Order.
      *
      * @throws ValidationException when the reason is missing or the Enrollment is not submitted
      */
@@ -25,6 +26,10 @@ class RejectEnrollment
 
         return DB::transaction(function () use ($enrollment, $reason) {
             $locked = $enrollment->lockInStatus([EnrollmentStatus::Submitted], 'enrollment', __('Only a submitted enrollment can be rejected.'));
+
+            if ($locked->hasPaymentUnderReview()) {
+                throw ValidationException::withMessages(['enrollment' => __('A payment proof waits for review: confirm or reject it before rejecting the enrollment.')]);
+            }
 
             $locked->update([
                 'status' => EnrollmentStatus::Rejected,

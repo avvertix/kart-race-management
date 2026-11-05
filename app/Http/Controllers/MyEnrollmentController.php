@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Enrollments\ChangeEnrollmentLicence;
 use App\Actions\Enrollments\PickRaceNumber;
+use App\Actions\Enrollments\SetEnrollmentCompetitor;
 use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Actions\SubmitPaymentProof;
 use App\Enums\LicenceRequestStatus;
@@ -31,7 +32,21 @@ class MyEnrollmentController extends Controller
             'enrollment' => $enrollment,
             'championship' => $enrollment->championship,
             'subjects' => Gate::allows('changeLicence', $enrollment) ? EnrollmentSubjects::for($enrollment->user, $enrollment->championship) : collect(),
+            'competitorLicences' => Gate::allows('changeCompetitor', $enrollment) ? Enrollment::competitorCandidates($enrollment->championship, $enrollment->user, $enrollment->holder())->push(...array_filter([$enrollment->competitorLicence]))->unique('id') : collect(),
         ]);
+    }
+
+    /**
+     * Name, change or remove the Competitor while the Enrollment is submitted, see SetEnrollmentCompetitor.
+     */
+    public function updateCompetitor(Request $request, Enrollment $enrollment, SetEnrollmentCompetitor $setEnrollmentCompetitor): RedirectResponse
+    {
+        $this->authorize('changeCompetitor', $enrollment);
+
+        $setEnrollmentCompetitor($enrollment, $request->input('competitor_licence'), $enrollment->user);
+
+        return to_route('my-enrollments.show', $enrollment)
+            ->with('flash.banner', __('Competitor of the enrollment saved.'));
     }
 
     /**

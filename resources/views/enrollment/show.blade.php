@@ -43,6 +43,22 @@
             <p>
                 <span class="block text-zinc-500">{{ __('Competitor') }}</span>
                 {{ $enrollment->competitorLicence ? $enrollment->competitorLicence->holder->fullName().' · '.$enrollment->competitorLicence->number : __('No competitor') }}
+                @can('changeCompetitor', $enrollment)
+                    @if ($competitorLicences->isNotEmpty())
+                        <form method="POST" action="{{ route('enrollments.competitor.update', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">
+                            @csrf
+                            @method('PUT')
+                            <select name="competitor_licence" aria-label="{{ __('Competitor') }}" class="rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
+                                <option value="">{{ __('No competitor') }}</option>
+                                @foreach ($competitorLicences as $competitor)
+                                    <option value="{{ $competitor->ulid }}" @selected($enrollment->competitor_licence_id === $competitor->getKey())>{{ $competitor->holder->fullName() }} &middot; {{ $competitor->number }}</option>
+                                @endforeach
+                            </select>
+                            <x-secondary-button type="submit">{{ __('Save competitor') }}</x-secondary-button>
+                        </form>
+                        <x-input-error for="competitor_licence" class="mt-1" />
+                    @endif
+                @endcan
                 @if ($enrollment->isDriverUnderage())
                     <span class="block text-sm text-zinc-600">{{ __('The driver is underage.') }}</span>
                 @endif
@@ -139,6 +155,9 @@
                     </form>
                 @endif
 
+                @if ($enrollment->hasPaymentUnderReview())
+                    <p class="text-sm text-zinc-600">{{ __('A payment proof waits for review: confirm or reject it before rejecting the enrollment.') }}</p>
+                @else
                 <form method="POST" action="{{ route('enrollments.reject', $enrollment) }}" class="space-y-2">
                     @csrf
                     <x-label for="reason" value="{{ __('Rejection reason') }}" />
@@ -146,9 +165,12 @@
                     <x-input-error for="reason" class="mt-2" />
                     <x-danger-button type="submit">{{ __('Reject enrollment') }}</x-danger-button>
                 </form>
+                @endif
             @endif
 
-            @if ($enrollment->status->isActive())
+            @if ($enrollment->status->isActive() && $enrollment->hasPaymentUnderReview())
+                <p class="text-sm text-zinc-600">{{ __('A payment proof waits for review: confirm or reject it before withdrawing.') }}</p>
+            @elseif ($enrollment->status->isActive())
                 <form method="POST" action="{{ route('enrollments.withdraw', $enrollment) }}" class="space-y-2">
                     @csrf
                     <p class="text-sm text-zinc-600">{{ __('Withdrawing releases the race number and cancels an unpaid order. Refunds are settled with the driver.') }}</p>

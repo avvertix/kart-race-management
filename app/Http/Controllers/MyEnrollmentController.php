@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Enrollments\ChangeEnrollmentLicence;
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Actions\SubmitPaymentProof;
+use App\Enums\LicenceRequestStatus;
 use App\Models\Enrollment;
+use App\Support\EnrollmentSubjects;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class MyEnrollmentController extends Controller
@@ -26,7 +30,33 @@ class MyEnrollmentController extends Controller
         return view('my-enrollment.show', [
             'enrollment' => $enrollment,
             'championship' => $enrollment->championship,
+            'subjects' => Gate::allows('changeLicence', $enrollment) ? EnrollmentSubjects::for($enrollment->user, $enrollment->championship) : collect(),
         ]);
+    }
+
+    /**
+     * Give the Enrollment another licence once its request was rejected, see ChangeEnrollmentLicence. The `subject` input
+     * is `licence:<ulid>`, `licence_request:<ulid>` or `renew:<ulid>`.
+     */
+    public function updateLicence(Request $request, Enrollment $enrollment, ChangeEnrollmentLicence $changeEnrollmentLicence): RedirectResponse
+    {
+        $this->authorize('changeLicence', $enrollment);
+
+        [$kind, $ulid] = array_pad(explode(':', (string) $request->input('subject'), 2), 2, null);
+
+        $enrollment = $changeEnrollmentLicence($enrollment, $request->user(), [
+            'licence' => $kind === 'licence' ? $ulid : null,
+            'licence_request' => $kind === 'licence_request' ? $ulid : null,
+            'renew' => $kind === 'renew' ? $ulid : null,
+        ]);
+
+        if ($enrollment->licenceRequest?->status === LicenceRequestStatus::Draft) {
+            return to_route('licence-requests.edit', $enrollment->licenceRequest)
+                ->with('flash.banner', __('Complete the licence request: the enrollment waits for it.'));
+        }
+
+        return to_route('my-enrollments.show', $enrollment)
+            ->with('flash.banner', __('Licence of the enrollment changed.'));
     }
 
     /**

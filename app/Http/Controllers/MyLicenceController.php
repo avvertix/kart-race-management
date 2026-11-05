@@ -7,8 +7,10 @@ namespace App\Http\Controllers;
 use App\Data\HolderData;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceSource;
+use App\Enums\OrderStatus;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Order;
 use App\Rules\LicenseNumberValidationRule;
 use App\Support\LicenceCatalogue;
 use Closure;
@@ -30,7 +32,8 @@ class MyLicenceController extends Controller
     }
 
     /**
-     * The licences managed by the signed-in user, their open requests, and which licences can be renewed.
+     * The licences managed by the signed-in user, their open requests, which licences can be renewed, and the paid
+     * Packages whose licence renewal is still to start.
      */
     public function index(Request $request): View
     {
@@ -51,6 +54,14 @@ class MyLicenceController extends Controller
         $renewalYear = LicenceRequest::validityYearFor(now());
 
         return view('my-licence.index', [
+            'coveredRenewals' => Order::query()
+                ->where('user_id', $request->user()->getKey())
+                ->where('status', OrderStatus::Paid)
+                ->with('lines')
+                ->latest()
+                ->get()
+                ->filter(fn (Order $order) => $order->canStartLicenceRenewal())
+                ->values(),
             'licenceRequests' => $licenceRequests,
             'licences' => $licences,
             'renewableLicenceIds' => $this->renewableLicenceIds($licences, $licenceRequests, $renewalYear),

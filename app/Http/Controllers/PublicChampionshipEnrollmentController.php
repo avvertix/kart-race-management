@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\SubmitEnrollment;
+use App\Enums\LicenceRequestStatus;
 use App\Enums\ProductGrantKind;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
-use App\Models\LicenceRequest;
 use App\Models\Price;
 use App\Models\Product;
 use App\Models\ProductGrant;
 use App\Models\User;
+use App\Support\EnrollmentSubjects;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -37,7 +37,13 @@ class PublicChampionshipEnrollmentController extends Controller
 
         $user = $request->user();
 
-        $packages = Product::query()->enrollingIn($championship)->with(['prices', 'grants'])->orderBy('title')->get()->filter(fn (Product $package) => $package->orderablePrice() !== null)->values();
+        $packages = Product::query()
+            ->where(fn ($query) => $query->enrollingIn($championship)->orWhere(fn ($query) => $query->enrollingWithRenewalIn($championship)))
+            ->with(['prices', 'grants'])
+            ->orderBy('title')
+            ->get()
+            ->filter(fn (Product $package) => $package->orderablePrice() !== null)
+            ->values();
 
         return view('public-championship.enrollment', [
             'championship' => $championship,
@@ -49,7 +55,7 @@ class PublicChampionshipEnrollmentController extends Controller
                 ->with(['licence', 'licenceRequest', 'order', 'reservations'])
                 ->latest()
                 ->get(),
-            'subjects' => $user === null ? collect() : $this->subjectsFor($user, $championship),
+            'subjects' => $user === null ? collect() : EnrollmentSubjects::for($user, $championship),
             'paymentOptions' => $this->paymentOptions($championship, $packages),
             'competitorLicences' => $user === null ? collect() : Licence::query()->managedBy($user)->competitorIn($championship)->orderBy('id')->get(),
         ]);
@@ -70,10 +76,16 @@ class PublicChampionshipEnrollmentController extends Controller
         $enrollment = $submitEnrollment($request->user(), $championship, [
             'licence' => $kind === 'licence' ? $ulid : null,
             'licence_request' => $kind === 'licence_request' ? $ulid : null,
+            'renew' => $kind === 'renew' ? $ulid : null,
             'competitor_licence' => $request->input('competitor_licence'),
             'product' => $request->input('product'),
             'bib' => $request->input('bib'),
         ]);
+
+        if ($enrollment->licenceRequest?->status === LicenceRequestStatus::Draft) {
+            return to_route('licence-requests.edit', $enrollment->licenceRequest)
+                ->with('flash.banner', __('Enrollment submitted. Complete the licence request: the enrollment waits for it.'));
+        }
 
         return to_route('my-enrollments.show', $enrollment)
             ->with('flash.banner', $enrollment->order !== null
@@ -82,50 +94,11 @@ class PublicChampionshipEnrollmentController extends Controller
     }
 
     /**
-     * What the User can enroll: their driver Licences and open Licence Requests for the championship that are not enrolled
-     * yet, with whether the Driver is underage and the race number the Licence already holds.
-     *
-     * @return Collection<int, array{value: string, label: string, underage: bool, heldBib: ?int}>
-     */
-    private function subjectsFor(User $user, Championship $championship): Collection
-    {
-        $active = $championship->enrollments()->active()->get(['licence_id', 'licence_request_id']);
-
-        $licences = Licence::query()
-            ->managedBy($user)
-            ->enrollableIn($championship)
-            ->whereNotIn('id', $active->pluck('licence_id')->filter()->all())
-            ->orderBy('id')
-            ->get()
-            ->map(fn (Licence $licence) => [
-                'value' => 'licence:'.$licence->ulid,
-                'label' => $licence->holder->fullName().' · '.$licence->licenceTypeLabel().' · '.$licence->number,
-                'underage' => $championship->requiresCompetitorFor($licence->holder),
-                'heldBib' => PickRaceNumber::reservationHeldBy($championship, $licence)?->bib,
-            ]);
-
-        $licenceRequests = LicenceRequest::query()
-            ->requestedBy($user)
-            ->enrollableIn($championship)
-            ->whereNotIn('id', $active->pluck('licence_request_id')->filter()->all())
-            ->latest()
-            ->get()
-            ->map(fn (LicenceRequest $licenceRequest) => [
-                'value' => 'licence_request:'.$licenceRequest->ulid,
-                'label' => collect([$licenceRequest->holder?->fullName(), $licenceRequest->licenceTypeLabel(), (string) __('Licence request: the enrollment waits for the licence')])->filter()->join(' · '),
-                'underage' => $licenceRequest->holder !== null && $championship->requiresCompetitorFor($licenceRequest->holder),
-                'heldBib' => null,
-            ]);
-
-        return $licences->toBase()->concat($licenceRequests->toBase())->values();
-    }
-
-    /**
-     * What can be paid for the Enrollment: the fee, or free, then each Package including it, with whether it is paid and
-     * reserves a race number.
+     * What can be paid for the Enrollment: the fee, or free, then each Package including it, with whether it is paid,
+     * reserves a race number, and is for an existing Licence or a renewal started now (`for`).
      *
      * @param  \Illuminate\Database\Eloquent\Collection<int, Product>  $packages
-     * @return Collection<int, array{value: string, label: string, pays: bool, grantsNumber: bool}>
+     * @return Collection<int, array{value: string, label: string, pays: bool, grantsNumber: bool, for: string}>
      */
     private function paymentOptions(Championship $championship, \Illuminate\Database\Eloquent\Collection $packages): Collection
     {
@@ -137,11 +110,13 @@ class PublicChampionshipEnrollmentController extends Controller
             'label' => __('The enrollment on its own').' · '.($settings->isFree() ? __('Free') : ($price?->label() ?? __('Not available at the moment'))),
             'pays' => ! $settings->isFree(),
             'grantsNumber' => $settings->grants_bib_reservation,
+            'for' => 'any',
         ]])->concat($packages->map(fn (Product $package) => [
             'value' => $package->ulid,
             'label' => $package->title.' · '.$package->orderablePrice()?->label(),
             'pays' => true,
             'grantsNumber' => $settings->grants_bib_reservation || $package->grants->contains(fn (ProductGrant $grant) => $grant->kind === ProductGrantKind::Enrollment && $grant->championship_id === $championship->getKey() && $grant->grants_bib_reservation),
+            'for' => $package->grants->contains('kind', ProductGrantKind::LicenceEmission) ? 'renewal' : 'licence',
         ]))->values();
     }
 

@@ -57,6 +57,8 @@
 
         <x-validation-errors />
 
+        @include('partials.waiting-enrollments', ['licenceRequest' => $licenceRequest])
+
         <section class="rounded-md border p-4 space-y-3 {{ $panelClasses }}" role="status">
             <div>
                 <h3 class="font-semibold">{{ $panelTitle }}</h3>

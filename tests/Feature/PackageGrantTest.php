@@ -195,10 +195,10 @@ class PackageGrantTest extends TestCase
         $this->actingAs($user)
             ->get(route('public.championships.enrollment', $championship))
             ->assertSee('Enrollment only package')
-            ->assertDontSee('Renewal and enrollment');
+            ->assertSee('Renewal and enrollment');
     }
 
-    public function test_a_rejected_packaged_request_leaves_nothing_active(): void
+    public function test_a_rejected_packaged_request_leaves_the_enrollment_waiting_and_grants_nothing(): void
     {
         $championship = $this->championship();
         [$order, $user] = $this->paidPackageOrder([
@@ -213,8 +213,10 @@ class PackageGrantTest extends TestCase
 
         app(RejectLicenceRequest::class)($licenceRequest->fresh(), User::factory()->organizer()->create(), 'Not eligible.');
 
-        $this->assertSame(EnrollmentStatus::Rejected, $enrollment->fresh()->status);
-        $this->assertSame(BibReservationStatus::Released, $reservation->fresh()->status);
+        $this->assertSame(EnrollmentStatus::Submitted, $enrollment->fresh()->status);
+        $this->assertTrue($enrollment->fresh()->needsLicence());
+        $this->assertSame(BibReservationStatus::Pending, $reservation->fresh()->status);
+        $this->assertTrue($order->fresh()->canStartLicenceRenewal());
         $this->assertSame(0, Entitlement::query()->count());
     }
 

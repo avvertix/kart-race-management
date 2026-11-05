@@ -137,4 +137,43 @@
             </div>
         </div>
     </form>
+
+    <x-section-border />
+
+    <div class="md:grid md:grid-cols-3 md:gap-6">
+        <x-section-title>
+            <x-slot name="title">{{ __('Enrollment options') }}</x-slot>
+            <x-slot name="description">
+                {{ __('What drivers enroll with: free or a fixed amount, covering the licence renewal, reserving a race number or giving race fee discounts, possibly only for some licence categories.') }}
+            </x-slot>
+        </x-section-title>
+
+        <div class="mt-5 md:mt-0 md:col-span-2 px-4 py-5 space-y-3">
+            @forelse ($options as $option)
+                <div class="flex flex-wrap items-start justify-between gap-3 rounded-md border border-zinc-200 bg-white p-3">
+                    <div>
+                        <p class="text-sm font-medium text-zinc-900">
+                            {{ $option->title }} &middot; <span class="font-mono tabular-nums">{{ $option->amountLabel() }}</span>
+                            @unless ($option->active)
+                                &middot; <span class="text-zinc-500">{{ __('Not offered') }}</span>
+                            @endunless
+                        </p>
+                        <p class="text-sm text-zinc-500">
+                            {{ collect([
+                                $option->covers_licence_renewal ? __('Covers the licence renewal') : null,
+                                $option->reserves_race_number ? __('Reserves a race number') : null,
+                                $option->entitlement_mode?->describe((int) $option->entitlement_amount),
+                                $option->licenceCategories() === [] ? null : collect($option->licenceCategories())->map->localizedName()->join(', '),
+                            ])->filter()->join(' · ') }}
+                        </p>
+                    </div>
+                    <a href="{{ route('enrollment-options.edit', $option) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Edit') }}<span class="sr-only">, {{ $option->title }}</span></a>
+                </div>
+            @empty
+                <p class="text-sm text-zinc-500">{{ __('No enrollment options yet.') }}</p>
+            @endforelse
+
+            <x-button-link href="{{ route('championships.enrollment-options.create', $championship) }}">{{ __('Add an option') }}</x-button-link>
+        </div>
+    </div>
 </x-championship-page-layout>

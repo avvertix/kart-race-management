@@ -107,6 +107,16 @@ class Championship extends Model
     }
 
     /**
+     * The options drivers enroll with, in the organizer's order.
+     *
+     * @return HasMany<EnrollmentOption, $this>
+     */
+    public function enrollmentOptions(): HasMany
+    {
+        return $this->hasMany(EnrollmentOption::class)->orderBy('sort')->orderBy('id');
+    }
+
+    /**
      * Get the awards.
      *
      * @return HasMany<ChampionshipAward, $this>

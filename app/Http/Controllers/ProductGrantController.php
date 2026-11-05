@@ -10,6 +10,7 @@ use App\Enums\ProductKind;
 use App\Models\Championship;
 use App\Models\Product;
 use App\Models\ProductGrant;
+use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -30,7 +31,17 @@ class ProductGrantController extends Controller
 
         $validated = $request->validate([
             'kind' => ['required', Rule::enum(ProductGrantKind::class)],
-            'championship' => ['nullable', 'required_unless:kind,'.ProductGrantKind::LicenceEmission->value, 'string', Rule::exists(Championship::class, 'uuid')],
+            'championship' => [
+                'nullable',
+                'required_unless:kind,'.ProductGrantKind::LicenceEmission->value,
+                'string',
+                Rule::exists(Championship::class, 'uuid'),
+                function (string $attribute, mixed $value, Closure $fail) use ($request) {
+                    if ($request->input('kind') === ProductGrantKind::Enrollment->value && ! Championship::query()->where('uuid', $value)->first()?->enrollment->enabled) {
+                        $fail(__('Turn on enrollment in the championship before adding an enrollment.'));
+                    }
+                },
+            ],
             'mode' => ['nullable', 'required_if:kind,'.ProductGrantKind::Entitlement->value, Rule::enum(EntitlementMode::class)],
             'amount' => ['nullable', 'required_if:kind,'.ProductGrantKind::Entitlement->value, 'numeric', 'min:1', 'max:100000', Rule::when($request->input('mode') === EntitlementMode::Credit->value, 'integer')],
             'grants_bib_reservation' => ['nullable', 'boolean'],

@@ -138,7 +138,7 @@ class PublicProductControllerTest extends TestCase
         Storage::fake('payments');
 
         $user = User::factory()->create();
-        $product = Price::factory()->for(Product::factory()->enrollment())->create(['amount' => 18000])->product;
+        $product = Price::factory()->for(Product::factory())->create(['amount' => 18000])->product;
 
         $response = $this->actingAs($user)->post(route('public.products.order', $product));
 

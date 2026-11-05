@@ -9,6 +9,7 @@ use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Price;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class PublicChampionshipEnrollmentController extends Controller
         return view('public-championship.enrollment', [
             'championship' => $championship,
             'settings' => $settings,
-            'price' => $championship->enrollmentProduct()?->orderablePrice(),
+            'price' => $this->feePrice($championship),
             'packages' => Product::query()->enrollingIn($championship)->with(['prices', 'grants'])->orderBy('title')->get()->filter(fn (Product $package) => $package->orderablePrice() !== null)->values(),
             'myEnrollments' => $user === null ? collect() : $championship->enrollments()
                 ->where('user_id', $user->getKey())
@@ -73,5 +74,15 @@ class PublicChampionshipEnrollmentController extends Controller
 
         return to_route('public.championships.enrollment', $championship)
             ->with('flash.banner', __('Enrollment submitted. The organizer will confirm it.'));
+    }
+
+    /**
+     * The fixed Price of the enrollment fee, null when not on sale or not a fixed amount.
+     */
+    private function feePrice(Championship $championship): ?Price
+    {
+        $price = $championship->enrollmentProduct()?->orderablePrice();
+
+        return $price !== null && ! $price->isRange() ? $price : null;
     }
 }

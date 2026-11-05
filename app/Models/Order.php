@@ -23,6 +23,7 @@ use Illuminate\Validation\ValidationException;
  *
  * @property string $ulid
  * @property int $user_id
+ * @property ?int $licence_id
  * @property OrderStatus $status
  * @property ?int $total
  * @property Currency $currency
@@ -33,6 +34,7 @@ use Illuminate\Validation\ValidationException;
  * @property ?CarbonImmutable $paid_at
  * @property CarbonImmutable $created_at
  * @property-read User $user
+ * @property-read ?Licence $licence
  * @property-read \Illuminate\Database\Eloquent\Collection<int, OrderLine> $lines
  * @property-read ?Payment $latestPayment
  */
@@ -49,6 +51,7 @@ class Order extends Model implements Payable
 
     protected $fillable = [
         'user_id',
+        'licence_id',
         'status',
         'total',
         'currency',
@@ -83,6 +86,16 @@ class Order extends Model implements Payable
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * The Licence a Package of race fee discounts ordered on its own is for.
+     *
+     * @return BelongsTo<Licence, $this>
+     */
+    public function licence(): BelongsTo
+    {
+        return $this->belongsTo(Licence::class);
     }
 
     /**

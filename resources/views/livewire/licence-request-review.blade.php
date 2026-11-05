@@ -46,7 +46,7 @@
                 LicenceRequestPaymentStatus::Paid => $licenceRequest->payment_channel
                     ? __('Paid by :channel, :amount', ['channel' => mb_strtolower($licenceRequest->payment_channel->localizedName()), 'amount' => $licenceRequest->amountLabel()])
                     : __('Paid, :amount', ['amount' => $licenceRequest->amountLabel()]),
-                LicenceRequestPaymentStatus::Covered => __('Covered by a package'),
+                LicenceRequestPaymentStatus::Covered => __('Covered by an order'),
             },
         ],
         [
@@ -386,7 +386,7 @@
                     @elseif ($viewedCount < $documentCount)
                         <p class="text-sm text-zinc-600">{{ __('Mark every document as viewed first: :viewed of :total viewed.', ['viewed' => $viewedCount, 'total' => $documentCount]) }}</p>
                     @elseif ($paymentStatus === LicenceRequestPaymentStatus::Covered)
-                        <p class="text-sm text-zinc-600">{{ __('A package covers the request: nothing to pay.') }}</p>
+                        <p class="text-sm text-zinc-600">{{ __('A package or an enrollment fee covers the request: nothing to pay.') }}</p>
                     @else
                         <p class="text-sm text-zinc-600">{{ __('The driver is asked to pay this amount. You emit the licence once the payment is confirmed.') }}</p>
                         <div>

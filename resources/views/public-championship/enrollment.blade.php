@@ -174,8 +174,8 @@
                         <p class="text-zinc-700">{{ __('Not available at the moment') }}</p>
                     @else
                         <p class="text-2xl font-mono tabular-nums">{{ $price->label() }}</p>
-                        @if ($price->isRange())
-                            <p class="text-sm text-zinc-600">{{ __('The organizer confirms the final amount after reviewing your enrollment.') }}</p>
+                        @if ($settings->fee_covers_licence_renewal)
+                            <p class="text-sm text-zinc-600">{{ __('It also covers the renewal of your licence, when you enroll with a licence request.') }}</p>
                         @endif
                     @endif
                 </div>

@@ -49,7 +49,7 @@ class RejectLicenceRequest
             ->where('order_id', $reviewed->covering_order_id)
             ->where('status', EnrollmentStatus::Submitted)
             ->get()
-            ->each(fn (Enrollment $enrollment) => app(RejectEnrollment::class)($enrollment, __('The licence request it was packaged with was rejected.')));
+            ->each(fn (Enrollment $enrollment) => app(RejectEnrollment::class)($enrollment, __('The licence request paid together with it was rejected.')));
 
         $reviewed->user->notify(new LicenceRequestRejected($reviewed));
 

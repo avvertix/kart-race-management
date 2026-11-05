@@ -54,7 +54,7 @@
             <x-section-title>
                 <x-slot name="title">{{ __('Price') }}</x-slot>
                 <x-slot name="description">
-                    {{ __('The enrollment product sold to drivers who enroll. Without a product, enrolling is free.') }}
+                    {{ __('The enrollment fee, a fixed amount the same for every licence. Without a fee, enrolling is free.') }}
                 </x-slot>
             </x-section-title>
 
@@ -82,6 +82,13 @@
                         </p>
                     @endif
                     <x-input-error for="product" class="mt-2" />
+                    <label class="flex items-start gap-3 pt-2">
+                        <x-checkbox name="fee_covers_licence_renewal" value="1" :checked="old('fee_covers_licence_renewal', $settings->fee_covers_licence_renewal)" />
+                        <div>
+                            <span class="text-sm font-medium text-zinc-900">{{ __('The fee covers the licence renewal') }}</span>
+                            <p class="text-sm text-zinc-500">{{ __('A driver enrolling with a licence request pays only the fee. A driver with a valid licence pays the same.') }}</p>
+                        </div>
+                    </label>
                 </div>
             </div>
         </div>

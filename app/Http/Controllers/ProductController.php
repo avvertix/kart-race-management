@@ -149,7 +149,7 @@ class ProductController extends Controller
 
             'prices' => 'nullable|array',
             'prices.*.id' => ['nullable', 'integer', 'distinct', Rule::exists('prices', 'id')->where('product_id', $product?->getKey() ?? 0)],
-            'prices.*.type' => ['required', Rule::in(['fixed', 'range'])],
+            'prices.*.type' => ['required', Rule::in($kind === ProductKind::Enrollment ? ['fixed'] : ['fixed', 'range'])],
             'prices.*.amount' => ['exclude_unless:prices.*.type,fixed', 'required', 'numeric', 'decimal:0,2', 'min:0'],
             'prices.*.amount_min' => ['exclude_unless:prices.*.type,range', 'required', 'numeric', 'decimal:0,2', 'min:0'],
             'prices.*.amount_max' => ['exclude_unless:prices.*.type,range', 'required', 'numeric', 'decimal:0,2', 'gt:prices.*.amount_min'],

@@ -7,8 +7,10 @@ namespace App\Http\Controllers;
 use App\Data\EnrollmentSettingsData;
 use App\Enums\ProductKind;
 use App\Models\Championship;
+use App\Models\Price;
 use App\Models\Product;
 use Carbon\CarbonImmutable;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,7 +34,7 @@ class UpdateChampionshipEnrollmentSettingsController extends Controller
 
     /**
      * Save the enrollment settings. Turning enrollment on needs both dates; the Product must be an enrollment Product
-     * of the championship.
+     * of the championship with fixed prices only, and can cover the licence renewal.
      */
     public function update(Request $request, Championship $championship): RedirectResponse
     {
@@ -48,7 +50,13 @@ class UpdateChampionshipEnrollmentSettingsController extends Controller
                 Rule::exists(Product::class, 'ulid')
                     ->where('kind', ProductKind::Enrollment->value)
                     ->where('championship_id', $championship->getKey()),
+                function (string $attribute, mixed $value, Closure $fail) {
+                    if (Price::query()->whereHas('product', fn (Builder $query) => $query->where('ulid', $value))->whereNull('amount')->exists()) {
+                        $fail(__('The enrollment fee must be a fixed amount.'));
+                    }
+                },
             ],
+            'fee_covers_licence_renewal' => ['nullable', 'boolean'],
             'grants_bib_reservation' => ['nullable', 'boolean'],
             'requires_competitor_when_underage' => ['nullable', 'boolean'],
         ]);
@@ -60,6 +68,7 @@ class UpdateChampionshipEnrollmentSettingsController extends Controller
             product_id: isset($validated['product']) ? $this->enrollmentProducts($championship)->where('ulid', $validated['product'])->value('id') : null,
             grants_bib_reservation: $request->boolean('grants_bib_reservation'),
             requires_competitor_when_underage: $request->boolean('requires_competitor_when_underage'),
+            fee_covers_licence_renewal: isset($validated['product']) && $request->boolean('fee_covers_licence_renewal'),
         );
 
         $championship->save();

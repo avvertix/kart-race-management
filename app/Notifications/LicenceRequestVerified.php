@@ -30,7 +30,7 @@ class LicenceRequestVerified extends AccountNotification
 
         if ($this->licenceRequest->payment_status === LicenceRequestPaymentStatus::Covered) {
             return $mail
-                ->line(__('It is covered by your package: there is nothing to pay. The organizer now requests your licence from :provider.', ['provider' => $this->licenceRequest->provider?->label()]))
+                ->line(__('It is covered by your order: there is nothing to pay. The organizer now requests your licence from :provider.', ['provider' => $this->licenceRequest->provider?->label()]))
                 ->action(__('View the request'), $this->openUrl());
         }
 

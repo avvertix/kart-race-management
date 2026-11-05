@@ -131,7 +131,7 @@ class LicenceNotificationsTest extends TestCase
 
         app(VerifyLicenceRequest::class)($licenceRequest, $organizer, null);
 
-        $this->assertSafeMail(new LicenceRequestVerified($licenceRequest->fresh()), $licenceRequest->user, ['covered by your package']);
+        $this->assertSafeMail(new LicenceRequestVerified($licenceRequest->fresh()), $licenceRequest->user, ['covered by your order']);
     }
 
     public function test_rejecting_tells_the_applicant_why(): void

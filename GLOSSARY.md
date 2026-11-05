@@ -83,7 +83,7 @@ A race number of 1000 or above, used for Participants of special categories that
 ### Commerce
 
 **Product**:
-Something the organizer sells, such as an Enrollment Fee, a race fee or a Promotional Package. An Enrollment Fee, or a Package including an Enrollment, is bought only while enrolling. Licence renewals are not Products: a Licence Request is not bought through an Order.
+Something the organizer sells, such as an Enrollment Fee, a race fee or a Promotional Package. An Enrollment Fee, or a Package including an Enrollment without a Licence renewal, is bought only while enrolling. Licence renewals are not Products: a Licence Request is not bought through an Order.
 
 **Price**:
 The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a package's cost depends on what the buyer picks.

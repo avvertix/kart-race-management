@@ -33,6 +33,7 @@ class LicenceRequestFactory extends Factory
             'user_id' => User::factory(),
             'status' => LicenceRequestStatus::Draft,
             'payment_status' => LicenceRequestPaymentStatus::AwaitingPrice,
+            'validity_year' => LicenceRequest::validityYearFor(now()),
             'parents' => HolderData::collect([], DataCollection::class),
         ];
     }

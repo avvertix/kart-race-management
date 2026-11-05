@@ -14,6 +14,8 @@ use App\Enums\LicenceRequestDocumentStatus;
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
+use App\Enums\LicenceRole;
+use App\Support\LicenceCatalogue;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -34,6 +36,7 @@ use Spatie\LaravelData\DataCollection;
  * @property string $ulid
  * @property int $user_id
  * @property ?LicenceProvider $provider
+ * @property ?int $validity_year
  * @property ?string $licence_type
  * @property bool $includes_competitor
  * @property ?string $previous_licence_number
@@ -98,6 +101,7 @@ class LicenceRequest extends Model implements Payable
     protected $fillable = [
         'user_id',
         'provider',
+        'validity_year',
         'licence_type',
         'includes_competitor',
         'previous_licence_number',
@@ -133,6 +137,27 @@ class LicenceRequest extends Model implements Payable
         $date = $date->setTimezone(config('races.timezone'));
 
         return $date->month === 12 ? $date->year + 1 : $date->year;
+    }
+
+    /**
+     * The licence years a request started at the given time, now by default, can be for: the one renewals are open for,
+     * and the next one while a championship of that year is open for enrollment.
+     *
+     * @return array<int, int>
+     */
+    public static function requestableYears(?CarbonImmutable $at = null): array
+    {
+        $at ??= now();
+        $renewalYear = self::validityYearFor($at);
+        $nextYear = $renewalYear + 1;
+
+        $isNextYearOpen = Championship::query()
+            ->where('enrollment->enabled', true)
+            ->whereYear('start_at', $nextYear)
+            ->get()
+            ->contains(fn (Championship $championship) => $championship->enrollment->isOpen($at));
+
+        return $isNextYearOpen ? [$renewalYear, $nextYear] : [$renewalYear];
     }
 
     /**
@@ -589,8 +614,8 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Only the requests an Enrollment in the championship can wait for: submitted, not emitted nor rejected, and of
-     * the championship's provider when it names one.
+     * Only the requests an Enrollment in the championship can wait for: submitted, not emitted nor rejected, for a
+     * driver licence valid in its year and of the championship's provider when it names one.
      *
      * @param  Builder<self>  $query
      */
@@ -598,7 +623,25 @@ class LicenceRequest extends Model implements Payable
     {
         $query->open()
             ->where('status', '!=', LicenceRequestStatus::Draft)
+            ->where('validity_year', $championship->start_at->year)
+            ->where(fn (Builder $query) => $query->whereNull('licence_type')->orWhere(fn (Builder $query) => $query->forDriverLicence()))
             ->when($championship->licences->provider, fn (Builder $query, LicenceProvider $provider) => $query->where('provider', $provider));
+    }
+
+    /**
+     * Only the requests for a driver Licence Type.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeForDriverLicence(Builder $query): void
+    {
+        $query->where(function (Builder $query) {
+            foreach (LicenceCatalogue::providers() as $provider) {
+                $query->orWhere(fn (Builder $query) => $query
+                    ->where('provider', $provider)
+                    ->whereIn('licence_type', LicenceCatalogue::types($provider, withInactive: true)->where('role', LicenceRole::Driver)->pluck('code')->all()));
+            }
+        });
     }
 
     /**
@@ -643,6 +686,7 @@ class LicenceRequest extends Model implements Payable
     {
         return [
             'provider' => LicenceProvider::class,
+            'validity_year' => 'integer',
             'includes_competitor' => 'boolean',
             'previous_licence_number' => 'encrypted',
             'status' => LicenceRequestStatus::class,

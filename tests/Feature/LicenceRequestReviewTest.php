@@ -26,7 +26,6 @@ use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\PaymentChannelType;
 use App\Models\User;
-use Carbon\CarbonImmutable;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -523,15 +522,15 @@ class LicenceRequestReviewTest extends TestCase
         $this->assertEquals(1, Licence::count());
     }
 
-    public function test_emit_form_suggests_the_next_year_for_requests_from_december(): void
+    public function test_emit_form_suggests_the_year_of_the_request(): void
     {
         $organizer = User::factory()->organizer()->create();
 
-        $november = LicenceRequest::factory()->verified()->create(['submitted_at' => CarbonImmutable::parse('2026-11-30 22:30', 'UTC')]);
-        $december = LicenceRequest::factory()->verified()->create(['submitted_at' => CarbonImmutable::parse('2026-11-30 23:30', 'UTC')]);
+        $thisYear = LicenceRequest::factory()->verified()->create(['validity_year' => 2026]);
+        $nextYear = LicenceRequest::factory()->verified()->create(['validity_year' => 2027]);
 
-        $this->review($november, $organizer)->assertSet('validityYear', '2026');
-        $this->review($december, $organizer)->assertSet('validityYear', '2027');
+        $this->review($thisYear, $organizer)->assertSet('validityYear', '2026');
+        $this->review($nextYear, $organizer)->assertSet('validityYear', '2027');
     }
 
     public function test_rejecting_needs_a_reason_shown_to_the_requester(): void

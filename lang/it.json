@@ -1624,5 +1624,10 @@
     "Open for enrollment": "Iscrizioni aperte",
     "Enrollment open until :date": "Iscrizioni aperte fino al :date",
     "Pending enrollments": "Iscrizioni in attesa",
-    "Waiting for the organizer to confirm": "In attesa della conferma dell'organizzatore"
+    "Waiting for the organizer to confirm": "In attesa della conferma dell'organizzatore",
+    "The driver is already enrolled in the championship.": "Il pilota è già iscritto al campionato.",
+    "The licence is not a driver licence.": "La licenza non è una licenza conduttore.",
+    "The licence is not valid in the championship year.": "La licenza non è valida nell'anno del campionato.",
+    "Enrollments wait for this request in a championship of :year.": "Delle iscrizioni attendono questa richiesta in un campionato del :year.",
+    "For :year": "Per il :year"
 }

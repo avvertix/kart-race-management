@@ -50,7 +50,7 @@
             <span>/</span>
             <span>{{ $licenceRequest->holder ? __('Licence request for :holder', ['holder' => $licenceRequest->holder->fullName()]) : __('Licence request') }}</span>
         </h2>
-        <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ $status->requesterLabel() }}</p>
+        <p class="text-sm text-zinc-500">{{ $licenceRequest->licenceTypeLabel() ?? __('Licence not chosen yet') }} &middot; {{ __('For :year', ['year' => $licenceRequest->validity_year]) }} &middot; {{ $status->requesterLabel() }}</p>
     </x-slot>
 
     <div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8 max-w-3xl space-y-6">

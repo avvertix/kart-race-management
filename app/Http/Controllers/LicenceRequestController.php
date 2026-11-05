@@ -22,6 +22,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -39,6 +40,7 @@ class LicenceRequestController extends Controller
         $request->validate([
             'licence' => ['nullable', 'string'],
             'order' => ['nullable', 'string'],
+            'validity_year' => ['nullable', 'integer', Rule::in(LicenceRequest::requestableYears())],
         ]);
 
         $previous = $request->filled('licence')
@@ -49,7 +51,9 @@ class LicenceRequestController extends Controller
             ? Order::query()->where('user_id', $request->user()->getKey())->where('ulid', $request->input('order'))->firstOrFail()
             : null;
 
-        $licenceRequest = DB::transaction(function () use ($request, $startRenewal, $previous, $coveringOrder) {
+        $validityYear = $request->filled('validity_year') ? (int) $request->input('validity_year') : null;
+
+        $licenceRequest = DB::transaction(function () use ($request, $startRenewal, $previous, $coveringOrder, $validityYear) {
             if ($coveringOrder !== null) {
                 $locked = Order::query()->whereKey($coveringOrder->getKey())->lockForUpdate()->firstOrFail();
 
@@ -58,7 +62,7 @@ class LicenceRequestController extends Controller
                 }
             }
 
-            return $startRenewal($request->user(), $previous, $coveringOrder);
+            return $startRenewal($request->user(), $previous, $coveringOrder, $validityYear);
         });
 
         return redirect()->route('licence-requests.edit', $licenceRequest);

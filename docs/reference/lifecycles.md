@@ -13,6 +13,8 @@
 | Emitted | The temporary licence PDF is uploaded and the Licence is created. Requires the payment to be paid or covered | — |
 | Rejected | Closed without a licence | — |
 
+A Licence Request is for one validity year, chosen when it is started: the year renewals are open for (the next one from December), or the next year while a championship of that year is open for enrollment. The emitted Licence is for that year when Enrollments wait for the request.
+
 A Licence Request is a renewal and is paid on its own, not through an Order:
 
 | Payment status | Meaning | Next |
@@ -40,7 +42,7 @@ A Licence Request is a renewal and is paid on its own, not through an Order:
 | Rejected | Not accepted | — |
 | Withdrawn | Cancelled by the driver while submitted, or by the organizer at any time | — |
 
-The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Licence, or a Licence Request, has at most one submitted or confirmed Enrollment per championship. Underage is judged on the championship start date. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Enrollment moves to the new Licence; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
+The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Driver has at most one submitted or confirmed Enrollment per championship, matched by licence number or by the holder (fiscal code, or name and birth date). Only a driver Licence valid in the championship's year, or a driver Licence Request for that year, can be enrolled. Underage is judged on the championship start date. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Licence must be for the request's year, and the Enrollment moves to the new Licence, unless the Driver is already enrolled in that championship, which rejects it; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
 
 ## BIB Reservation
 

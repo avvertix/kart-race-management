@@ -8,6 +8,7 @@ use App\Actions\Orders\CancelOrder;
 use App\Data\HolderData;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentStatus;
+use App\Enums\LicenceRole;
 use App\Enums\OrderStatus;
 use App\Enums\ProductGrantKind;
 use Carbon\CarbonImmutable;
@@ -81,6 +82,39 @@ class Enrollment extends Model
         if ($isEnrolled) {
             throw ValidationException::withMessages(['licence' => __('This licence is already enrolled in the championship.')]);
         }
+
+        if (self::isDriverEnrolled($championship, $licence?->number_hash, $licence->holder ?? $licenceRequest?->holder)) {
+            throw ValidationException::withMessages(['licence' => __('The driver is already enrolled in the championship.')]);
+        }
+    }
+
+    /**
+     * Whether the Driver has an active Enrollment in the championship, other than the given one: through a Licence with the
+     * same number, or a Licence or Licence Request of the same holder (see HolderData::identityKey()).
+     */
+    public static function isDriverEnrolled(Championship $championship, ?string $licenceNumberHash, ?HolderData $holder, ?self $except = null): bool
+    {
+        if ($licenceNumberHash === null && $holder === null) {
+            return false;
+        }
+
+        $enrollments = self::query()
+            ->where('championship_id', $championship->getKey())
+            ->active()
+            ->when($except, fn (Builder $query) => $query->whereKeyNot($except->getKey()));
+
+        if ($licenceNumberHash !== null && $enrollments->clone()->whereHas('licence', fn (Builder $query) => $query->where('number_hash', $licenceNumberHash))->exists()) {
+            return true;
+        }
+
+        if ($holder === null) {
+            return false;
+        }
+
+        return $enrollments
+            ->with(['licence', 'licenceRequest'])
+            ->get()
+            ->contains(fn (self $enrollment) => $enrollment->holder()?->identityKey() === $holder->identityKey());
     }
 
     /**
@@ -213,6 +247,8 @@ class Enrollment extends Model
         return array_values(array_filter([
             $this->licence === null ? (string) __('The licence request is not emitted yet.') : null,
             $this->licence !== null && ! $this->licence->isVerifiedOrEmitted() ? (string) __('The declared licence is not verified yet.') : null,
+            $this->licence !== null && $this->licence->role !== LicenceRole::Driver ? (string) __('The licence is not a driver licence.') : null,
+            $this->licence !== null && $this->licence->validity_year !== $this->championship->start_at->year ? (string) __('The licence is not valid in the championship year.') : null,
             $this->order !== null && $this->order->status !== OrderStatus::Paid ? (string) __('The payment is not confirmed yet.') : null,
             $this->requiresCompetitor() && $this->competitor_licence_id === null ? (string) __('The driver is underage and no competitor is named.') : null,
         ]));

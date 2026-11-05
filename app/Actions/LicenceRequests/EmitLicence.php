@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\LicenceRequests;
 
+use App\Actions\Enrollments\RejectEnrollment;
 use App\Actions\Orders\GrantPackages;
+use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceSource;
 use App\Models\BibReservation;
+use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Entitlement;
 use App\Models\Licence;
@@ -16,6 +19,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Notifications\LicenceEmitted;
 use App\Rules\LicenseNumberValidationRule;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +35,8 @@ class EmitLicence
      * Create the Licence the provider emitted for a verified request, paid or covered by a package, with its temporary licence
      * PDF. The Licence takes the request's holder, Licence Type and competitor licence, and is managed by the requester.
      * The Enrollments waiting for the request move to the new Licence, and their race numbers are bound to it. Paid
-     * Packages of the request and of those Enrollments are granted.
+     * Packages of the request and of those Enrollments are granted. Enrollments waiting in a championship of another year
+     * refuse the Licence, and those of a Driver already enrolled there are rejected.
      *
      * @throws ValidationException when the request is not verified or paid, the input is not valid or the number is already registered
      */
@@ -67,6 +72,23 @@ class EmitLicence
                     throw ValidationException::withMessages(['request' => __('Confirm the payment before emitting the licence.')]);
                 }
 
+                $waiting = Enrollment::query()
+                    ->where('licence_request_id', $locked->getKey())
+                    ->active()
+                    ->get();
+
+                $championships = Championship::query()
+                    ->whereKey($waiting->pluck('championship_id')->unique()->all())
+                    ->orderBy('id')
+                    ->lockForUpdate()
+                    ->get();
+
+                $otherYear = $championships->first(fn (Championship $championship) => $championship->start_at->year !== $validityYear);
+
+                if ($otherYear !== null) {
+                    throw ValidationException::withMessages(['validity_year' => __('Enrollments wait for this request in a championship of :year.', ['year' => $otherYear->start_at->year])]);
+                }
+
                 $isRegistered = Licence::query()
                     ->where('number_hash', Licence::hashNumber($number))
                     ->where('validity_year', $validityYear)
@@ -96,18 +118,13 @@ class EmitLicence
 
                 Entitlement::linkTo($licence);
 
-                $waiting = Enrollment::query()
-                    ->where('licence_request_id', $locked->getKey())
-                    ->active()
-                    ->pluck('id');
-
-                Enrollment::query()->whereKey($waiting)->update([
+                Enrollment::query()->whereKey($waiting->modelKeys())->update([
                     'licence_id' => $licence->getKey(),
                     'licence_request_id' => null,
                 ]);
 
                 BibReservation::query()
-                    ->whereIn('enrollment_id', $waiting)
+                    ->whereIn('enrollment_id', $waiting->modelKeys())
                     ->notReleased()
                     ->get()
                     ->each(fn (BibReservation $reservation) => $reservation->update([
@@ -116,6 +133,8 @@ class EmitLicence
                         'driver_licence_hash' => $licence->number_hash,
                         'licence_type' => $licence->race_licence_category,
                     ]));
+
+                $this->rejectDuplicates($licence, $waiting, $championships);
 
                 return $licence;
             });
@@ -137,8 +156,23 @@ class EmitLicence
     }
 
     /**
-     * Grant the paid Packages waiting for the Licence: the one covering its request, and those paying the Enrollments
-     * that moved to it.
+     * Reject the Enrollments that moved to the Licence while its Driver is already enrolled in the same championship.
+     * Call it inside the transaction, with the championships locked.
+     *
+     * @param  Collection<int, Enrollment>  $moved
+     * @param  Collection<int, Championship>  $championships
+     */
+    private function rejectDuplicates(Licence $licence, Collection $moved, Collection $championships): void
+    {
+        $moved
+            ->filter(fn (Enrollment $enrollment) => $enrollment->status === EnrollmentStatus::Submitted)
+            ->filter(fn (Enrollment $enrollment) => Enrollment::isDriverEnrolled($championships->find($enrollment->championship_id), $licence->number_hash, $licence->holder, except: $enrollment))
+            ->each(fn (Enrollment $enrollment) => app(RejectEnrollment::class)($enrollment, __('The driver is already enrolled in the championship.')));
+    }
+
+    /**
+     * Grant the paid Packages waiting for the Licence: the one covering its request, and those paying the active
+     * Enrollments that moved to it.
      */
     private function grantPackagesOf(Licence $licence): void
     {
@@ -146,7 +180,7 @@ class EmitLicence
 
         $orders = Order::query()
             ->whereIn('id', LicenceRequest::query()->whereKey($licence->licence_request_id)->whereNotNull('covering_order_id')->select('covering_order_id'))
-            ->orWhereIn('id', Enrollment::query()->where('licence_id', $licence->getKey())->whereNotNull('order_id')->select('order_id'))
+            ->orWhereIn('id', Enrollment::query()->where('licence_id', $licence->getKey())->active()->whereNotNull('order_id')->select('order_id'))
             ->get();
 
         $orders->each(fn (Order $order) => $grantPackages($order));

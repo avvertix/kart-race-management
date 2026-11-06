@@ -46,7 +46,7 @@
                 LicenceRequestPaymentStatus::Paid => $licenceRequest->payment_channel
                     ? __('Paid by :channel, :amount', ['channel' => mb_strtolower($licenceRequest->payment_channel->localizedName()), 'amount' => $licenceRequest->amountLabel()])
                     : __('Paid, :amount', ['amount' => $licenceRequest->amountLabel()]),
-                LicenceRequestPaymentStatus::Covered => $licenceRequest->covering_enrollment_id ? __('Covered by an enrollment') : __('Covered by an order'),
+                LicenceRequestPaymentStatus::Covered => __('Covered by an enrollment'),
             },
         ],
         [
@@ -168,8 +168,8 @@
                     <p class="text-sm text-red-800"><span class="font-semibold">{{ __('Rejected') }}:</span> {{ $licenceRequest->rejection_reason }}</p>
                 @endif
 
-                @if ($licenceRequest->coveringOrder)
-                    <a href="{{ route('orders.show', $licenceRequest->coveringOrder) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Order :order', ['order' => $licenceRequest->coveringOrder->ulid]) }}</a>
+                @if ($licenceRequest->coveringEnrollment)
+                    <a href="{{ route('enrollments.show', $licenceRequest->coveringEnrollment) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Enrollment in :championship', ['championship' => $licenceRequest->coveringEnrollment->championship->title]) }}</a>
                 @endif
 
                 @if (in_array($status, LicenceRequestStatus::rejectable(), true))
@@ -386,7 +386,7 @@
                     @elseif ($viewedCount < $documentCount)
                         <p class="text-sm text-zinc-600">{{ __('Mark every document as viewed first: :viewed of :total viewed.', ['viewed' => $viewedCount, 'total' => $documentCount]) }}</p>
                     @elseif ($paymentStatus === LicenceRequestPaymentStatus::Covered)
-                        <p class="text-sm text-zinc-600">{{ __('A package or an enrollment fee covers the request: nothing to pay.') }}</p>
+                        <p class="text-sm text-zinc-600">{{ __('The enrollment covers the request: nothing to pay.') }}</p>
                     @else
                         <p class="text-sm text-zinc-600">{{ __('The driver is asked to pay this amount. You emit the licence once the payment is confirmed.') }}</p>
                         <div>

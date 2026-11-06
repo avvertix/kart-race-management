@@ -14,13 +14,12 @@ class GrantEnrollmentEntitlements
      * Create the race fee discount of the Enrollment's option for its Licence, once the Enrollment is active, its
      * payment settled (paid, or nothing due) and its Licence verified or emitted; until then it grants nothing. Runs on
      * submitting, on payment confirmation, on licence verification and emission, and on a change of licence. Granting
-     * twice creates nothing twice: the Enrollment row is locked, as the unique index on the Entitlement source doesn't
-     * cover rows without a Package grant.
+     * twice creates nothing twice: the Enrollment row is locked while looking for the Entitlement it is the source of.
      */
     public function __invoke(Enrollment $enrollment): void
     {
         DB::transaction(function () use ($enrollment) {
-            $locked = Enrollment::query()->whereKey($enrollment->getKey())->with(['option', 'licence', 'order'])->lockForUpdate()->first();
+            $locked = Enrollment::query()->whereKey($enrollment->getKey())->with(['option', 'licence'])->lockForUpdate()->first();
 
             $option = $locked?->option;
             $licence = $locked?->licence;

@@ -12,12 +12,12 @@ use App\Models\Race;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class LicenceProviderPerLicenceTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_aci_and_asi_licences_can_be_enrolled_whatever_the_championship_provider(): void

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('championships', function (Blueprint $table) {
-            // Entitlements from promo codes and packages apply to race fees; requires bonuses off
+            // Entitlements from promo codes and enrollment options apply to race fees; requires bonuses off
             $table->boolean('entitlements_enabled')->default(false)->after('bonus_enabled');
         });
 

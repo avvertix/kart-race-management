@@ -1,6 +1,6 @@
 # Championship settings
 
-Settings of a championship, chosen when creating it or later from its page. Settings marked **new** are off by default and stay off for championships created before they existed. While licences and products are in early access, only users with early access see the new settings and the public enrollment page.
+Settings of a championship, chosen when creating it or later from its page. Settings marked **new** are off by default and stay off for championships created before they existed. While licences and enrollments are in early access, only users with early access see the new settings and the public enrollment page.
 
 ## Licences
 
@@ -30,7 +30,7 @@ Each championship lists the options drivers enroll with, in the order set by the
 | Amount | Fixed, in euro; 0 is free. The same whatever the licence |
 | Covers the licence renewal | The amount also pays the Licence Request the Enrollment waits for |
 | Reserves a race number | The Driver picks a Championship BIB while enrolling |
-| Race fee discount | Race fees or a balance granted with the Enrollment; only when the championship uses promo codes and packages instead of bonuses |
+| Race fee discount | Race fees or a balance granted with the Enrollment; only when the championship uses Entitlements instead of bonuses |
 | Licence categories | Offered only to licences of these categories; none means any |
 
 ## Wildcards
@@ -47,7 +47,7 @@ Each championship lists the options drivers enroll with, in the order set by the
 |---|---|---|
 | Registration price | Race fee, unless the category sets its own | Platform-wide price |
 | Bonuses enabled | Legacy Bonuses apply to race fees | On |
-| Entitlements enabled (**new**) | Entitlements from promo codes and packages apply to race fees. Requires bonuses to be off | Off |
+| Entitlements enabled (**new**) | Entitlements from promo codes and enrollment options apply to race fees. Requires bonuses to be off | Off |
 | Bonus mode, fixed bonus amount | Legacy Bonus settings | Credit |
 
 Each race can override whether bonuses or Entitlements apply to it. By default a race follows the championship.

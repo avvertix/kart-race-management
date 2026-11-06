@@ -217,12 +217,12 @@
 
         <x-section-border />
 
-        @feature(\App\Features\LicencesAndProducts::class)
+        @feature(\App\Features\LicencesAndEnrollments::class)
             <div class="md:grid md:grid-cols-3 md:gap-6">
                 <x-section-title>
-                    <x-slot name="title">{{ __('Promo codes and packages') }}</x-slot>
+                    <x-slot name="title">{{ __('Promo codes and enrollment discounts') }}</x-slot>
                     <x-slot name="description">
-                        {{ __('Let promo codes and promotional packages reduce the race fees. A championship uses either these or bonuses: disable bonuses first. Each race can opt out.') }}
+                        {{ __('Let promo codes and the race fee discounts of enrollment options reduce the race fees. A championship uses either these or bonuses: disable bonuses first. Each race can opt out.') }}
                     </x-slot>
                 </x-section-title>
 
@@ -233,7 +233,7 @@
 
                         <label class="flex items-start gap-3">
                             <x-checkbox name="entitlements_enabled" value="1" :checked="old('entitlements_enabled', $championship->entitlements_enabled)" />
-                            <span class="text-sm font-medium text-zinc-900">{{ __('Promo codes and packages reduce race fees') }}</span>
+                            <span class="text-sm font-medium text-zinc-900">{{ __('Promo codes and enrollment discounts reduce race fees') }}</span>
                         </label>
                         <x-input-error for="entitlements_enabled" class="mt-2" />
 

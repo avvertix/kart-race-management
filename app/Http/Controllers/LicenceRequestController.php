@@ -4,46 +4,37 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\Enrollments\EnrollPackagedRequest;
 use App\Actions\LicenceRequests\DeleteLicenceRequestDraft;
 use App\Actions\LicenceRequests\StartLicenceRenewal;
 use App\Actions\SubmitPaymentProof;
 use App\Data\RequiredDocument;
-use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceDocument;
 use App\Enums\LicenceDocumentKind;
-use App\Models\Championship;
-use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\LicenceRequestDocument;
-use App\Models\Order;
 use App\Support\LicenceCatalogue;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LicenceRequestController extends Controller
 {
     /**
-     * Start a renewal: empty, or pre-filled from one of the user's licences, and covered by a paid Package when started
-     * from its Order.
+     * Start a renewal: empty, or pre-filled from one of the user's licences.
      */
-    public function store(Request $request, StartLicenceRenewal $startRenewal, EnrollPackagedRequest $enrollPackagedRequest): RedirectResponse
+    public function store(Request $request, StartLicenceRenewal $startRenewal): RedirectResponse
     {
         $this->authorize('create', LicenceRequest::class);
 
         $request->validate([
             'licence' => ['nullable', 'string'],
-            'order' => ['nullable', 'string'],
             'validity_year' => ['nullable', 'integer', Rule::in(LicenceRequest::requestableYears())],
         ]);
 
@@ -51,37 +42,9 @@ class LicenceRequestController extends Controller
             ? Licence::query()->managedBy($request->user())->where('ulid', $request->input('licence'))->firstOrFail()
             : null;
 
-        $coveringOrder = $request->filled('order')
-            ? Order::query()->where('user_id', $request->user()->getKey())->where('ulid', $request->input('order'))->firstOrFail()
-            : null;
-
         $validityYear = $request->filled('validity_year') ? (int) $request->input('validity_year') : null;
 
-        $licenceRequest = DB::transaction(function () use ($request, $startRenewal, $previous, $coveringOrder, $validityYear) {
-            if ($coveringOrder !== null) {
-                $locked = Order::query()->whereKey($coveringOrder->getKey())->lockForUpdate()->firstOrFail();
-
-                if (! $locked->canStartLicenceRenewal()) {
-                    throw ValidationException::withMessages(['order' => __('This order doesn\'t cover a licence renewal, or it was already started.')]);
-                }
-            }
-
-            $started = $startRenewal($request->user(), $previous, $coveringOrder, $validityYear);
-
-            if ($coveringOrder !== null) {
-                $this->moveWaitingEnrollments($coveringOrder, $started);
-            }
-
-            return $started;
-        });
-
-        $skipped = $coveringOrder === null ? [] : $enrollPackagedRequest($licenceRequest);
-
-        if ($skipped !== []) {
-            return redirect()->route('licence-requests.edit', $licenceRequest)
-                ->with('flash.banner', implode(' ', $skipped))
-                ->with('flash.bannerStyle', 'warning');
-        }
+        $licenceRequest = $startRenewal($request->user(), $previous, $validityYear);
 
         return redirect()->route('licence-requests.edit', $licenceRequest);
     }
@@ -93,7 +56,7 @@ class LicenceRequestController extends Controller
     {
         $this->authorize('view', $licenceRequest);
 
-        $licenceRequest->load(['latestPayment', 'coveringOrder', 'changeRequests', 'documents', 'licence']);
+        $licenceRequest->load(['latestPayment', 'coveringEnrollment.championship', 'changeRequests', 'documents', 'licence']);
 
         return view('licence-request.show', [
             'licenceRequest' => $licenceRequest,
@@ -166,28 +129,5 @@ class LicenceRequestController extends Controller
             'holder' => $licenceRequest->holder,
             'parents' => $licenceRequest->parentHolders(),
         ])->stream(Str::slug($document->label()).'.pdf');
-    }
-
-    /**
-     * Move the Enrollments paid by the Order whose request was rejected to the new request it covers. Call it inside the
-     * transaction, with the Order locked.
-     */
-    private function moveWaitingEnrollments(Order $order, LicenceRequest $licenceRequest): void
-    {
-        $waiting = Enrollment::query()->where('order_id', $order->getKey())->where('status', EnrollmentStatus::Submitted)->whereNull('licence_id')->get();
-
-        Championship::query()->whereKey($waiting->pluck('championship_id')->unique()->all())->orderBy('id')->lockForUpdate()->get();
-
-        Enrollment::query()
-            ->whereKey($waiting->modelKeys())
-            ->lockForUpdate()
-            ->with(['licenceRequest', 'championship'])
-            ->get()
-            ->filter(fn (Enrollment $enrollment) => $enrollment->needsLicence())
-            ->each(function (Enrollment $enrollment) use ($licenceRequest) {
-                Enrollment::ensureNotEnrolled($enrollment->championship, null, $licenceRequest, except: $enrollment);
-
-                $enrollment->update(['licence_request_id' => $licenceRequest->getKey()]);
-            });
     }
 }

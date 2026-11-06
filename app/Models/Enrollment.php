@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Actions\Orders\CancelOrder;
 use App\Data\HolderData;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceRole;
-use App\Enums\OrderStatus;
-use App\Enums\ProductGrantKind;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,7 +34,6 @@ use Illuminate\Validation\ValidationException;
  * @property ?int $competitor_licence_id
  * @property int $user_id
  * @property EnrollmentStatus $status
- * @property ?int $order_id
  * @property ?int $enrollment_option_id
  * @property int $amount
  * @property Currency $currency
@@ -53,7 +49,6 @@ use Illuminate\Validation\ValidationException;
  * @property-read ?LicenceRequest $licenceRequest
  * @property-read ?Licence $competitorLicence
  * @property-read User $user
- * @property-read ?Order $order
  * @property-read ?EnrollmentOption $option
  */
 class Enrollment extends Model implements Payable
@@ -76,7 +71,6 @@ class Enrollment extends Model implements Payable
         'competitor_licence_id',
         'user_id',
         'status',
-        'order_id',
         'confirmed_at',
         'confirmed_by',
         'rejection_reason',
@@ -233,14 +227,6 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * @return BelongsTo<Order, $this>
-     */
-    public function order(): BelongsTo
-    {
-        return $this->belongsTo(Order::class);
-    }
-
-    /**
      * The Enrollment Option the driver chose, null when enrolled by the organizer.
      *
      * @return BelongsTo<EnrollmentOption, $this>
@@ -288,12 +274,11 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * Whether the Enrollment's payment is settled: nothing due or paid, and its Order paid for an Enrollment made with
-     * a Package bought on its own.
+     * Whether the Enrollment's payment is settled: nothing due, or paid.
      */
     public function isPaymentSettled(): bool
     {
-        return $this->payment_status->isSettled() && ($this->order === null || $this->order->status === OrderStatus::Paid);
+        return $this->payment_status->isSettled();
     }
 
     /**
@@ -307,25 +292,19 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * Whether the driver can reserve a race number with the Enrollment: when the championship grants it with enrollment,
-     * or when the Package paying the Enrollment does.
+     * Whether the driver can reserve a race number with the Enrollment: when its option includes one.
      */
     public function grantsBibReservation(): bool
     {
-        if ($this->option?->reserves_race_number) {
-            return true;
-        }
-
-        return $this->order !== null && $this->order->grantsOf(ProductGrantKind::Enrollment)
-            ->contains(fn (ProductGrant $grant) => $grant->championship_id === $this->championship_id && $grant->grants_bib_reservation);
+        return $this->option?->reserves_race_number === true;
     }
 
     /**
-     * Whether a payment proof of the Enrollment, or of its Order, waits for the organizer.
+     * Whether a payment proof of the Enrollment waits for the organizer.
      */
     public function hasPaymentUnderReview(): bool
     {
-        return $this->payment_status === EnrollmentPaymentStatus::PaymentSubmitted || $this->order?->status === OrderStatus::PaymentSubmitted;
+        return $this->payment_status === EnrollmentPaymentStatus::PaymentSubmitted;
     }
 
     /**
@@ -401,12 +380,11 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * Free what a rejected or withdrawn Enrollment held: release its race numbers, return the open Licence Requests it
-     * covered to their own payment, and cancel its Order when not paid nor with a payment proof to review. Paid
-     * enrollments are refunded outside the platform, and a request they covered then asks for its own payment. A race
-     * fee discount already granted stays with the Licence.
+     * Free what a rejected or withdrawn Enrollment held: release its race numbers and return the open Licence Requests
+     * it covered to their own payment. Paid enrollments are refunded outside the platform, and a request they covered
+     * then asks for its own payment. A race fee discount already granted stays with the Licence.
      */
-    public function releaseNumbersAndCancelUnpaidOrder(): void
+    public function releaseNumbersAndCoverage(): void
     {
         $this->reservations()->notReleased()->update([
             'status' => BibReservationStatus::Released,
@@ -418,10 +396,6 @@ class Enrollment extends Model implements Payable
             ->open()
             ->get()
             ->each(fn (LicenceRequest $licenceRequest) => $licenceRequest->uncover());
-
-        if ($this->order !== null && in_array($this->order->status, [OrderStatus::AwaitingPrice, OrderStatus::AwaitingPayment], true)) {
-            app(CancelOrder::class)($this->order);
-        }
     }
 
     /**

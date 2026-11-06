@@ -14,12 +14,12 @@ use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class EnrollmentPagesTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_driver_pays_the_enrollment_from_its_page(): void
@@ -53,7 +53,6 @@ class EnrollmentPagesTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame(EnrollmentPaymentStatus::PaymentSubmitted, $enrollment->fresh()->payment_status);
-        $this->assertNull($enrollment->fresh()->order_id);
     }
 
     public function test_a_notification_about_the_enrollment_payment_opens_the_enrollment_page(): void

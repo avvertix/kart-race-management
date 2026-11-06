@@ -30,12 +30,12 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class LicenceRequestActionsTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     protected function setUp(): void

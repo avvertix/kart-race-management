@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\Championship;
 use Carbon\CarbonImmutable;
 use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class PublicChampionshipEnrollmentTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_a_championship_without_enrollment_has_no_page(): void
@@ -24,7 +24,7 @@ class PublicChampionshipEnrollmentTest extends TestCase
 
     public function test_the_page_needs_early_access(): void
     {
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         $this->get(route('public.championships.enrollment', $this->championship()))->assertNotFound();
     }

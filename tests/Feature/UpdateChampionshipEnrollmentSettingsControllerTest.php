@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\Championship;
 use App\Models\EnrollmentOption;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class UpdateChampionshipEnrollmentSettingsControllerTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_an_existing_championship_has_enrollment_off(): void
@@ -39,7 +39,7 @@ class UpdateChampionshipEnrollmentSettingsControllerTest extends TestCase
 
     public function test_the_settings_need_early_access(): void
     {
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         $this->actingAs(User::factory()->organizer()->create())
             ->get(route('championships.enrollment-settings.edit', Championship::factory()->create()))

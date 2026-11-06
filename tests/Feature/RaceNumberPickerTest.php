@@ -24,12 +24,12 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class RaceNumberPickerTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_picker_shows_the_hundreds_and_the_state_of_each_number(): void
@@ -238,7 +238,7 @@ class RaceNumberPickerTest extends TestCase
         Notification::fake();
 
         $championship = $this->championship();
-        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Paid]);
 
         $this->actingAs($licenceRequest->user)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence_request:'.$licenceRequest->ulid, 'bib' => '21'])

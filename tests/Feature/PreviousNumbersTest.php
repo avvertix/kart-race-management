@@ -16,12 +16,12 @@ use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class PreviousNumbersTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_organizer_sees_the_numbers_the_driver_used_before(): void

@@ -22,14 +22,14 @@ use Illuminate\Support\Facades\URL;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\CreateDriver;
 use Tests\CreateVehicle;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class MyLicenceControllerTest extends TestCase
 {
     use CreateDriver;
     use CreateVehicle;
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_user_sees_only_the_licences_they_manage(): void

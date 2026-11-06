@@ -62,13 +62,9 @@ A race registration form that was started but not yet submitted.
 A Driver's Licence enrolled in a championship, optionally with a Competitor (required for underage Drivers, who cannot be their own Competitor). A Driver has at most one active Enrollment per championship, while one User can enroll each Driver whose Licence they manage. It can wait for the Licence Request that will give the Licence; when that request is rejected, the User picks another Licence for it. It is made with one of the championship's Enrollment Options, free or at a fixed amount, and carries its own payment. It is optional for racing and does not fix the category or the Competitor, which a Participant can change between races. Each championship is isolated: enrollments do not carry over to other championships.
 _Avoid_: Championship registration, subscription, promotional registration
 
-**Enrollment Fee**:
-Being replaced by the amount of an Enrollment Option (ADR 0006). The fixed amount a championship charges for an Enrollment. The championship may make it cover the Licence Request renewing the Driver's Licence for its year; a Driver who already holds a valid Licence pays the same.
-_Avoid_: Subscription fee
-
 **Enrollment Option**:
 What a Driver enrolls in a championship with: free or a fixed amount, optionally covering the Licence renewal, reserving a Championship BIB and granting a race fee discount, possibly offered only to some licence categories. A championship offers one or more; see ADR 0006.
-_Avoid_: Plan, tier, package
+_Avoid_: Plan, tier, package, enrollment fee, promotional package
 
 **Wildcard**:
 A Participant who races but does not score championship points, as decided by the championship's wildcard configuration (e.g. because they are not enrolled).
@@ -86,16 +82,6 @@ A race number of 1000 or above, used for Participants of special categories that
 
 ### Commerce
 
-**Product**:
-Something the organizer sells, such as an Enrollment Fee, a race fee or a Promotional Package. An Enrollment Fee, or a Package including an Enrollment without a Licence renewal, is bought only while enrolling. Licence renewals are not Products: a Licence Request is not bought through an Order.
-
-**Price**:
-The amount charged for a Product in a given period, either fixed or a range whose final amount the organizer sets for each Order, e.g. when a package's cost depends on what the buyer picks.
-
-**Order**:
-A request by a User to buy one or more Products. It is paid by uploading a payment proof that the organizer confirms. When it pays for an Enrollment, the User sees it only as the Enrollment's payment.
-_Avoid_: Purchase, transaction
-
 **Entitlement**:
 A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code or by an Enrollment Option. It belongs to one Licence.
 _Avoid_: Voucher
@@ -106,7 +92,3 @@ A legacy, organizer-assigned reduction of race fees for a Driver in a championsh
 **Promo Code**:
 A code issued by the organizer that is claimed for one Licence, turning it into an Entitlement. It is claimed either by a User for a Licence they manage, or by typing it into a race registration without an account, against the licence number entered. Once claimed, it cannot be claimed for another Licence.
 _Avoid_: Discount code, coupon
-
-**Promotional Package**:
-A Product that grants several things at once when its Order is confirmed, e.g. a Licence emission, an Entitlement and the right to reserve a Championship BIB.
-_Avoid_: Bundle

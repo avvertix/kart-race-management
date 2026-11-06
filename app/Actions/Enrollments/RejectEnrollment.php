@@ -15,7 +15,7 @@ class RejectEnrollment
 {
     /**
      * Reject a submitted Enrollment with a reason the driver reads, while no payment proof waits for review. Releases its
-     * race numbers and cancels its unpaid Order.
+     * race numbers and returns a Licence Request it covered to its own payment.
      *
      * @throws ValidationException when the reason is missing or the Enrollment is not submitted
      */
@@ -37,7 +37,7 @@ class RejectEnrollment
                 'rejection_reason' => $reason,
             ]);
 
-            $locked->releaseNumbersAndCancelUnpaidOrder();
+            $locked->releaseNumbersAndCoverage();
 
             return $locked;
         });

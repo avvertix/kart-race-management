@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Enums\NotificationType;
 use App\Enums\Role;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\HasRole;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
@@ -67,11 +67,11 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
     {
         $candidates = self::query()->whereIn('role', [Role::Organizer->value, Role::Admin->value])->get();
 
-        Feature::for($candidates->all())->load([LicencesAndProducts::class]);
+        Feature::for($candidates->all())->load([LicencesAndEnrollments::class]);
 
         return $candidates
             ->filter(fn (self $user) => ($user->hasRole(Role::Organizer) || $user->wantsEmail($type))
-                && Feature::for($user)->active(LicencesAndProducts::class))
+                && Feature::for($user)->active(LicencesAndEnrollments::class))
             ->values();
     }
 

@@ -66,7 +66,7 @@
                         @endforelse
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500"><x-time :value="$item->created_at" /></td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->order?->status->label() ?? __('Free') }}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->payment_status->label() }}</td>
                     @if ($status === \App\Enums\EnrollmentStatus::Submitted)
                         @php($missing = $item->missingForConfirmation())
                         <td class="px-3 py-4 text-sm">

@@ -36,30 +36,6 @@
     <div class="pb-12">
         <div class="px-4 sm:px-6 lg:px-8 space-y-4">
 
-            @foreach ($coveredRenewals as $coveredRenewal)
-                <div class="rounded-md border border-lime-300 bg-lime-50 p-4 space-y-2">
-                    <p class="font-medium text-lime-900">{{ __('Renewal covered by :package', ['package' => $coveredRenewal->lines->pluck('description')->join(', ')]) }}</p>
-                    <p class="text-sm text-lime-900">{{ __('Start the licence request: it asks for no payment.') }}</p>
-                    <form method="POST" action="{{ route('licence-requests.store') }}" class="flex flex-wrap items-end gap-2">
-                        @csrf
-                        <input type="hidden" name="order" value="{{ $coveredRenewal->ulid }}">
-                        @if ($licences->whereIn('id', $renewableLicenceIds)->isNotEmpty())
-                            <div>
-                                <x-label for="renew_{{ $coveredRenewal->ulid }}" value="{{ __('Renew') }}" />
-                                <select id="renew_{{ $coveredRenewal->ulid }}" name="licence" class="mt-1 rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
-                                    @foreach ($licences->whereIn('id', $renewableLicenceIds) as $renewable)
-                                        <option value="{{ $renewable->ulid }}">{{ $renewable->holder->fullName() }} &middot; {{ $renewable->number }}</option>
-                                    @endforeach
-                                    <option value="">{{ __('a licence that is not in your account') }}</option>
-                                </select>
-                            </div>
-                        @endif
-                        <x-button type="submit">{{ __('Start your licence renewal') }}</x-button>
-                    </form>
-                    <x-input-error for="order" class="mt-2" />
-                </div>
-            @endforeach
-
             <p class="text-sm text-zinc-600 max-w-prose">{{ __('The licences of the people you act for: yourself, your children or the drivers of your team. Each licence holds its holder\'s details.') }}</p>
 
             <p class="text-sm text-zinc-600 max-w-prose">

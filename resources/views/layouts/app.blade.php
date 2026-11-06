@@ -23,7 +23,7 @@
             <x-language-selector class="max-lg:hidden" />
 
             @auth
-                @feature(\App\Features\LicencesAndProducts::class)
+                @feature(\App\Features\LicencesAndEnrollments::class)
                     @php
                         $unreadNotificationCount = auth()->user()->unreadNotifications()->count();
                     @endphp

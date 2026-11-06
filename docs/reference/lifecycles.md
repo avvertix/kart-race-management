@@ -15,7 +15,7 @@
 
 A Licence Request is for one validity year, chosen when it is started: the year renewals are open for (the next one from December), or the next year while a championship of that year is open for enrollment. The emitted Licence is for that year when Enrollments wait for the request.
 
-A Licence Request is a renewal and is paid on its own, not through an Order:
+A Licence Request is a renewal and is paid on its own, unless the Enrollment waiting for it covers it:
 
 | Payment status | Meaning | Next |
 |---|---|---|
@@ -23,7 +23,7 @@ A Licence Request is a renewal and is paid on its own, not through an Order:
 | To pay | The amount is set; no payment proof yet. The organizer can still change it | Proof uploaded, Paid |
 | Proof uploaded | A payment proof is uploaded | Paid, To pay |
 | Paid | The organizer confirmed the bank transfer proof, or recorded a cash or credit card payment at the office | — |
-| Covered | The Enrollment the request waits for pays the renewal, as its option covers it, or a Promotional Package bought on its own does. It counts as paid once that Enrollment (or Order) is paid; if the request is rejected, it covers a new one. Withdrawing or rejecting the Enrollment, or moving it to an option that doesn't cover the renewal, returns the request to its own payment | — |
+| Covered | The Enrollment the request waits for pays the renewal, as its option covers it. It counts as paid once that Enrollment is paid; if the request is rejected, it covers a new one. Withdrawing or rejecting the Enrollment, or moving it to an option that doesn't cover the renewal, returns the request to its own payment | — |
 
 ## Licence
 
@@ -64,50 +64,6 @@ The organizer can move a submitted Enrollment to another option until its paymen
 | Released | Freed by the organizer | — |
 
 Pending reservations don't expire. Reservations created by the organizer may have an expiry date. Reservations created before statuses existed are confirmed. A released reservation can't be changed.
-
-## Order
-
-| Status | Meaning | Next |
-|---|---|---|
-| Awaiting price | Created for a Product priced as a range; the organizer sets the final amount after reviewing the request. No payment proof can be uploaded yet | Awaiting payment, Cancelled |
-| Awaiting payment | Created for a fixed-price Product, or priced by the organizer; no payment proof yet | Payment submitted, Cancelled |
-| Payment submitted | A payment proof is uploaded | Paid, Awaiting payment |
-| Paid | The organizer confirmed the payment; what was bought is granted. Grants that need a Licence wait until it is emitted | — |
-| Cancelled | Its Enrollment was withdrawn or rejected before payment | — |
-
-An Order is created as soon as the User picks the Product to buy, and locks the Price valid at that moment, fixed or range. It can be paid later. When setting the final amount, the organizer starts from the locked Price; an amount outside its range needs a reason, shown to the User. The amount can change until a payment proof is uploaded.
-
-The diagram shows the Order with what moves it: the User picking a Product, the organizer's actions on price and payment, the Enrollment that cancels it, and what a paid Order unlocks.
-
-```mermaid
-stateDiagram-v2
-    direction LR
-
-    state "Awaiting price" as AwaitingPrice
-    state "Awaiting payment" as AwaitingPayment
-    state "Payment submitted" as PaymentSubmitted
-
-    [*] --> AwaitingPrice: User picks a Product with a ranged Price
-    [*] --> AwaitingPayment: User picks a Product with a fixed Price
-
-    AwaitingPrice --> AwaitingPayment: organizer sets the final amount
-    AwaitingPayment --> AwaitingPayment: organizer changes the amount (no proof yet)
-    AwaitingPayment --> PaymentSubmitted: User uploads a payment proof
-    PaymentSubmitted --> AwaitingPayment: organizer rejects the proof
-    PaymentSubmitted --> Paid: organizer confirms the payment
-
-    AwaitingPrice --> Cancelled: Enrollment withdrawn or rejected
-    AwaitingPayment --> Cancelled: Enrollment withdrawn or rejected
-
-    Paid --> [*]
-    Cancelled --> [*]
-
-    note right of Paid
-        Enrollment can be confirmed.
-        A licence renewal in a Package is covered.
-        Package grants apply once the Licence is emitted.
-    end note
-```
 
 ## Promo Code
 

@@ -16,7 +16,6 @@ Tutorials will be added once the features can be tried end to end.
 For organizers:
 
 - [Configure a new championship](how-to/organizer/configure-a-new-championship.md)
-- [Set up products and prices](how-to/organizer/set-up-products-and-prices.md)
 - [Process a licence request](how-to/organizer/process-a-licence-request.md)
 - [Confirm enrollments and race numbers](how-to/organizer/confirm-enrollments-and-race-numbers.md)
 - [Issue promo codes](how-to/organizer/issue-promo-codes.md)
@@ -44,7 +43,7 @@ For maintainers:
 
 - [Licences, users and identity](explanation/licences-and-identity.md)
 - [Enrollment, points and wildcards](explanation/enrollment-and-wildcards.md)
-- [Discounts: entitlements, packages and bonuses](explanation/discounts.md)
+- [Discounts: entitlements, enrollment options and bonuses](explanation/discounts.md)
 - [Rolling out without breaking running championships](explanation/backward-compatibility.md)
 
 ## Decisions

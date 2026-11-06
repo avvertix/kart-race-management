@@ -17,7 +17,7 @@
     <div class="pt-3 pb-12 px-4 sm:px-6 lg:px-8 space-y-4">
         @if ($items->isEmpty())
             <p class="rounded-md border border-dashed border-zinc-300 bg-white p-6 text-center text-sm text-zinc-600">
-                {{ __('No notifications yet. You find here what needs your attention on licence requests and orders.') }}
+                {{ __('No notifications yet. You find here what needs your attention on licence requests and enrollments.') }}
             </p>
         @else
             <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200 bg-white">

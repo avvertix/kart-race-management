@@ -17,7 +17,7 @@ class VerifyLicenceRequest
 {
     /**
      * Finish the review without changes to ask: every document viewed and no comment left. The amount, in cents, is what the
-     * requester pays next; a request covered by a package needs none.
+     * requester pays next; a request covered by an Enrollment needs none.
      *
      * @throws ValidationException when the request is not being reviewed, a document is not viewed, a comment is left or the amount is missing
      */

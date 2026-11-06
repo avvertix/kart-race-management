@@ -1,4 +1,4 @@
-# Discounts: entitlements, packages and bonuses
+# Discounts: entitlements, enrollment options and bonuses
 
 ## Entitlements
 
@@ -14,7 +14,7 @@ Whether Entitlements can be used in a race depends on its configuration. By defa
 Entitlements come from two places:
 
 - a **Promo Code** the organizer issued and someone claimed, e.g. a prize for last season's results or a plain discount;
-- a **Promotional Package** bought by the driver, e.g. a licence renewal that includes some race fees.
+- an **Enrollment Option** that includes a race fee discount, granted once the Enrollment is paid and its Licence verified or emitted, e.g. a promo that covers the licence renewal and the first race.
 
 ## Why claiming matters
 
@@ -27,7 +27,7 @@ Each code has a link and a QR code that show the code and how many times it has 
 
 ## Discounts on licences and enrollments
 
-Licence requests and enrollments are discounted through their **Prices** and through **Promotional Packages**, not through Promo Codes. Promo Codes are only about race fees.
+Enrollments are discounted through the amount of their **Enrollment Options**, e.g. a promo option that also covers the licence renewal. The organizer sets the amount of each licence request while reviewing it. Promo Codes are only about race fees.
 
 ## Bonuses
 

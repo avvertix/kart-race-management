@@ -98,7 +98,7 @@ return [
         'awaiting_payment' => 'Da pagare',
         'payment_submitted' => 'Ricevuta caricata',
         'paid' => 'Pagata',
-        'covered' => 'Inclusa in un pacchetto',
+        'covered' => 'Inclusa nell\'iscrizione',
     ],
 
     'enrollment_payment_status' => [

@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Data\HolderData;
+use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
-use App\Enums\OrderStatus;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
-use App\Models\Order;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class EnrollmentCompetitorTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_an_underage_driver_needs_an_adult_competitor_other_than_themselves(): void
@@ -98,8 +97,7 @@ class EnrollmentCompetitorTest extends TestCase
     {
         $championship = $this->championship();
         $user = User::factory()->create();
-        $order = Order::factory()->for($user)->create(['status' => OrderStatus::PaymentSubmitted]);
-        $enrollment = Enrollment::factory()->for($championship)->for($user)->create(['order_id' => $order->getKey()]);
+        $enrollment = Enrollment::factory()->for($championship)->for($user)->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::PaymentSubmitted]);
 
         $this->actingAs($user)
             ->post(route('my-enrollments.withdraw', $enrollment))

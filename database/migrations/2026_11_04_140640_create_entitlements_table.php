@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table->unsignedInteger('remaining');
 
-            // Where the Entitlement comes from: a claimed promo code or a package order line
+            // Where the Entitlement comes from: a claimed promo code or an enrollment
             $table->nullableMorphs('source');
         });
 

@@ -5,27 +5,22 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\LicenceRequests\RejectLicenceRequest;
-use App\Actions\Orders\PlaceOrder;
+use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
-use App\Enums\OrderStatus;
-use App\Enums\ProductGrantKind;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
-use App\Models\Order;
-use App\Models\Price;
-use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class RenewWhileEnrollingTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     protected function setUp(): void
@@ -75,8 +70,7 @@ class RenewWhileEnrollingTest extends TestCase
         $championship = $this->championship();
         $user = User::factory()->create();
         $licenceRequest = LicenceRequest::factory()->for($user)->submitted()->create(['validity_year' => 2027]);
-        $order = Order::factory()->for($user)->create(['status' => OrderStatus::Paid]);
-        $enrollment = Enrollment::factory()->for($championship)->waitingFor($licenceRequest)->create(['order_id' => $order->getKey()]);
+        $enrollment = Enrollment::factory()->for($championship)->waitingFor($licenceRequest)->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::Paid]);
         $declared = Licence::factory()->for($user)->create(['validity_year' => 2027]);
 
         app(RejectLicenceRequest::class)($licenceRequest, User::factory()->organizer()->create(), 'Documents missing.');
@@ -96,33 +90,8 @@ class RenewWhileEnrollingTest extends TestCase
 
         $this->assertTrue($enrollment->licence->is($declared));
         $this->assertNull($enrollment->licence_request_id);
-        $this->assertSame($order->getKey(), $enrollment->order_id);
-    }
-
-    public function test_starting_the_renewal_of_a_package_bought_on_its_own_enrolls_at_once(): void
-    {
-        $championship = $this->championship();
-        $closed = Championship::factory()->create(['title' => 'Closed championship', 'start_at' => now()->setDate(2027, 3, 1)]);
-        $package = $this->package($championship, withRenewal: true);
-        $package->grants()->create(['kind' => ProductGrantKind::Enrollment, 'championship_id' => $closed->getKey()]);
-        $user = User::factory()->create();
-        $order = app(PlaceOrder::class)($user, $package);
-        $order->update(['status' => OrderStatus::Paid, 'paid_at' => now()]);
-
-        $this->actingAs($user)
-            ->get(route('my-licences.index'))
-            ->assertSee(__('Renewal covered by :package', ['package' => $package->title]));
-
-        $this->actingAs($user)
-            ->post(route('licence-requests.store'), ['order' => $order->ulid])
-            ->assertSessionHas('flash.bannerStyle', 'warning');
-
-        $this->assertSame(1, $championship->enrollments()->count());
-        $this->assertSame(0, $closed->enrollments()->count());
-
-        $this->actingAs($user)
-            ->get(route('my-licences.index'))
-            ->assertDontSee(__('Renewal covered by :package', ['package' => $package->title]));
+        $this->assertSame(EnrollmentPaymentStatus::Paid, $enrollment->payment_status);
+        $this->assertSame(9000, $enrollment->amount);
     }
 
     private function championship(): Championship
@@ -131,19 +100,5 @@ class RenewWhileEnrollingTest extends TestCase
             'start_at' => now()->setDate(2027, 3, 1)->startOfDay(),
             'end_at' => now()->setDate(2027, 10, 31)->startOfDay(),
         ]);
-    }
-
-    private function package(Championship $championship, bool $withRenewal): Product
-    {
-        $package = Product::factory()->create(['title' => $withRenewal ? 'Renewal and enrollment' : 'Enrollment and two races']);
-        Price::factory()->for($package)->create();
-
-        if ($withRenewal) {
-            $package->grants()->create(['kind' => ProductGrantKind::LicenceEmission]);
-        }
-
-        $package->grants()->create(['kind' => ProductGrantKind::Enrollment, 'championship_id' => $championship->getKey()]);
-
-        return $package;
     }
 }

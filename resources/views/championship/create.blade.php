@@ -18,7 +18,7 @@
 
             @include('championship.partials.form')
 
-            @feature(\App\Features\LicencesAndProducts::class)
+            @feature(\App\Features\LicencesAndEnrollments::class)
                 <div class="mt-4">
                     <p class="block font-medium text-sm text-zinc-700">{{ __('Licence provider') }}</p>
                     <p class="mb-2 text-sm text-zinc-500">{{ __('Who issues the licences. It sets the wording of the registration form and which exports are offered.') }}</p>

@@ -284,7 +284,7 @@ class Race extends Model
     }
 
     /**
-     * Whether Entitlements from promo codes and packages apply to the race fees: when the championship enables them,
+     * Whether Entitlements from promo codes and enrollment options apply to the race fees: when the championship enables them,
      * unless the race opts out.
      */
     public function isEntitlementEnabled(): bool

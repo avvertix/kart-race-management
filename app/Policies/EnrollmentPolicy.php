@@ -48,7 +48,7 @@ class EnrollmentPolicy
 
     /**
      * Determine whether the user can pick or change the race number as the driver: their own enrollment, while
-     * submitted and enrollment is open, when the championship or the Package reserves a number.
+     * submitted and enrollment is open, when the option reserves a number.
      */
     public function pickRaceNumber(User $user, Enrollment $enrollment): bool
     {

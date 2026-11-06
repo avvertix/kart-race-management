@@ -39,7 +39,7 @@ class UpdateChampionshipBonusSettingsController extends Controller
 
         if ($championship->entitlements_enabled && ($validated['bonus_enabled'] ?? null) !== 'false') {
             throw ValidationException::withMessages([
-                'bonus_enabled' => __('Disable promo codes and packages before enabling bonuses.'),
+                'bonus_enabled' => __('Disable promo codes and enrollment discounts before enabling bonuses.'),
             ]);
         }
 

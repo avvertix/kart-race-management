@@ -1,6 +1,6 @@
 # Add licence providers and platform configuration
 
-Organizers set up **Products** and **Prices** from the application, see [Set up products and prices](../organizer/set-up-products-and-prices.md). The Licence Types, the documents a renewal asks for and everything below live in the code or in the environment and need a maintainer ([ADR 0004](../../adr/0004-licence-renewals-outside-products.md)).
+Organizers set up the **Enrollment Options** of each championship from the application, see [Configure a new championship](../organizer/configure-a-new-championship.md). The Licence Types, the documents a renewal asks for and everything below live in the code or in the environment and need a maintainer ([ADR 0004](../../adr/0004-licence-renewals-outside-products.md)).
 
 ## What lives where
 
@@ -16,8 +16,8 @@ Organizers set up **Products** and **Prices** from the application, see [Set up 
 | Permissions of each role | `App\Enums\Role::permissions()` | Maintainer |
 | Where uploaded licence documents are stored | `licence-documents` disk in `config/filesystems.php` | Maintainer |
 | Platform-wide licence provider and country, organizer email | `.env` | Whoever deploys |
-| Products, Prices | Application | Organizer |
-| Who sees licences, licence requests, products and orders (early access) | User page, *Early access to licences and products* | Admin |
+| Enrollment Options | Application | Organizer |
+| Who sees licences, licence requests and enrollments (early access) | User page, *Early access to licences and enrollments* | Admin |
 
 ## Add or change a Licence Type
 
@@ -96,9 +96,9 @@ Update `tests/Unit/RoleTest.php` with the new permission, and the [roles and per
 
 ## Early access
 
-Licences, licence requests, products and orders are being prepared for a future championship, so they sit behind the `App\Features\LicencesAndProducts` feature flag ([Laravel Pennant](https://laravel.com/docs/pennant), stored in the `features` table). For everyone else their pages answer 404 and their menu items are hidden. Admins always have them; an admin enables other users from the user page with *Early access to licences and products*. Guests never have them, so the public product pages stay hidden.
+Licences, licence requests and enrollments are being prepared for a future championship, so they sit behind the `App\Features\LicencesAndEnrollments` feature flag ([Laravel Pennant](https://laravel.com/docs/pennant), stored in the `features` table under its former name `App\Features\LicencesAndProducts`, so the users enabled before the rename keep it). For everyone else their pages answer 404 and their menu items are hidden. Admins always have them; an admin enables other users from the user page with *Early access to licences and enrollments*. Guests never have them, so the public enrollment pages stay hidden.
 
-To go live, remove the flag: delete the feature class, its `EnsureFeaturesAreActive` route middleware and the `@feature` blocks in the navigation, the user page checkbox and the `EnablesLicencesAndProducts` test trait.
+To go live, remove the flag: delete the feature class, its `EnsureFeaturesAreActive` route middleware and the `@feature` blocks in the navigation, the user page checkbox and the `EnablesLicencesAndEnrollments` test trait.
 
 ## Store licence documents
 

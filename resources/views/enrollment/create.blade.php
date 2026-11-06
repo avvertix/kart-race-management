@@ -16,7 +16,7 @@
             <x-section-title>
                 <x-slot name="title">{{ __('Enroll a licence') }}</x-slot>
                 <x-slot name="description">
-                    {{ __('Enroll a driver licence valid for :year on behalf of its driver, also outside the enrollment period. No order is created: settle the payment with the driver.', ['year' => $championship->start_at->year]) }}
+                    {{ __('Enroll a driver licence valid for :year on behalf of its driver, also outside the enrollment period. Nothing is due: settle any payment with the driver.', ['year' => $championship->start_at->year]) }}
                 </x-slot>
             </x-section-title>
 

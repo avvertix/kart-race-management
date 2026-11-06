@@ -8,7 +8,7 @@
                 {{ __('Edit reservation') }}
             </x-button-link>
         @endcan
-        @feature(\App\Features\LicencesAndProducts::class)
+        @feature(\App\Features\LicencesAndEnrollments::class)
             @can('confirm', $reservation)
                 <form method="POST" action="{{ route('bib-reservations.confirm', $reservation) }}">
                     @csrf
@@ -30,7 +30,7 @@
                 <p class="text-2xl font-bold">
                     <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $reservation->bib }}</span> {{ $reservation->driver }}
                 </p>
-                @feature(\App\Features\LicencesAndProducts::class)
+                @feature(\App\Features\LicencesAndEnrollments::class)
                     <p>
                         <span class="block text-zinc-500">{{ __('Status') }}</span>
                         {{ $reservation->status->label() }}

@@ -37,9 +37,6 @@ return new class extends Migration
             // EnrollmentStatus
             $table->string('status', 20);
 
-            // The Order paying for the enrollment Product, when not free
-            $table->foreignId('order_id')->nullable();
-
             $table->timestamp('confirmed_at')->nullable();
 
             $table->foreignId('confirmed_by')->nullable();

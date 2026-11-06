@@ -32,7 +32,7 @@ return new class extends Migration
 
         Schema::table('licence_requests', function (Blueprint $table) {
             // The Enrollment whose option covers the renewal, so the request asks for no payment of its own
-            $table->foreignId('covering_enrollment_id')->nullable()->after('covering_order_id');
+            $table->foreignId('covering_enrollment_id')->nullable()->after('paid_at');
         });
     }
 

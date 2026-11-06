@@ -7,18 +7,18 @@ namespace Tests\Feature;
 use App\Actions\PromoCodes\IssuePromoCodes;
 use App\Enums\EntitlementMode;
 use App\Enums\PromoCodeStatus;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\Championship;
 use App\Models\PromoCode;
 use App\Models\User;
 use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class PromoCodeTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_organizer_issues_random_codes(): void
@@ -169,7 +169,7 @@ class PromoCodeTest extends TestCase
             ->get(route('championships.promo-codes.index', $this->championship()))
             ->assertForbidden();
 
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         $this->actingAs(User::factory()->organizer()->create())
             ->get(route('championships.promo-codes.index', $this->championship()))

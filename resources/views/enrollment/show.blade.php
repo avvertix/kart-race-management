@@ -69,9 +69,6 @@
                     {{ $enrollment->option?->title ?? __('Enrolled by the organizer') }}
                     &middot; <span class="font-mono tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span>
                     &middot; {{ $enrollment->payment_status->label() }}
-                    @if ($enrollment->order)
-                        &middot; <a href="{{ route('orders.show', $enrollment->order) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ __('Order :order', ['order' => $enrollment->order->ulid]) }}</a>
-                    @endif
                 </p>
                 @if ($enrollment->latestPayment)
                     @php($proofUrl = $enrollment->latestPayment->downloadUrl)
@@ -213,7 +210,7 @@
             @elseif ($enrollment->status->isActive())
                 <form method="POST" action="{{ route('enrollments.withdraw', $enrollment) }}" class="space-y-2">
                     @csrf
-                    <p class="text-sm text-zinc-600">{{ __('Withdrawing releases the race number and cancels an unpaid order. Refunds are settled with the driver.') }}</p>
+                    <p class="text-sm text-zinc-600">{{ __('Withdrawing releases the race number and returns a covered licence request to its own payment. Refunds are settled with the driver.') }}</p>
                     <x-danger-button type="submit">{{ __('Withdraw enrollment') }}</x-danger-button>
                 </form>
             @endif

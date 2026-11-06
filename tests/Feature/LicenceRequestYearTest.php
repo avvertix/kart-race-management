@@ -5,21 +5,16 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\LicenceRequests\EmitLicence;
-use App\Actions\Orders\PlaceOrder;
 use App\Data\HolderData;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRole;
-use App\Enums\OrderStatus;
-use App\Enums\ProductGrantKind;
 use App\Livewire\LicenceRequestReview;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
-use App\Models\Price;
-use App\Models\Product;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
@@ -27,12 +22,12 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class LicenceRequestYearTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_a_request_is_for_the_year_renewals_are_open_for(): void
@@ -93,31 +88,12 @@ class LicenceRequestYearTest extends TestCase
         $this->assertSame(0, $championship->enrollments()->count());
     }
 
-    public function test_a_request_covered_by_a_package_is_for_the_year_of_the_championship_it_enrolls_in(): void
-    {
-        $this->travelTo('2026-11-05 10:00');
-        $championship = $this->openChampionship(2027);
-        $package = Product::factory()->create();
-        Price::factory()->for($package)->create();
-        $package->grants()->create(['kind' => ProductGrantKind::LicenceEmission]);
-        $package->grants()->create(['kind' => ProductGrantKind::Enrollment, 'championship_id' => $championship->getKey()]);
-        $user = User::factory()->create();
-        $order = app(PlaceOrder::class)($user, $package);
-        $order->update(['status' => OrderStatus::Paid, 'paid_at' => now()]);
-
-        $this->actingAs($user)
-            ->post(route('licence-requests.store'), ['order' => $order->ulid])
-            ->assertSessionHasNoErrors();
-
-        $this->assertSame(2027, LicenceRequest::query()->sole()->validity_year);
-    }
-
     public function test_the_licence_is_emitted_for_the_year_of_the_request_its_enrollments_wait_for(): void
     {
         Notification::fake();
         $this->travelTo('2026-11-05 10:00');
         $championship = $this->openChampionship(2027);
-        $licenceRequest = LicenceRequest::factory()->verified()->create(['validity_year' => 2027, 'payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->verified()->create(['validity_year' => 2027, 'payment_status' => LicenceRequestPaymentStatus::Paid]);
         Enrollment::factory()->for($championship)->waitingFor($licenceRequest)->create();
         $organizer = User::factory()->organizer()->create();
 
@@ -141,7 +117,7 @@ class LicenceRequestYearTest extends TestCase
     {
         Notification::fake();
         $this->travelTo('2026-11-05 10:00');
-        $licenceRequest = LicenceRequest::factory()->verified()->create(['validity_year' => 2026, 'payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->verified()->create(['validity_year' => 2026, 'payment_status' => LicenceRequestPaymentStatus::Paid]);
 
         $licence = app(EmitLicence::class)($licenceRequest, User::factory()->organizer()->create(), 'A123456', 2027, UploadedFile::fake()->create('licence.pdf', 100, 'application/pdf'));
 
@@ -212,7 +188,7 @@ class LicenceRequestYearTest extends TestCase
         $enrolled = Enrollment::factory()->for($championship)->create([
             'licence_id' => Licence::factory()->verified()->create(['holder' => $holder]),
         ]);
-        $licenceRequest = LicenceRequest::factory()->verified()->create(['validity_year' => 2026, 'holder' => $holder, 'payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->verified()->create(['validity_year' => 2026, 'holder' => $holder, 'payment_status' => LicenceRequestPaymentStatus::Paid]);
         $waiting = Enrollment::factory()->for($championship)->waitingFor($licenceRequest)->create();
 
         app(EmitLicence::class)($licenceRequest, User::factory()->organizer()->create(), 'A123456', 2026, UploadedFile::fake()->create('licence.pdf', 100, 'application/pdf'));

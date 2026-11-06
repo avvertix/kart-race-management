@@ -6,8 +6,6 @@ namespace App\Providers;
 
 use App\Events\EnrollmentConfirmed;
 use App\Events\EnrollmentRevoked;
-use App\Events\OrderPaid;
-use App\Listeners\GrantPackagesWhenOrderPaid;
 use App\Listeners\LogNotification;
 use App\Listeners\ReevaluateWildcardsForEnrollment;
 use App\Models\Category;
@@ -15,8 +13,6 @@ use App\Models\Championship;
 use App\Models\ChampionshipTire;
 use App\Models\Enrollment;
 use App\Models\LicenceRequest;
-use App\Models\Order;
-use App\Models\OrderLine;
 use App\Models\Participant;
 use App\Models\PromoCode;
 use App\Models\Race;
@@ -77,9 +73,7 @@ class AppServiceProvider extends ServiceProvider
             'category' => Category::class,
             'championship' => Championship::class,
             'race' => Race::class,
-            'order' => Order::class,
             'promo_code' => PromoCode::class,
-            'order_line' => OrderLine::class,
             'licence_request' => LicenceRequest::class,
             'enrollment' => Enrollment::class,
         ]);
@@ -142,7 +136,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Event::listen(NotificationSent::class, LogNotification::class);
         Event::listen([EnrollmentConfirmed::class, EnrollmentRevoked::class], ReevaluateWildcardsForEnrollment::class);
-        Event::listen(OrderPaid::class, GrantPackagesWhenOrderPaid::class);
     }
 
     /**

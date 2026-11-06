@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 /**
- * Where the payment of a Licence Request stands. Requests are paid on their own, not through an Order.
+ * Where the payment of a Licence Request stands. Requests are paid on their own, or by the Enrollment that covers them.
  */
 enum LicenceRequestPaymentStatus: string
 {
@@ -21,7 +21,7 @@ enum LicenceRequestPaymentStatus: string
     case Paid = 'paid';
 
     /**
-     * Paid with a Promotional Package that includes the renewal.
+     * Paid by the Enrollment waiting for the request, as its option covers the renewal.
      */
     case Covered = 'covered';
 

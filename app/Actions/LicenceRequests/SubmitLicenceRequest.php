@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions\LicenceRequests;
 
-use App\Actions\Enrollments\EnrollPackagedRequest;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\NotificationType;
 use App\Models\Enrollment;
@@ -21,8 +20,7 @@ class SubmitLicenceRequest
 {
     /**
      * Send a complete draft to the organizer. Paying is not required to submit. It must still fit the championships whose
-     * Enrollments wait for it. A request covered by a Package with an Enrollment is enrolled in its championships, see
-     * EnrollPackagedRequest.
+     * Enrollments wait for it.
      *
      * @throws ValidationException when the request is not a draft or something is missing
      */
@@ -46,8 +44,6 @@ class SubmitLicenceRequest
 
             return $locked;
         });
-
-        app(EnrollPackagedRequest::class)($submitted);
 
         $submitted->enrollments()->active()->whereNull('competitor_licence_id')->with(['championship', 'user', 'licenceRequest'])->get()
             ->filter(fn (Enrollment $enrollment) => $enrollment->requiresCompetitor())

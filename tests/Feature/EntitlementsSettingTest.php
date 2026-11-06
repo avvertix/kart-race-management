@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\BonusMode;
 use App\Models\Championship;
 use App\Models\Race;
 use App\Models\User;
 use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class EntitlementsSettingTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_existing_championships_and_races_have_entitlements_off(): void
@@ -80,7 +80,7 @@ class EntitlementsSettingTest extends TestCase
 
         $this->actingAs($organizer)
             ->get(route('races.edit', $race))
-            ->assertSee(__('Promo codes and packages'));
+            ->assertSee(__('Promo codes and enrollment discounts'));
 
         $this->actingAs($organizer)
             ->put(route('races.update', $race), [
@@ -104,7 +104,7 @@ class EntitlementsSettingTest extends TestCase
 
     public function test_the_setting_needs_early_access(): void
     {
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         $championship = Championship::factory()->create(['bonus_enabled' => false]);
 

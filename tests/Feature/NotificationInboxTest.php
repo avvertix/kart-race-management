@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\NotificationType;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Livewire\LicenceRequestReview;
 use App\Models\LicenceRequest;
 use App\Models\User;
@@ -16,12 +16,12 @@ use Database\Factories\LicenceFactory;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class NotificationInboxTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_bell_counts_the_unread_notifications(): void
@@ -167,7 +167,7 @@ class NotificationInboxTest extends TestCase
 
     public function test_the_inbox_needs_early_access(): void
     {
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         $this->actingAs(User::factory()->create())->get(route('notifications.index'))->assertNotFound();
     }

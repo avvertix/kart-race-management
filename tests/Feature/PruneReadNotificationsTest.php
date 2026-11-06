@@ -7,12 +7,12 @@ namespace Tests\Feature;
 use App\Models\LicenceRequest;
 use App\Notifications\LicenceRequestReceived;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class PruneReadNotificationsTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_read_notifications_are_deleted_12_months_after_being_read(): void

@@ -9,7 +9,7 @@
         @csrf
         @method('PUT')
 
-        @feature(\App\Features\LicencesAndProducts::class)
+        @feature(\App\Features\LicencesAndEnrollments::class)
             <div class="md:grid md:grid-cols-3 md:gap-6">
                 <x-section-title>
                     <x-slot name="title">{{ __('Licence provider') }}</x-slot>

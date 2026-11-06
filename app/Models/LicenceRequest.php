@@ -15,7 +15,6 @@ use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceRole;
-use App\Enums\OrderStatus;
 use App\Support\LicenceCatalogue;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
@@ -32,7 +31,7 @@ use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\DataCollection;
 
 /**
- * A request to renew a licence, made by a User for themselves or someone they act for. It is paid on its own, not through an Order.
+ * A request to renew a licence, made by a User for themselves or someone they act for. It is paid on its own, or by the Enrollment that covers it.
  *
  * @property string $ulid
  * @property int $user_id
@@ -53,7 +52,6 @@ use Spatie\LaravelData\DataCollection;
  * @property ?CarbonImmutable $priced_at
  * @property ?int $payment_confirmed_by
  * @property ?CarbonImmutable $paid_at
- * @property ?int $covering_order_id
  * @property ?int $covering_enrollment_id
  * @property ?int $licence_id
  * @property ?CarbonImmutable $submitted_at
@@ -67,7 +65,6 @@ use Spatie\LaravelData\DataCollection;
  * @property ?int $reviewed_by
  * @property CarbonImmutable $created_at
  * @property-read User $user
- * @property-read ?Order $coveringOrder
  * @property-read ?Payment $latestPayment
  * @property-read ?Licence $licence
  * @property-read \Illuminate\Database\Eloquent\Collection<int, LicenceRequestDocument> $documents
@@ -118,7 +115,6 @@ class LicenceRequest extends Model implements Payable
         'priced_at',
         'payment_confirmed_by',
         'paid_at',
-        'covering_order_id',
         'covering_enrollment_id',
         'licence_id',
         'submitted_at',
@@ -192,25 +188,14 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * The paid Promotional Package Order covering the renewal, instead of its own payment.
-     *
-     * @return BelongsTo<Order, $this>
-     */
-    public function coveringOrder(): BelongsTo
-    {
-        return $this->belongsTo(Order::class, 'covering_order_id');
-    }
-
-    /**
      * Let the Enrollment pay the request, as its option covers the licence renewal, when the request's own payment is
-     * not made nor covered yet, by the Enrollment or by a Package bought on its own (`covering_order_id`). Call it
-     * inside a transaction.
+     * not made nor covered yet. Call it inside a transaction.
      */
     public function coverWith(Enrollment $enrollment): void
     {
         $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
 
-        if ($locked->covering_order_id !== null || $locked->covering_enrollment_id !== null || ! in_array($locked->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true)) {
+        if ($locked->covering_enrollment_id !== null || ! in_array($locked->payment_status, [LicenceRequestPaymentStatus::AwaitingPrice, LicenceRequestPaymentStatus::AwaitingPayment], true)) {
             return;
         }
 
@@ -595,24 +580,20 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Whether nothing is left to pay: the organizer confirmed the payment, or it is covered by a paid Order (a Package
-     * bought on its own) or by an Enrollment whose option covers the renewal, once that Enrollment is paid.
+     * Whether nothing is left to pay: the organizer confirmed the payment, or it is covered by an Enrollment whose option
+     * covers the renewal, once that Enrollment is paid.
      */
     public function isPaymentSettled(): bool
     {
         return match ($this->payment_status) {
             LicenceRequestPaymentStatus::Paid => true,
-            LicenceRequestPaymentStatus::Covered => match (true) {
-                $this->covering_enrollment_id !== null => $this->coveringEnrollment?->isPaymentSettled() === true,
-                $this->covering_order_id !== null => $this->coveringOrder?->status === OrderStatus::Paid,
-                default => true,
-            },
+            LicenceRequestPaymentStatus::Covered => $this->coveringEnrollment?->isPaymentSettled() === true,
             default => false,
         };
     }
 
     /**
-     * Whether the organizer can still set the amount: not covered by a package, and no payment proof ever uploaded.
+     * Whether the organizer can still set the amount: not covered by an Enrollment, and no payment proof ever uploaded.
      */
     public function canBePriced(): bool
     {

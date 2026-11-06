@@ -19,6 +19,13 @@ Nothing is sold outside enrollment, so the commerce layer goes: drivers and orga
 - Rename the early-access flag `LicencesAndProducts` to `LicencesAndEnrollments`, keeping the stored feature values.
 - Navigation: nothing links to products or orders.
 
+- Implementation notes:
+  - The flag class carries `#[Name('App\Features\LicencesAndProducts')]`, so Pennant keeps reading and writing the stored rows under the former name. The user page field is now `licences_and_enrollments`.
+  - A Covered Licence Request is settled only through its covering Enrollment; tests that used Covered as a shortcut for "nothing to pay" now use Paid, or cover the request with a real Enrollment.
+  - `Enrollment::releaseNumbersAndCancelUnpaidOrder()` became `releaseNumbersAndCoverage()`. `StartLicenceRenewal` no longer takes a covering Order, and `licence-requests.store` no longer accepts `order`.
+  - The race fee discount setting is labelled "Promo codes and enrollment discounts". The Italian strings used only by the removed pages are dropped from `lang/it.json`.
+  - Order notifications already stored in a development database no longer resolve; `migrate:fresh` clears them.
+
 ## Out of scope
 
 Selling race fees or other items (a later feature would bring its own model).

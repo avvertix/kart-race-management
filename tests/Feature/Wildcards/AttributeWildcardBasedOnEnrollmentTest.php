@@ -7,7 +7,7 @@ namespace Tests\Feature\Wildcards;
 use App\Actions\Enrollments\ConfirmEnrollment;
 use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Actions\Wildcard\AttributeWildcardBasedOnEnrollment;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Livewire\WildcardSettings;
 use App\Models\Championship;
 use App\Models\Enrollment;
@@ -20,12 +20,12 @@ use App\Models\WildcardStrategy;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class AttributeWildcardBasedOnEnrollmentTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_only_participants_with_a_confirmed_enrollment_score_points(): void
@@ -133,7 +133,7 @@ class AttributeWildcardBasedOnEnrollmentTest extends TestCase
             ->test(WildcardSettings::class, ['championship' => $championship])
             ->assertSee(WildcardStrategy::BASED_ON_ENROLLMENT->localizedName());
 
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         Livewire::actingAs(User::factory()->organizer()->create())
             ->test(WildcardSettings::class, ['championship' => $championship])

@@ -36,7 +36,7 @@ class SubmitEnrollment
      * The driver enrolls one of their Licences, an open Licence Request, or a renewal started now for the championship's
      * year, while enrollment is open, with an Enrollment Option offered for the licence category: its amount becomes the
      * Enrollment's payment, and an option covering the renewal pays the request started. A free option's race fee
-     * discount is granted at once when the Licence is verified. Reserves the picked race number when the championship or the Package grants one,
+     * discount is granted at once when the Licence is verified. Reserves the picked race number when the option includes one,
      * unless the Licence already holds a reservation in the championship: it keeps that number.
      *
      * @param  array{licence?: ?string, licence_request?: ?string, renew?: ?string, competitor_licence?: ?string, option?: ?string, bib?: mixed}  $input  ULIDs, `new` to renew a licence not on the platform, and the race number

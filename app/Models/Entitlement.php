@@ -25,11 +25,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $remaining
  * @property ?string $source_type
  * @property ?int $source_id
- * @property ?int $product_grant_id
  * @property CarbonImmutable $created_at
  * @property-read Championship $championship
  * @property-read ?Licence $licence
- * @property-read PromoCode|OrderLine|null $source
+ * @property-read PromoCode|Enrollment|null $source
  */
 class Entitlement extends Model
 {
@@ -45,7 +44,6 @@ class Entitlement extends Model
         'remaining',
         'source_type',
         'source_id',
-        'product_grant_id',
     ];
 
     /**
@@ -88,7 +86,7 @@ class Entitlement extends Model
     }
 
     /**
-     * The promo code or the order line the Entitlement comes from.
+     * The promo code or the Enrollment the Entitlement comes from.
      *
      * @return MorphTo<Model, $this>
      */

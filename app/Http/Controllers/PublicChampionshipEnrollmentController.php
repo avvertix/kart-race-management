@@ -42,7 +42,7 @@ class PublicChampionshipEnrollmentController extends Controller
             'settings' => $settings,
             'myEnrollments' => $user === null ? collect() : $championship->enrollments()
                 ->where('user_id', $user->getKey())
-                ->with(['licence', 'licenceRequest', 'order', 'reservations'])
+                ->with(['licence', 'licenceRequest', 'reservations'])
                 ->latest()
                 ->get(),
             'subjects' => $user === null ? collect() : EnrollmentSubjects::for($user, $championship),

@@ -17,7 +17,7 @@
         </x-dynamic-component>
     @endcan
 
-    @feature(\App\Features\LicencesAndProducts::class)
+    @feature(\App\Features\LicencesAndEnrollments::class)
     @can('create', \App\Models\Licence::class)
         <x-dynamic-component :component="$item" :href="route('my-licences.index')" :current="request()->routeIs('my-licences.*', 'licence-requests.*')">
             {{ __('My licences') }}
@@ -32,7 +32,7 @@
         </x-dynamic-component>
     @endcan
 
-    @feature(\App\Features\LicencesAndProducts::class)
+    @feature(\App\Features\LicencesAndEnrollments::class)
     @can('viewAny', \App\Models\LicenceRequest::class)
         <x-dynamic-component :component="$item" :href="route('licence-request-reviews.index')" :current="request()->routeIs('licence-request-reviews.*')">
             {{ __('Licence requests') }}
@@ -42,18 +42,6 @@
     @can('viewAny', \App\Models\Licence::class)
         <x-dynamic-component :component="$item" :href="route('licences.index')" :current="request()->routeIs('licences.*')">
             {{ __('All licences') }}
-        </x-dynamic-component>
-    @endcan
-
-    @can('viewAny', \App\Models\Product::class)
-        <x-dynamic-component :component="$item" :href="route('products.index')" :current="request()->routeIs('products.*')">
-            {{ __('Products') }}
-        </x-dynamic-component>
-    @endcan
-
-    @can('viewAny', \App\Models\Order::class)
-        <x-dynamic-component :component="$item" :href="route('orders.index')" :current="request()->routeIs('orders.*')">
-            {{ __('Orders') }}
         </x-dynamic-component>
     @endcan
     @endfeature

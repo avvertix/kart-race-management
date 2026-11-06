@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\DeleteUser;
 use App\Actions\Fortify\CreateNewUserWithRole;
 use App\Enums\Role;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\User;
 use App\Rules\ValidRole;
 use Illuminate\Http\Request;
@@ -73,7 +73,7 @@ class UserController extends Controller
         return view('user.edit', [
             'user' => $user,
             'roles' => $this->availableRoles(),
-            'hasLicencesAndProducts' => Feature::for($user)->active(LicencesAndProducts::class),
+            'hasLicencesAndEnrollments' => Feature::for($user)->active(LicencesAndEnrollments::class),
         ]);
     }
 
@@ -86,7 +86,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'role' => ['required', 'string', new ValidRole],
-            'licences_and_products' => ['sometimes', 'boolean'],
+            'licences_and_enrollments' => ['sometimes', 'boolean'],
         ]);
 
         $user->update([
@@ -95,10 +95,10 @@ class UserController extends Controller
             'role' => $validated['role'],
         ]);
 
-        if ($request->has('licences_and_products')) {
-            $request->boolean('licences_and_products')
-                ? Feature::for($user)->activate(LicencesAndProducts::class)
-                : Feature::for($user)->deactivate(LicencesAndProducts::class);
+        if ($request->has('licences_and_enrollments')) {
+            $request->boolean('licences_and_enrollments')
+                ? Feature::for($user)->activate(LicencesAndEnrollments::class)
+                : Feature::for($user)->deactivate(LicencesAndEnrollments::class);
         }
 
         return redirect()->route('users.index')

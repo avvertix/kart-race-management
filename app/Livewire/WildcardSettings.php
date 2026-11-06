@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\Championship;
 use App\Models\WildcardStrategy;
 use Illuminate\Support\Facades\Auth;
@@ -84,7 +84,7 @@ class WildcardSettings extends Component
     }
 
     /**
-     * The rules the organizer can choose; the one based on enrollment only with early access to licences and products,
+     * The rules the organizer can choose; the one based on enrollment only with early access to licences and enrollments,
      * or when the championship already uses it.
      *
      * @return array<int, WildcardStrategy>
@@ -94,7 +94,7 @@ class WildcardSettings extends Component
         return collect(WildcardStrategy::cases())
             ->reject(fn (WildcardStrategy $strategy): bool => $strategy === WildcardStrategy::BASED_ON_ENROLLMENT
                 && $this->getChampionshipProperty()?->wildcard->strategy !== WildcardStrategy::BASED_ON_ENROLLMENT
-                && ! Feature::active(LicencesAndProducts::class))
+                && ! Feature::active(LicencesAndEnrollments::class))
             ->values()
             ->all();
     }

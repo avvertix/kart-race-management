@@ -18,4 +18,4 @@ Codes don't expire: each one is usable only in its championship. You can revoke 
 
 To exclude a race, e.g. a special event, turn Entitlements off in that race's settings.
 
-Promo codes discount the race fee only, not tyres, and one per race registration. To discount licences or enrollments, use Prices or Promotional Packages instead.
+Promo codes discount the race fee only, not tyres, and one per race registration. To discount enrollments, offer an Enrollment Option at a lower amount instead.

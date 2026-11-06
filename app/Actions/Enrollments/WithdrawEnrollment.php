@@ -14,7 +14,7 @@ class WithdrawEnrollment
 {
     /**
      * Withdraw the Enrollment: the driver while it is submitted, the organizer also once confirmed, while no payment proof
-     * waits for review. Releases its race numbers and cancels its unpaid Order.
+     * waits for review. Releases its race numbers and returns a Licence Request it covered to its own payment.
      *
      * @throws ValidationException when the Enrollment can't be withdrawn
      */
@@ -37,7 +37,7 @@ class WithdrawEnrollment
 
             $locked->update(['status' => EnrollmentStatus::Withdrawn]);
 
-            $locked->releaseNumbersAndCancelUnpaidOrder();
+            $locked->releaseNumbersAndCoverage();
 
             return [$locked, $wasConfirmed];
         });

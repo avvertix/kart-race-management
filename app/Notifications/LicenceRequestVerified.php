@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Tells the applicant the request is verified and how to pay it, or that a package covers it.
+ * Tells the applicant the request is verified and how to pay it, or that the enrollment covers it.
  */
 class LicenceRequestVerified extends AccountNotification
 {
@@ -30,7 +30,7 @@ class LicenceRequestVerified extends AccountNotification
 
         if ($this->licenceRequest->payment_status === LicenceRequestPaymentStatus::Covered) {
             return $mail
-                ->line(__('It is covered by your order: there is nothing to pay. The organizer now requests your licence from :provider.', ['provider' => $this->licenceRequest->provider?->label()]))
+                ->line(__('It is covered by your enrollment: there is nothing to pay. The organizer now requests your licence from :provider.', ['provider' => $this->licenceRequest->provider?->label()]))
                 ->action(__('View the request'), $this->openUrl());
         }
 

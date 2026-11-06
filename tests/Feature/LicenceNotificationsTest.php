@@ -11,15 +11,14 @@ use App\Actions\LicenceRequests\RequestLicenceRequestChanges;
 use App\Actions\LicenceRequests\ResubmitLicenceRequest;
 use App\Actions\LicenceRequests\SubmitLicenceRequest;
 use App\Actions\LicenceRequests\VerifyLicenceRequest;
-use App\Actions\Orders\PlaceOrder;
-use App\Actions\Orders\SetOrderPrice;
 use App\Data\HolderData;
 use App\Enums\LicenceRequestDocumentStatus;
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestSection;
 use App\Enums\NotificationType;
+use App\Models\Championship;
+use App\Models\Enrollment;
 use App\Models\LicenceRequest;
-use App\Models\Price;
 use App\Models\User;
 use App\Notifications\LicenceEmitted;
 use App\Notifications\LicenceRequestChangesRequested;
@@ -27,7 +26,6 @@ use App\Notifications\LicenceRequestReceived;
 use App\Notifications\LicenceRequestRejected;
 use App\Notifications\LicenceRequestSubmitted;
 use App\Notifications\LicenceRequestVerified;
-use App\Notifications\OrderPriceSet;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -36,12 +34,12 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class LicenceNotificationsTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     private const FISCAL_CODE = 'RSSMRA08E14A794X';
@@ -124,14 +122,15 @@ class LicenceNotificationsTest extends TestCase
         ]);
     }
 
-    public function test_a_request_covered_by_a_package_has_nothing_to_pay(): void
+    public function test_a_request_covered_by_an_enrollment_has_nothing_to_pay(): void
     {
         $organizer = User::factory()->organizer()->create();
-        $licenceRequest = $this->underReview(['payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = $this->underReview();
+        $licenceRequest->coverWith(Enrollment::factory()->for(Championship::factory()->openForEnrollment(coversRenewal: true))->waitingFor($licenceRequest)->create());
 
         app(VerifyLicenceRequest::class)($licenceRequest, $organizer, null);
 
-        $this->assertSafeMail(new LicenceRequestVerified($licenceRequest->fresh()), $licenceRequest->user, ['covered by your order']);
+        $this->assertSafeMail(new LicenceRequestVerified($licenceRequest->fresh()), $licenceRequest->user, ['covered by your enrollment']);
     }
 
     public function test_rejecting_tells_the_applicant_why(): void
@@ -149,25 +148,13 @@ class LicenceNotificationsTest extends TestCase
     public function test_emitting_links_the_applicant_to_the_licence(): void
     {
         $organizer = User::factory()->organizer()->create();
-        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Paid]);
 
         $licence = app(EmitLicence::class)($licenceRequest, $organizer, 'A123456', 2027, UploadedFile::fake()->create('licence.pdf', 100, 'application/pdf'));
 
         Notification::assertSentToTimes($licenceRequest->user, LicenceEmitted::class, 1);
 
         $this->assertSafeMail(new LicenceEmitted($licence), $licenceRequest->user, [(string) $licence->validity_year]);
-    }
-
-    public function test_pricing_an_order_asks_the_buyer_to_pay(): void
-    {
-        $organizer = User::factory()->organizer()->create();
-        $order = (new PlaceOrder)(User::factory()->create(), Price::factory()->range(23000, 31000)->create()->product);
-
-        $order = (new SetOrderPrice)($order, $organizer, 25000);
-
-        Notification::assertSentToTimes($order->user, OrderPriceSet::class, 1);
-
-        $this->assertSafeMail(new OrderPriceSet($order), $order->user, [$order->amountLabel(), $order->ulid]);
     }
 
     public function test_turning_off_the_email_keeps_the_notification_in_the_app(): void

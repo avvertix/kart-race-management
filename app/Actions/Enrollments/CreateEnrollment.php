@@ -21,7 +21,7 @@ class CreateEnrollment
      * Create a submitted Enrollment for the Licence, or for the Licence Request it waits for, in a championship accepting
      * enrollments, with the Enrollment Option chosen: its amount is copied to the Enrollment's own payment, and an option
      * covering the licence renewal pays the Licence Request too, while it is not paid nor covered yet. Without an option
-     * (enrolled by the organizer, or by a Package bought on its own) nothing is due. A Licence Request is locked and
+     * (enrolled by the organizer) nothing is due. A Licence Request is locked and
      * checked again, so that an Enrollment never waits for a request emitted meanwhile.
      *
      * @throws ValidationException when the Licence or request is already enrolled, or the option is not of the championship

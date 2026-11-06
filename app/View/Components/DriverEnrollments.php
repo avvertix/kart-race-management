@@ -47,7 +47,7 @@ class DriverEnrollments extends Component
         $this->enrollments = $user === null ? new Collection : Enrollment::query()
             ->where('user_id', $user->getKey())
             ->whereHas('championship', fn ($query) => $query->where(fn ($query) => $query->whereNull('end_at')->orWhere('end_at', '>=', today()->startOfYear())))
-            ->with(['championship', 'licence', 'licenceRequest', 'order'])
+            ->with(['championship', 'licence', 'licenceRequest'])
             ->latest()
             ->take(self::ENROLLMENTS_LIMIT)
             ->get();

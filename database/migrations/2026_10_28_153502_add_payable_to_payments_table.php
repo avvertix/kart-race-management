@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
-            // Payments of an Order have no participant
+            // Payments of an Enrollment or a Licence Request have no participant
             $table->unsignedBigInteger('participant_id')->nullable()->change();
 
             $table->nullableMorphs('payable');

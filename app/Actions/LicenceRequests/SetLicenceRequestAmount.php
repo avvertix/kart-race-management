@@ -17,7 +17,7 @@ class SetLicenceRequestAmount
     /**
      * Change the amount to pay, in cents, set when verifying the request. It can change until a payment proof is uploaded.
      *
-     * @throws ValidationException when the request is not verified, covered by a package or a proof was already uploaded
+     * @throws ValidationException when the request is not verified, covered by an Enrollment or a proof was already uploaded
      */
     public function __invoke(LicenceRequest $licenceRequest, User $organizer, int $amount): LicenceRequest
     {

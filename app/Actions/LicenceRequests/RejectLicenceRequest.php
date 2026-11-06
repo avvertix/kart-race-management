@@ -18,7 +18,7 @@ class RejectLicenceRequest
 {
     /**
      * Close the request without a licence, with a reason shown to the requester. Refunds are settled by email. The
-     * Enrollments waiting for the request stay submitted: the User picks another Licence for them, and the Order that
+     * Enrollments waiting for the request stay submitted: the User picks another Licence for them, and the Enrollment that
      * covered the request covers a new one. Besides the rejection, the User is told about each such Enrollment, as it
      * is acted upon from its own page.
      *

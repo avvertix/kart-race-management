@@ -267,7 +267,7 @@ class LicenceRequestForm extends Component
 
     public function render(): View
     {
-        $licenceRequest = $this->licenceRequest->load(['documents', 'changeRequests', 'latestPayment', 'coveringOrder']);
+        $licenceRequest = $this->licenceRequest->load(['documents', 'changeRequests', 'latestPayment', 'coveringEnrollment.championship']);
 
         $provider = LicenceProvider::tryFrom($this->provider);
 

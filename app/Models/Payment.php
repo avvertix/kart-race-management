@@ -40,7 +40,7 @@ class Payment extends Model
     }
 
     /**
-     * What the payment is for, e.g. an Order. Race participant payments use participant instead.
+     * What the payment is for: an Enrollment or a Licence Request. Race participant payments use participant instead.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Model, $this>
      */

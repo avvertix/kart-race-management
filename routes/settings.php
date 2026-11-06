@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Notifications;
 use App\Livewire\Settings\Profile;
@@ -27,7 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('security.edit');
 
     Route::livewire('settings/notifications', Notifications::class)
-        ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
+        ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
         ->name('notifications.edit');
 });
 

@@ -21,7 +21,9 @@ use App\Enums\LicenceRequestSection;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceSource;
 use App\Livewire\LicenceRequestReview;
+use App\Models\Championship;
 use App\Models\DriverLicence;
+use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\PaymentChannelType;
@@ -36,12 +38,12 @@ use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use ReflectionClass;
 use ReflectionMethod;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class LicenceRequestReviewTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     protected function setUp(): void
@@ -300,10 +302,11 @@ class LicenceRequestReviewTest extends TestCase
             ->assertSee('Pay €85.50');
     }
 
-    public function test_a_request_covered_by_a_package_is_verified_without_an_amount(): void
+    public function test_a_request_covered_by_an_enrollment_is_verified_without_an_amount(): void
     {
         $organizer = User::factory()->organizer()->create();
-        $licenceRequest = LicenceRequest::factory()->submitted()->withAllDocuments()->create(['payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->submitted()->withAllDocuments()->create();
+        $licenceRequest->coverWith(Enrollment::factory()->for(Championship::factory()->openForEnrollment(coversRenewal: true))->waitingFor($licenceRequest)->create());
         $licenceRequest->documents()->update(['status' => LicenceRequestDocumentStatus::Accepted]);
 
         $this->review($licenceRequest, $organizer)
@@ -447,7 +450,7 @@ class LicenceRequestReviewTest extends TestCase
     public function test_requests_not_verified_cannot_be_emitted_or_handed_to_the_provider(): void
     {
         $organizer = User::factory()->organizer()->create();
-        $licenceRequest = LicenceRequest::factory()->submitted()->create(['payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->submitted()->create(['payment_status' => LicenceRequestPaymentStatus::Paid]);
 
         $this->expectValidationError(fn () => app(ForwardLicenceRequest::class)($licenceRequest, $organizer));
         $this->expectValidationError(fn () => app(EmitLicence::class)($licenceRequest, $organizer, 'A123456', 2027, UploadedFile::fake()->create('licence.pdf', 100, 'application/pdf')));

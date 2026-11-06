@@ -263,7 +263,7 @@ class LicenceRequestReview extends Component
 
     public function render(): View
     {
-        $licenceRequest = $this->licenceRequest->refresh()->load(['user', 'documents', 'changeRequests', 'latestPayment', 'coveringOrder', 'licence']);
+        $licenceRequest = $this->licenceRequest->refresh()->load(['user', 'documents', 'changeRequests', 'latestPayment', 'coveringEnrollment.championship', 'licence']);
 
         $changesRequestedAt = $licenceRequest->changes_requested_at;
         $isNew = fn (RequiredDocument $required) => $licenceRequest->uploadFor($required)?->isUploadedAfter($changesRequestedAt) === true;

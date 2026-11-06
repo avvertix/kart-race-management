@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\User;
 use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class DashboardEnrollmentsTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_dashboard_proposes_the_championships_open_for_enrollment(): void
@@ -58,7 +58,7 @@ class DashboardEnrollmentsTest extends TestCase
 
     public function test_the_dashboard_has_no_enrollments_without_early_access(): void
     {
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
         Feature::flushCache();
 
         $this->championship('Open championship', opensInDays: -1, closesInDays: 10);

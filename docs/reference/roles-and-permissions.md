@@ -1,6 +1,6 @@
 # Roles and permissions
 
-Only the permissions added for licences, enrollment, orders and promo codes are listed here.
+Only the permissions added for licences, enrollment and promo codes are listed here.
 
 | Action | Admin | Organizer | Driver |
 |---|---|---|---|
@@ -13,8 +13,7 @@ Only the permissions added for licences, enrollment, orders and promo codes are 
 | Confirm, reject or withdraw Enrollments | ✓ | ✓ | |
 | Confirm, change or release race number reservations; copy reservations from a past championship | ✓ | ✓ | |
 | Enroll any Licence, also outside the enrollment period | ✓ | ✓ | |
-| Configure Products and Prices | ✓ | ✓ | |
-| Set the final price of range-priced Orders, confirm Order payments | ✓ | ✓ | |
+| Configure Enrollment Options, confirm enrollment payments | ✓ | ✓ | |
 | Issue and revoke Promo Codes | ✓ | ✓ | |
 | Claim a Promo Code for an own Licence | ✓ | ✓ | ✓ |
 

@@ -36,7 +36,7 @@ class ChampionshipEnrollmentController extends Controller
         $status = $request->enum('status', EnrollmentStatus::class) ?? EnrollmentStatus::Submitted;
 
         $enrollments = $championship->enrollments()
-            ->with(['licence', 'licenceRequest', 'competitorLicence', 'order', 'reservations'])
+            ->with(['licence', 'licenceRequest', 'competitorLicence', 'reservations'])
             ->where('status', $status)
             ->oldest()
             ->oldest('id')
@@ -70,7 +70,7 @@ class ChampionshipEnrollmentController extends Controller
 
     /**
      * Enroll a Licence on behalf of its driver: the Enrollment belongs to the User managing the Licence, who sees and can
-     * withdraw it. No Order is placed: the organizer settles the payment directly.
+     * withdraw it. Nothing is due: the organizer settles any payment directly.
      */
     public function store(Request $request, Championship $championship, CreateEnrollment $createEnrollment): RedirectResponse
     {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\LicenceRole;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\BibReservation;
 use App\Models\Category;
 use App\Models\CompetitorLicence;
@@ -21,7 +21,7 @@ use Tests\CreateCompetitor;
 use Tests\CreateDriver;
 use Tests\CreateMechanic;
 use Tests\CreateVehicle;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class RaceRegistrationLicencePickerTest extends TestCase
@@ -30,7 +30,7 @@ class RaceRegistrationLicencePickerTest extends TestCase
     use CreateDriver;
     use CreateMechanic;
     use CreateVehicle;
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_a_guest_sees_the_form_as_before(): void
@@ -62,7 +62,7 @@ class RaceRegistrationLicencePickerTest extends TestCase
             ->assertDontSee('DRIVER-OLD')
             ->assertDontSee('SOMEONE-ELSE');
 
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         $this->actingAs(User::factory()->create())
             ->get(route('races.registration.create', $race))

@@ -42,23 +42,15 @@ class RoleTest extends TestCase
         $this->assertEquals(['*'], Role::Admin->permissions());
     }
 
-    public function test_organizer_manages_licences_products_orders_enrollments_and_promo_codes(): void
+    public function test_organizer_manages_licences_enrollments_and_promo_codes(): void
     {
         $this->assertEquals([
-            'product:list',
-            'product:view',
-            'product:create',
-            'product:update',
-            'product:delete',
             'licence-request:list',
             'licence-request:view',
             'licence-request:update',
             'licence:list',
             'licence:view',
             'licence:update',
-            'order:list',
-            'order:view',
-            'order:update',
             'enrollment:list',
             'enrollment:view',
             'enrollment:create',
@@ -73,7 +65,7 @@ class RoleTest extends TestCase
         ], $this->licencePermissions(Role::Organizer));
     }
 
-    public function test_driver_handles_own_licences_enrollments_orders_and_promo_codes(): void
+    public function test_driver_handles_own_licences_enrollments_and_promo_codes(): void
     {
         $this->assertEquals([
             'licence-request:create',
@@ -86,8 +78,6 @@ class RoleTest extends TestCase
             'enrollment:create',
             'enrollment:view',
             'enrollment:update',
-            'order:create',
-            'order:view',
             'promo-code:claim',
         ], $this->licencePermissions(Role::Driver));
     }
@@ -100,7 +90,8 @@ class RoleTest extends TestCase
     }
 
     /**
-     * The permissions of the role on products, licence requests, licences, orders, enrollments and promo codes.
+     * The permissions of the role on licence requests, licences, enrollments and promo codes, and on the removed
+     * products and orders, so none is left behind.
      *
      * @return list<string>
      */

@@ -16,9 +16,6 @@ use App\Notifications\LicenceRequestReceived;
 use App\Notifications\LicenceRequestRejected;
 use App\Notifications\LicenceRequestSubmitted;
 use App\Notifications\LicenceRequestVerified;
-use App\Notifications\OrderPaymentConfirmed;
-use App\Notifications\OrderPaymentRejected;
-use App\Notifications\OrderPriceSet;
 
 /**
  * The notifications a User can receive, each by email and in the app. The value keys the User's email preferences.
@@ -34,12 +31,6 @@ enum NotificationType: string
     case LicenceRequestRejected = 'licence_request_rejected';
 
     case LicenceEmitted = 'licence_emitted';
-
-    case OrderPriceSet = 'order_price_set';
-
-    case OrderPaymentConfirmed = 'order_payment_confirmed';
-
-    case OrderPaymentRejected = 'order_payment_rejected';
 
     case EnrollmentConfirmed = 'enrollment_confirmed';
 
@@ -75,9 +66,6 @@ enum NotificationType: string
             self::LicenceRequestVerified => LicenceRequestVerified::class,
             self::LicenceRequestRejected => LicenceRequestRejected::class,
             self::LicenceEmitted => LicenceEmitted::class,
-            self::OrderPriceSet => OrderPriceSet::class,
-            self::OrderPaymentConfirmed => OrderPaymentConfirmed::class,
-            self::OrderPaymentRejected => OrderPaymentRejected::class,
             self::EnrollmentConfirmed => EnrollmentConfirmed::class,
             self::EnrollmentRejected => EnrollmentRejected::class,
             self::EnrollmentNeedsAction => EnrollmentNeedsAction::class,

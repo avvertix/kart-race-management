@@ -7,7 +7,7 @@
 
         <x-welcome-new-user class="md:col-span-12" />
 
-        @feature(\App\Features\LicencesAndProducts::class)
+        @feature(\App\Features\LicencesAndEnrollments::class)
             <x-driver-enrollments class="md:col-span-12" />
         @endfeature
 

@@ -9,7 +9,7 @@ use App\Actions\GenerateRaceNumber;
 use App\Actions\RegisterParticipant;
 use App\Actions\Wildcard\AttributeWildcardBasedOnBibReservation;
 use App\Enums\BibReservationStatus;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\BibReservation;
 use App\Models\Category;
 use App\Models\Championship;
@@ -24,14 +24,14 @@ use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\CreateDriver;
 use Tests\CreateVehicle;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class BibReservationStatusTest extends TestCase
 {
     use CreateDriver;
     use CreateVehicle;
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_reservations_are_confirmed_by_default(): void
@@ -195,7 +195,7 @@ class BibReservationStatusTest extends TestCase
             ->post(route('bib-reservations.release', $reservation))
             ->assertForbidden();
 
-        Feature::define(LicencesAndProducts::class, fn () => false);
+        Feature::define(LicencesAndEnrollments::class, fn () => false);
 
         $this->actingAs(User::factory()->organizer()->create())
             ->post(route('bib-reservations.confirm', $reservation))

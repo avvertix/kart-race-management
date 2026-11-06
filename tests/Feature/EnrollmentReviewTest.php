@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\BibReservationStatus;
+use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
-use App\Enums\OrderStatus;
 use App\Events\EnrollmentConfirmed;
 use App\Events\EnrollmentRevoked;
 use App\Models\BibReservation;
@@ -14,17 +14,16 @@ use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
-use App\Models\Order;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Illuminate\Support\Facades\Event;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class EnrollmentReviewTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_organizer_lists_the_submitted_enrollments_oldest_first(): void
@@ -72,8 +71,7 @@ class EnrollmentReviewTest extends TestCase
         Event::fake([EnrollmentConfirmed::class]);
 
         $organizer = User::factory()->organizer()->create();
-        $order = Order::factory()->create(['status' => OrderStatus::Paid]);
-        $enrollment = Enrollment::factory()->recycle($this->championshipWithEnrollment())->create(['order_id' => $order->getKey()]);
+        $enrollment = Enrollment::factory()->recycle($this->championshipWithEnrollment())->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::Paid]);
         $reservation = BibReservation::factory()->pending()->recycle($enrollment->championship)->create(['enrollment_id' => $enrollment->getKey()]);
 
         $this->actingAs($organizer)
@@ -126,7 +124,8 @@ class EnrollmentReviewTest extends TestCase
     public function test_an_unpaid_enrollment_cannot_be_confirmed(): void
     {
         $enrollment = Enrollment::factory()->recycle($this->championshipWithEnrollment())->create([
-            'order_id' => Order::factory()->create(['status' => OrderStatus::PaymentSubmitted])->getKey(),
+            'amount' => 9000,
+            'payment_status' => EnrollmentPaymentStatus::PaymentSubmitted,
         ]);
 
         $this->assertConfirmationRefused($enrollment, 'The payment is not confirmed yet.');
@@ -147,8 +146,7 @@ class EnrollmentReviewTest extends TestCase
     public function test_the_organizer_rejects_an_enrollment_with_a_reason(): void
     {
         $organizer = User::factory()->organizer()->create();
-        $order = Order::factory()->create(['status' => OrderStatus::AwaitingPayment]);
-        $enrollment = Enrollment::factory()->recycle($this->championshipWithEnrollment())->create(['order_id' => $order->getKey()]);
+        $enrollment = Enrollment::factory()->recycle($this->championshipWithEnrollment())->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::AwaitingPayment]);
         $reservation = BibReservation::factory()->pending()->recycle($enrollment->championship)->create(['enrollment_id' => $enrollment->getKey()]);
 
         $this->actingAs($organizer)
@@ -163,7 +161,6 @@ class EnrollmentReviewTest extends TestCase
 
         $this->assertSame(EnrollmentStatus::Rejected, $enrollment->status);
         $this->assertSame('The licence is not valid for this championship.', $enrollment->rejection_reason);
-        $this->assertSame(OrderStatus::Cancelled, $order->fresh()->status);
         $this->assertSame(BibReservationStatus::Released, $reservation->fresh()->status);
     }
 
@@ -171,15 +168,14 @@ class EnrollmentReviewTest extends TestCase
     {
         Event::fake([EnrollmentRevoked::class]);
 
-        $order = Order::factory()->create(['status' => OrderStatus::Paid]);
-        $enrollment = Enrollment::factory()->confirmed()->recycle($this->championshipWithEnrollment())->create(['order_id' => $order->getKey()]);
+        $enrollment = Enrollment::factory()->confirmed()->recycle($this->championshipWithEnrollment())->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::Paid]);
 
         $this->actingAs(User::factory()->organizer()->create())
             ->post(route('enrollments.withdraw', $enrollment))
             ->assertRedirect(route('enrollments.show', $enrollment));
 
         $this->assertSame(EnrollmentStatus::Withdrawn, $enrollment->fresh()->status);
-        $this->assertSame(OrderStatus::Paid, $order->fresh()->status);
+        $this->assertSame(EnrollmentPaymentStatus::Paid, $enrollment->fresh()->payment_status);
 
         Event::assertDispatched(EnrollmentRevoked::class);
     }
@@ -208,7 +204,7 @@ class EnrollmentReviewTest extends TestCase
         $this->assertTrue($enrollment->licence->is($licence));
         $this->assertTrue($enrollment->user->is($licence->user));
         $this->assertSame(EnrollmentStatus::Submitted, $enrollment->status);
-        $this->assertNull($enrollment->order_id);
+        $this->assertSame(EnrollmentPaymentStatus::NotDue, $enrollment->payment_status);
     }
 
     public function test_the_organizer_pages_need_enrollment_enabled(): void

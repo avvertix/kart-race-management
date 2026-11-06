@@ -10,12 +10,12 @@ use App\Models\DriverLicence;
 use App\Models\EnrollmentOption;
 use App\Models\User;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class EnrollmentOptionTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_the_organizer_configures_the_kartsport_options(): void

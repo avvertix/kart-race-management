@@ -14,7 +14,7 @@ The new features are released while championships are running on the live platfo
 | Enrollment | Not available | Optional, free or paid |
 | Points eligibility | Existing wildcard rules | Can also be "based on enrollment" |
 | Race numbers 1–999 | Reserved by the organizer | Also picked by drivers when enrolling |
-| Race fee discounts | Bonuses | Entitlements from promo codes and packages |
+| Race fee discounts | Bonuses | Entitlements from promo codes and enrollment options |
 
 ## Temporary workarounds to remove
 

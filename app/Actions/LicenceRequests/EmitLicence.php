@@ -6,7 +6,6 @@ namespace App\Actions\LicenceRequests;
 
 use App\Actions\Enrollments\GrantEnrollmentEntitlements;
 use App\Actions\Enrollments\RejectEnrollment;
-use App\Actions\Orders\GrantPackages;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceSource;
@@ -16,7 +15,6 @@ use App\Models\Enrollment;
 use App\Models\Entitlement;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
-use App\Models\Order;
 use App\Models\User;
 use App\Notifications\LicenceEmitted;
 use App\Rules\LicenseNumberValidationRule;
@@ -33,10 +31,10 @@ use Throwable;
 class EmitLicence
 {
     /**
-     * Create the Licence the provider emitted for a verified request, paid or covered by a package, with its temporary licence
+     * Create the Licence the provider emitted for a verified request, paid or covered by an Enrollment, with its temporary licence
      * PDF. The Licence takes the request's holder, Licence Type and competitor licence, and is managed by the requester.
      * The Enrollments waiting for the request move to the new Licence, and their race numbers are bound to it. Paid
-     * Packages of the request and of those Enrollments are granted. Enrollments waiting in a championship of another year
+     * Enrollments get the race fee discounts of their options. Enrollments waiting in a championship of another year
      * refuse the Licence, and those of a Driver already enrolled there are rejected.
      *
      * @throws ValidationException when the request is not verified or paid, the input is not valid or the number is already registered
@@ -149,7 +147,7 @@ class EmitLicence
             throw $exception;
         }
 
-        $this->grantPackagesOf($licence);
+        $this->grantEntitlementsOf($licence);
 
         $licence->user->notify(new LicenceEmitted($licence));
 
@@ -172,20 +170,10 @@ class EmitLicence
     }
 
     /**
-     * Grant the paid Packages waiting for the Licence, the one covering its request and those paying the active
-     * Enrollments that moved to it, and the race fee discounts of those Enrollments' options.
+     * Grant the race fee discounts of the options of the active Enrollments that moved to the Licence.
      */
-    private function grantPackagesOf(Licence $licence): void
+    private function grantEntitlementsOf(Licence $licence): void
     {
-        $grantPackages = app(GrantPackages::class);
-
-        $orders = Order::query()
-            ->whereIn('id', LicenceRequest::query()->whereKey($licence->licence_request_id)->whereNotNull('covering_order_id')->select('covering_order_id'))
-            ->orWhereIn('id', Enrollment::query()->where('licence_id', $licence->getKey())->active()->whereNotNull('order_id')->select('order_id'))
-            ->get();
-
-        $orders->each(fn (Order $order) => $grantPackages($order));
-
         $grantEnrollmentEntitlements = app(GrantEnrollmentEntitlements::class);
 
         Enrollment::query()->where('licence_id', $licence->getKey())->active()->get()

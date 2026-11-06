@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Http\Controllers\BibReservationController;
 use App\Http\Controllers\BibReservationImportController;
 use App\Http\Controllers\BibReservationStatusController;
@@ -42,10 +42,8 @@ use App\Http\Controllers\LicenceRequestReviewController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\MyEnrollmentController;
 use App\Http\Controllers\MyLicenceController;
-use App\Http\Controllers\MyOrderController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrbitsBackupController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ParticipantFederationAuthorizationController;
 use App\Http\Controllers\ParticipantPaymentController;
 use App\Http\Controllers\ParticipantSignatureNotificationController;
@@ -56,12 +54,9 @@ use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductGrantController;
 use App\Http\Controllers\PromoCodeClaimController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicChampionshipEnrollmentController;
-use App\Http\Controllers\PublicProductController;
 use App\Http\Controllers\PublicPromoCodeController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceCombinedResultController;
@@ -262,7 +257,7 @@ Route::middleware([
 
         Route::resource('users', UserController::class)->except(['show']);
 
-        Route::middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))->group(function () {
+        Route::middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))->group(function () {
             Route::get('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'edit'])->name('championships.enrollment-settings.edit');
             Route::put('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'update'])->name('championships.enrollment-settings.update');
             Route::get('championships/{championship}/enrollment-options/create', [ChampionshipEnrollmentOptionController::class, 'create'])->name('championships.enrollment-options.create');
@@ -293,57 +288,32 @@ Route::middleware([
             Route::post('enrollments/{enrollment}/payment/reject', [EnrollmentReviewController::class, 'rejectPayment'])->name('enrollments.payment.reject');
             Route::put('enrollments/{enrollment}/option', [EnrollmentReviewController::class, 'option'])->name('enrollments.option.update');
 
-            Route::resource('products', ProductController::class)->except(['show', 'destroy']);
-            Route::post('products/{product}/grants', [ProductGrantController::class, 'store'])->name('products.grants.store');
-            Route::delete('product-grants/{productGrant}', [ProductGrantController::class, 'destroy'])->name('product-grants.destroy');
-
             Route::resource('licences', LicenceController::class)->only(['index', 'show']);
             Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');
 
             Route::get('licence-requests', [LicenceRequestReviewController::class, 'index'])->name('licence-request-reviews.index');
             Route::livewire('licence-requests/{licenceRequest}', LicenceRequestReview::class)->name('licence-request-reviews.show');
-
-            Route::resource('orders', OrderController::class)->only(['index', 'show']);
-            Route::put('orders/{order}/price', [OrderController::class, 'price'])->name('orders.price');
-            Route::post('orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
-            Route::post('orders/{order}/reject-payment', [OrderController::class, 'rejectPayment'])->name('orders.reject-payment');
         });
 
     });
 
-// Products, open to everyone, and the licences and orders of the signed-in user, while in early access (see App\Features\LicencesAndProducts)
+// Championship enrollment, promo codes, and the licences and enrollments of the signed-in user, while in early access (see App\Features\LicencesAndEnrollments)
 
 Route::get('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'show'])
-    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
     ->name('public.championships.enrollment');
 
 Route::get('promo-codes/{promoCode}', [PublicPromoCodeController::class, 'show'])
-    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
     ->name('public.promo-codes.show');
-
-Route::get('products', [PublicProductController::class, 'index'])
-    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
-    ->name('public.products.index');
-
-Route::get('products/{product}', [PublicProductController::class, 'show'])
-    ->middleware(EnsureFeaturesAreActive::using(LicencesAndProducts::class))
-    ->name('public.products.show');
-
-Route::get('products/{product}/register', [PublicProductController::class, 'register'])
-    ->middleware(['guest', EnsureFeaturesAreActive::using(LicencesAndProducts::class)])
-    ->name('public.products.register');
 
 Route::middleware([
     'auth',
     'auth.session',
     'verified',
     DenyAgentMiddleware::class,
-    EnsureFeaturesAreActive::using(LicencesAndProducts::class),
+    EnsureFeaturesAreActive::using(LicencesAndEnrollments::class),
 ])->group(function () {
-    Route::get('products/{product}/continue', [PublicProductController::class, 'continue'])->name('public.products.continue');
-
-    Route::post('products/{product}/order', [PublicProductController::class, 'order'])->name('public.products.order');
-
     Route::post('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'store'])->name('public.championships.enrollment.store');
     Route::get('my-enrollments/{enrollment}', [MyEnrollmentController::class, 'show'])->name('my-enrollments.show');
     Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
@@ -364,8 +334,6 @@ Route::middleware([
         ->middleware('throttle:30,1')
         ->name('my-enrollments.race-number.update');
 
-    Route::get('orders/{order}', [MyOrderController::class, 'show'])->name('my-orders.show');
-
     Route::resource('licences', MyLicenceController::class)->names('my-licences');
 
     Route::post('licence-requests', [LicenceRequestController::class, 'store'])->name('licence-requests.store');
@@ -381,10 +349,6 @@ Route::middleware([
     Route::get('licences/{licence}/temporary-licence', [MyLicenceController::class, 'temporaryLicence'])
         ->middleware('signed')
         ->name('my-licences.temporary-licence');
-
-    Route::post('orders/{order}/payment', [MyOrderController::class, 'pay'])
-        ->middleware('throttle:10,10')
-        ->name('my-orders.payment.store');
 
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('notifications/read', [NotificationController::class, 'readAll'])->name('notifications.read-all');

@@ -98,7 +98,7 @@ return [
         'awaiting_payment' => 'To pay',
         'payment_submitted' => 'Proof uploaded',
         'paid' => 'Paid',
-        'covered' => 'Covered by a package',
+        'covered' => 'Covered by the enrollment',
     ],
 
     'enrollment_payment_status' => [

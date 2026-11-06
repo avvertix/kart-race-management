@@ -4,8 +4,8 @@ Judgement rules for reviewing a diff. Mechanical rules are checked by tools: Pin
 
 ## Consistency under concurrency
 
-- **Lock order**: lock the championship first, then the Licence Request, Enrollment or Order it touches, ordered by id when locking several. A new action follows the order of `CreateEnrollment` and `ChangeEnrollmentLicence`.
-- **Recheck under the lock**: what was validated before the transaction (a request still open, an Order still unused, an Enrollment still submitted) is checked again after locking, as `CreateEnrollment` rechecks `enrollableIn`.
+- **Lock order**: lock the championship first, then the Licence Request or Enrollment it touches, ordered by id when locking several. A new action follows the order of `CreateEnrollment` and `ChangeEnrollmentLicence`.
+- **Recheck under the lock**: what was validated before the transaction (a request still open, an Enrollment still submitted) is checked again after locking, as `CreateEnrollment` rechecks `enrollableIn`.
 - **Side effects inside**: changes that must hold together with the main change (rejecting a duplicate, moving Enrollments to a new request) run in the same transaction. Notifications extend `AccountNotification`, queued after commit, so sending them inside a transaction is fine.
 
 ## Payments

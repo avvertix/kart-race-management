@@ -7,13 +7,11 @@ namespace App\Actions\Enrollments;
 use App\Actions\LicenceRequests\StartLicenceRenewal;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
-use App\Enums\OrderStatus;
 use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
-use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -29,7 +27,7 @@ class ChangeEnrollmentLicence
     /**
      * Give a submitted Enrollment whose Licence Request was rejected another Licence: one of the User, an open request,
      * or a renewal started now for the championship's year. The Enrollment keeps its payment and race number; when its
-     * option covers the renewal, or a Package bought on its own does, the new or chosen request is covered too, unless
+     * option covers the renewal, the new or chosen request is covered too, unless
      * another request already uses that cover. A Licence already holding a race number in the championship can't take one more.
      *
      * @param  array{licence?: ?string, licence_request?: ?string, renew?: ?string}  $input  ULIDs, or `new` to renew a licence not on the platform
@@ -51,8 +49,6 @@ class ChangeEnrollmentLicence
                 throw ValidationException::withMessages(['enrollment' => __('The enrollment still waits for its licence request.')]);
             }
 
-            $order = $locked->order_id === null ? null : Order::query()->whereKey($locked->order_id)->lockForUpdate()->first();
-            $renewalOrder = $order !== null && $order->status !== OrderStatus::Cancelled && $order->hasUnusedRenewal() ? $order : null;
             $coversRenewal = $locked->option?->covers_licence_renewal === true
                 && LicenceRequest::query()->where('covering_enrollment_id', $locked->getKey())->where('status', '!=', LicenceRequestStatus::Rejected)->doesntExist();
 
@@ -71,7 +67,6 @@ class ChangeEnrollmentLicence
                 $licenceRequest = ($this->startLicenceRenewal)(
                     $user,
                     Licence::findByUlid($validated['renew'] === SubmitEnrollment::RENEW_NEW ? null : $validated['renew']),
-                    $renewalOrder,
                     $championship->start_at->year,
                 );
             }

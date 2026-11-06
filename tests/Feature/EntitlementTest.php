@@ -27,7 +27,7 @@ use Tests\CreateCompetitor;
 use Tests\CreateDriver;
 use Tests\CreateMechanic;
 use Tests\CreateVehicle;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class EntitlementTest extends TestCase
@@ -36,7 +36,7 @@ class EntitlementTest extends TestCase
     use CreateDriver;
     use CreateMechanic;
     use CreateVehicle;
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_a_user_claims_a_code_for_a_licence_valid_in_the_championship_year(): void
@@ -212,7 +212,7 @@ class EntitlementTest extends TestCase
 
         $championship = $this->championship();
         $code = PromoCode::factory()->recycle($championship)->create(['amount' => 3]);
-        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Paid]);
         $race = Race::factory()->recycle($championship)->create();
         $category = Category::factory()->recycle($championship)->create();
 

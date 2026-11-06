@@ -34,7 +34,7 @@
     $steps = array_filter([
         [__('Submitted'), $licenceRequest->submitted_at !== null, $status === LicenceRequestStatus::Draft, $licenceRequest->submitted_at],
         [$isChangesRequested ? __('Organizer review: waiting for your fixes') : __('Organizer review'), $licenceRequest->verified_at !== null, in_array($status, [LicenceRequestStatus::Submitted, LicenceRequestStatus::InReview, LicenceRequestStatus::ChangesRequested], true), $licenceRequest->verified_at],
-        [$licenceRequest->payment_status === LicenceRequestPaymentStatus::Covered ? ($licenceRequest->covering_enrollment_id ? __('Covered by your enrollment') : __('Covered by your order')) : __('Payment'), $isPaymentSettled, $status === LicenceRequestStatus::Verified && ! $isPaymentSettled, $licenceRequest->paid_at],
+        [$licenceRequest->payment_status === LicenceRequestPaymentStatus::Covered ? __('Covered by your enrollment') : __('Payment'), $isPaymentSettled, $status === LicenceRequestStatus::Verified && ! $isPaymentSettled, $licenceRequest->paid_at],
         $licenceRequest->forwarded_at !== null ? [__('Sent to :provider', ['provider' => $licenceRequest->provider?->label()]), true, false, $licenceRequest->forwarded_at] : null,
         [__('Licence emitted'), $licenceRequest->emitted_at !== null, $isPaymentSettled && in_array($status, LicenceRequestStatus::verified(), true), $licenceRequest->emitted_at],
     ]);
@@ -187,8 +187,6 @@
                 @case (LicenceRequestPaymentStatus::Covered)
                     @if ($licenceRequest->coveringEnrollment)
                         <p class="text-sm text-zinc-600">{{ __('Covered by your enrollment in :championship.', ['championship' => $licenceRequest->coveringEnrollment->championship->title]) }} <a href="{{ route('my-enrollments.show', $licenceRequest->coveringEnrollment) }}" class="text-orange-600 hover:text-orange-900">{{ __('View the enrollment') }}</a></p>
-                    @else
-                        <p class="text-sm text-zinc-600">{{ __('Covered by your order :order.', ['order' => $licenceRequest->coveringOrder?->ulid]) }}</p>
                     @endif
                     @break
             @endswitch

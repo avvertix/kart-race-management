@@ -10,23 +10,21 @@ use App\Data\HolderData;
 use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestPaymentStatus;
-use App\Enums\OrderStatus;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
-use App\Models\Order;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
-use Tests\EnablesLicencesAndProducts;
+use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
 
 class EnrollmentTest extends TestCase
 {
-    use EnablesLicencesAndProducts;
+    use EnablesLicencesAndEnrollments;
     use FastRefreshDatabase;
 
     public function test_a_championship_without_enrollment_shows_nothing_new(): void
@@ -68,7 +66,6 @@ class EnrollmentTest extends TestCase
         $this->assertSame(EnrollmentStatus::Submitted, $enrollment->status);
         $this->assertTrue($enrollment->licence->is($licence));
         $this->assertTrue($enrollment->user->is($driver));
-        $this->assertNull($enrollment->order_id);
 
         $this->actingAs($driver)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$licence->ulid])
@@ -90,7 +87,6 @@ class EnrollmentTest extends TestCase
         $enrollment = $championship->enrollments()->sole();
 
         $response->assertRedirect(route('my-enrollments.show', $enrollment));
-        $this->assertNull($enrollment->order_id);
         $this->assertSame(EnrollmentPaymentStatus::AwaitingPayment, $enrollment->payment_status);
         $this->assertSame(15000, $enrollment->amount);
         $this->assertTrue($enrollment->option->is($championship->enrollmentOptions()->sole()));
@@ -148,7 +144,7 @@ class EnrollmentTest extends TestCase
         Notification::fake();
 
         $championship = $this->openChampionship();
-        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Covered]);
+        $licenceRequest = LicenceRequest::factory()->verified()->create(['payment_status' => LicenceRequestPaymentStatus::Paid]);
 
         $this->actingAs($licenceRequest->user)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence_request:'.$licenceRequest->ulid])
@@ -180,18 +176,16 @@ class EnrollmentTest extends TestCase
         $this->assertSame(EnrollmentStatus::Submitted, $enrollment->fresh()->status);
     }
 
-    public function test_the_driver_withdraws_a_submitted_enrollment_and_its_unpaid_order_is_cancelled(): void
+    public function test_the_driver_withdraws_a_submitted_enrollment_awaiting_payment(): void
     {
         $driver = User::factory()->create();
-        $order = $this->orderFor($driver);
-        $enrollment = Enrollment::factory()->for($driver)->create(['order_id' => $order->getKey()]);
+        $enrollment = Enrollment::factory()->for($driver)->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::AwaitingPayment]);
 
         $this->actingAs($driver)
             ->post(route('my-enrollments.withdraw', $enrollment))
             ->assertRedirect(route('my-enrollments.show', $enrollment));
 
         $this->assertSame(EnrollmentStatus::Withdrawn, $enrollment->fresh()->status);
-        $this->assertSame(OrderStatus::Cancelled, $order->fresh()->status);
     }
 
     public function test_the_driver_cannot_withdraw_a_confirmed_enrollment(): void
@@ -221,10 +215,5 @@ class EnrollmentTest extends TestCase
         $holder->birth_date = now()->subYears($years)->toDateString();
 
         return $holder;
-    }
-
-    private function orderFor(User $user): Order
-    {
-        return Order::factory()->for($user)->create(['status' => OrderStatus::AwaitingPayment]);
     }
 }

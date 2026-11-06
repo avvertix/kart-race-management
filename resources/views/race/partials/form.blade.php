@@ -133,10 +133,10 @@
                         <x-input-error for="bonus_enabled" class="mt-2" />
                     </div>
                     @if ($championship->entitlements_enabled)
-                        @feature(\App\Features\LicencesAndProducts::class)
+                        @feature(\App\Features\LicencesAndEnrollments::class)
                             <div class="col-span-6 sm:col-span-4">
-                                <x-label for="entitlements_enabled" value="{{ __('Promo codes and packages') }}" />
-                                <p class="text-zinc-600 text-sm">{{ __('Whether promo codes and packages reduce the race fee of this race.') }}</p>
+                                <x-label for="entitlements_enabled" value="{{ __('Promo codes and enrollment discounts') }}" />
+                                <p class="text-zinc-600 text-sm">{{ __('Whether promo codes and enrollment discounts reduce the race fee of this race.') }}</p>
                                 <flux:select name="entitlements_enabled" id="entitlements_enabled" class="mt-1 block w-full">
                                     <option value="" @selected(old('entitlements_enabled', optional($race ?? null)->entitlements_enabled) !== false && old('entitlements_enabled') !== 'false')>{{ __('Apply, as in the championship') }}</option>
                                     <option value="false" @selected(old('entitlements_enabled', optional($race ?? null)->entitlements_enabled) === false || old('entitlements_enabled') === 'false')>{{ __('Don\'t apply to this race') }}</option>

@@ -8,7 +8,7 @@ use App\Actions\PrepareRegistrationLicencePickers;
 use App\Actions\RegisterParticipant;
 use App\Data\PaymentSettingsData;
 use App\Exceptions\InvalidParticipantSignatureException;
-use App\Features\LicencesAndProducts;
+use App\Features\LicencesAndEnrollments;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
 use App\Models\Participant;
@@ -75,7 +75,7 @@ class RaceRegistrationController extends Controller
                 // ignore invalid from param
             }
 
-            if (Feature::active(LicencesAndProducts::class)) {
+            if (Feature::active(LicencesAndEnrollments::class)) {
                 $licencePickers = app(PrepareRegistrationLicencePickers::class)($user, $race, $request->only(['driver_licence', 'competitor_licence', 'mechanic_licence']));
 
                 if ($licencePickers['template'] !== null) {

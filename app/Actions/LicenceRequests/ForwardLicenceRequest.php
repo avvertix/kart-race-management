@@ -14,7 +14,7 @@ class ForwardLicenceRequest
 {
     /**
      * Record that the verified request was handed to the Licence Provider, which emits the licence later. It is optional:
-     * a licence the provider emits at once is emitted from the verified request. It must be paid, or covered by a package.
+     * a licence the provider emits at once is emitted from the verified request. It must be paid, or covered by a paid Enrollment.
      *
      * @throws ValidationException when the request is not verified or not paid
      */

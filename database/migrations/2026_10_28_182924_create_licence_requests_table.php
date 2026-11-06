@@ -63,9 +63,6 @@ return new class extends Migration
 
             $table->timestamp('paid_at')->nullable();
 
-            // The paid Promotional Package Order covering the renewal
-            $table->foreignId('covering_order_id')->nullable();
-
             // The Licence created on emission
             $table->foreignId('licence_id')->nullable();
 

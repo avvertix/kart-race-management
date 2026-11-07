@@ -17,8 +17,7 @@ class ExportRacePrefinaleGridController extends Controller
     {
         $this->authorize('create', Transponder::class);
 
-        $bibs = $buildGrids($race)
-            ->flatMap(fn (array $grid) => $grid['prefinale']['grid'] ?? collect())
+        $bibs = ($buildGrids->prefinale($race)['grid'] ?? collect())
             ->map(fn (array $row) => $row['result']->bib)
             ->values();
 

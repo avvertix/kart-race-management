@@ -32,6 +32,13 @@ class RunTypeTest extends TestCase
             ['qualifying - 4 TEMPI TUTTI - Results.xml'],
             ['cronometrate - 60 MINI GR.3 - Results.xml'],
             ['prove cronometrate - 60 MINI GR.3 - Results.xml'],
+        ];
+    }
+
+    public static function qualifying_series_file_names()
+    {
+        return [
+            ['2. Qualifiche   Qualifying - 60 MINI GR.3 U.10 - gruppo 2.xml'],
             ['Qualifiche Serie 1 - 125 KZ N OVER - Results.xml'],
             ['Serie 2 - 125 KZ N OVER - Results.xml'],
             ['Series 1 - 125 KZ N OVER - Results.xml'],
@@ -90,6 +97,22 @@ class RunTypeTest extends TestCase
 
         $this->assertEquals(RunType::QUALIFY, $runType);
         $this->assertTrue($runType->isQualify());
+    }
+
+    #[DataProvider('qualifying_series_file_names')]
+    public function test_qualifying_series_recognized(string $file): void
+    {
+        $runType = RunType::fromString($file);
+
+        $this->assertEquals(RunType::QUALIFY_SERIES, $runType);
+        $this->assertTrue($runType->isQualifySeries());
+        $this->assertTrue($runType->isQualify());
+        $this->assertTrue($runType->isWorkingSession());
+    }
+
+    public function test_only_series_and_heats_are_working_sessions(): void
+    {
+        $this->assertSame([15, 25], RunType::workingSessionValues());
     }
 
     #[DataProvider('first_race_session_file_names')]

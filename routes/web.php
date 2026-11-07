@@ -44,6 +44,7 @@ use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
+use App\Http\Controllers\RaceCombinedResultController;
 use App\Http\Controllers\RaceCommunicationImportController;
 use App\Http\Controllers\RaceCommunicationsController;
 use App\Http\Controllers\RaceController;
@@ -166,6 +167,10 @@ Route::middleware([
         Route::get('races/{race}/heat-grids/export', ExportRacePrefinaleGridController::class)->name('races.export.prefinale-grid');
 
         Route::get('races/{race}/heat-grids/export/heats/{heat}', ExportRaceHeatGridController::class)->whereNumber('heat')->name('races.export.heat-grid');
+
+        Route::post('races/{race}/results/combine-qualifying', [RaceCombinedResultController::class, 'qualifying'])->name('races.results.combine-qualifying');
+
+        Route::post('races/{race}/results/combine-heats', [RaceCombinedResultController::class, 'heats'])->name('races.results.combine-heats');
 
         Route::get('races/{race}/heat-grids', [RaceHeatGridController::class, 'index'])->name('races.heat-grids.index');
 

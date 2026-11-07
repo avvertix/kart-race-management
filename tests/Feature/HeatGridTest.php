@@ -163,6 +163,19 @@ class HeatGridTest extends TestCase
         $this->assertSame([2, 1], $this->bibs($byQualifying['grid']));
     }
 
+    public function test_prefinale_grid_holds_at_most_the_track_capacity(): void
+    {
+        $heatOne = collect(range(1, 20))->map(fn (int $position) => $this->heatRow(1, $position, $position, '8:30.000'));
+        $heatTwo = collect(range(1, 20))->map(fn (int $position) => $this->heatRow(2, 100 + $position, $position, '8:40.000'));
+
+        $grid = (new CalculatePrefinaleGrid)(collect([$heatOne, $heatTwo]), collect(), 36);
+
+        $this->assertCount(36, $grid['grid']);
+        $this->assertSame(36, $grid['grid']->last()['position']);
+        $this->assertSame(18, (int) ceil($grid['grid']->last()['position'] / 2));
+        $this->assertSame([19, 119, 20, 120], $this->bibs($grid['not_admitted']));
+    }
+
     public function test_prefinale_grid_leaves_out_drivers_who_did_not_start(): void
     {
         $grid = (new CalculatePrefinaleGrid)(collect([
@@ -219,7 +232,7 @@ class HeatGridTest extends TestCase
         $this->assertSame('KZ', $grid['category']);
         $this->assertSame([1, 3], $this->bibs($grid['assignment'][1]));
         $this->assertSame([2, 4], $this->bibs($grid['assignment'][2]));
-        $this->assertSame([2, 1, 4, 3], $this->bibs($grid['prefinale']['grid']));
+        $this->assertSame([2, 1, 4, 3], $this->bibs($response->viewData('prefinale')['grid']));
     }
 
     public function test_heat_grids_page_requires_authentication(): void

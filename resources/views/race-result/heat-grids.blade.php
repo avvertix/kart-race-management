@@ -22,6 +22,37 @@
             </div>
         </div>
 
+        @can('create', \App\Models\RunResult::class)
+            <div class="mb-8 rounded-md bg-white p-4 shadow-sm ring-1 ring-black/5 print:hidden">
+                <h3 class="font-semibold text-zinc-800 mb-1">{{ __('Combined results') }}</h3>
+                <p class="text-sm text-zinc-500 mb-3">{{ __('Series and heats are never published. Combine them in one result to score and publish it. Combining again replaces the previous one.') }}</p>
+
+                @error('combine')
+                    <p class="text-sm text-red-700 mb-3">{{ $message }}</p>
+                @enderror
+
+                <div class="flex flex-wrap items-end gap-6">
+                    <form method="post" action="{{ route('races.results.combine-qualifying', $race) }}">
+                        @csrf
+                        <x-secondary-button type="submit">{{ __('Combine qualifying series') }}</x-secondary-button>
+                    </form>
+
+                    <form method="post" action="{{ route('races.results.combine-heats', $race) }}" class="flex items-end gap-2">
+                        @csrf
+                        <label class="text-sm text-zinc-600">
+                            {{ __('Classify the heats as') }}
+                            <select name="run_type" class="ml-2 rounded-md border-zinc-300 text-sm">
+                                @foreach ([\App\Models\RunType::RACE_1, \App\Models\RunType::RACE_2] as $type)
+                                    <option value="{{ $type->value }}">{{ $type->localizedName() }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <x-secondary-button type="submit">{{ __('Classify heats') }}</x-secondary-button>
+                    </form>
+                </div>
+            </div>
+        @endcan
+
         <form method="get" action="{{ route('races.heat-grids.index', $race) }}">
             @forelse ($grids as $grid)
                 @php
@@ -92,23 +123,37 @@
                         </p>
                     @endif
 
-                    <h4 class="font-semibold text-zinc-700 mb-2">{{ __('Pre-final grid') }}</h4>
+                </section>
+            @empty
+                <p class="text-zinc-600 p-4">{{ __('No qualifying results uploaded.') }}</p>
+            @endforelse
 
-                    @if ($grid['prefinale'] === null)
+            @if ($grids->isNotEmpty())
+                <section class="mb-10">
+                    <h3 class="font-semibold text-xl text-zinc-800 mb-1">{{ __('Pre-final grid') }}</h3>
+                    <p class="text-sm text-zinc-500 mb-3">
+                        {{ __('One grid for all the categories, at most :capacity drivers (:rows rows of two).', ['capacity' => \App\Actions\BuildRaceHeatGrids::TRACK_CAPACITY, 'rows' => \App\Actions\BuildRaceHeatGrids::TRACK_CAPACITY / 2]) }}
+                    </p>
+
+                    @if ($prefinale === null)
                         <p class="text-sm text-zinc-500">{{ __('Available once the heats have been run and their results uploaded.') }}</p>
                     @else
                         <x-table>
                             <x-slot name="head">
                                 <th scope="col" class="py-2 pl-4 pr-2 text-left text-sm font-semibold text-zinc-900">{{ __('Grid') }}</th>
+                                <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Row') }}</th>
                                 <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Bib') }}</th>
                                 <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Name') }}</th>
+                                <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Category') }}</th>
                                 <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Heat result') }}</th>
                             </x-slot>
-                            @foreach ($grid['prefinale']['grid'] as $row)
+                            @foreach ($prefinale['grid'] as $row)
                                 <tr>
                                     <td class="whitespace-nowrap py-2 pl-4 pr-2 text-sm font-semibold text-zinc-900">{{ $row['position'] }}</td>
+                                    <td class="whitespace-nowrap px-2 py-2 text-sm text-zinc-500">{{ (int) ceil($row['position'] / 2) }}</td>
                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-mono">{{ $row['result']->bib }}</td>
                                     <td class="px-2 py-2 text-sm text-zinc-900">{{ $row['result']->name }}</td>
+                                    <td class="whitespace-nowrap px-2 py-2 text-sm text-zinc-500">{{ $row['result']->category }}</td>
                                     <td class="whitespace-nowrap px-2 py-2 text-sm text-zinc-500">
                                         {{ __('Heat :number', ['number' => $row['heat']]) }} &middot; {{ $row['heat_position'] }}°
                                         @if ($row['heat_position'] === 1)
@@ -119,22 +164,27 @@
                             @endforeach
                         </x-table>
 
+                        @if ($prefinale['not_admitted']->isNotEmpty())
+                            <p class="text-sm text-red-700 mt-2">
+                                {{ __('Beyond the track capacity (:capacity drivers), not admitted:', ['capacity' => \App\Actions\BuildRaceHeatGrids::TRACK_CAPACITY]) }}
+                                {{ $prefinale['not_admitted']->map(fn ($row) => $row['position'].'. '.$row['result']->bib.' '.$row['result']->name)->join(', ') }}
+                            </p>
+                        @endif
+
                         <p class="text-sm text-zinc-500 mt-2">
                             {{ __('Heats ordered by the winner total time:') }}
-                            {{ $grid['prefinale']['heats']->map(fn ($heat) => $heat['heat'].'. '.$heat['winner']->name.' ('.$heat['winner']->total_race_time.')')->join(' — ') }}
+                            {{ $prefinale['heats']->map(fn ($heat) => $heat['heat'].'. '.$heat['winner']->name.' ('.$heat['winner']->total_race_time.')')->join(' — ') }}
                         </p>
 
-                        @if ($grid['prefinale']['excluded']->isNotEmpty())
+                        @if ($prefinale['excluded']->isNotEmpty())
                             <p class="text-sm text-red-700 mt-1">
                                 {{ __('Did not start or disqualified in heats, not placed:') }}
-                                {{ $grid['prefinale']['excluded']->map(fn ($result) => $result->bib.' '.$result->name)->join(', ') }}
+                                {{ $prefinale['excluded']->map(fn ($result) => $result->bib.' '.$result->name)->join(', ') }}
                             </p>
                         @endif
                     @endif
                 </section>
-            @empty
-                <p class="text-zinc-600 p-4">{{ __('No qualifying results uploaded.') }}</p>
-            @endforelse
+            @endif
 
             @if ($grids->isNotEmpty())
                 <div class="print:hidden">

@@ -277,7 +277,10 @@ class ResultRaceController extends Controller
     {
         $this->authorize('updateAny', RunResult::class);
 
-        $race->results()->whereNull('published_at')->update(['published_at' => now()]);
+        $race->results()
+            ->whereNull('published_at')
+            ->whereNotIn('run_type', RunType::workingSessionValues())
+            ->update(['published_at' => now()]);
 
         return redirect()->back()->with('flash.banner', __('All results published.'));
     }
@@ -317,6 +320,8 @@ class ResultRaceController extends Controller
 
         $this->authorize('update', $result);
 
+        abort_unless($result->canBePublished(), 422, __('Series and heats are not published, publish their combined results.'));
+
         $result->update([
             'published_at' => $result->isPublished() ? null : now(),
         ]);
@@ -337,7 +342,9 @@ class ResultRaceController extends Controller
 
         $this->authorize('delete', $result);
 
-        Storage::disk('race-results')->delete($result->file_name);
+        if (filled($result->file_name)) {
+            Storage::disk('race-results')->delete($result->file_name);
+        }
 
         $result->participantResults()->delete();
         $result->delete();

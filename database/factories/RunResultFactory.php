@@ -22,7 +22,7 @@ class RunResultFactory extends Factory
     {
         return [
             'race_id' => Race::factory(),
-            'run_type' => fake()->randomElement(RunType::cases())->value,
+            'run_type' => fake()->randomElement(array_filter(RunType::cases(), fn (RunType $type) => ! $type->isWorkingSession()))->value,
             'title' => fake()->sentence(3),
             'file_name' => fake()->word().'.xml',
         ];

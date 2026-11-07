@@ -20,6 +20,7 @@ class RunTypeTest extends TestCase
             ['warmup - 4 TEMPI TUTTI - Results.xml'],
             ['prove libere - 60 MINI GR.3 - Results.xml'],
             ['warm-up - 60 MINI GR.3 - Results.xml'],
+            ['prove libere Gruppo 1 - 60 MINI GR.3 - Results.xml'],
         ];
     }
 
@@ -31,6 +32,11 @@ class RunTypeTest extends TestCase
             ['qualifying - 4 TEMPI TUTTI - Results.xml'],
             ['cronometrate - 60 MINI GR.3 - Results.xml'],
             ['prove cronometrate - 60 MINI GR.3 - Results.xml'],
+            ['Qualifiche Serie 1 - 125 KZ N OVER - Results.xml'],
+            ['Serie 2 - 125 KZ N OVER - Results.xml'],
+            ['Series 1 - 125 KZ N OVER - Results.xml'],
+            ['Gruppo A - 125 KZ N OVER - Results.xml'],
+            ['Group B - 125 KZ N OVER - Results.xml'],
         ];
     }
 

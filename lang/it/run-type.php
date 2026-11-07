@@ -15,6 +15,7 @@ return [
     'types' => [
         'WARM_UP' => 'Prove Libere',
         'QUALIFY' => 'Qualifiche',
+        'HEAT' => 'Batterie',
         'RACE_1' => 'Pre-finale (Gara 1)',
         'RACE_2' => 'Finale (Gara 2)',
     ],

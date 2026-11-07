@@ -16,6 +16,9 @@
                         {{ __('Upload results') }}
                     </x-button-link>
                     @if ($runResults->isNotEmpty())
+                        <x-button-link href="{{ route('races.heat-grids.index', $race) }}">
+                            {{ __('Heats and grids') }}
+                        </x-button-link>
                         <form action="{{ route('races.results.link-participants', $race) }}" method="post">
                             @csrf
                             <x-secondary-button type="submit" class="">

@@ -14,10 +14,13 @@ class PrintRacePenaltySheet
 {
     public const WILDCARD_SUFFIX = ':wildcard';
 
+    public const MAX_ROWS_PER_SHEET = 36;
+
     public function __construct(
         private Race $race,
         private array $groups = [],
         private bool $separateWildcards = false,
+        private bool $splitLargeGroups = false,
     ) {}
 
     public function stream(string $filename = 'penalty-sheet.pdf')
@@ -72,7 +75,52 @@ class PrintRacePenaltySheet
         return collect($groups)
             ->map(fn (array $keys) => $this->buildGroupFromKeys($keys, $participants, $separateWildcards))
             ->filter(fn (array $group) => $group['participants']->isNotEmpty())
+            ->flatMap(fn (array $group) => $this->splitGroup($group))
             ->values();
+    }
+
+    /**
+     * Divide a group with more than MAX_ROWS_PER_SHEET participants into sheets of
+     * similar size, assigning participants by registration time (created_at).
+     *
+     * Sizes differ by at most one and the earlier sheets are the larger ones,
+     * e.g. 38 participants become 19 + 18.
+     *
+     * @param  array{title: string, participants: Collection, showCategory: bool, minRows: int}  $group
+     * @return array<int, array{title: string, participants: Collection, showCategory: bool, minRows: int}>
+     */
+    private function splitGroup(array $group): array
+    {
+        $total = $group['participants']->count();
+
+        if (! $this->splitLargeGroups || $total <= self::MAX_ROWS_PER_SHEET) {
+            return [$group];
+        }
+
+        $sheets = (int) ceil($total / self::MAX_ROWS_PER_SHEET);
+        $baseSize = intdiv($total, $sheets);
+        $remainder = $total % $sheets;
+
+        $sorted = $group['participants']
+            ->sortBy([['created_at', 'asc'], ['bib', 'asc']])
+            ->values();
+
+        $offset = 0;
+        $result = [];
+
+        for ($index = 0; $index < $sheets; $index++) {
+            $size = $baseSize + ($index < $remainder ? 1 : 0);
+
+            $result[] = $this->buildGroup(
+                $group['title'].' ('.($index + 1).'/'.$sheets.')',
+                $sorted->slice($offset, $size)->sortBy('bib')->values(),
+                $group['showCategory'],
+            );
+
+            $offset += $size;
+        }
+
+        return $result;
     }
 
     private function shouldSeparateWildcards(): bool
@@ -140,7 +188,7 @@ class PrintRacePenaltySheet
             'title' => $title,
             'participants' => $participants,
             'showCategory' => $showCategory,
-            'minRows' => max($participants->count(), 36),
+            'minRows' => max($participants->count(), self::MAX_ROWS_PER_SHEET),
         ];
     }
 

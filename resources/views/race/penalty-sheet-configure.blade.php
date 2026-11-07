@@ -29,6 +29,7 @@
                         groups: [],
                         nextId: 2,
                         separateWildcards: false,
+                        splitLargeGroups: false,
                         dragging: null,
                         dragOverGroupId: null,
 
@@ -39,6 +40,7 @@
                                 value ? this.addWildcardItems() : this.removeWildcardItems();
                                 this.saveToStorage();
                             });
+                            this.$watch('splitLargeGroups', () => this.saveToStorage());
                         },
 
                         expectedItems(separateWildcards) {
@@ -63,6 +65,7 @@
                                     const noExtra = storedUlids.every(u => currentUlids.includes(u));
                                     if (allPresent && noExtra) {
                                         this.separateWildcards = separateWildcards;
+                                        this.splitLargeGroups = parsed.splitLargeGroups ?? false;
                                         this.groups = parsed.groups;
                                         this.nextId = parsed.nextId ?? (parsed.groups.length + 1);
                                         return;
@@ -90,7 +93,7 @@
                         },
 
                         saveToStorage() {
-                            localStorage.setItem(storageKey, JSON.stringify({ groups: this.groups, nextId: this.nextId, separateWildcards: this.separateWildcards }));
+                            localStorage.setItem(storageKey, JSON.stringify({ groups: this.groups, nextId: this.nextId, separateWildcards: this.separateWildcards, splitLargeGroups: this.splitLargeGroups }));
                         },
 
                         addGroup() {
@@ -154,6 +157,9 @@
                             if (this.separateWildcards) {
                                 params.append('separate_wildcards', '1');
                             }
+                            if (this.splitLargeGroups) {
+                                params.append('split_large_groups', '1');
+                            }
                             const qs = params.toString();
                             return qs ? base + '?' + qs : base;
                         },
@@ -188,6 +194,23 @@
                         <span class="text-sm text-zinc-700">{{ __('Treat wildcards as separate categories') }}</span>
                     </div>
                 @endif
+
+                <div class="flex items-center gap-3">
+                    <button
+                        type="button"
+                        role="switch"
+                        :aria-checked="splitLargeGroups.toString()"
+                        @click="splitLargeGroups = ! splitLargeGroups"
+                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                        :class="splitLargeGroups ? 'bg-orange-600' : 'bg-zinc-300'"
+                    >
+                        <span
+                            class="pointer-events-none inline-block size-5 rounded-full bg-white shadow-sm transition-transform"
+                            :class="splitLargeGroups ? 'translate-x-5' : 'translate-x-0'"
+                        ></span>
+                    </button>
+                    <span class="text-sm text-zinc-700">{{ __('Split groups with more than :count participants into balanced sheets by registration time', ['count' => \App\Exports\PrintRacePenaltySheet::MAX_ROWS_PER_SHEET]) }}</span>
+                </div>
 
                 <div class="flex flex-wrap gap-4 items-start">
 

@@ -745,6 +745,34 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertCount(3, $breakdown['entries_by_race']->get($race->getKey()));
     }
 
+    public function test_day_award_uses_the_size_of_the_heats_classification_as_session_bonus(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+
+        $drivers = Participant::factory()->count(4)->recycle($championship)->recycle($race)->category($category)->create();
+
+        $heats = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_1, 'is_generated' => true]);
+        foreach ($drivers as $driver) {
+            $this->createResult($heats, $driver, 10);
+        }
+
+        $final = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::RACE_2]);
+        $this->createResult($final, $drivers[0], 20);
+        $this->createResult($final, $drivers[1], 18);
+
+        $award = ChampionshipAward::factory()->dayAward()->recycle($championship)->create();
+        $award->categories()->sync([$category->getKey()]);
+        $award->races()->sync([$race->getKey()]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertCount(4, $ranking);
+        $this->assertEquals([4, 4, 4, 4], $ranking->pluck('session_bonus')->all());
+        $this->assertEquals(34.0, $ranking[0]['total_points']);
+    }
+
     public function test_day_award_breaks_ties_by_session_size_then_race_and_qualifying_best_lap(): void
     {
         $championship = Championship::factory()->create();

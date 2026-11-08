@@ -221,6 +221,9 @@ class CalculateAwardRanking
      * For day awards each row also carries the smallest number of entries (all categories,
      * DNS and DNF included) among the sessions the participant raced in, and the best lap
      * times of race 1, race 2 and qualifying, all used to rank and break ties.
+     *
+     * When a race result is generated from the heats, its size (the sum of the heats) is the
+     * session size of that race, so a smaller final does not lower the bonus.
      */
     private function fetchPerRacePoints(Builder $query, bool $forDayAward = false): Collection
     {
@@ -232,6 +235,7 @@ class CalculateAwardRanking
             $query
                 ->joinSub($sessionSizes, 'session_sizes', 'session_sizes.run_result_id', '=', 'participant_results.run_result_id')
                 ->selectRaw('MIN(session_sizes.session_size) as session_size')
+                ->selectRaw('MAX(CASE WHEN run_results.is_generated = 1 AND run_results.run_type IN (?, ?) THEN session_sizes.session_size END) as heats_session_size', [RunType::RACE_1->value, RunType::RACE_2->value])
                 ->selectRaw('MAX(CASE WHEN run_results.run_type = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_1_best_lap_time', [RunType::RACE_1->value])
                 ->selectRaw('MAX(CASE WHEN run_results.run_type = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_2_best_lap_time', [RunType::RACE_2->value])
                 ->selectRaw('MAX(CASE WHEN run_results.run_type = ? THEN participant_results.best_lap_time END) as qualifying_best_lap_time', [RunType::QUALIFY->value]);
@@ -299,7 +303,9 @@ class CalculateAwardRanking
             ->map(function (Collection $raceRows) {
                 $first = $raceRows->first();
                 $pointsPerRace = $raceRows->mapWithKeys(fn ($row) => [$row->race_id => (float) $row->race_points]);
-                $sessionBonus = (int) $raceRows->min('session_size');
+                $sessionBonus = (int) $raceRows
+                    ->map(fn ($row) => $row->heats_session_size ?? $row->session_size)
+                    ->min();
 
                 return [
                     'participant_id' => $first->participant_id,

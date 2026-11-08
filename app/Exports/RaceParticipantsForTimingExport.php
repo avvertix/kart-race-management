@@ -17,8 +17,8 @@ class RaceParticipantsForTimingExport implements FromQuery, WithHeadings, WithMa
     use Exportable;
 
     public function __construct(
-        private Race $race,
-        private ?Collection $mappings = null
+        protected Race $race,
+        protected ?Collection $mappings = null
     ) {
         if (is_null($this->mappings)) {
             $this->mappings = $this->loadTransponderMappingsFromFile();

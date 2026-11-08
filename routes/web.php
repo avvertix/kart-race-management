@@ -24,10 +24,12 @@ use App\Http\Controllers\CopyChampionshipBibReservationsController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
 use App\Http\Controllers\CopyChampionshipTiresController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
+use App\Http\Controllers\ExportRaceHeatGridController;
 use App\Http\Controllers\ExportRaceParticipantsController;
 use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
+use App\Http\Controllers\ExportRacePrefinaleGridController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantFederationAuthorizationController;
@@ -42,9 +44,11 @@ use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
+use App\Http\Controllers\RaceCombinedResultController;
 use App\Http\Controllers\RaceCommunicationImportController;
 use App\Http\Controllers\RaceCommunicationsController;
 use App\Http\Controllers\RaceController;
+use App\Http\Controllers\RaceHeatGridController;
 use App\Http\Controllers\RaceImportController;
 use App\Http\Controllers\RaceInChampionshipController;
 use App\Http\Controllers\RaceParticipantController;
@@ -159,6 +163,16 @@ Route::middleware([
         Route::post('championships/{championship}/bib-reservations/copy', [CopyChampionshipBibReservationsController::class, 'store'])->name('championships.bib-reservations.store-copy');
 
         Route::resource('races.results', ResultRaceController::class)->shallow()->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+
+        Route::get('races/{race}/heat-grids/export', ExportRacePrefinaleGridController::class)->name('races.export.prefinale-grid');
+
+        Route::get('races/{race}/heat-grids/export/heats/{heat}', ExportRaceHeatGridController::class)->whereNumber('heat')->name('races.export.heat-grid');
+
+        Route::post('races/{race}/results/combine-qualifying', [RaceCombinedResultController::class, 'qualifying'])->name('races.results.combine-qualifying');
+
+        Route::post('races/{race}/results/combine-heats', [RaceCombinedResultController::class, 'heats'])->name('races.results.combine-heats');
+
+        Route::get('races/{race}/heat-grids', [RaceHeatGridController::class, 'index'])->name('races.heat-grids.index');
 
         Route::post('results/{result}/toggle-publish', [ResultRaceController::class, 'togglePublish'])->name('results.toggle-publish');
 

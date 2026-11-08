@@ -44,8 +44,8 @@ class OrbitsBackupController extends Controller
             'file' => [
                 'required',
                 File::defaults()
-                    ->extensions(['oxb', 'zip', '7z'])
-                    ->types(['application/x-7z-compressed', 'application/zip'])
+                    ->extensions(['oxb', 'zip', '7z', 'pdf'])
+                    ->types(['application/x-7z-compressed', 'application/zip', 'application/pdf'])
                     ->max(50 * 1024), // 50 MB maximum
             ],
             'championship' => [

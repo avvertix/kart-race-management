@@ -14,7 +14,9 @@ return [
 
     'types' => [
         'WARM_UP' => 'Free Practice',
+        'QUALIFY_SERIES' => 'Qualifying series',
         'QUALIFY' => 'Qualifying',
+        'HEAT' => 'Heats',
         'RACE_1' => 'Pre-final (Race 1)',
         'RACE_2' => 'Final (Race 2)',
     ],

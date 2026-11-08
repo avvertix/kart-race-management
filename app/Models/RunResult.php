@@ -24,6 +24,7 @@ class RunResult extends Model
         'title',
         'file_name',
         'published_at',
+        'is_generated',
     ];
 
     /**
@@ -76,7 +77,15 @@ class RunResult extends Model
      */
     public function isPublished(): bool
     {
-        return $this->published_at !== null;
+        return $this->published_at !== null && $this->canBePublished();
+    }
+
+    /**
+     * Series and heats are working sessions, only their combined classification is published.
+     */
+    public function canBePublished(): bool
+    {
+        return ! $this->run_type->isWorkingSession();
     }
 
     /**
@@ -89,6 +98,7 @@ class RunResult extends Model
         return [
             'run_type' => RunType::class,
             'published_at' => 'datetime',
+            'is_generated' => 'boolean',
         ];
     }
 }

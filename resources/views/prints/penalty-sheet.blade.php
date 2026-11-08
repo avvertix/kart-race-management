@@ -123,7 +123,7 @@
         </tbody>
     </table>
 
-    <div class="penalty-title">GESTIONE FUORI PESO / PENALITÀ</div>
+    {{-- <div class="penalty-title">GESTIONE FUORI PESO / PENALITÀ</div>
 
     <table class="penalty-outer">
         <tr>
@@ -170,7 +170,7 @@
                 </table>
             </td>
         </tr>
-    </table>
+    </table> --}}
 
 </div>
 @if (! $loop->last)

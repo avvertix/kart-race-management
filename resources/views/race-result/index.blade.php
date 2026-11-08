@@ -16,6 +16,9 @@
                         {{ __('Upload results') }}
                     </x-button-link>
                     @if ($runResults->isNotEmpty())
+                        <x-button-link href="{{ route('races.heat-grids.index', $race) }}">
+                            {{ __('Heats and grids') }}
+                        </x-button-link>
                         <form action="{{ route('races.results.link-participants', $race) }}" method="post">
                             @csrf
                             <x-secondary-button type="submit" class="">
@@ -90,6 +93,9 @@
                     <tr>
                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-zinc-900 sm:pl-6">
                             <a href="{{ route('results.show', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ $runResult->title }}</a>
+                            @if ($runResult->is_generated)
+                                <span class="ml-2 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">{{ __('Calculated') }}</span>
+                            @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                             {{ $runResult->participant_results_count }}
@@ -100,6 +106,8 @@
                         <td class="whitespace-nowrap px-3 py-4 text-sm">
                             @if ($runResult->isPublished())
                                 <span class="text-green-600">{{ __('Published') }}</span>
+                            @elseif (! $runResult->canBePublished())
+                                <span class="text-zinc-400">{{ __('Not published') }}</span>
                             @else
                                 <span class="text-zinc-400">{{ __('Draft') }}</span>
                             @endif
@@ -115,12 +123,14 @@
                                     @csrf
                                     <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Link') }}</button>
                                 </form>
-                                <form class="inline" action="{{ route('results.toggle-publish', $runResult) }}" method="post">
-                                    @csrf
-                                    <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">
-                                        {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
-                                    </button>
-                                </form>
+                                @if ($runResult->canBePublished())
+                                    <form class="inline" action="{{ route('results.toggle-publish', $runResult) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">
+                                            {{ $runResult->isPublished() ? __('Unpublish') : __('Publish') }}
+                                        </button>
+                                    </form>
+                                @endif
                                 <form class="inline" action="{{ route('results.destroy', $runResult) }}" method="post">
                                     @csrf
                                     @method('DELETE')

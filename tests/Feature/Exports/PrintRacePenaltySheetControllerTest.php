@@ -377,6 +377,90 @@ class PrintRacePenaltySheetControllerTest extends TestCase
         $this->assertCount(2, $groups[0]['participants']);
     }
 
+    public function test_large_group_is_split_by_registration_time_with_larger_first_sheet(): void
+    {
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Senior']);
+
+        // bib order is the reverse of registration order to prove created_at drives the split
+        foreach (range(1, 37) as $i) {
+            Participant::factory()->recycle($race->championship)->confirmed()->create([
+                'race_id' => $race->getKey(),
+                'category_id' => $category->getKey(),
+                'bib' => 100 - $i,
+                'created_at' => Carbon::parse('2024-01-01 10:00:00')->addMinutes($i),
+            ]);
+        }
+
+        $export = new PrintRacePenaltySheet($race, [], false, true);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(2, $groups);
+        $this->assertSame('Senior (1/2)', $groups[0]['title']);
+        $this->assertSame('Senior (2/2)', $groups[1]['title']);
+        $this->assertCount(19, $groups[0]['participants']);
+        $this->assertCount(18, $groups[1]['participants']);
+
+        $firstSheetCreatedAt = $groups[0]['participants']->max('created_at');
+        $secondSheetCreatedAt = $groups[1]['participants']->min('created_at');
+        $this->assertTrue($firstSheetCreatedAt < $secondSheetCreatedAt);
+    }
+
+    public function test_group_up_to_the_limit_is_not_split(): void
+    {
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Senior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(36)->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, [], false, true);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(1, $groups);
+        $this->assertSame('Senior', $groups[0]['title']);
+    }
+
+    public function test_large_group_is_not_split_when_not_requested(): void
+    {
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Senior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(38)->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, []);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertCount(1, $groups);
+        $this->assertCount(38, $groups[0]['participants']);
+    }
+
+    public function test_very_large_group_is_split_in_more_than_two_sheets(): void
+    {
+        $race = Race::factory()->create();
+        $category = Category::factory()->recycle($race->championship)->create(['name' => 'Senior']);
+
+        Participant::factory()->recycle($race->championship)->confirmed()->count(80)->create([
+            'race_id' => $race->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $export = new PrintRacePenaltySheet($race, [], false, true);
+
+        $groups = (fn () => $this->buildGroups())->call($export);
+
+        $this->assertSame([27, 27, 26], $groups->map(fn ($group) => $group['participants']->count())->all());
+        $this->assertSame('Senior (3/3)', $groups[2]['title']);
+    }
+
     public function test_wildcard_participants_are_marked_in_print(): void
     {
         $race = Race::factory()->create();

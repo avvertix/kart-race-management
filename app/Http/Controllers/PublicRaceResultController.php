@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Race;
 use App\Models\RunResult;
+use App\Models\RunType;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -20,6 +21,7 @@ class PublicRaceResultController extends Controller
 
         $groupedRunResults = $race->results()
             ->whereNotNull('published_at')
+            ->whereNotIn('run_type', RunType::workingSessionValues())
             ->withCount('participantResults')
             ->orderBy('run_type')
             ->get()

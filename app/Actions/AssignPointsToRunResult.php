@@ -13,6 +13,10 @@ class AssignPointsToRunResult
 {
     public function __invoke(RunResult $runResult, ChampionshipPointScheme $pointScheme): void
     {
+        if ($runResult->run_type->isWorkingSession()) {
+            return;
+        }
+
         $runResult->loadMissing('race');
 
         $race = $runResult->race;

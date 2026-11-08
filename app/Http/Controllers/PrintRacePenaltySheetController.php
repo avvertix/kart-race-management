@@ -23,6 +23,7 @@ class PrintRacePenaltySheetController extends Controller
             $race,
             $request->input('groups', []),
             $request->boolean('separate_wildcards'),
+            $request->boolean('split_large_groups'),
         ))->stream("{$filename}.pdf");
     }
 }

@@ -54,21 +54,25 @@
         @endcan
 
         <form method="get" action="{{ route('races.heat-grids.index', $race) }}">
-            @forelse ($grids as $grid)
+            @if ($grid === null)
+                <p class="text-zinc-600 p-4">{{ __('No qualifying results uploaded.') }}</p>
+            @else
                 @php
                     $ranking = $grid['ranking'];
                 @endphp
 
-                <section class="mb-10 break-inside-avoid">
+                <section class="mb-10">
                     <div class="flex items-end justify-between gap-4 mb-2">
-                        <h3 class="font-semibold text-xl text-zinc-800">{{ $grid['category'] }}</h3>
+                        <h3 class="font-semibold text-xl text-zinc-800">{{ __('Heats assignment from qualifying') }}</h3>
                         <label class="flex items-center gap-2 text-sm text-zinc-600 print:hidden">
                             {{ __('Number of heats') }}
-                            <input type="number" min="1" max="12" name="heats[{{ $grid['index'] }}]" value="{{ $grid['heats'] }}" class="w-20 rounded-md border-zinc-300 text-sm" />
+                            <input type="number" min="1" max="12" name="heats" value="{{ $grid['heats'] }}" class="w-20 rounded-md border-zinc-300 text-sm" />
                         </label>
                     </div>
 
-                    <h4 class="font-semibold text-zinc-700">{{ __('Heats assignment from qualifying') }}</h4>
+                    <p class="text-sm text-zinc-500 mb-1">
+                        {{ __('All the classes are in every heat:') }} {{ $grid['categories']->join(', ') }}.
+                    </p>
                     <p class="text-sm text-zinc-500 mb-3">
                         {{ trans_choice(':count qualifying series|:count qualifying series', $ranking['series']) }},
                         {{ trans_choice(':count driver|:count drivers', $ranking['ranked']->count() + $ranking['untimed']->count()) }}.
@@ -87,7 +91,7 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <h5 class="font-semibold text-zinc-700">{{ __('Heat :number', ['number' => $heat]) }}</h5>
                                     @can('create', \App\Models\Transponder::class)
-                                        <a href="{{ route('races.export.heat-grid', ['race' => $race, 'heat' => $heat, 'heats' => $grids->pluck('heats')->all()]) }}" class="text-sm text-orange-600 hover:text-orange-900 print:hidden">{{ __('Export for timing') }}</a>
+                                        <a href="{{ route('races.export.heat-grid', ['race' => $race, 'heat' => $heat, 'heats' => $grid['heats']]) }}" class="text-sm text-orange-600 hover:text-orange-900 print:hidden">{{ __('Export for timing') }}</a>
                                     @endcan
                                 </div>
                                 <x-table>
@@ -95,6 +99,7 @@
                                         <th scope="col" class="py-2 pl-4 pr-2 text-left text-sm font-semibold text-zinc-900">#</th>
                                         <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Bib') }}</th>
                                         <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Name') }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-sm font-semibold text-zinc-900">{{ __('Category') }}</th>
                                         <th scope="col" class="px-2 py-2 text-right text-sm font-semibold text-zinc-900">{{ __('Qualifying') }}</th>
                                     </x-slot>
                                     @foreach ($entries as $entry)
@@ -102,6 +107,7 @@
                                             <td class="whitespace-nowrap py-2 pl-4 pr-2 text-sm text-zinc-500">{{ $entry['grid'] }}</td>
                                             <td class="whitespace-nowrap px-2 py-2 text-sm font-mono">{{ $entry['result']->bib }}</td>
                                             <td class="px-2 py-2 text-sm text-zinc-900">{{ $entry['result']->name }}</td>
+                                            <td class="whitespace-nowrap px-2 py-2 text-sm text-zinc-500">{{ $entry['result']->category }}</td>
                                             <td class="whitespace-nowrap px-2 py-2 text-sm text-zinc-500 text-right">
                                                 @if ($entry['drawn'])
                                                     {{ __('No time: draw') }}
@@ -122,13 +128,11 @@
                             {{ $ranking['excluded']->map(fn ($result) => $result->bib.' '.$result->name)->join(', ') }}
                         </p>
                     @endif
-
                 </section>
-            @empty
-                <p class="text-zinc-600 p-4">{{ __('No qualifying results uploaded.') }}</p>
-            @endforelse
 
-            @if ($grids->isNotEmpty())
+            @endif
+
+            @if ($grid !== null)
                 <section class="mb-10">
                     <h3 class="font-semibold text-xl text-zinc-800 mb-1">{{ __('Pre-final grid') }}</h3>
                     <p class="text-sm text-zinc-500 mb-3">
@@ -186,7 +190,7 @@
                 </section>
             @endif
 
-            @if ($grids->isNotEmpty())
+            @if ($grid !== null)
                 <div class="print:hidden">
                     <x-button type="submit">{{ __('Recalculate') }}</x-button>
                 </div>

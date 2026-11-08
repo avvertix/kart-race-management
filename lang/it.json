@@ -912,6 +912,7 @@
     "Recalculate": "Ricalcola",
     "Calculated": "Calcolato",
     "Row": "Fila",
+    "All the classes are in every heat:": "Tutte le classi sono presenti in ogni batteria:",
     "One grid for all the categories, at most :capacity drivers (:rows rows of two).": "Una sola griglia per tutte le categorie, al massimo :capacity piloti (:rows file da due).",
     "Beyond the track capacity (:capacity drivers), not admitted:": "Oltre la capienza della pista (:capacity piloti), non ammessi:",
     "Not published": "Non pubblicato",

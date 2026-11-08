@@ -227,12 +227,44 @@ class HeatGridTest extends TestCase
 
         $response->assertSuccessful();
 
-        $grid = $response->viewData('grids')->first();
+        $grid = $response->viewData('grid');
 
-        $this->assertSame('KZ', $grid['category']);
+        $this->assertSame(['KZ'], $grid['categories']->all());
         $this->assertSame([1, 3], $this->bibs($grid['assignment'][1]));
         $this->assertSame([2, 4], $this->bibs($grid['assignment'][2]));
         $this->assertSame([2, 1, 4, 3], $this->bibs($response->viewData('prefinale')['grid']));
+    }
+
+    public function test_every_heat_contains_all_the_classes_of_the_qualifying(): void
+    {
+        $user = User::factory()->admin()->create();
+        $race = Race::factory()->create();
+
+        // One qualifying series with two classes: the heats are made on the whole field
+        $qualifying = RunResult::factory()->create(['race_id' => $race->getKey(), 'run_type' => RunType::QUALIFY_SERIES]);
+
+        foreach ([1 => ['A', '50.000'], 2 => ['A', '50.100'], 3 => ['B', '50.200'], 4 => ['B', '50.300'], 5 => ['A', '50.400'], 6 => ['B', '50.500']] as $bib => [$category, $time]) {
+            ParticipantResult::factory()->create([
+                'run_result_id' => $qualifying->getKey(),
+                'category_id' => null,
+                'bib' => $bib,
+                'category' => $category,
+                'best_lap_time' => $time,
+            ]);
+        }
+
+        $response = $this->actingAs($user)->get(route('races.heat-grids.index', $race));
+
+        $response->assertSuccessful();
+
+        $grid = $response->viewData('grid');
+
+        $this->assertSame(['A', 'B'], $grid['categories']->all());
+        $this->assertSame(2, $grid['heats']);
+        $this->assertSame([1, 3, 5], $this->bibs($grid['assignment'][1]));
+        $this->assertSame([2, 4, 6], $this->bibs($grid['assignment'][2]));
+        $this->assertSame(['A', 'B', 'A'], $grid['assignment'][1]->map(fn ($entry) => $entry['result']->category)->all());
+        $this->assertSame(['A', 'B', 'B'], $grid['assignment'][2]->map(fn ($entry) => $entry['result']->category)->all());
     }
 
     public function test_heat_grids_page_requires_authentication(): void

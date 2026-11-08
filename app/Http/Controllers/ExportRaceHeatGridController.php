@@ -15,18 +15,17 @@ use Illuminate\Support\Str;
 class ExportRaceHeatGridController extends Controller
 {
     /**
-     * Export the drivers of one heat, of every category, in their starting order.
+     * Export the drivers of one heat, of every class, in their starting order.
      */
     public function __invoke(Request $request, Race $race, int $heat, BuildRaceHeatGrids $buildGrids)
     {
         $this->authorize('create', Transponder::class);
 
-        $grids = $buildGrids($race, (array) $request->input('heats', []));
+        $grid = $buildGrids($race, $request->integer('heats') ?: null);
 
-        abort_unless($grids->contains(fn (array $grid) => $grid['assignment']->has($heat)), 404);
+        abort_unless($grid !== null && $grid['assignment']->has($heat), 404);
 
-        $bibs = $grids
-            ->flatMap(fn (array $grid) => $grid['assignment']->get($heat, collect()))
+        $bibs = $grid['assignment'][$heat]
             ->map(fn (array $entry) => $entry['result']->bib)
             ->values();
 

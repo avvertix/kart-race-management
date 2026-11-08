@@ -25,7 +25,7 @@ class RaceHeatGridController extends Controller
         return view('race-result.heat-grids', [
             'race' => $race,
             'championship' => $race->championship,
-            'grids' => $buildGrids($race, (array) $request->input('heats', [])),
+            'grid' => $buildGrids($race, $request->integer('heats') ?: null),
             'prefinale' => $buildGrids->prefinale($race),
         ]);
     }

@@ -10,7 +10,7 @@ use App\Models\RunType;
 use Illuminate\Support\Collection;
 
 /**
- * Heats assignment and pre-final grid of every category qualified in a race.
+ * Heats assignment and pre-final grid of a race.
  */
 class BuildRaceHeatGrids
 {
@@ -30,33 +30,32 @@ class BuildRaceHeatGrids
     ) {}
 
     /**
-     * Heats assignment of every category, from its qualifying.
+     * Heats assignment from the whole qualifying field. All the classes that qualified are
+     * ranked together and split in the same heats, as they race together.
      *
-     * @param  array<int, mixed>  $requestedHeats  Number of heats keyed by the category index
-     * @return Collection<int, array{index: int, category: string, heats: int, ranking: array, assignment: Collection}>
+     * @return array{heats: int, categories: Collection<int, string>, ranking: array, assignment: Collection}|null Null until qualifying results are uploaded
      */
-    public function __invoke(Race $race, array $requestedHeats = []): Collection
+    public function __invoke(Race $race, ?int $requestedHeats = null): ?array
     {
-        $qualifying = $this->participantResultsOf($race, [RunType::QUALIFY_SERIES, RunType::QUALIFY])->groupBy('category');
+        $qualifying = $this->participantResultsOf($race, [RunType::QUALIFY_SERIES, RunType::QUALIFY]);
+
+        if ($qualifying->isEmpty()) {
+            return null;
+        }
+
         $uploadedHeats = $this->participantResultsOf($race, [RunType::HEAT])->pluck('run_result_id')->unique()->count();
 
-        return $qualifying->keys()
-            ->sort(SORT_NATURAL | SORT_FLAG_CASE)
-            ->values()
-            ->map(function (string $category, int $index) use ($qualifying, $uploadedHeats, $requestedHeats) {
-                $heats = (int) ($requestedHeats[$index] ?? ($uploadedHeats > 0 ? $uploadedHeats : self::DEFAULT_HEATS));
-                $heats = max(1, min(self::MAX_HEATS, $heats));
+        $heats = $requestedHeats ?? ($uploadedHeats > 0 ? $uploadedHeats : self::DEFAULT_HEATS);
+        $heats = max(1, min(self::MAX_HEATS, $heats));
 
-                $ranking = ($this->rankQualifying)($qualifying->get($category));
+        $ranking = ($this->rankQualifying)($qualifying);
 
-                return [
-                    'index' => $index,
-                    'category' => $category,
-                    'heats' => $heats,
-                    'ranking' => $ranking,
-                    'assignment' => ($this->assignHeats)($ranking, $heats),
-                ];
-            });
+        return [
+            'heats' => $heats,
+            'categories' => $qualifying->pluck('category')->unique()->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
+            'ranking' => $ranking,
+            'assignment' => ($this->assignHeats)($ranking, $heats),
+        ];
     }
 
     /**
@@ -73,13 +72,15 @@ class BuildRaceHeatGrids
             return null;
         }
 
-        // Last tie-break between heat winners: qualifying position within their category
-        $qualifyingPositions = $this($race)->flatMap(
-            fn (array $grid) => $grid['ranking']['ranked']
-                ->concat($grid['ranking']['untimed'])
+        // Last tie-break between heat winners: qualifying position
+        $ranking = $this($race)['ranking'] ?? null;
+
+        $qualifyingPositions = $ranking === null
+            ? collect()
+            : $ranking['ranked']
+                ->concat($ranking['untimed'])
                 ->values()
-                ->mapWithKeys(fn (ParticipantResult $result, int $position) => [$result->bib => $position + 1])
-        );
+                ->mapWithKeys(fn (ParticipantResult $result, int $position) => [$result->bib => $position + 1]);
 
         return ($this->calculatePrefinaleGrid)($heats, $qualifyingPositions, self::TRACK_CAPACITY);
     }

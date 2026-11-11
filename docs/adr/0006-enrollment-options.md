@@ -20,3 +20,5 @@ Products, Prices, Packages and Orders are removed; the migrations of this unrele
 ## Consequences
 
 Price periods (early-bird), organizer-set prices, one payment covering several championships, and selling anything outside enrollment are no longer possible. Dates on options can be added when a championship needs them.
+
+Update: the moto championship sells two options with a deposit and a balance due by a date. An option can ask for a deposit and set the balance due date. The Enrollment's payment is the sum of its confirmed payment records (bank transfer proofs uploaded by the driver, or cash, card and transfers recorded by the organizer, each with the amount the organizer confirmed). Paying the deposit unlocks everything the option includes; the balance is reminded and shown as overdue, never enforced automatically. We considered modelling the deposit as a second payment on the Enrollment, and rejected it: a list of records also covers partial payments, mixed channels and a change of option after paying.

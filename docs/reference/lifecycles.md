@@ -23,7 +23,7 @@ A Licence Request is a renewal and is paid on its own, unless the Enrollment wai
 | To pay | The amount is set; no payment proof yet. The organizer can still change it | Proof uploaded, Paid |
 | Proof uploaded | A payment proof is uploaded | Paid, To pay |
 | Paid | The organizer confirmed the bank transfer proof, or recorded a cash or credit card payment at the office | — |
-| Covered | The Enrollment the request waits for pays the renewal, as its option covers it. It counts as paid once that Enrollment is paid; if the request is rejected, it covers a new one. Withdrawing or rejecting the Enrollment, or moving it to an option that doesn't cover the renewal, returns the request to its own payment | — |
+| Covered | The Enrollment the request waits for pays the renewal, as its option covers it. It counts as paid once that Enrollment's deposit, or its full amount without a deposit, is paid; if the request is rejected, it covers a new one. Withdrawing or rejecting the Enrollment, or moving it to an option that doesn't cover the renewal, returns the request to its own payment | — |
 
 ## Licence
 
@@ -51,9 +51,10 @@ The organizer always confirms an Enrollment by hand. Free enrollments only skip 
 | Nothing to pay | A free option, or enrolled by the organizer |
 | To pay | The amount of the option chosen, or what is left of it, by bank transfer with the Enrollment as reason |
 | Proof uploaded | Waiting for the organizer to confirm it with the amount received, or reject it |
-| Paid | The confirmed Payment Records reach the amount; a Licence Request the option covers counts as paid, and the option's race fee discount is granted once the Licence exists |
+| Deposit paid | The option asks for a deposit and the confirmed Payment Records reach it: the Enrollment gets everything its option includes (confirmation, the covered Licence Request, the race fee discount); the balance is due by the option's date |
+| Paid | The confirmed Payment Records reach the amount. Without a deposit, only now a Licence Request the option covers counts as paid, the Enrollment can be confirmed and the option's race fee discount is granted once the Licence exists |
 
-The status follows the Enrollment's Payment Records. The driver uploads one bank transfer proof at a time; the organizer confirms it with the amount read on the bank statement, which may be less than what is due, or rejects it, and rejected proofs are kept. The organizer can also record a payment received by cash, credit card or bank transfer, with its amount and no proof, while no proof waits for review. Payments add up: the Enrollment stays To pay until they reach its amount.
+The status follows the Enrollment's Payment Records. The driver uploads one bank transfer proof at a time; the organizer confirms it with the amount read on the bank statement, which may be less than what is due, or rejects it, and rejected proofs are kept. The organizer can also record a payment received by cash, credit card or bank transfer, with its amount and no proof, while no proof waits for review. Payments add up: the Enrollment stays To pay until they reach the deposit, when the option asks for one, then Deposit paid until they reach its amount.
 
 The organizer can move a submitted Enrollment to another option until its payment is confirmed; the amount follows.
 

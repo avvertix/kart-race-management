@@ -21,7 +21,8 @@ class RecordEnrollmentPayment
 
     /**
      * Record a payment the organizer received for an active Enrollment by cash, credit card or bank transfer, with its
-     * amount in cents and no proof: it is confirmed at once. A proof waiting for review must be reviewed first.
+     * amount in cents and no proof: it is confirmed at once, and unlocks the Enrollment like a confirmed proof. A proof
+     * waiting for review must be reviewed first.
      *
      * @throws ValidationException when the amount is missing, the Enrollment is not active or not awaiting a payment
      */

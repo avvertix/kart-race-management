@@ -14,6 +14,7 @@ use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Payment;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Illuminate\Support\Facades\Event;
@@ -72,6 +73,7 @@ class EnrollmentReviewTest extends TestCase
 
         $organizer = User::factory()->organizer()->create();
         $enrollment = Enrollment::factory()->recycle($this->championshipWithEnrollment())->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::Paid]);
+        Payment::factory()->confirmedFor($enrollment, 9000)->create();
         $reservation = BibReservation::factory()->pending()->recycle($enrollment->championship)->create(['enrollment_id' => $enrollment->getKey()]);
 
         $this->actingAs($organizer)

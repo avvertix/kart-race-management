@@ -47,6 +47,8 @@ class ChangeEnrollmentOption
                 'enrollment_option_id' => $option->getKey(),
                 'amount' => $option->amount,
                 'currency' => $option->currency,
+                'deposit_amount' => $option->deposit_amount,
+                'balance_due_on' => $option->balance_due_on,
             ]);
 
             $locked->refreshPaymentStatus();

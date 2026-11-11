@@ -37,6 +37,8 @@ use Illuminate\Validation\ValidationException;
  * @property ?int $enrollment_option_id
  * @property int $amount
  * @property Currency $currency
+ * @property ?int $deposit_amount
+ * @property ?CarbonImmutable $balance_due_on
  * @property EnrollmentPaymentStatus $payment_status
  * @property ?CarbonImmutable $paid_at
  * @property ?int $payment_confirmed_by
@@ -77,6 +79,8 @@ class Enrollment extends Model implements Payable
         'enrollment_option_id',
         'amount',
         'currency',
+        'deposit_amount',
+        'balance_due_on',
         'payment_status',
         'paid_at',
         'payment_confirmed_by',
@@ -253,7 +257,7 @@ class Enrollment extends Model implements Payable
     {
         $locked = self::query()->whereKey($this->getKey())->lockForUpdate()->firstOrFail();
 
-        if ($locked->payment_status !== EnrollmentPaymentStatus::AwaitingPayment || ! $locked->status->isActive()) {
+        if (! in_array($locked->payment_status, [EnrollmentPaymentStatus::AwaitingPayment, EnrollmentPaymentStatus::DepositPaid], true) || ! $locked->status->isActive()) {
             throw ValidationException::withMessages([$errorKey => __('The enrollment is not awaiting a payment.')]);
         }
 
@@ -290,7 +294,8 @@ class Enrollment extends Model implements Payable
 
     /**
      * Set the payment status from the amount and the payment records: nothing due, paid once the confirmed records reach
-     * the amount, a proof waiting for the organizer, or awaiting payment. Paid keeps the day it was first reached.
+     * the amount, a proof waiting for the organizer, the deposit paid, or awaiting payment. Paid keeps the day it was
+     * first reached.
      */
     public function refreshPaymentStatus(): void
     {
@@ -302,6 +307,7 @@ class Enrollment extends Model implements Payable
             $this->amount === 0 && $paid === 0 => EnrollmentPaymentStatus::NotDue,
             $paid >= $this->amount => EnrollmentPaymentStatus::Paid,
             $this->payments()->submitted()->exists() => EnrollmentPaymentStatus::PaymentSubmitted,
+            $this->deposit_amount !== null && $paid >= $this->deposit_amount => EnrollmentPaymentStatus::DepositPaid,
             default => EnrollmentPaymentStatus::AwaitingPayment,
         };
 
@@ -312,11 +318,29 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * Whether the Enrollment's payment is settled: nothing due, or paid.
+     * Whether the Enrollment's payment is settled: nothing due, or paid in full.
      */
     public function isPaymentSettled(): bool
     {
         return $this->payment_status->isSettled();
+    }
+
+    /**
+     * The deposit and balance due date copied from the option when enrolling, e.g. "Deposit €300.00, balance by
+     * 31 March 2027"; null without a deposit.
+     */
+    public function paymentTermsLabel(): ?string
+    {
+        return EnrollmentOption::describePaymentTerms($this->currency, $this->deposit_amount, $this->balance_due_on);
+    }
+
+    /**
+     * Whether enough is paid for the Enrollment to get what its option includes: the deposit, or the full amount when
+     * there is none. True when nothing is due.
+     */
+    public function isDepositPaid(): bool
+    {
+        return $this->amount === 0 || $this->paidAmount() >= ($this->deposit_amount ?? $this->amount);
     }
 
     /**
@@ -394,7 +418,7 @@ class Enrollment extends Model implements Payable
             $this->licence !== null && ! $this->licence->isVerifiedOrEmitted() ? (string) __('The declared licence is not verified yet.') : null,
             $this->licence !== null && $this->licence->role !== LicenceRole::Driver ? (string) __('The licence is not a driver licence.') : null,
             $this->licence !== null && $this->licence->validity_year !== $this->championship->start_at->year ? (string) __('The licence is not valid in the championship year.') : null,
-            ! $this->isPaymentSettled() ? (string) __('The payment is not confirmed yet.') : null,
+            ! $this->isDepositPaid() ? (string) __('The payment is not confirmed yet.') : null,
             $this->requiresCompetitor() && $this->competitor_licence_id === null ? (string) __('The driver is underage and no competitor is named.') : null,
         ]));
     }
@@ -458,6 +482,8 @@ class Enrollment extends Model implements Payable
             'confirmed_at' => 'datetime',
             'amount' => 'integer',
             'currency' => Currency::class,
+            'deposit_amount' => 'integer',
+            'balance_due_on' => 'date',
             'payment_status' => EnrollmentPaymentStatus::class,
             'paid_at' => 'datetime',
         ];

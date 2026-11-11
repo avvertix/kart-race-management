@@ -102,6 +102,23 @@ class EnrollmentReviewTest extends TestCase
         $this->assertConfirmationRefused($enrollment, 'The licence request is not emitted yet.');
     }
 
+    public function test_the_enrollment_page_links_the_licence_request_it_waits_for(): void
+    {
+        $championship = $this->championshipWithEnrollment();
+        $submitted = Enrollment::factory()->recycle($championship)->waitingFor(LicenceRequest::factory()->withLicenceAndHolder()->submitted()->create())->create();
+        $draft = Enrollment::factory()->recycle($championship)->waitingFor(LicenceRequest::factory()->withLicenceAndHolder(LicenceFactory::distinctHolder())->create())->create();
+        $organizer = User::factory()->organizer()->create();
+
+        $this->actingAs($organizer)
+            ->get(route('enrollments.show', $submitted))
+            ->assertSee(route('licence-request-reviews.show', $submitted->licenceRequest), false);
+
+        $this->actingAs($organizer)
+            ->get(route('enrollments.show', $draft))
+            ->assertSee(__('Waiting for the licence request'))
+            ->assertDontSee(route('licence-request-reviews.show', $draft->licenceRequest), false);
+    }
+
     public function test_an_unverified_declared_licence_is_verified_before_confirming(): void
     {
         $organizer = User::factory()->organizer()->create();

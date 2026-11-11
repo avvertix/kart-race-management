@@ -11,6 +11,7 @@ use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceRole;
 use App\Enums\PaymentStatus;
+use App\Features\LicencesAndEnrollments;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Validation\ValidationException;
+use Laravel\Pennant\Feature;
 
 /**
  * A driver Licence, or the open Licence Request that will become one, enrolled in a championship.
@@ -112,6 +114,36 @@ class Enrollment extends Model implements Payable
         if (self::isDriverEnrolled($championship, $licence?->number_hash, $licence->holder ?? $licenceRequest?->holder, $except)) {
             throw ValidationException::withMessages(['licence' => __('The driver is already enrolled in the championship.')]);
         }
+    }
+
+    /**
+     * Whether the User can open Enrollments for review: the review permission and the early access to enrollments.
+     */
+    public static function isReviewableBy(?User $user): bool
+    {
+        return $user !== null && $user->can('review', self::class) && Feature::for($user)->active(LicencesAndEnrollments::class);
+    }
+
+    /**
+     * The active Enrollments of the championship keyed by the number hash of their Licence, to show next to the race
+     * participants with those licence numbers.
+     *
+     * @param  array<int, string>  $licenceHashes
+     * @return Collection<string, self>
+     */
+    public static function activeByLicenceHash(int $championshipId, array $licenceHashes): Collection
+    {
+        if ($licenceHashes === []) {
+            return new Collection;
+        }
+
+        return self::query()
+            ->where('championship_id', $championshipId)
+            ->active()
+            ->whereHas('licence', fn (Builder $query) => $query->whereIn('number_hash', $licenceHashes))
+            ->with(['option', 'licence'])
+            ->get()
+            ->keyBy(fn (self $enrollment) => $enrollment->licence->number_hash);
     }
 
     /**

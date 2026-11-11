@@ -16,6 +16,7 @@ Organizers set up the **Enrollment Options** of each championship from the appli
 | Permissions of each role | `App\Enums\Role::permissions()` | Maintainer |
 | Where uploaded licence documents are stored | `licence-documents` disk in `config/filesystems.php` | Maintainer |
 | Platform-wide licence provider and country, organizer email | `.env` | Whoever deploys |
+| Licence Types the instance handles, renewal price | `.env` | Whoever deploys |
 | Enrollment Options | Application | Organizer |
 | Who sees licences, licence requests and enrollments (early access) | User page, *Early access to licences and enrollments* | Admin |
 
@@ -113,3 +114,9 @@ The files are not encrypted by the application. Put the storage volume on an enc
 | `RACE_LICENCE_PROVIDER` | Provider named in race registration texts | `ACI Sport` |
 | `RACE_LICENCE_COUNTRY` | Country of the provider, as a two letter code | `it` |
 | `RACE_ORGANIZER_EMAIL` | The organizer's contact address, shown to drivers asking for a first licence. Notifications go to the organizers' accounts instead, see [Notifications](../../reference/notifications.md) | — |
+| `LICENCE_TYPES` | Licence Types the instance handles, as `provider.code` separated by commas, e.g. `asi.ma,asi.mechanic`. See [Limit an instance to some Licence Types](#limit-an-instance-to-some-licence-types) | every type |
+| `LICENCE_RENEWAL_PRICE` | Price of a renewal outside enrollment, in euro: a price (`50`) or a range (`50-80`). Shown to requesters before they submit; a price also pre-fills the amount the organizer sets during review. Renewals covered by an enrollment show none | — |
+
+## Limit an instance to some Licence Types
+
+Each championship family can run on its own deployment, e.g. one for kart and one for moto. `LICENCE_TYPES` lists the types a deployment works with; providers follow, so a provider with none of its types listed is not offered. Licences and requests of other types are not offered for renewal, declaration, enrollment, competitor or race registration, and championships can only name the providers left. They keep showing their type name. An entry that is not in `config/licences.php`, or a renewal price that cannot be read, makes every page using licences fail with an error naming the variable: open the licence pages once after deploying.

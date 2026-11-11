@@ -10,6 +10,7 @@ use App\Data\HolderData;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceRole;
 use App\Enums\LicenceSource;
+use App\Support\LicenceCatalogue;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -206,37 +207,62 @@ class Licence extends Model
     }
 
     /**
-     * Only the driver licences that can be enrolled in the championship: valid in its year, from any provider.
+     * Only the driver licences that can be enrolled in the championship: valid in its year, of a type the instance
+     * handles, from any provider.
      *
      * @param  Builder<self>  $query
      */
     public function scopeEnrollableIn(Builder $query, Championship $championship): void
     {
         $query->where('role', LicenceRole::Driver)
-            ->where('validity_year', $championship->start_at->year);
+            ->where('validity_year', $championship->start_at->year)
+            ->ofEnabledType();
     }
 
     /**
-     * Only the driver licences of an earlier year than the championship, that can be renewed for it.
+     * Only the driver licences of an earlier year than the championship, of a type the instance handles, that can be
+     * renewed for it.
      *
      * @param  Builder<self>  $query
      */
     public function scopeRenewableFor(Builder $query, Championship $championship): void
     {
         $query->where('role', LicenceRole::Driver)
-            ->where('validity_year', '<', $championship->start_at->year);
+            ->where('validity_year', '<', $championship->start_at->year)
+            ->ofEnabledType();
     }
 
     /**
      * Only the licences that can name the Competitor in the championship: including a competitor licence, valid in its
-     * year.
+     * year, of a type the instance handles.
      *
      * @param  Builder<self>  $query
      */
     public function scopeCompetitorIn(Builder $query, Championship $championship): void
     {
         $query->where('includes_competitor', true)
-            ->where('validity_year', $championship->start_at->year);
+            ->where('validity_year', $championship->start_at->year)
+            ->ofEnabledType();
+    }
+
+    /**
+     * Only the licences of a Licence Type the instance handles (LICENCE_TYPES), retired types included.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeOfEnabledType(Builder $query): void
+    {
+        if (! LicenceCatalogue::restrictsTypes()) {
+            return;
+        }
+
+        $query->where(function (Builder $query) {
+            foreach (LicenceProvider::cases() as $provider) {
+                $query->orWhere(fn (Builder $query) => $query
+                    ->where('provider', $provider)
+                    ->whereIn('licence_type', LicenceCatalogue::types($provider, withInactive: true)->pluck('code')->all()));
+            }
+        });
     }
 
     /**

@@ -209,6 +209,9 @@
                     @endif
 
                     @unless ($isChangesRequested)
+                        @if ($renewalPrice !== null && $licenceRequest->covering_enrollment_id === null)
+                            <p class="text-sm text-zinc-600">{{ __('The renewal costs :price.', ['price' => $renewalPrice]) }}</p>
+                        @endif
                         <p class="text-sm text-zinc-600">{{ __('After you submit, the organizer checks the request and tells you the amount to pay.') }}</p>
                     @endunless
 

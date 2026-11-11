@@ -15,7 +15,7 @@ class SetEnrollmentCompetitor
 {
     /**
      * Name, change or remove the Competitor of a submitted Enrollment: an adult at the championship start, other than the
-     * driver, including the competitor licence. The driver picks among the Licences they manage (`$among`), the
+     * driver, including the competitor licence, of a type the instance handles. The driver picks among the Licences they manage (`$among`), the
      * organizer among all, e.g. for an Enrollment the organizer created without one.
      *
      * @throws ValidationException when the Enrollment is not submitted or the Licence can't be the Competitor
@@ -30,6 +30,7 @@ class SetEnrollmentCompetitor
             if (filled($competitorUlid)) {
                 $competitor = Licence::query()
                     ->when($among, fn ($query, User $user) => $query->managedBy($user))
+                    ->ofEnabledType()
                     ->where('ulid', $competitorUlid)
                     ->first();
 

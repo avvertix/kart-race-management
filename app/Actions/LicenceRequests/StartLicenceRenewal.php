@@ -16,11 +16,11 @@ use Illuminate\Auth\Access\AuthorizationException;
 class StartLicenceRenewal
 {
     /**
-     * Start a draft renewal, empty or pre-filled from a Licence the User manages: provider, Licence Type while still offered,
-     * competitor licence, holder, previous number and, for a licence emitted on the platform, the parents entered then.
-     * It is for the given year, by default the one renewals are open for. For a licence not on the platform the requester
-     * chooses the provider, pre-selected only when one provider has Licence Types. An Enrollment whose option covers the
-     * renewal covers the request afterwards, see LicenceRequest::coverWith().
+     * Start a draft renewal, empty or pre-filled from a Licence the User manages: holder and, for a licence emitted on the
+     * platform, the parents entered then; while its provider is still offered, also provider, previous number, competitor
+     * licence and Licence Type while still offered. Otherwise the requester chooses the provider, pre-selected only when
+     * one provider has Licence Types. It is for the given year, by default the one renewals are open for. An Enrollment
+     * whose option covers the renewal covers the request afterwards, see LicenceRequest::coverWith().
      *
      * @throws AuthorizationException when the Licence is managed by another User
      */
@@ -34,15 +34,17 @@ class StartLicenceRenewal
 
         $isOffered = $licenceType !== null && $licenceType->active;
 
+        $isProviderOffered = $previous !== null && in_array($previous->provider, LicenceCatalogue::providers(), true);
+
         return LicenceRequest::create([
             'user_id' => $user->getKey(),
             'status' => LicenceRequestStatus::Draft,
             'payment_status' => LicenceRequestPaymentStatus::AwaitingPrice,
-            'provider' => $previous->provider ?? $this->onlyProvider(),
+            'provider' => $isProviderOffered ? $previous->provider : $this->onlyProvider(),
             'validity_year' => $validityYear ?? LicenceRequest::validityYearFor(now()),
             'licence_type' => $isOffered ? $licenceType->code : null,
             'includes_competitor' => $isOffered && $previous->includes_competitor,
-            'previous_licence_number' => $previous?->number,
+            'previous_licence_number' => $isProviderOffered ? $previous->number : null,
             'holder' => $previous?->holder,
             'parents' => array_values($previous?->licenceRequest?->parents?->all() ?? []),
         ]);

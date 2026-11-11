@@ -21,6 +21,14 @@ trait HasLicenceType
     }
 
     /**
+     * Whether a Licence Type is picked and the instance handles it.
+     */
+    public function isOfEnabledType(): bool
+    {
+        return $this->licenceTypeData() !== null && LicenceCatalogue::isEnabled($this->provider, $this->licence_type);
+    }
+
+    /**
      * The Licence Type as shown to people, e.g. "NAZ E" or "NAZ E with competitor licence". Falls back to the stored code.
      */
     public function licenceTypeLabel(): ?string

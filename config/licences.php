@@ -106,6 +106,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Licence Types handled by this instance
+    |--------------------------------------------------------------------------
+    |
+    | The Licence Types this deployment works with, as "provider.code", e.g.
+    | LICENCE_TYPES=asi.ma,asi.mechanic. Licences and requests of other
+    | types are not offered, enrolled, renewed or used in race registration;
+    | they keep their name. Empty: every type listed above.
+    |
+    */
+
+    'enabled_types' => array_values(array_filter(array_map(trim(...), explode(',', (string) env('LICENCE_TYPES', ''))))),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Renewal price
+    |--------------------------------------------------------------------------
+    |
+    | What a renewal outside enrollment costs, in euro, shown to requesters
+    | before they submit: a price (50) or a range (50-80). A price also
+    | pre-fills the amount the organizer sets during review.
+    |
+    */
+
+    'renewal_price' => env('LICENCE_RENEWAL_PRICE'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Forms published by the providers
     |--------------------------------------------------------------------------
     |

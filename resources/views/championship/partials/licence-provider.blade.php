@@ -10,7 +10,7 @@
             <p class="text-sm text-zinc-500">{{ __('As for championships created before the provider could be chosen.') }}</p>
         </div>
     </label>
-    @foreach (\App\Enums\LicenceProvider::cases() as $provider)
+    @foreach (\App\Support\LicenceCatalogue::selectableProviders($championship?->licences->provider) as $provider)
         <label class="flex items-start gap-3">
             <input type="radio" name="licence_provider" value="{{ $provider->value }}" @checked($selectedProvider === $provider->value) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
             <span class="text-sm font-medium text-zinc-900">{{ $provider->label() }}</span>

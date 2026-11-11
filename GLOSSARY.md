@@ -70,7 +70,7 @@ _Avoid_: Plan, tier, package, enrollment fee, promotional package
 A Participant who races but does not score championship points, as decided by the championship's wildcard configuration (e.g. because they are not enrolled).
 
 **BIB Reservation**:
-A Championship BIB held for a Driver's Licence in a championship. It is pending until the organizer confirms it or releases it; first confirmed, first served. The organizer may confirm it before the Enrollment it belongs to, which releases it when withdrawn or rejected.
+A Championship BIB held for a Driver's Licence in a championship. It is pending until the organizer confirms it or releases it; first confirmed, first served. The organizer may confirm it before the Enrollment it belongs to, which releases it when withdrawn or rejected. Once confirmed, only the organizer changes it.
 _Avoid_: Booking, hold
 
 **Championship BIB**:

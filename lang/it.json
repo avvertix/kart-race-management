@@ -982,6 +982,8 @@
     "The payment proof could not be saved, please try again.": "Non è stato possibile salvare la ricevuta di pagamento, riprova.",
     "Payment confirmed.": "Pagamento confermato.",
     "Payment recorded.": "Pagamento registrato.",
+    "Confirmed by the organizer: ask them to change it.": "Confermato dall'organizzatore: chiedi a lui di cambiarlo.",
+    "The organizer confirmed the race number: ask them to change it.": "L'organizzatore ha confermato il numero di gara: chiedi a lui di cambiarlo.",
     "Deposit (€)": "Acconto (€)",
     "Balance due by": "Saldo entro il",
     "Optional. Paying the deposit gives the driver everything the option includes; the balance is due by the date.": "Facoltativo. Con l'acconto il pilota ottiene tutto ciò che l'opzione include; il saldo va pagato entro la data.",

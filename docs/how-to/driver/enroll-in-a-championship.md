@@ -14,7 +14,7 @@ Enrollment is optional: you can always register for single races. Depending on t
 You get a notification, by email and in the app, when the organizer confirms or rejects the enrollment, when it needs another licence or a competitor from you, and when your payment is confirmed or its proof isn't accepted. The dashboard lists your enrollments in current and future championships.
 
 - The organizer confirms enrollments in the order they arrive. Race numbers are first confirmed, first served.
-- Each enrollment has its own page, linked from the championship's enrollment page: licence, race number, payment and status. Until confirmation you can change your race number pick while enrollment is open, and withdraw the enrollment, except while your payment proof waits for review. After it, ask the organizer.
+- Each enrollment has its own page, linked from the championship's enrollment page: licence, race number, payment and status. Until confirmation you can change your race number pick while enrollment is open, unless the organizer already confirmed the number, and withdraw the enrollment, except while your payment proof waits for review. After it, ask the organizer.
 - A declared licence can't be changed or removed while it is enrolled, as driver or competitor.
 - If the licence request is rejected, the enrollment stays: choose another licence or renew again from its page. What you paid, and the race number, stay with it.
 - For a refund of a paid enrollment that is withdrawn or rejected, email the organizer.

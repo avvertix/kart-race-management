@@ -102,6 +102,8 @@
                             @endforelse
                             @can('pickRaceNumber', $enrollment)
                                 <a href="{{ route('my-enrollments.race-number.edit', $enrollment) }}" class="text-sm text-orange-600 hover:text-orange-900">{{ $heldReservations->isNotEmpty() ? __('Change race number') : __('Pick a race number') }}</a>
+                            @elseif ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && $enrollment->hasConfirmedRaceNumber())
+                                <span class="text-sm text-zinc-600">{{ __('Confirmed by the organizer: ask them to change it.') }}</span>
                             @endcan
                         </dd>
                     @endif

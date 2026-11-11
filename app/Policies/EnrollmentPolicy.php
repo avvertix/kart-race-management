@@ -48,13 +48,14 @@ class EnrollmentPolicy
 
     /**
      * Determine whether the user can pick or change the race number as the driver: their own enrollment, while
-     * submitted and enrollment is open, when the option reserves a number.
+     * submitted and enrollment is open, when the option reserves a number and the organizer did not confirm it yet.
      */
     public function pickRaceNumber(User $user, Enrollment $enrollment): bool
     {
         return $this->ownsSubmitted($user, $enrollment)
             && $enrollment->championship->enrollment->isOpen()
-            && $enrollment->grantsBibReservation();
+            && $enrollment->grantsBibReservation()
+            && ! $enrollment->hasConfirmedRaceNumber();
     }
 
     /**

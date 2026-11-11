@@ -25,11 +25,11 @@ class PrepareRegistrationLicencePickers
     public const NO_COMPETITOR = 'none';
 
     /**
-     * The Licences the User manages that can fill a race registration, valid in the race's year: drivers, competitors
-     * and mechanics. With the picked ones, the template that pre-fills the form; the fields stay editable. Without a
-     * picked competitor, the one of the User's previous registration of the driver is used, unless NO_COMPETITOR is
-     * picked. Licences on the platform are of the national provider: the competitor licence type is local. The race number
-     * reserved for the driver's Licence is pre-filled.
+     * The Licences the User manages that can fill a race registration, valid in the race's year and of a type the
+     * instance handles: drivers, competitors and mechanics. With the picked ones, the template that pre-fills the form;
+     * the fields stay editable. Without a picked competitor, the one of the User's previous registration of the driver is
+     * used, unless NO_COMPETITOR is picked. Licences on the platform are of the national provider: the competitor licence
+     * type is local. The race number reserved for the driver's Licence is pre-filled.
      *
      * @param  array{driver_licence?: ?string, competitor_licence?: ?string, mechanic_licence?: ?string}  $picked  ULIDs
      * @return array{
@@ -51,6 +51,7 @@ class PrepareRegistrationLicencePickers
         $licences = fn (Closure $scope) => Licence::query()
             ->managedBy($user)
             ->where('validity_year', $year)
+            ->ofEnabledType()
             ->where($scope)
             ->orderBy('id')
             ->get();

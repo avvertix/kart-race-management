@@ -382,7 +382,7 @@ class LicenceRequest extends Model implements Payable
     public function isSectionComplete(LicenceRequestSection $section): bool
     {
         return match ($section) {
-            LicenceRequestSection::Licence => $this->licenceTypeData() !== null && filled($this->previous_licence_number),
+            LicenceRequestSection::Licence => $this->isOfEnabledType() && filled($this->previous_licence_number),
             LicenceRequestSection::Holder => $this->holder !== null,
             LicenceRequestSection::Parents => ! $this->isUnderage() || count($this->parentHolders()) > 0,
             LicenceRequestSection::Documents => $this->hasRequiredUploads(LicenceDocumentKind::Upload),
@@ -677,14 +677,14 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Only the requests for a driver Licence Type.
+     * Only the requests for a driver Licence Type the instance handles, retired types included.
      *
      * @param  Builder<self>  $query
      */
     public function scopeForDriverLicence(Builder $query): void
     {
         $query->where(function (Builder $query) {
-            foreach (LicenceCatalogue::providers() as $provider) {
+            foreach (LicenceProvider::cases() as $provider) {
                 $query->orWhere(fn (Builder $query) => $query
                     ->where('provider', $provider)
                     ->whereIn('licence_type', LicenceCatalogue::types($provider, withInactive: true)->where('role', LicenceRole::Driver)->pluck('code')->all()));

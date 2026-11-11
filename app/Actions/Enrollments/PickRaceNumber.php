@@ -24,15 +24,16 @@ class PickRaceNumber
 {
     /**
      * Pick, or change, the race number of a submitted Enrollment: a Pending reservation held until the organizer
-     * confirms the Enrollment. First come, first served: the number is locked while it is checked and reserved.
+     * confirms the Enrollment. First come, first served: the number is locked while it is checked and reserved. Once
+     * the organizer confirmed the number, only the organizer changes it, and it stays confirmed.
      *
      * @throws ValidationException when the number is not valid nor free, or the Enrollment can't pick one
      */
-    public function __invoke(Enrollment $enrollment, mixed $bib, User $user): BibReservation
+    public function __invoke(Enrollment $enrollment, mixed $bib, User $user, bool $byOrganizer = false): BibReservation
     {
         $bib = $this->validated($bib);
 
-        return $this->whileHolding($bib, fn () => DB::transaction(fn () => $this->assign($enrollment, $bib, $user)));
+        return $this->whileHolding($bib, fn () => DB::transaction(fn () => $this->assign($enrollment, $bib, $user, $byOrganizer)));
     }
 
     /**
@@ -96,9 +97,13 @@ class PickRaceNumber
      *
      * @throws ValidationException
      */
-    public function assign(Enrollment $enrollment, int $bib, User $user): BibReservation
+    public function assign(Enrollment $enrollment, int $bib, User $user, bool $byOrganizer = false): BibReservation
     {
         $locked = $enrollment->lockInStatus([EnrollmentStatus::Submitted], 'bib', __('The race number can be changed only until the enrollment is confirmed.'));
+
+        if (! $byOrganizer && $locked->hasConfirmedRaceNumber()) {
+            throw ValidationException::withMessages(['bib' => __('The organizer confirmed the race number: ask them to change it.')]);
+        }
 
         $championship = $locked->championship;
 

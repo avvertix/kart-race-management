@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Actions\Enrollments\PickRaceNumber;
 use App\Data\HolderData;
+use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Models\Championship;
@@ -12,6 +14,7 @@ use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
+use Illuminate\Validation\ValidationException;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
@@ -130,6 +133,45 @@ class EnrollmentCompetitorTest extends TestCase
         $this->actingAs($enrollment->user)
             ->get(route('my-enrollments.race-number.edit', $enrollment))
             ->assertForbidden();
+    }
+
+    public function test_once_the_race_number_is_confirmed_only_the_organizer_changes_it(): void
+    {
+        $championship = $this->championship(grantsNumber: true);
+        $enrollment = Enrollment::factory()->for($championship)->create();
+        $organizer = User::factory()->organizer()->create();
+
+        $reservation = app(PickRaceNumber::class)($enrollment, 7, $enrollment->user);
+
+        $this->actingAs($organizer)
+            ->post(route('bib-reservations.confirm', $reservation))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(BibReservationStatus::Confirmed, $reservation->fresh()->status);
+
+        $this->actingAs($enrollment->user)
+            ->get(route('my-enrollments.show', $enrollment))
+            ->assertDontSee(route('my-enrollments.race-number.edit', $enrollment))
+            ->assertSee(__('Confirmed by the organizer: ask them to change it.'));
+
+        $this->actingAs($enrollment->user)
+            ->get(route('my-enrollments.race-number.edit', $enrollment))
+            ->assertForbidden();
+
+        try {
+            app(PickRaceNumber::class)($enrollment, 8, $enrollment->user);
+            $this->fail('The driver changed a confirmed race number.');
+        } catch (ValidationException $exception) {
+            $this->assertArrayHasKey('bib', $exception->errors());
+        }
+
+        $this->actingAs($organizer)
+            ->put(route('enrollments.race-number.update', $enrollment), ['bib' => 9])
+            ->assertSessionHasNoErrors();
+
+        $reservation->refresh();
+        $this->assertSame(9, $reservation->bib);
+        $this->assertSame(BibReservationStatus::Confirmed, $reservation->status);
     }
 
     private function championship(bool $grantsNumber = false): Championship

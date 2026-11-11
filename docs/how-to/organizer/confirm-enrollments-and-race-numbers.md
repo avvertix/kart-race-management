@@ -22,7 +22,7 @@ You can create an Enrollment for any Licence at any time, also outside the enrol
 
 ## Release or change a race number
 
-A pending number stays held until you confirm or release it. To give the number to someone else, release it first. After confirmation, only an organizer can change a Driver's number.
+A pending number stays held until you confirm or release it. To give the number to someone else, release it first. Once you confirm a number, on its own or with its enrollment, only an organizer can change it; the Driver no longer can. From the enrollment page you can still change it while the enrollment is submitted, and it stays confirmed.
 
 1. **Open the championship's Race Number Reservations** and open the reservation.
 2. **Choose *Confirm reservation*** for a pending one, ***Edit reservation*** to change the number, or ***Release the number*** to free it.

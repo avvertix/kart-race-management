@@ -21,7 +21,7 @@ use Illuminate\View\View;
 class ChampionshipEnrollmentController extends Controller
 {
     /**
-     * The Enrollments of one status, submitted by default, oldest first.
+     * The Enrollments of one status, submitted by default, oldest first; or the active ones with an overdue balance.
      */
     public function index(Request $request, Championship $championship): View
     {
@@ -31,13 +31,15 @@ class ChampionshipEnrollmentController extends Controller
 
         $request->validate([
             'status' => ['nullable', Rule::enum(EnrollmentStatus::class)],
+            'overdue' => ['nullable', 'boolean'],
         ]);
 
-        $status = $request->enum('status', EnrollmentStatus::class) ?? EnrollmentStatus::Submitted;
+        $overdue = $request->boolean('overdue');
+        $status = $overdue ? null : ($request->enum('status', EnrollmentStatus::class) ?? EnrollmentStatus::Submitted);
 
         $enrollments = $championship->enrollments()
             ->with(['licence', 'licenceRequest', 'competitorLicence', 'reservations', 'payments'])
-            ->where('status', $status)
+            ->when($overdue, fn ($query) => $query->overdue(), fn ($query) => $query->where('status', $status))
             ->oldest()
             ->oldest('id')
             ->paginate(50)
@@ -48,6 +50,7 @@ class ChampionshipEnrollmentController extends Controller
         return view('enrollment.index', [
             'championship' => $championship,
             'status' => $status,
+            'overdue' => $overdue,
             'enrollments' => $enrollments,
         ]);
     }

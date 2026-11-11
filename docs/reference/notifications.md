@@ -16,6 +16,7 @@ In the app, the bell next to the account menu shows how many notifications are u
 | The Licence is emitted | The applicant, with a link to the Licence |
 | The organizer confirms the payment of an enrollment | The User who enrolled, with a link to the Enrollment |
 | The organizer can't accept the payment proof of an enrollment | The User who enrolled, with a link to upload a new one |
+| The balance of an enrollment is due within a week and not paid yet (`enrollments:remind-balance`, every morning, once per enrollment) | The User who enrolled, with the balance, the due date and how to pay |
 | The organizer confirms an enrollment | The User who enrolled, with a link to the Enrollment |
 | The organizer rejects an enrollment | The User who enrolled, with the reason |
 | An enrollment needs something before it can be confirmed: another licence after its request was rejected, or the Competitor of an underage driver once the licence request shows the age | The User who enrolled, with a link to the Enrollment |

@@ -23,6 +23,7 @@ use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\Payment;
 use App\Models\PaymentChannelType;
+use App\Models\Race;
 use App\Models\User;
 use App\Notifications\EnrollmentPaymentConfirmed;
 use Illuminate\Http\UploadedFile;
@@ -270,25 +271,26 @@ class PaymentRecordsTest extends TestCase
         });
     }
 
-    public function test_the_option_cannot_change_once_something_is_paid(): void
+    public function test_a_change_of_option_keeps_what_was_paid(): void
     {
         $enrollment = $this->enrollmentToPay(18000);
-        $cheaper = EnrollmentOption::factory()->for($enrollment->championship)->create(['amount' => 5000]);
+        $dearer = EnrollmentOption::factory()->for($enrollment->championship)->create(['amount' => 25000]);
 
         app(RecordEnrollmentPayment::class)($enrollment, User::factory()->organizer()->create(), PaymentChannelType::CASH, 6000);
+        app(ChangeEnrollmentOption::class)($enrollment->fresh(), $dearer);
 
-        $this->expectException(ValidationException::class);
-
-        app(ChangeEnrollmentOption::class)($enrollment->fresh(), $cheaper);
+        $this->assertSame(6000, $enrollment->fresh()->paidAmount());
+        $this->assertSame(19000, $enrollment->fresh()->balance());
     }
 
-    public function test_a_withdrawn_enrollment_takes_no_payment_and_its_driver_is_told_about_refunds(): void
+    public function test_a_withdrawn_enrollment_takes_no_payment_after_the_first_race_and_its_driver_is_told_about_refunds(): void
     {
         $enrollment = $this->enrollmentToPay(18000);
         $organizer = User::factory()->organizer()->create();
+        Race::factory()->for($enrollment->championship)->create(['event_start_at' => now()->subDay(), 'event_end_at' => now()->addDay()]);
 
         app(RecordEnrollmentPayment::class)($enrollment, $organizer, PaymentChannelType::CASH, 6000);
-        app(WithdrawEnrollment::class)($enrollment->fresh(), byOrganizer: true);
+        app(WithdrawEnrollment::class)($enrollment->fresh());
 
         try {
             app(RecordEnrollmentPayment::class)($enrollment->fresh(), $organizer, PaymentChannelType::CASH, 12000);

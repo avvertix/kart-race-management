@@ -113,6 +113,23 @@
                     <section class="space-y-3">
                         <h3 class="font-semibold text-zinc-900">{{ $enrollment->option->title }} &middot; <span class="font-mono tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span> &middot; {{ $enrollment->payment_status->label() }}</h3>
                         @include('partials.enrollment-payment-records', ['enrollment' => $enrollment])
+                        @if ($options->count() > 1)
+                            <form method="POST" action="{{ route('my-enrollments.option.update', $enrollment) }}" class="flex flex-wrap items-end gap-2">
+                                @csrf
+                                @method('PUT')
+                                <div>
+                                    <x-label for="option" value="{{ __('Switch to') }}" />
+                                    <select id="option" name="option" class="mt-1 rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
+                                        @foreach ($options as $item)
+                                            <option value="{{ $item->ulid }}" @selected($enrollment->enrollment_option_id === $item->getKey())>{{ $item->title }} &middot; {{ $item->amountLabel() }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <x-secondary-button type="submit">{{ __('Change option') }}</x-secondary-button>
+                            </form>
+                            <p class="text-sm text-zinc-600">{{ __('You can change option until the enrollment is paid in full and enrollment closes: what you already paid counts towards the new one.') }}</p>
+                            <x-input-error for="option" />
+                        @endif
                         @if ($enrollment->status->isActive())
                             @can('pay', $enrollment)
                                 <div class="prose prose-zinc">

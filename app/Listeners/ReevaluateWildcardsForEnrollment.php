@@ -6,7 +6,6 @@ namespace App\Listeners;
 
 use App\Actions\Wildcard\RecalculateWildcards;
 use App\Events\EnrollmentConfirmed;
-use App\Events\EnrollmentRevoked;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\RunResult;
@@ -18,11 +17,11 @@ class ReevaluateWildcardsForEnrollment
     public function __construct(private RecalculateWildcards $recalculateWildcards) {}
 
     /**
-     * When an Enrollment is confirmed or revoked in a championship with wildcards based on enrollment, evaluate again
+     * When an Enrollment is confirmed in a championship with wildcards based on enrollment, evaluate again
      * the driver's participations in races without results. Races with results keep their status until the organizer
      * recalculates them.
      */
-    public function handle(EnrollmentConfirmed|EnrollmentRevoked $event): void
+    public function handle(EnrollmentConfirmed $event): void
     {
         $enrollment = $event->enrollment;
         $championship = $enrollment->championship;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Wildcards;
 
 use App\Actions\Enrollments\ConfirmEnrollment;
-use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Actions\Wildcard\AttributeWildcardBasedOnEnrollment;
 use App\Features\LicencesAndEnrollments;
 use App\Livewire\WildcardSettings;
@@ -67,11 +66,6 @@ class AttributeWildcardBasedOnEnrollmentTest extends TestCase
         $this->assertTrue($past->fresh()->wildcard);
         $this->assertFalse($next->fresh()->wildcard);
         $this->assertFalse($otherDriver->fresh()->wildcard);
-
-        app(WithdrawEnrollment::class)($enrollment->fresh(), byOrganizer: true);
-
-        $this->assertTrue($next->fresh()->wildcard);
-        $this->assertTrue($past->fresh()->wildcard);
     }
 
     public function test_other_strategies_ignore_enrollments(): void

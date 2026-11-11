@@ -70,7 +70,7 @@ class EnrollmentDepositTest extends TestCase
             ->assertSee(__('Deposit :deposit, balance by :date', ['deposit' => '€300.00', 'date' => '31 March 2027']));
     }
 
-    public function test_a_paid_deposit_unlocks_everything_the_option_includes(): void
+    public function test_a_paid_deposit_unlocks_the_covered_renewal_and_the_race_credits_but_not_the_confirmation(): void
     {
         [$championship, $gold] = $this->moto();
         $user = User::factory()->create();
@@ -93,7 +93,7 @@ class EnrollmentDepositTest extends TestCase
         $enrollment->refresh();
         $this->assertSame(EnrollmentPaymentStatus::DepositPaid, $enrollment->payment_status);
         $this->assertTrue($enrollment->isDepositPaid());
-        $this->assertSame([], $enrollment->missingForConfirmation());
+        $this->assertSame([__('The balance is not paid yet.')], $enrollment->missingForConfirmation());
         $this->assertSame(6, Entitlement::query()->where('source_id', $enrollment->getKey())->sole()->amount);
         $this->assertTrue($renewal->fresh()->isPaymentSettled());
         $this->assertSame(65000, $enrollment->balance());
@@ -144,7 +144,7 @@ class EnrollmentDepositTest extends TestCase
         $this->assertSame(EnrollmentPaymentStatus::Paid, $enrollment->fresh()->payment_status);
     }
 
-    public function test_after_the_deposit_the_organizer_confirms_the_enrollment_and_sees_its_own_terms(): void
+    public function test_after_the_deposit_the_driver_is_asked_for_the_balance_and_the_organizer_sees_the_enrollment_terms(): void
     {
         [$championship, $gold] = $this->moto();
         $user = User::factory()->create();
@@ -161,13 +161,13 @@ class EnrollmentDepositTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('dashboard'))
-            ->assertDontSee(__('Payment').': '.EnrollmentPaymentStatus::DepositPaid->label());
+            ->assertSee(__('Payment').': '.EnrollmentPaymentStatus::DepositPaid->label());
 
         $this->actingAs($organizer)
             ->post(route('enrollments.confirm', $enrollment))
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasErrors();
 
-        $this->assertSame(EnrollmentStatus::Confirmed, $enrollment->fresh()->status);
+        $this->assertSame(EnrollmentStatus::Submitted, $enrollment->fresh()->status);
     }
 
     public function test_a_rejected_balance_proof_leaves_the_deposit_paid(): void

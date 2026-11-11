@@ -38,9 +38,9 @@ A Licence Request is a renewal and is paid on its own, unless the Enrollment wai
 | Status | Meaning | Next |
 |---|---|---|
 | Submitted | Created when the driver submits the form. Waiting for the organizer. When it names an open Licence Request instead of a Licence, it also waits for the licence | Confirmed, Rejected, Withdrawn |
-| Confirmed | Accepted by the organizer. Confirms the race number reservation | Withdrawn |
+| Confirmed | Accepted by the organizer, once paid in full. Confirms the race number reservation. Final: only confirmed Enrollments take part in the championship, and the driver never goes back to wildcard | — |
 | Rejected | Not accepted | — |
-| Withdrawn | Cancelled by the driver while submitted, or by the organizer at any time, but not while a payment proof waits for review | — |
+| Withdrawn | Cancelled by the driver or the organizer while submitted, but not while a payment proof waits for review. Until the championship's first race starts, the organizer brings it back to Submitted by recording a payment, unless what was paid was turned into race credit | Submitted |
 
 The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Driver has at most one submitted or confirmed Enrollment per championship, matched by licence number or by the holder (fiscal code, or name and birth date). Only a driver Licence valid in the championship's year, or a driver Licence Request for that year, can be enrolled. Underage is judged on the championship start date; the Competitor of an underage Driver is an adult other than the Driver, and can be named until confirmation. An Enrollment can't be withdrawn or rejected while a payment proof waits for review, and its declared Licences can't be changed or removed while it is active. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Licence must be for the request's year, and the Enrollment moves to the new Licence, unless the Driver is already enrolled in that championship, which rejects it; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence or starts a new request, keeping its payment and race number; an option that covered the rejected request covers the new one. An Enrollment can also wait for a draft request, started while enrolling. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
 
@@ -51,12 +51,14 @@ The organizer always confirms an Enrollment by hand. Free enrollments only skip 
 | Nothing to pay | A free option, or enrolled by the organizer |
 | To pay | The amount of the option chosen, or what is left of it, by bank transfer with the Enrollment as reason |
 | Proof uploaded | Waiting for the organizer to confirm it with the amount received, or reject it |
-| Deposit paid | The option asks for a deposit and the confirmed Payment Records reach it: the Enrollment gets everything its option includes (confirmation, the covered Licence Request, the race fee discount); the balance is due by the option's date |
-| Paid | The confirmed Payment Records reach the amount. Without a deposit, only now a Licence Request the option covers counts as paid, the Enrollment can be confirmed and the option's race fee discount is granted once the Licence exists |
+| Deposit paid | The option asks for a deposit and the confirmed Payment Records reach it: the covered Licence Request counts as paid and the option's race fee discount is granted; confirming waits for the balance, due by the option's date |
+| Paid | The confirmed Payment Records reach the amount: the Enrollment can be confirmed. Without a deposit, only now a Licence Request the option covers counts as paid and the option's race fee discount is granted once the Licence exists |
 
 The status follows the Enrollment's Payment Records. The driver uploads one bank transfer proof at a time; the organizer confirms it with the amount read on the bank statement, which may be less than what is due, or rejects it, and rejected proofs are kept. The organizer can also record a payment received by cash, credit card or bank transfer, with its amount and no proof, while no proof waits for review. Payments add up: the Enrollment stays To pay until they reach the deposit, when the option asks for one, then Deposit paid until they reach its amount. When the balance is due within a week the User who enrolled is reminded once, unless a payment proof waits for review that day. After that date an Enrollment not paid in full is *Overdue* in the organizer's list: it stays active, and the organizer decides what to do.
 
-The organizer can move a submitted Enrollment to another option until its payment is confirmed; the amount follows.
+A submitted Enrollment can move to another option until it is paid in full: by the driver while enrollment is open, by the organizer also afterwards. What was paid counts towards the new amount; paying more than it leaves the difference to refund outside the platform. A race fee discount already granted stays. After the enrollment period closes nobody enrolls a new Licence, the organizer included.
+
+When a withdrawn Enrollment paid something, the organizer can instead turn it into a race fee balance on its Licence: the option's unused race fee discounts are cancelled, the race fees they already covered are taken off, and the Enrollment can't come back.
 
 ## BIB Reservation
 

@@ -7,11 +7,11 @@
         {{ __('Enrollments') }} - {{ $championship->title }}
     </x-slot>
     <x-slot name="actions">
-        @can('review', \App\Models\Enrollment::class)
+        @if (auth()->user()->can('review', \App\Models\Enrollment::class) && ! $championship->enrollment->hasClosed())
             <x-button-link href="{{ route('championships.enrollments.create', $championship) }}">
                 {{ __('Enroll a licence') }}
             </x-button-link>
-        @endcan
+        @endif
     </x-slot>
 
     <div class="space-y-4">

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Enrollments\ChangeEnrollmentLicence;
+use App\Actions\Enrollments\ChangeEnrollmentOption;
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\SetEnrollmentCompetitor;
+use App\Actions\Enrollments\SubmitEnrollment;
 use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Actions\SubmitPaymentProof;
 use App\Enums\LicenceRequestStatus;
@@ -15,6 +17,7 @@ use App\Support\EnrollmentSubjects;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class MyEnrollmentController extends Controller
@@ -32,6 +35,9 @@ class MyEnrollmentController extends Controller
             'enrollment' => $enrollment,
             'championship' => $enrollment->championship,
             'subjects' => Gate::allows('changeLicence', $enrollment) ? EnrollmentSubjects::for($enrollment->user, $enrollment->championship) : collect(),
+            'options' => Gate::allows('changeOption', $enrollment)
+                ? $enrollment->championship->enrollmentOptions()->offeredFor(SubmitEnrollment::categoryOf($enrollment->licence, $enrollment->licenceRequest, null))->get()
+                : collect(),
             'competitorLicences' => Gate::allows('changeCompetitor', $enrollment) ? Enrollment::competitorCandidates($enrollment->championship, $enrollment->user, $enrollment->holder())->push(...array_filter([$enrollment->competitorLicence]))->unique('id') : collect(),
         ]);
     }
@@ -47,6 +53,25 @@ class MyEnrollmentController extends Controller
 
         return to_route('my-enrollments.show', $enrollment)
             ->with('flash.banner', __('Competitor of the enrollment saved.'));
+    }
+
+    /**
+     * Switch the Enrollment to another option offered to its licence category, see ChangeEnrollmentOption.
+     */
+    public function updateOption(Request $request, Enrollment $enrollment, ChangeEnrollmentOption $changeEnrollmentOption): RedirectResponse
+    {
+        $this->authorize('changeOption', $enrollment);
+
+        $option = $enrollment->championship->enrollmentOptions()->where('ulid', (string) $request->input('option'))->first();
+
+        if ($option === null) {
+            throw ValidationException::withMessages(['option' => __('The enrollment option is not available.')]);
+        }
+
+        $changeEnrollmentOption($enrollment, $option, byDriver: true);
+
+        return to_route('my-enrollments.show', $enrollment)
+            ->with('flash.banner', __('Enrollment option changed.'));
     }
 
     /**
@@ -124,7 +149,7 @@ class MyEnrollmentController extends Controller
     {
         $this->authorize('withdraw', $enrollment);
 
-        $withdrawEnrollment($enrollment, byOrganizer: false);
+        $withdrawEnrollment($enrollment);
 
         return to_route('my-enrollments.show', $enrollment)
             ->with('flash.banner', __('Enrollment withdrawn.'));

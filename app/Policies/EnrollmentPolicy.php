@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
 use App\Models\User;
@@ -56,6 +57,17 @@ class EnrollmentPolicy
             && $enrollment->championship->enrollment->isOpen()
             && $enrollment->grantsBibReservation()
             && ! $enrollment->hasConfirmedRaceNumber();
+    }
+
+    /**
+     * Determine whether the user can switch the enrollment to another option as its driver: their own, while submitted,
+     * enrollment is open and it is not paid in full nor has a payment proof waiting for review.
+     */
+    public function changeOption(User $user, Enrollment $enrollment): bool
+    {
+        return $this->ownsSubmitted($user, $enrollment)
+            && $enrollment->championship->enrollment->isOpen()
+            && ! in_array($enrollment->payment_status, [EnrollmentPaymentStatus::Paid, EnrollmentPaymentStatus::PaymentSubmitted], true);
     }
 
     /**

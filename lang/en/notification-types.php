@@ -15,6 +15,7 @@ return [
         'enrollment_needs_action' => 'Enrollment needs your attention',
         'enrollment_payment_confirmed' => 'Enrollment payment confirmed',
         'enrollment_payment_rejected' => 'Enrollment payment proof not accepted',
+        'enrollment_balance_due' => 'Enrollment balance due soon',
         'licence_request_submitted' => 'Licence request to review',
     ],
 
@@ -29,6 +30,7 @@ return [
         'enrollment_needs_action' => 'When your enrollment needs another licence or a competitor.',
         'enrollment_payment_confirmed' => 'When the organizer confirms the payment of your enrollment.',
         'enrollment_payment_rejected' => 'When the organizer can\'t confirm the payment proof of your enrollment.',
+        'enrollment_balance_due' => 'When the balance of your enrollment is due within a week and not paid yet.',
         'licence_request_submitted' => 'When a driver submits a licence request, also after fixing it.',
     ],
 

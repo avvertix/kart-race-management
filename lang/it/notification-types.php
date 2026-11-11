@@ -15,6 +15,7 @@ return [
         'enrollment_needs_action' => 'Iscrizione da completare',
         'enrollment_payment_confirmed' => 'Pagamento dell\'iscrizione confermato',
         'enrollment_payment_rejected' => 'Ricevuta di pagamento dell\'iscrizione non accettata',
+        'enrollment_balance_due' => 'Saldo dell\'iscrizione in scadenza',
         'licence_request_submitted' => 'Richiesta di licenza da verificare',
     ],
 
@@ -29,6 +30,7 @@ return [
         'enrollment_needs_action' => 'Quando la tua iscrizione richiede un\'altra licenza o un concorrente.',
         'enrollment_payment_confirmed' => 'Quando l\'organizzatore conferma il pagamento della tua iscrizione.',
         'enrollment_payment_rejected' => 'Quando l\'organizzatore non può confermare la ricevuta di pagamento della tua iscrizione.',
+        'enrollment_balance_due' => 'Quando il saldo della tua iscrizione scade entro una settimana e non è ancora pagato.',
         'licence_request_submitted' => 'Quando un pilota invia una richiesta di licenza, anche dopo averla corretta.',
     ],
 

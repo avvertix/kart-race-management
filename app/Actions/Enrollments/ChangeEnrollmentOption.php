@@ -49,6 +49,7 @@ class ChangeEnrollmentOption
                 'currency' => $option->currency,
                 'deposit_amount' => $option->deposit_amount,
                 'balance_due_on' => $option->balance_due_on,
+                'balance_reminded_at' => null,
             ]);
 
             $locked->refreshPaymentStatus();

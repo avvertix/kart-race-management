@@ -27,11 +27,21 @@ enum EnrollmentPaymentStatus: string
     case Paid = 'paid';
 
     /**
+     * The statuses with nothing left to pay.
+     *
+     * @return array<int, self>
+     */
+    public static function settled(): array
+    {
+        return [self::NotDue, self::Paid];
+    }
+
+    /**
      * Whether nothing is left to pay.
      */
     public function isSettled(): bool
     {
-        return in_array($this, [self::NotDue, self::Paid], true);
+        return in_array($this, self::settled(), true);
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use App\Notifications\AccountNotification;
+use App\Notifications\EnrollmentBalanceDue;
 use App\Notifications\EnrollmentConfirmed;
 use App\Notifications\EnrollmentNeedsAction;
 use App\Notifications\EnrollmentPaymentConfirmed;
@@ -42,6 +43,8 @@ enum NotificationType: string
 
     case EnrollmentPaymentRejected = 'enrollment_payment_rejected';
 
+    case EnrollmentBalanceDue = 'enrollment_balance_due';
+
     /**
      * Sent to the organizers when a request is submitted, also after changes.
      */
@@ -71,6 +74,7 @@ enum NotificationType: string
             self::EnrollmentNeedsAction => EnrollmentNeedsAction::class,
             self::EnrollmentPaymentConfirmed => EnrollmentPaymentConfirmed::class,
             self::EnrollmentPaymentRejected => EnrollmentPaymentRejected::class,
+            self::EnrollmentBalanceDue => EnrollmentBalanceDue::class,
             self::LicenceRequestSubmitted => LicenceRequestSubmitted::class,
         };
     }

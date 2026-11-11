@@ -82,7 +82,8 @@ class ChampionshipEnrollmentOptionController extends Controller
     }
 
     /**
-     * The option's attributes from the form. The amount is entered in euro; race fee discounts need the championship
+     * The option's attributes from the form. The amount and the deposit are entered in euro, the deposit below the amount
+     * and with the balance due date, ignored without a deposit; race fee discounts need the championship
      * to use Entitlements. A new option is offered to drivers; an existing one only while "offered" stays ticked.
      *
      * @return array<string, mixed>
@@ -93,6 +94,8 @@ class ChampionshipEnrollmentOptionController extends Controller
             'title' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string', 'max:1000'],
             'amount' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100000'],
+            'deposit_amount' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.01', 'lt:amount'],
+            'balance_due_on' => ['nullable', 'required_with:deposit_amount', 'date'],
             'covers_licence_renewal' => ['nullable', 'boolean'],
             'reserves_race_number' => ['nullable', 'boolean'],
             'entitlement_mode' => [
@@ -121,6 +124,8 @@ class ChampionshipEnrollmentOptionController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'amount' => (int) round(((float) $validated['amount']) * 100),
+            'deposit_amount' => isset($validated['deposit_amount']) ? (int) round(((float) $validated['deposit_amount']) * 100) : null,
+            'balance_due_on' => isset($validated['deposit_amount']) ? $validated['balance_due_on'] : null,
             'covers_licence_renewal' => $request->boolean('covers_licence_renewal'),
             'reserves_race_number' => $request->boolean('reserves_race_number'),
             'entitlement_mode' => $mode,

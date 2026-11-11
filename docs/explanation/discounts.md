@@ -14,7 +14,7 @@ Whether Entitlements can be used in a race depends on its configuration. By defa
 Entitlements come from two places:
 
 - a **Promo Code** the organizer issued and someone claimed, e.g. a prize for last season's results or a plain discount;
-- an **Enrollment Option** that includes a race fee discount, granted once the Enrollment is paid and its Licence verified or emitted, e.g. a promo that covers the licence renewal and the first race.
+- an **Enrollment Option** that includes a race fee discount, granted once the Enrollment's deposit, or its full amount without a deposit, is paid and its Licence verified or emitted, e.g. a promo that covers the licence renewal and the first race.
 
 ## Why claiming matters
 

@@ -36,6 +36,20 @@
             <x-input-error for="amount" class="mt-2" />
         </div>
 
+        <div class="flex flex-wrap gap-4">
+            <div>
+                <x-label for="deposit_amount" value="{{ __('Deposit (€)') }}" />
+                <x-input id="deposit_amount" type="text" inputmode="decimal" name="deposit_amount" class="mt-1 block w-40" :value="old('deposit_amount', $option->deposit_amount === null ? '' : number_format($option->deposit_amount / 100, 2, '.', ''))" />
+                <x-input-error for="deposit_amount" class="mt-2" />
+            </div>
+            <div>
+                <x-label for="balance_due_on" value="{{ __('Balance due by') }}" />
+                <x-input id="balance_due_on" type="date" name="balance_due_on" class="mt-1 block" :value="old('balance_due_on', $option->balance_due_on?->toDateString())" />
+                <x-input-error for="balance_due_on" class="mt-2" />
+            </div>
+        </div>
+        <p class="-mt-3 text-sm text-zinc-500">{{ __('Optional. Paying the deposit gives the driver everything the option includes; the balance is due by the date.') }}</p>
+
         <fieldset class="space-y-2">
             <legend class="text-sm font-medium text-zinc-900">{{ __('Includes') }}</legend>
             <label class="flex items-start gap-3">

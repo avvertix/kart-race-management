@@ -63,7 +63,7 @@ A Driver's Licence enrolled in a championship, optionally with a Competitor (req
 _Avoid_: Championship registration, subscription, promotional registration
 
 **Enrollment Option**:
-What a Driver enrolls in a championship with: free or a fixed amount, optionally covering the Licence renewal, reserving a Championship BIB and granting a race fee discount, possibly offered only to some licence categories. A championship offers one or more; see ADR 0006.
+What a Driver enrolls in a championship with: free or a fixed amount, possibly with a deposit that unlocks the Enrollment and the balance due by a date, optionally covering the Licence renewal, reserving a Championship BIB and granting a race fee discount, possibly offered only to some licence categories. A championship offers one or more; see ADR 0006.
 _Avoid_: Plan, tier, package, enrollment fee, promotional package
 
 **Wildcard**:

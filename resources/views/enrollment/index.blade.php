@@ -66,7 +66,12 @@
                         @endforelse
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500"><x-time :value="$item->created_at" /></td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">{{ $item->payment_status->label() }}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
+                        {{ $item->payment_status->label() }}
+                        @if ($item->amount > 0 && $item->balance() > 0)
+                            <span class="block font-mono tabular-nums">{{ __(':paid paid, :balance due', ['paid' => $item->currency->format($item->paidAmount()), 'balance' => $item->currency->format($item->balance())]) }}</span>
+                        @endif
+                    </td>
                     @if ($status === \App\Enums\EnrollmentStatus::Submitted)
                         @php($missing = $item->missingForConfirmation())
                         <td class="px-3 py-4 text-sm">

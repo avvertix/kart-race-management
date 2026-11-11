@@ -41,6 +41,18 @@ class PaymentFactory extends Factory
         ]);
     }
 
+    /**
+     * A payment of the given amount, in cents, the organizer confirmed for an Enrollment or a Licence Request.
+     */
+    public function confirmedFor(Model $payable, int $amount): static
+    {
+        return $this->proofFor($payable)->state(fn (array $attributes) => [
+            'amount' => $amount,
+            'status' => PaymentStatus::Confirmed,
+            'reviewed_at' => now(),
+        ]);
+    }
+
     public function forParticipant(?Participant $participant = null)
     {
         return $this->state(function (array $attributes) use ($participant) {

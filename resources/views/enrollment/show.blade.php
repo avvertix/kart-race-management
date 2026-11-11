@@ -69,6 +69,10 @@
                     {{ $enrollment->option?->title ?? __('Enrolled by the organizer') }}
                     &middot; <span class="font-mono tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span>
                     &middot; {{ $enrollment->payment_status->label() }}
+                    @php($paymentTerms = $enrollment->paymentTermsLabel())
+                    @if ($paymentTerms !== null)
+                        <span class="block text-sm text-zinc-600">{{ $paymentTerms }}</span>
+                    @endif
                 </p>
                 <div class="mt-2">
                     @include('partials.enrollment-payment-records', ['enrollment' => $enrollment])
@@ -91,7 +95,7 @@
                         </form>
                     </div>
                     <p class="mt-1 text-sm text-zinc-600">{{ __('Type the amount you see on the bank statement.') }}</p>
-                @elseif ($enrollment->payment_status === \App\Enums\EnrollmentPaymentStatus::AwaitingPayment && $enrollment->status->isActive())
+                @elseif (in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::AwaitingPayment, \App\Enums\EnrollmentPaymentStatus::DepositPaid], true) && $enrollment->status->isActive())
                     <form method="POST" action="{{ route('enrollments.payment.record', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">
                         @csrf
                         <div>

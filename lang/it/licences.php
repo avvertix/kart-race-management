@@ -111,6 +111,7 @@ return [
         'not_due' => 'Nulla da pagare',
         'awaiting_payment' => 'Da pagare',
         'payment_submitted' => 'Ricevuta caricata',
+        'deposit_paid' => 'Acconto pagato',
         'paid' => 'Pagata',
     ],
 

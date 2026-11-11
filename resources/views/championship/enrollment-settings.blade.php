@@ -107,6 +107,7 @@
                         </p>
                         <p class="text-sm text-zinc-500">
                             {{ collect([
+                                $option->paymentTermsLabel(),
                                 $option->covers_licence_renewal ? __('Covers the licence renewal') : null,
                                 $option->reserves_race_number ? __('Reserves a race number') : null,
                                 $option->entitlement_mode?->describe((int) $option->entitlement_amount),

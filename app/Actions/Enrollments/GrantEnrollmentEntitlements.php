@@ -12,8 +12,8 @@ class GrantEnrollmentEntitlements
 {
     /**
      * Create the race fee discount of the Enrollment's option for its Licence, once the Enrollment is active, its
-     * payment settled (paid, or nothing due) and its Licence verified or emitted; until then it grants nothing. Runs on
-     * submitting, on payment confirmation, on licence verification and emission, and on a change of licence. Granting
+     * deposit paid (or its full amount, or nothing due) and its Licence verified or emitted; until then it grants
+     * nothing. Runs on submitting, on payment confirmation, on licence verification and emission, and on a change of licence. Granting
      * twice creates nothing twice: the Enrollment row is locked while looking for the Entitlement it is the source of.
      */
     public function __invoke(Enrollment $enrollment): void
@@ -28,7 +28,7 @@ class GrantEnrollmentEntitlements
                 return;
             }
 
-            if (! $locked->status->isActive() || ! $locked->isPaymentSettled()) {
+            if (! $locked->status->isActive() || ! $locked->isDepositPaid()) {
                 return;
             }
 

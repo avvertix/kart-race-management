@@ -111,6 +111,7 @@ return [
         'not_due' => 'Nothing to pay',
         'awaiting_payment' => 'To pay',
         'payment_submitted' => 'Proof uploaded',
+        'deposit_paid' => 'Deposit paid',
         'paid' => 'Paid',
     ],
 

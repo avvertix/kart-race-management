@@ -22,8 +22,13 @@ return new class extends Migration
 
             $table->string('currency', 3)->default('EUR')->after('amount');
 
+            // The option's deposit and balance due date, copied with the amount
+            $table->unsignedInteger('deposit_amount')->nullable()->after('currency');
+
+            $table->date('balance_due_on')->nullable()->after('deposit_amount');
+
             // EnrollmentPaymentStatus
-            $table->string('payment_status', 30)->default('not_due')->after('currency');
+            $table->string('payment_status', 30)->default('not_due')->after('balance_due_on');
 
             $table->timestamp('paid_at')->nullable()->after('payment_status');
 
@@ -46,7 +51,7 @@ return new class extends Migration
         });
 
         Schema::table('enrollments', function (Blueprint $table) {
-            $table->dropColumn(['enrollment_option_id', 'amount', 'currency', 'payment_status', 'paid_at', 'payment_confirmed_by']);
+            $table->dropColumn(['enrollment_option_id', 'amount', 'currency', 'deposit_amount', 'balance_due_on', 'payment_status', 'paid_at', 'payment_confirmed_by']);
         });
     }
 };

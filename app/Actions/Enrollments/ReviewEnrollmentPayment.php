@@ -19,9 +19,9 @@ class ReviewEnrollmentPayment
 
     /**
      * Confirm the uploaded payment proof of an active Enrollment with the amount received, in cents, as read on the bank
-     * statement, or reject it so the driver uploads a new one. Rejected proofs are kept. The Enrollment is paid once its
-     * confirmed records reach its amount: that grants the option's race fee discount once the Licence exists, and
-     * settles the Licence Request the Enrollment covers.
+     * statement, or reject it so the driver uploads a new one. Rejected proofs are kept. Once its confirmed records reach
+     * the deposit, or the amount without a deposit, the Enrollment gets the option's race fee discount once the Licence
+     * exists, and settles the Licence Request it covers.
      *
      * @throws ValidationException when no payment proof awaits confirmation, or confirming without an amount
      */

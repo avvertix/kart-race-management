@@ -8,15 +8,18 @@ use App\Actions\Enrollments\ChangeEnrollmentOption;
 use App\Actions\Enrollments\ConfirmEnrollment;
 use App\Actions\Enrollments\FindPreviousNumbers;
 use App\Actions\Enrollments\PickRaceNumber;
+use App\Actions\Enrollments\RecordEnrollmentPayment;
 use App\Actions\Enrollments\RejectEnrollment;
 use App\Actions\Enrollments\ReviewEnrollmentPayment;
 use App\Actions\Enrollments\SetEnrollmentCompetitor;
 use App\Actions\Enrollments\WithdrawEnrollment;
 use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
+use App\Models\PaymentChannelType;
 use App\Support\RaceNumberAvailability;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -33,7 +36,7 @@ class EnrollmentReviewController extends Controller
     {
         $this->authorize('review', Enrollment::class);
 
-        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'user', 'option', 'latestPayment', 'reservations']);
+        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'user', 'option', 'payments', 'reservations']);
 
         return view('enrollment.show', [
             'enrollment' => $enrollment,
@@ -47,13 +50,13 @@ class EnrollmentReviewController extends Controller
     }
 
     /**
-     * Confirm the Enrollment's payment proof, without leaving the review.
+     * Confirm the Enrollment's payment proof with the amount received, in euro, without leaving the review.
      */
     public function confirmPayment(Request $request, Enrollment $enrollment, ReviewEnrollmentPayment $reviewEnrollmentPayment): RedirectResponse
     {
         $this->authorize('review', Enrollment::class);
 
-        $reviewEnrollmentPayment($enrollment, $request->user(), confirm: true);
+        $reviewEnrollmentPayment($enrollment, $request->user(), confirm: true, amount: $this->validatedAmountInCents($request));
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Payment confirmed.'));
@@ -70,6 +73,23 @@ class EnrollmentReviewController extends Controller
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Payment rejected.'));
+    }
+
+    /**
+     * Record a payment received by cash, credit card or bank transfer without a proof, without leaving the review.
+     */
+    public function recordPayment(Request $request, Enrollment $enrollment, RecordEnrollmentPayment $recordEnrollmentPayment): RedirectResponse
+    {
+        $this->authorize('review', Enrollment::class);
+
+        $validated = $request->validate([
+            'channel' => ['required', Rule::enum(PaymentChannelType::class)],
+        ]);
+
+        $recordEnrollmentPayment($enrollment, $request->user(), PaymentChannelType::from((int) $validated['channel']), $this->validatedAmountInCents($request));
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', __('Payment recorded.'));
     }
 
     /**
@@ -173,5 +193,21 @@ class EnrollmentReviewController extends Controller
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Enrollment withdrawn.'));
+    }
+
+    /**
+     * The amount received, entered in euro with a decimal point or comma, in cents.
+     */
+    private function validatedAmountInCents(Request $request): int
+    {
+        $request->merge(['amount' => str_replace(',', '.', mb_trim((string) $request->input('amount')))]);
+
+        $validated = $request->validate(
+            ['amount' => ['required', 'numeric', 'decimal:0,2', 'min:0.01', 'max:100000']],
+            [],
+            ['amount' => __('Amount (€)')],
+        );
+
+        return (int) round(((float) $validated['amount']) * 100);
     }
 }

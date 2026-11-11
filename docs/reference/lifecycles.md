@@ -49,9 +49,11 @@ The organizer always confirms an Enrollment by hand. Free enrollments only skip 
 | Status | Meaning |
 |---|---|
 | Nothing to pay | A free option, or enrolled by the organizer |
-| To pay | The amount of the option chosen, by bank transfer with the Enrollment as reason |
-| Proof uploaded | Waiting for the organizer to confirm or reject it |
-| Paid | Confirmed by the organizer; a Licence Request the option covers counts as paid, and the option's race fee discount is granted once the Licence exists |
+| To pay | The amount of the option chosen, or what is left of it, by bank transfer with the Enrollment as reason |
+| Proof uploaded | Waiting for the organizer to confirm it with the amount received, or reject it |
+| Paid | The confirmed Payment Records reach the amount; a Licence Request the option covers counts as paid, and the option's race fee discount is granted once the Licence exists |
+
+The status follows the Enrollment's Payment Records. The driver uploads one bank transfer proof at a time; the organizer confirms it with the amount read on the bank statement, which may be less than what is due, or rejects it, and rejected proofs are kept. The organizer can also record a payment received by cash, credit card or bank transfer, with its amount and no proof, while no proof waits for review. Payments add up: the Enrollment stays To pay until they reach its amount.
 
 The organizer can move a submitted Enrollment to another option until its payment is confirmed; the amount follows.
 

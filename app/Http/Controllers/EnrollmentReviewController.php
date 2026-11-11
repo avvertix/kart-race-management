@@ -144,13 +144,14 @@ class EnrollmentReviewController extends Controller
     }
 
     /**
-     * Pick or change the race number for the driver, while the Enrollment is submitted, see PickRaceNumber.
+     * Pick or change the race number for the driver, while the Enrollment is submitted, also once confirmed on its own,
+     * see PickRaceNumber.
      */
     public function raceNumber(Request $request, Enrollment $enrollment, PickRaceNumber $pickRaceNumber): RedirectResponse
     {
         $this->authorize('review', Enrollment::class);
 
-        $reservation = $pickRaceNumber($enrollment, $request->input('bib'), $request->user());
+        $reservation = $pickRaceNumber($enrollment, $request->input('bib'), $request->user(), byOrganizer: true);
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Race number :bib picked for the enrollment.', ['bib' => $reservation->bib]));

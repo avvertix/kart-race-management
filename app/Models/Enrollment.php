@@ -396,6 +396,14 @@ class Enrollment extends Model implements Payable
     }
 
     /**
+     * Whether the organizer confirmed the Enrollment's race number: from then on only the organizer changes it.
+     */
+    public function hasConfirmedRaceNumber(): bool
+    {
+        return $this->reservations()->where('status', BibReservationStatus::Confirmed)->exists();
+    }
+
+    /**
      * Whether a payment proof of the Enrollment waits for the organizer.
      */
     public function hasPaymentUnderReview(): bool

@@ -87,7 +87,7 @@
                                             @if($entry['is_dnf'] || $entry['is_dns'] || $entry['is_dq'])
                                                 {{ $entry['status']->localizedName() }}
                                             @else
-                                                {{ $entry['position'] }}
+                                                {{ $entry['position'] }} - {{ __(':position in category', ['position' => $entry['position_in_category']]) }}
                                             @endif
                                         </td>
                                         <td class="px-2 py-2 border-b text-right font-medium">{{ $entry['points'] }}</td>

@@ -37,7 +37,12 @@
                     {{ $licence->provider->label() }} &middot; {{ $licence->licenceTypeLabel() }} &middot; <span class="font-mono">{{ $licence->number }}</span> &middot; {{ $licence->validity_year }}
                     <span class="block text-sm text-zinc-600">{{ $licence->source->label() }}{{ $licence->isVerifiedOrEmitted() ? ' · '.__('Verified') : '' }}</span>
                 @elseif ($enrollment->licenceRequest)
-                    {{ __('Waiting for the licence request') }} &middot; {{ $enrollment->licenceRequest->status->label() }}
+                    @if ($enrollment->licenceRequest->status !== \App\Enums\LicenceRequestStatus::Draft && auth()->user()->can('review', $enrollment->licenceRequest))
+                        <a href="{{ route('licence-request-reviews.show', $enrollment->licenceRequest) }}" class="text-orange-600 hover:text-orange-900">{{ __('Waiting for the licence request') }}</a>
+                    @else
+                        {{ __('Waiting for the licence request') }}
+                    @endif
+                    &middot; {{ $enrollment->licenceRequest->status->label() }}
                 @endif
             </p>
             <p>

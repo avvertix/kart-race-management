@@ -40,7 +40,9 @@
             $isPaymentSettled,
             $isVerified && ! $isPaymentSettled,
             match ($paymentStatus) {
-                LicenceRequestPaymentStatus::AwaitingPrice => __('You set the amount when you finish the review'),
+                LicenceRequestPaymentStatus::AwaitingPrice => $renewalPrice === null
+                    ? __('You set the amount when you finish the review')
+                    : __('You set the amount when you finish the review. Renewal price: :price', ['price' => $renewalPrice]),
                 LicenceRequestPaymentStatus::AwaitingPayment => __('Waiting for the driver\'s payment of :amount', ['amount' => $licenceRequest->amountLabel()]),
                 LicenceRequestPaymentStatus::PaymentSubmitted => __('Payment proof to confirm, :amount', ['amount' => $licenceRequest->amountLabel()]),
                 LicenceRequestPaymentStatus::Paid => $licenceRequest->payment_channel

@@ -282,6 +282,7 @@ class LicenceRequestForm extends Component
             'selectedLicenceType' => $licenceTypes->firstWhere('code', $this->licenceType),
             'documents' => $licenceRequest->requiredDocuments(LicenceDocumentKind::Upload),
             'forms' => $licenceRequest->requiredDocuments(LicenceDocumentKind::SignedForm),
+            'renewalPrice' => LicenceCatalogue::renewalPriceLabel(),
         ])->title(__('Licence request'));
     }
 

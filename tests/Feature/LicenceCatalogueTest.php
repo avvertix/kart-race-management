@@ -11,6 +11,7 @@ use App\Enums\LicenceProvider;
 use App\Enums\LicenceRole;
 use App\Models\DriverLicence;
 use App\Support\LicenceCatalogue;
+use InvalidArgumentException;
 use Tests\TestCase;
 
 class LicenceCatalogueTest extends TestCase
@@ -94,5 +95,76 @@ class LicenceCatalogueTest extends TestCase
         config(['licences.types.asi' => []]);
 
         $this->assertEquals([LicenceProvider::Aci], LicenceCatalogue::providers());
+    }
+
+    public function test_the_instance_handles_only_the_enabled_types_and_their_providers(): void
+    {
+        config(['licences.enabled_types' => ['asi.ma']]);
+
+        $this->assertEquals([LicenceProvider::Asi], LicenceCatalogue::providers());
+        $this->assertEquals(['ma'], LicenceCatalogue::types(LicenceProvider::Asi)->pluck('code')->all());
+        $this->assertTrue(LicenceCatalogue::types(LicenceProvider::Aci, withInactive: true)->isEmpty());
+        $this->assertEquals([], LicenceCatalogue::selectableCodes(LicenceProvider::Aci, 'naz-e'));
+        $this->assertTrue(LicenceCatalogue::isEnabled(LicenceProvider::Asi, 'ma'));
+        $this->assertFalse(LicenceCatalogue::isEnabled(LicenceProvider::Aci, 'naz-e'));
+    }
+
+    public function test_a_type_not_enabled_keeps_its_name_but_is_not_offered(): void
+    {
+        config(['licences.enabled_types' => ['asi.ma']]);
+
+        $type = LicenceCatalogue::find(LicenceProvider::Aci, 'naz-e');
+
+        $this->assertEquals('NAZ E', $type->name);
+        $this->assertFalse($type->active);
+    }
+
+    public function test_every_type_is_enabled_when_none_is_listed(): void
+    {
+        config(['licences.enabled_types' => []]);
+
+        $this->assertEquals([LicenceProvider::Aci, LicenceProvider::Asi], LicenceCatalogue::providers());
+        $this->assertTrue(LicenceCatalogue::isEnabled(LicenceProvider::Aci, 'naz-c'));
+    }
+
+    public function test_an_enabled_type_that_does_not_exist_is_a_configuration_error(): void
+    {
+        config(['licences.enabled_types' => ['asi.ma', 'asi.naz-e']]);
+
+        $this->expectExceptionMessage('LICENCE_TYPES lists unknown Licence Types: asi.naz-e');
+
+        LicenceCatalogue::providers();
+    }
+
+    public function test_the_renewal_price_is_a_fixed_amount_or_a_range(): void
+    {
+        config(['licences.renewal_price' => '50']);
+
+        $this->assertEquals(5000, LicenceCatalogue::fixedRenewalPrice());
+        $this->assertEquals('€50.00', LicenceCatalogue::renewalPriceLabel());
+
+        config(['licences.renewal_price' => '49.50-80']);
+
+        $this->assertNull(LicenceCatalogue::fixedRenewalPrice());
+        $this->assertEquals('€49.50 – €80.00', LicenceCatalogue::renewalPriceLabel());
+
+        config(['licences.renewal_price' => null]);
+
+        $this->assertNull(LicenceCatalogue::fixedRenewalPrice());
+        $this->assertNull(LicenceCatalogue::renewalPriceLabel());
+    }
+
+    public function test_a_renewal_price_that_cannot_be_read_is_a_configuration_error(): void
+    {
+        foreach (['fifty', '80-50', '50-', '50.123'] as $price) {
+            config(['licences.renewal_price' => $price]);
+
+            try {
+                LicenceCatalogue::renewalPriceLabel();
+                $this->fail("[{$price}] was accepted.");
+            } catch (InvalidArgumentException $exception) {
+                $this->assertStringContainsString('LICENCE_RENEWAL_PRICE', $exception->getMessage());
+            }
+        }
     }
 }

@@ -7,10 +7,10 @@ namespace App\Http\Controllers;
 use App\Data\LicenceSettingsData;
 use App\Enums\LicenceProvider;
 use App\Models\Championship;
+use App\Support\LicenceCatalogue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
 class ChampionshipController extends Controller
@@ -61,7 +61,7 @@ class ChampionshipController extends Controller
             'end' => 'nullable|date|after:start',
             'title' => 'nullable|string|max:250|unique:'.Championship::class.',title',
             'description' => 'nullable|string|max:1000',
-            'licence_provider' => ['nullable', 'string', new Enum(LicenceProvider::class)],
+            'licence_provider' => ['nullable', 'string', Rule::enum(LicenceProvider::class)->only(LicenceCatalogue::selectableProviders())],
         ]);
 
         $start_date = Carbon::parse($validated['start']);

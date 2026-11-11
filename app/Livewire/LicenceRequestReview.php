@@ -24,6 +24,7 @@ use App\Models\LicenceRequest;
 use App\Models\LicenceRequestDocument;
 use App\Models\PaymentChannelType;
 use App\Models\User;
+use App\Support\LicenceCatalogue;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\UploadedFile;
@@ -78,7 +79,8 @@ class LicenceRequestReview extends Component
         $this->authorize('review', $licenceRequest);
 
         $this->licenceRequest = $licenceRequest;
-        $this->amount = $licenceRequest->amount === null ? '' : number_format($licenceRequest->amount / 100, 2, '.', '');
+        $amount = $licenceRequest->amount ?? ($licenceRequest->covering_enrollment_id === null ? LicenceCatalogue::fixedRenewalPrice() : null);
+        $this->amount = $amount === null ? '' : number_format($amount / 100, 2, '.', '');
         $this->number = $licenceRequest->provider === LicenceProvider::Aci ? ($licenceRequest->previous_licence_number ?? '') : '';
         $this->validityYear = (string) $licenceRequest->validity_year;
     }
@@ -279,6 +281,7 @@ class LicenceRequestReview extends Component
             'newUploadCount' => $requiredDocuments->filter($isNew)->count(),
             'selectedDocument' => $uploads->firstWhere('id', $this->selectedDocumentId) ?? $uploads->first(),
             'previousLicenceOfAnotherUser' => $licenceRequest->previousLicenceOfAnotherUser(),
+            'renewalPrice' => LicenceCatalogue::renewalPriceLabel(),
         ]);
     }
 

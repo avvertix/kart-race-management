@@ -203,6 +203,7 @@ class RegisterParticipant
 
         return Licence::query()
             ->managedBy($user)
+            ->ofEnabledType()
             ->where('ulid', $ulid)
             ->where('number_hash', $licenceHash)
             ->value('id');

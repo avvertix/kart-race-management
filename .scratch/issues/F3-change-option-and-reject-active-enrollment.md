@@ -38,7 +38,7 @@ Drivers and the organizer switch an Enrollment between options (Silver and Gold)
   - Race credit (`CreditEnrollmentPayment`, route `enrollments.credit`): balance = paid − sum of the discounts recorded on `participant_entitlement` for the Entitlements whose source is the Enrollment; those Entitlements drop to 0 remaining; `enrollments.credited_at` is set (added to the unreleased migration: `migrate:fresh`). It needs a Licence and the championship to use race fee discounts.
   - Overpayment after a cheaper option shows ":amount to refund" on both enrollment pages; race credit leaves it out (at most the Enrollment's amount).
   - A withdrawn Enrollment that waited for a request emitted meanwhile moves to the new Licence when it comes back.
-  - Known limits: a withdrawn Enrollment already paid in full can only be credited (no payment left to record); rejected Enrollments are not credited; a covered licence renewal is not deducted from the credit.
+  - Follow-up with the organizer: the credit is a race fee balance promo code (`credit_promo_code_id`) the organizer hands to the driver, issued for withdrawn and rejected Enrollments; the price of a covered renewal that was emitted is taken off, pre-filled with the instance's lowest renewal price; `BringBackEnrollment` (route `enrollments.bring-back`) brings back without a payment, e.g. when paid in full; on a change of option the race fee discount follows the new option (`GrantEnrollmentEntitlements` keys on source and mode).
 
 ## Out of scope
 
@@ -49,5 +49,5 @@ Refunds, which stay outside the platform.
 - Silver with €200 paid switched to Gold shows €750 due, by the driver while the window is open and by the organizer afterwards; Gold with €950 paid can't be switched.
 - A Gold Enrollment with only the deposit paid can't be confirmed; once paid in full it can, and it can't be withdrawn or rejected afterwards.
 - A withdrawn Enrollment with the deposit paid comes back to submitted when the organizer records the balance before the first race.
-- A withdrawn Enrollment with €300 paid gives a €300 race fee balance to the driver's Licence once the organizer turns it into credit, and can't come back afterwards.
+- A withdrawn Enrollment with €300 paid gives a €300 race fee balance promo code once the organizer turns it into credit, and can't come back afterwards.
 - Neither the driver nor the organizer enrolls a new Licence after the window closes.

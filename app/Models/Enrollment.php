@@ -43,6 +43,7 @@ use Laravel\Pennant\Feature;
  * @property ?CarbonImmutable $balance_due_on
  * @property ?CarbonImmutable $balance_reminded_at
  * @property ?CarbonImmutable $credited_at
+ * @property ?int $credit_promo_code_id
  * @property EnrollmentPaymentStatus $payment_status
  * @property ?CarbonImmutable $paid_at
  * @property ?int $payment_confirmed_by
@@ -56,6 +57,7 @@ use Laravel\Pennant\Feature;
  * @property-read ?Licence $competitorLicence
  * @property-read User $user
  * @property-read ?EnrollmentOption $option
+ * @property-read ?PromoCode $creditPromoCode
  */
 class Enrollment extends Model implements Payable
 {
@@ -87,6 +89,7 @@ class Enrollment extends Model implements Payable
         'balance_due_on',
         'balance_reminded_at',
         'credited_at',
+        'credit_promo_code_id',
         'payment_status',
         'paid_at',
         'payment_confirmed_by',
@@ -370,8 +373,8 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * Whether the organizer can bring the withdrawn Enrollment back by recording a payment: before the championship's
-     * first race starts, while what was paid is not turned into race credit.
+     * Whether the organizer can bring the withdrawn Enrollment back, see BringBackEnrollment: before the championship's
+     * first race starts, while what was paid is not turned into a promo code.
      */
     public function canBeBroughtBack(): bool
     {
@@ -381,14 +384,35 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * Whether the organizer can turn what the withdrawn Enrollment paid into a race fee balance on its Licence.
+     * Whether the organizer can turn what the withdrawn or rejected Enrollment paid into a promo code, once.
      */
     public function canBeCredited(): bool
     {
-        return $this->status === EnrollmentStatus::Withdrawn
+        return in_array($this->status, [EnrollmentStatus::Withdrawn, EnrollmentStatus::Rejected], true)
             && $this->credited_at === null
-            && $this->licence_id !== null
             && $this->paidAmount() > 0;
+    }
+
+    /**
+     * The promo code the organizer issued for what the Enrollment paid, see CreditEnrollmentPayment.
+     *
+     * @return BelongsTo<PromoCode, $this>
+     */
+    public function creditPromoCode(): BelongsTo
+    {
+        return $this->belongsTo(PromoCode::class, 'credit_promo_code_id');
+    }
+
+    /**
+     * The Licence Request whose renewal the Enrollment's option paid and that was emitted: the licence was renewed, so
+     * its price is taken off what the Enrollment paid when turned into a promo code.
+     */
+    public function coveredEmittedRenewal(): ?LicenceRequest
+    {
+        return LicenceRequest::query()
+            ->where('covering_enrollment_id', $this->getKey())
+            ->where('status', LicenceRequestStatus::Emitted)
+            ->first();
     }
 
     /**

@@ -11,6 +11,7 @@ use App\Enums\LicenceRequestStatus;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\EnrollmentOption;
+use App\Models\Entitlement;
 use App\Models\LicenceRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -25,8 +26,8 @@ class ChangeEnrollmentOption
      * at any time, e.g. when the licence category changed on renewal. The amount, deposit and due date follow the new
      * option, and the payment status is recomputed from the payments already made: paying more than the new amount leaves
      * the difference to refund outside the platform. The Licence Request the Enrollment waits for is covered or uncovered
-     * as the new option covers the renewal or not, and race numbers are released when the new option reserves none. A
-     * race fee discount already granted stays. A payment proof waiting for review must be reviewed first.
+     * as the new option covers the renewal or not, and race numbers are released when the new option reserves none. The
+     * race fee discount follows the new option, held until its deposit is paid. A payment proof waiting for review must be reviewed first.
      *
      * @throws ValidationException when the Enrollment is not submitted, paid in full, has a proof to review, or the option is not offered
      */
@@ -63,6 +64,8 @@ class ChangeEnrollmentOption
 
             $locked->refreshPaymentStatus();
 
+            $this->holdRaceFeeDiscountsUntilDeposit($locked);
+
             $waitedFor = $locked->licenceRequest;
 
             if ($waitedFor !== null && $waitedFor->status !== LicenceRequestStatus::Rejected) {
@@ -93,5 +96,22 @@ class ChangeEnrollmentOption
         ($this->grantEnrollmentEntitlements)($changed);
 
         return $changed;
+    }
+
+    /**
+     * Hold the race fee discounts already granted while the new option's deposit is not paid: what is left of them can't
+     * be used. GrantEnrollmentEntitlements brings them back, following the new option, once the deposit is paid.
+     */
+    private function holdRaceFeeDiscountsUntilDeposit(Enrollment $enrollment): void
+    {
+        if ($enrollment->isDepositPaid()) {
+            return;
+        }
+
+        Entitlement::query()
+            ->where('source_type', $enrollment->getMorphClass())
+            ->where('source_id', $enrollment->getKey())
+            ->lockForUpdate()
+            ->update(['remaining' => 0]);
     }
 }

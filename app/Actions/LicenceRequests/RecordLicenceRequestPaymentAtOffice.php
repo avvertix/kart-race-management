@@ -6,6 +6,7 @@ namespace App\Actions\LicenceRequests;
 
 use App\Enums\LicenceRequestPaymentStatus;
 use App\Enums\LicenceRequestStatus;
+use App\Enums\PaymentStatus;
 use App\Models\LicenceRequest;
 use App\Models\PaymentChannelType;
 use App\Models\User;
@@ -15,7 +16,8 @@ use Illuminate\Validation\ValidationException;
 class RecordLicenceRequestPaymentAtOffice
 {
     /**
-     * Record that the requester paid at the organizer's office, by cash or credit card, instead of a bank transfer.
+     * Record that the requester paid at the organizer's office, by cash or credit card, instead of a bank transfer: a
+     * confirmed payment record of the request's amount, without proof.
      *
      * @throws ValidationException when the channel is a bank transfer, or the request is not awaiting a payment
      */
@@ -37,6 +39,15 @@ class RecordLicenceRequestPaymentAtOffice
                     ? __('A payment proof awaits your review. Confirm or reject it first.')
                     : __('The request is not awaiting a payment.')]);
             }
+
+            $locked->payments()->create([
+                'amount' => $locked->amount,
+                'channel' => $channel,
+                'status' => PaymentStatus::Confirmed,
+                'recorded_by' => $organizer->getKey(),
+                'reviewed_by' => $organizer->getKey(),
+                'reviewed_at' => now(),
+            ]);
 
             $locked->update([
                 'payment_status' => LicenceRequestPaymentStatus::Paid,

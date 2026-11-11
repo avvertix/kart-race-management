@@ -286,6 +286,7 @@ Route::middleware([
             Route::put('enrollments/{enrollment}/competitor', [EnrollmentReviewController::class, 'competitor'])->name('enrollments.competitor.update');
             Route::post('enrollments/{enrollment}/payment/confirm', [EnrollmentReviewController::class, 'confirmPayment'])->name('enrollments.payment.confirm');
             Route::post('enrollments/{enrollment}/payment/reject', [EnrollmentReviewController::class, 'rejectPayment'])->name('enrollments.payment.reject');
+            Route::post('enrollments/{enrollment}/payment/record', [EnrollmentReviewController::class, 'recordPayment'])->name('enrollments.payment.record');
             Route::put('enrollments/{enrollment}/option', [EnrollmentReviewController::class, 'option'])->name('enrollments.option.update');
 
             Route::resource('licences', LicenceController::class)->only(['index', 'show']);

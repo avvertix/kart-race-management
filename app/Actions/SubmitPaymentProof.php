@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\PaymentStatus;
 use App\Models\Payment;
+use App\Models\PaymentChannelType;
 use App\Support\Payable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +18,8 @@ use Illuminate\Validation\ValidationException;
 class SubmitPaymentProof
 {
     /**
-     * Store the payment proof of an Enrollment or a Licence Request. Rejected proofs are kept.
+     * Store the payment proof of an Enrollment or a Licence Request: a bank transfer waiting for the organizer, who
+     * confirms the amount received. Rejected proofs are kept.
      *
      * @throws ValidationException when no payment is expected or the proof is not valid
      */
@@ -48,6 +51,8 @@ class SubmitPaymentProof
                 $payment = $locked->payments()->create([
                     'path' => $path,
                     'hash' => hash_file('sha512', Storage::disk('payments')->path($path)),
+                    'channel' => PaymentChannelType::BANK_TRANSFER,
+                    'status' => PaymentStatus::Submitted,
                 ]);
 
                 $locked->markPaymentSubmitted();

@@ -15,6 +15,7 @@ use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\Payment;
 use App\Models\User;
 use App\Notifications\EnrollmentConfirmed;
 use App\Notifications\EnrollmentNeedsAction;
@@ -79,7 +80,10 @@ class EnrollmentNotificationsTest extends TestCase
         $refused = Enrollment::factory()->for($championship)->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::PaymentSubmitted]);
         $organizer = User::factory()->organizer()->create();
 
-        app(ReviewEnrollmentPayment::class)($paid, $organizer, confirm: true);
+        Payment::factory()->proofFor($paid)->create();
+        Payment::factory()->proofFor($refused)->create();
+
+        app(ReviewEnrollmentPayment::class)($paid, $organizer, confirm: true, amount: 9000);
         app(ReviewEnrollmentPayment::class)($refused, $organizer, confirm: false);
 
         Notification::assertSentTo($paid->user, EnrollmentPaymentConfirmed::class);

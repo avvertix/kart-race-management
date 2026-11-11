@@ -10,6 +10,7 @@ use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Enums\LicenceRole;
+use App\Enums\PaymentStatus;
 use App\Support\Payable;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,7 +21,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -237,21 +237,13 @@ class Enrollment extends Model implements Payable
     }
 
     /**
-     * The payment proofs, including the rejected ones.
+     * The payment records: proofs uploaded by the driver, rejected ones included, and payments recorded by the organizer.
      *
      * @return MorphMany<Payment, $this>
      */
     public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable');
-    }
-
-    /**
-     * @return MorphOne<Payment, $this>
-     */
-    public function latestPayment(): MorphOne
-    {
-        return $this->morphOne(Payment::class, 'payable')->latestOfMany();
     }
 
     /**
@@ -268,9 +260,55 @@ class Enrollment extends Model implements Payable
         return $locked;
     }
 
+    /**
+     * Update the payment status once a proof is uploaded, see refreshPaymentStatus().
+     */
     public function markPaymentSubmitted(): void
     {
-        $this->update(['payment_status' => EnrollmentPaymentStatus::PaymentSubmitted]);
+        $this->refreshPaymentStatus();
+    }
+
+    /**
+     * The sum of the confirmed payment records, in cents.
+     */
+    public function paidAmount(): int
+    {
+        if ($this->relationLoaded('payments')) {
+            return (int) $this->payments->where('status', PaymentStatus::Confirmed)->sum('amount');
+        }
+
+        return (int) $this->payments()->confirmed()->sum('amount');
+    }
+
+    /**
+     * What is still to pay, in cents: never below zero, an amount paid in excess is refunded outside the platform.
+     */
+    public function balance(): int
+    {
+        return max(0, $this->amount - $this->paidAmount());
+    }
+
+    /**
+     * Set the payment status from the amount and the payment records: nothing due, paid once the confirmed records reach
+     * the amount, a proof waiting for the organizer, or awaiting payment. Paid keeps the day it was first reached.
+     */
+    public function refreshPaymentStatus(): void
+    {
+        $this->unsetRelation('payments');
+
+        $paid = $this->paidAmount();
+
+        $status = match (true) {
+            $this->amount === 0 && $paid === 0 => EnrollmentPaymentStatus::NotDue,
+            $paid >= $this->amount => EnrollmentPaymentStatus::Paid,
+            $this->payments()->submitted()->exists() => EnrollmentPaymentStatus::PaymentSubmitted,
+            default => EnrollmentPaymentStatus::AwaitingPayment,
+        };
+
+        $this->update([
+            'payment_status' => $status,
+            'paid_at' => $status === EnrollmentPaymentStatus::Paid ? ($this->paid_at ?? now()) : null,
+        ]);
     }
 
     /**

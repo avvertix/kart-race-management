@@ -21,9 +21,10 @@ class ChangeEnrollmentOption
      * The organizer moves a submitted Enrollment to another option offered by its championship, e.g. when the licence
      * category changed on renewal, until its payment is confirmed. The amount follows the new option, the Licence Request
      * the Enrollment waits for is covered or uncovered as the new option covers the renewal or not, and race numbers are
-     * released when the new option reserves none. A payment proof waiting for review must be rejected first.
+     * released when the new option reserves none. A payment proof waiting for review must be rejected first, and nothing
+     * can be paid yet.
      *
-     * @throws ValidationException when the Enrollment is not submitted, already paid, has a proof to review, or the option is not offered by its championship
+     * @throws ValidationException when the Enrollment is not submitted, already paid even in part, has a proof to review, or the option is not offered by its championship
      */
     public function __invoke(Enrollment $enrollment, EnrollmentOption $option): Enrollment
     {
@@ -38,7 +39,7 @@ class ChangeEnrollmentOption
                 throw ValidationException::withMessages(['option' => __('The enrollment option is not available.')]);
             }
 
-            if (in_array($locked->payment_status, [EnrollmentPaymentStatus::Paid, EnrollmentPaymentStatus::PaymentSubmitted], true)) {
+            if (in_array($locked->payment_status, [EnrollmentPaymentStatus::Paid, EnrollmentPaymentStatus::PaymentSubmitted], true) || $locked->paidAmount() > 0) {
                 throw ValidationException::withMessages(['option' => __('The payment is already confirmed or waits for review: the option can\'t change.')]);
             }
 
@@ -46,8 +47,9 @@ class ChangeEnrollmentOption
                 'enrollment_option_id' => $option->getKey(),
                 'amount' => $option->amount,
                 'currency' => $option->currency,
-                'payment_status' => $option->isFree() ? EnrollmentPaymentStatus::NotDue : EnrollmentPaymentStatus::AwaitingPayment,
             ]);
+
+            $locked->refreshPaymentStatus();
 
             $waitedFor = $locked->licenceRequest;
 

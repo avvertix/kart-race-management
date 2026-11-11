@@ -41,7 +41,7 @@ class EnrollmentReviewPaymentTest extends TestCase
             ->assertDontSee(route('enrollments.confirm', $enrollment));
 
         $this->actingAs($organizer)
-            ->post(route('enrollments.payment.confirm', $enrollment))
+            ->post(route('enrollments.payment.confirm', $enrollment), ['amount' => '180'])
             ->assertRedirect(route('enrollments.show', $enrollment));
 
         $this->assertSame(EnrollmentPaymentStatus::Paid, $enrollment->fresh()->payment_status);

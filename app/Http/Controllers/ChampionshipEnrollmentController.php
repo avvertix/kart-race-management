@@ -56,13 +56,14 @@ class ChampionshipEnrollmentController extends Controller
     }
 
     /**
-     * The form to enroll a Licence on behalf of its driver, at any time.
+     * The form to enroll a Licence on behalf of its driver, also before or outside the drivers' period, until it closes.
      */
     public function create(Championship $championship): View
     {
         $this->authorize('review', Enrollment::class);
 
         abort_unless($championship->enrollment->enabled, 404);
+        abort_if($championship->enrollment->hasClosed(), 403, __('Enrollment is closed.'));
 
         return view('enrollment.create', [
             'championship' => $championship,
@@ -80,6 +81,7 @@ class ChampionshipEnrollmentController extends Controller
         $this->authorize('review', Enrollment::class);
 
         abort_unless($championship->enrollment->enabled, 404);
+        abort_if($championship->enrollment->hasClosed(), 403, __('Enrollment is closed.'));
 
         $validated = $request->validate([
             'licence' => ['required', 'string', Rule::in($this->enrollableLicences($championship)->pluck('ulid'))],

@@ -42,6 +42,7 @@ use Laravel\Pennant\Feature;
  * @property ?int $deposit_amount
  * @property ?CarbonImmutable $balance_due_on
  * @property ?CarbonImmutable $balance_reminded_at
+ * @property ?CarbonImmutable $credited_at
  * @property EnrollmentPaymentStatus $payment_status
  * @property ?CarbonImmutable $paid_at
  * @property ?int $payment_confirmed_by
@@ -85,6 +86,7 @@ class Enrollment extends Model implements Payable
         'deposit_amount',
         'balance_due_on',
         'balance_reminded_at',
+        'credited_at',
         'payment_status',
         'paid_at',
         'payment_confirmed_by',
@@ -360,6 +362,36 @@ class Enrollment extends Model implements Payable
     }
 
     /**
+     * What was paid beyond the amount, in cents, e.g. after moving to a cheaper option: refunded outside the platform.
+     */
+    public function overpaidAmount(): int
+    {
+        return max(0, $this->paidAmount() - $this->amount);
+    }
+
+    /**
+     * Whether the organizer can bring the withdrawn Enrollment back by recording a payment: before the championship's
+     * first race starts, while what was paid is not turned into race credit.
+     */
+    public function canBeBroughtBack(): bool
+    {
+        return $this->status === EnrollmentStatus::Withdrawn
+            && $this->credited_at === null
+            && $this->championship->races()->where('event_start_at', '<=', now())->doesntExist();
+    }
+
+    /**
+     * Whether the organizer can turn what the withdrawn Enrollment paid into a race fee balance on its Licence.
+     */
+    public function canBeCredited(): bool
+    {
+        return $this->status === EnrollmentStatus::Withdrawn
+            && $this->credited_at === null
+            && $this->licence_id !== null
+            && $this->paidAmount() > 0;
+    }
+
+    /**
      * The deposit and balance due date copied from the option when enrolling, e.g. "Deposit €300.00, balance by
      * 31 March 2027"; null without a deposit.
      */
@@ -460,7 +492,7 @@ class Enrollment extends Model implements Payable
             $this->licence !== null && ! $this->licence->isVerifiedOrEmitted() ? (string) __('The declared licence is not verified yet.') : null,
             $this->licence !== null && $this->licence->role !== LicenceRole::Driver ? (string) __('The licence is not a driver licence.') : null,
             $this->licence !== null && $this->licence->validity_year !== $this->championship->start_at->year ? (string) __('The licence is not valid in the championship year.') : null,
-            ! $this->isDepositPaid() ? (string) __('The payment is not confirmed yet.') : null,
+            ! $this->isPaymentSettled() ? (string) ($this->paidAmount() > 0 ? __('The balance is not paid yet.') : __('The payment is not confirmed yet.')) : null,
             $this->requiresCompetitor() && $this->competitor_licence_id === null ? (string) __('The driver is underage and no competitor is named.') : null,
         ]));
     }
@@ -567,6 +599,7 @@ class Enrollment extends Model implements Payable
             'deposit_amount' => 'integer',
             'balance_due_on' => 'date',
             'balance_reminded_at' => 'datetime',
+            'credited_at' => 'datetime',
             'payment_status' => EnrollmentPaymentStatus::class,
             'paid_at' => 'datetime',
         ];

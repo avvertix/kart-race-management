@@ -8,7 +8,6 @@ use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Events\EnrollmentConfirmed;
-use App\Events\EnrollmentRevoked;
 use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Enrollment;
@@ -183,27 +182,22 @@ class EnrollmentReviewTest extends TestCase
         $this->assertSame(BibReservationStatus::Released, $reservation->fresh()->status);
     }
 
-    public function test_the_organizer_withdraws_a_confirmed_enrollment(): void
+    public function test_a_confirmed_enrollment_cannot_be_withdrawn(): void
     {
-        Event::fake([EnrollmentRevoked::class]);
-
-        $enrollment = Enrollment::factory()->confirmed()->recycle($this->championshipWithEnrollment())->create(['amount' => 9000, 'payment_status' => EnrollmentPaymentStatus::Paid]);
+        $enrollment = Enrollment::factory()->confirmed()->recycle($this->championshipWithEnrollment())->create();
 
         $this->actingAs(User::factory()->organizer()->create())
             ->post(route('enrollments.withdraw', $enrollment))
-            ->assertRedirect(route('enrollments.show', $enrollment));
+            ->assertSessionHasErrors('enrollment');
 
-        $this->assertSame(EnrollmentStatus::Withdrawn, $enrollment->fresh()->status);
-        $this->assertSame(EnrollmentPaymentStatus::Paid, $enrollment->fresh()->payment_status);
-
-        Event::assertDispatched(EnrollmentRevoked::class);
+        $this->assertSame(EnrollmentStatus::Confirmed, $enrollment->fresh()->status);
     }
 
-    public function test_the_organizer_enrolls_a_licence_outside_the_period(): void
+    public function test_the_organizer_enrolls_a_licence_before_the_period_opens(): void
     {
         $championship = $this->championshipWithEnrollment();
-        $championship->enrollment->closes_at = now()->subDay();
-        $championship->enrollment->opens_at = now()->subMonth();
+        $championship->enrollment->opens_at = now()->addDay();
+        $championship->enrollment->closes_at = now()->addMonth();
         $championship->save();
 
         $organizer = User::factory()->organizer()->create();

@@ -59,11 +59,11 @@ _Avoid_: Entry, registration (when referring to the record)
 A race registration form that was started but not yet submitted.
 
 **Enrollment**:
-A Driver's Licence enrolled in a championship, optionally with a Competitor (required for underage Drivers, who cannot be their own Competitor). A Driver has at most one active Enrollment per championship, while one User can enroll each Driver whose Licence they manage. It can wait for the Licence Request that will give the Licence; when that request is rejected, the User picks another Licence for it. It is made with one of the championship's Enrollment Options, free or at a fixed amount, and carries its own payment. It is optional for racing and does not fix the category or the Competitor, which a Participant can change between races. Each championship is isolated: enrollments do not carry over to other championships.
+A Driver's Licence enrolled in a championship, optionally with a Competitor (required for underage Drivers, who cannot be their own Competitor). A Driver has at most one active Enrollment per championship, while one User can enroll each Driver whose Licence they manage. It can wait for the Licence Request that will give the Licence; when that request is rejected, the User picks another Licence for it. It is made with one of the championship's Enrollment Options, free or at a fixed amount, and carries its own payment. It is optional for racing and does not fix the category or the Competitor, which a Participant can change between races. Only a confirmed Enrollment, paid in full, takes part in the championship, and it is final; a withdrawn one can come back until the first race. Each championship is isolated: enrollments do not carry over to other championships.
 _Avoid_: Championship registration, subscription, promotional registration
 
 **Enrollment Option**:
-What a Driver enrolls in a championship with: free or a fixed amount, possibly with a deposit that unlocks the Enrollment and the balance due by a date, optionally covering the Licence renewal, reserving a Championship BIB and granting a race fee discount, possibly offered only to some licence categories. A championship offers one or more; see ADR 0006.
+What a Driver enrolls in a championship with: free or a fixed amount, possibly with a deposit that unlocks the covered Licence renewal and the race fee discount, and the balance due by a date (confirming needs the full amount), optionally covering the Licence renewal, reserving a Championship BIB and granting a race fee discount, possibly offered only to some licence categories. A championship offers one or more; see ADR 0006.
 _Avoid_: Plan, tier, package, enrollment fee, promotional package
 
 **Wildcard**:
@@ -87,7 +87,7 @@ Money received for an Enrollment or a Licence Request: the amount the organizer 
 _Avoid_: Transaction, receipt
 
 **Entitlement**:
-A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code or by an Enrollment Option. It belongs to one Licence.
+A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code, by an Enrollment Option, or from what a withdrawn Enrollment paid. It belongs to one Licence.
 _Avoid_: Voucher
 
 **Bonus**:

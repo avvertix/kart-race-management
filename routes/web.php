@@ -288,6 +288,7 @@ Route::middleware([
             Route::post('enrollments/{enrollment}/payment/reject', [EnrollmentReviewController::class, 'rejectPayment'])->name('enrollments.payment.reject');
             Route::post('enrollments/{enrollment}/payment/record', [EnrollmentReviewController::class, 'recordPayment'])->name('enrollments.payment.record');
             Route::put('enrollments/{enrollment}/option', [EnrollmentReviewController::class, 'option'])->name('enrollments.option.update');
+            Route::post('enrollments/{enrollment}/credit', [EnrollmentReviewController::class, 'credit'])->name('enrollments.credit');
 
             Route::resource('licences', LicenceController::class)->only(['index', 'show']);
             Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');
@@ -320,6 +321,7 @@ Route::middleware([
     Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
     Route::put('my-enrollments/{enrollment}/licence', [MyEnrollmentController::class, 'updateLicence'])->name('my-enrollments.licence.update');
     Route::put('my-enrollments/{enrollment}/competitor', [MyEnrollmentController::class, 'updateCompetitor'])->name('my-enrollments.competitor.update');
+    Route::put('my-enrollments/{enrollment}/option', [MyEnrollmentController::class, 'updateOption'])->name('my-enrollments.option.update');
     Route::post('my-enrollments/{enrollment}/payment', [MyEnrollmentController::class, 'pay'])
         ->middleware('throttle:10,10')
         ->name('my-enrollments.payment.store');

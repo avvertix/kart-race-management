@@ -36,6 +36,9 @@ return new class extends Migration
 
             // When the User was reminded that the balance is due soon, so the reminder is sent once
             $table->timestamp('balance_reminded_at')->nullable()->after('payment_confirmed_by');
+
+            // When the organizer turned what a withdrawn Enrollment paid into a race fee balance; it can't come back then
+            $table->timestamp('credited_at')->nullable()->after('balance_reminded_at');
         });
 
         Schema::table('licence_requests', function (Blueprint $table) {
@@ -54,7 +57,7 @@ return new class extends Migration
         });
 
         Schema::table('enrollments', function (Blueprint $table) {
-            $table->dropColumn(['enrollment_option_id', 'amount', 'currency', 'deposit_amount', 'balance_due_on', 'payment_status', 'paid_at', 'payment_confirmed_by', 'balance_reminded_at']);
+            $table->dropColumn(['enrollment_option_id', 'amount', 'currency', 'deposit_amount', 'balance_due_on', 'payment_status', 'paid_at', 'payment_confirmed_by', 'balance_reminded_at', 'credited_at']);
         });
     }
 };

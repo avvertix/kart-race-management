@@ -139,6 +139,16 @@ final class LicenceCatalogue
     }
 
     /**
+     * The lowest renewal price in cents, the price itself when not a range; null when not set.
+     *
+     * @throws InvalidArgumentException when LICENCE_RENEWAL_PRICE cannot be read
+     */
+    public static function lowestRenewalPrice(): ?int
+    {
+        return self::renewalPriceRange()[0] ?? null;
+    }
+
+    /**
      * The renewal price as shown to people, e.g. "€50.00" or "€50.00 – €80.00", null when not set.
      *
      * @throws InvalidArgumentException when LICENCE_RENEWAL_PRICE cannot be read

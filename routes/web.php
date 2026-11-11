@@ -289,6 +289,7 @@ Route::middleware([
             Route::post('enrollments/{enrollment}/payment/record', [EnrollmentReviewController::class, 'recordPayment'])->name('enrollments.payment.record');
             Route::put('enrollments/{enrollment}/option', [EnrollmentReviewController::class, 'option'])->name('enrollments.option.update');
             Route::post('enrollments/{enrollment}/credit', [EnrollmentReviewController::class, 'credit'])->name('enrollments.credit');
+            Route::post('enrollments/{enrollment}/bring-back', [EnrollmentReviewController::class, 'bringBack'])->name('enrollments.bring-back');
 
             Route::resource('licences', LicenceController::class)->only(['index', 'show']);
             Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');

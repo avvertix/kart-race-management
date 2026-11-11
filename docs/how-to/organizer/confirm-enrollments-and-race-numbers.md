@@ -22,7 +22,7 @@ You can create an Enrollment for any Licence until the enrollment period closes,
 
 ## Withdrawn enrollments
 
-A confirmed Enrollment is final and can't be withdrawn. A submitted one can, by the driver or by you. Until the championship's first race starts, recording a payment on a withdrawn Enrollment brings it back, e.g. when the driver pays the balance late. If the driver won't pay the balance, choose *Turn into race credit*: what was paid becomes a race fee balance on the driver's licence, less the race fees the option's discounts already covered, and the unused discounts are cancelled. The Enrollment can't come back afterwards.
+A confirmed Enrollment is final and can't be withdrawn. A submitted one can, by the driver or by you. Until the championship's first race starts, recording a payment on a withdrawn Enrollment brings it back, e.g. when the driver pays the balance late; *Bring back* does it without a payment, e.g. when it was already paid in full. If the driver won't pay the balance, or you rejected the Enrollment after a payment, choose *Turn into a promo code*: what was paid becomes a race fee balance promo code, less the race fees the option's discounts already covered, whose unused part is cancelled. When the Enrollment paid a licence renewal that was emitted, type its price to take off; it is pre-filled with the renewal price of the instance. Hand the code to the driver, who claims it for a licence. The Enrollment can't come back afterwards.
 
 ## Release or change a race number
 

@@ -8,7 +8,7 @@
                 &middot; <span class="font-medium text-amber-700">{{ __(':amount to refund', ['amount' => $enrollment->currency->format($enrollment->overpaidAmount())]) }}</span>
             @endif
             @if ($enrollment->credited_at !== null)
-                &middot; {{ __('Turned into race credit') }}
+                &middot; {{ __('Turned into a promo code') }}
             @endif
         </p>
         <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200 bg-white text-sm">

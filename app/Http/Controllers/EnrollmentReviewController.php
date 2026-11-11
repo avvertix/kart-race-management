@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Enrollments\BringBackEnrollment;
 use App\Actions\Enrollments\ChangeEnrollmentOption;
 use App\Actions\Enrollments\ConfirmEnrollment;
 use App\Actions\Enrollments\CreditEnrollmentPayment;
@@ -94,18 +95,38 @@ class EnrollmentReviewController extends Controller
     }
 
     /**
-     * Turn what the withdrawn Enrollment paid into a race fee balance on its Licence, see CreditEnrollmentPayment.
+     * Turn what the withdrawn or rejected Enrollment paid into a promo code, see CreditEnrollmentPayment. The price of a
+     * covered licence renewal that was emitted, in euro, is asked when there is one.
      */
-    public function credit(Enrollment $enrollment, CreditEnrollmentPayment $creditEnrollmentPayment): RedirectResponse
+    public function credit(Request $request, Enrollment $enrollment, CreditEnrollmentPayment $creditEnrollmentPayment): RedirectResponse
     {
         $this->authorize('review', Enrollment::class);
 
-        $credit = $creditEnrollmentPayment($enrollment);
+        $validated = $request->validate([
+            'renewal_deduction' => $enrollment->coveredEmittedRenewal() !== null
+                ? ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100000']
+                : ['prohibited'],
+        ]);
+
+        $promoCode = $creditEnrollmentPayment($enrollment, $request->user(), (int) round(((float) ($validated['renewal_deduction'] ?? 0)) * 100));
 
         return to_route('enrollments.show', $enrollment)
-            ->with('flash.banner', $credit === null
-                ? __('Nothing left to credit: the race fees already discounted cover what was paid.')
-                : __('Race fee balance of :amount given to the licence.', ['amount' => $credit->mode->describe($credit->amount)]));
+            ->with('flash.banner', $promoCode === null
+                ? __('Nothing left to credit: the renewal and the race fees already discounted cover what was paid.')
+                : __('Promo code :code for :amount issued: hand it to the driver.', ['code' => $promoCode->code, 'amount' => $promoCode->mode->describe($promoCode->amount)]));
+    }
+
+    /**
+     * Bring the withdrawn Enrollment back to submitted, see BringBackEnrollment.
+     */
+    public function bringBack(Enrollment $enrollment, BringBackEnrollment $bringBackEnrollment): RedirectResponse
+    {
+        $this->authorize('review', Enrollment::class);
+
+        $bringBackEnrollment($enrollment);
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', __('Enrollment brought back.'));
     }
 
     /**

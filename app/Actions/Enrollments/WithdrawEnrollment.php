@@ -14,8 +14,8 @@ class WithdrawEnrollment
     /**
      * Withdraw a submitted Enrollment, by its driver or the organizer, while no payment proof waits for review: a confirmed
      * one is final, so the driver never goes back to wildcard. Releases its race numbers and returns a Licence Request it
-     * covered to its own payment. The organizer can bring it back by recording a payment before the first race, see
-     * RecordEnrollmentPayment, or turn what was paid into race credit, see CreditEnrollmentPayment.
+     * covered to its own payment. Before the first race the organizer can bring it back, see BringBackEnrollment, or
+     * turn what was paid into a promo code, see CreditEnrollmentPayment.
      *
      * @throws ValidationException when the Enrollment can't be withdrawn
      */

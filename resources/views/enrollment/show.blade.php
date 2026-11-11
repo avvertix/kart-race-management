@@ -124,13 +124,33 @@
                 <x-input-error for="amount" class="mt-1" />
                 <x-input-error for="channel" class="mt-1" />
                 <x-input-error for="payment" class="mt-1" />
-                @if ($enrollment->canBeCredited() && $enrollment->championship->entitlements_enabled)
-                    <form method="POST" action="{{ route('enrollments.credit', $enrollment) }}" class="mt-2 space-y-1">
+                @if ($enrollment->canBeBroughtBack())
+                    <form method="POST" action="{{ route('enrollments.bring-back', $enrollment) }}" class="mt-2 space-y-1">
                         @csrf
-                        <p class="text-sm text-zinc-600">{{ __('Turn the :amount paid into a race fee balance on the licence. Race fee discounts of the option are cancelled where unused, and those already used are taken off. The enrollment can\'t come back afterwards.', ['amount' => $enrollment->currency->format($enrollment->paidAmount())]) }}</p>
-                        <x-secondary-button type="submit">{{ __('Turn into race credit') }}</x-secondary-button>
+                        <p class="text-sm text-zinc-600">{{ __('Until the first race starts you can bring the withdrawn enrollment back, with what it paid.') }}</p>
+                        <x-secondary-button type="submit">{{ __('Bring back') }}</x-secondary-button>
+                    </form>
+                @endif
+                @if ($enrollment->canBeCredited() && $enrollment->championship->entitlements_enabled)
+                    @php($coveredRenewal = $enrollment->coveredEmittedRenewal())
+                    <form method="POST" action="{{ route('enrollments.credit', $enrollment) }}" class="mt-2 space-y-2">
+                        @csrf
+                        <p class="text-sm text-zinc-600">{{ __('Turn the :amount paid into a race fee promo code to hand to the driver. Race fee discounts of the option are cancelled where unused, and those already used are taken off. The enrollment can\'t come back afterwards.', ['amount' => $enrollment->currency->format($enrollment->paidAmount())]) }}</p>
+                        @if ($coveredRenewal !== null)
+                            @php($renewalPrice = \App\Support\LicenceCatalogue::lowestRenewalPrice())
+                            <div>
+                                <x-label for="renewal_deduction" :value="__('Licence renewal to take off (€)')" />
+                                <x-input id="renewal_deduction" name="renewal_deduction" type="text" inputmode="decimal" class="mt-1 block w-32" :value="old('renewal_deduction', $renewalPrice === null ? '' : number_format($renewalPrice / 100, 2, '.', ''))" required />
+                                <p class="mt-1 text-sm text-zinc-600">{{ __('The enrollment paid the licence renewal, which was emitted.') }}</p>
+                                <x-input-error for="renewal_deduction" class="mt-1" />
+                            </div>
+                        @endif
+                        <x-secondary-button type="submit">{{ __('Turn into a promo code') }}</x-secondary-button>
                     </form>
                     <x-input-error for="credit" class="mt-1" />
+                @endif
+                @if ($enrollment->creditPromoCode)
+                    <p class="mt-2 text-sm text-zinc-700">{{ __('Promo code :code for :amount, to hand to the driver.', ['code' => $enrollment->creditPromoCode->code, 'amount' => $enrollment->creditPromoCode->mode->describe($enrollment->creditPromoCode->amount)]) }}</p>
                 @endif
                 @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && ! in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::Paid, \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted], true) && $options->count() > 1)
                     <form method="POST" action="{{ route('enrollments.option.update', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">
@@ -249,7 +269,7 @@
             @elseif ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted)
                 <form method="POST" action="{{ route('enrollments.withdraw', $enrollment) }}" class="space-y-2">
                     @csrf
-                    <p class="text-sm text-zinc-600">{{ __('Withdrawing releases the race number and returns a covered licence request to its own payment. Until the first race you can bring it back by recording a payment, or turn what was paid into race credit. Refunds are settled with the driver.') }}</p>
+                    <p class="text-sm text-zinc-600">{{ __('Withdrawing releases the race number and returns a covered licence request to its own payment. Until the first race you can bring it back, or turn what was paid into a promo code. Refunds are settled with the driver.') }}</p>
                     <x-danger-button type="submit">{{ __('Withdraw enrollment') }}</x-danger-button>
                 </form>
             @endif

@@ -87,7 +87,7 @@ Money received for an Enrollment or a Licence Request: the amount the organizer 
 _Avoid_: Transaction, receipt
 
 **Entitlement**:
-A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code, by an Enrollment Option, or from what a withdrawn Enrollment paid. It belongs to one Licence.
+A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code or by an Enrollment Option. It belongs to one Licence. What a withdrawn or rejected Enrollment paid becomes a promo code.
 _Avoid_: Voucher
 
 **Bonus**:

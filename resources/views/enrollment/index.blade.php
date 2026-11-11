@@ -24,6 +24,10 @@
                     @endforeach
                 </select>
             </div>
+            <label class="flex items-center gap-2 pb-2 text-sm text-zinc-700">
+                <input type="checkbox" name="overdue" value="1" @checked($overdue) class="rounded-sm border-zinc-300 text-orange-600">
+                {{ __('Only overdue balances, any status') }}
+            </label>
             <x-secondary-button type="submit">{{ __('Filter') }}</x-secondary-button>
         </form>
 
@@ -68,6 +72,9 @@
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500"><x-time :value="$item->created_at" /></td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
                         {{ $item->payment_status->label() }}
+                        @if ($item->isOverdue())
+                            <span class="ml-1 rounded-sm bg-red-50 px-1.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-red-600/20">{{ __('Overdue') }}</span>
+                        @endif
                         @if ($item->amount > 0 && $item->balance() > 0)
                             <span class="block font-mono tabular-nums">{{ __(':paid paid, :balance due', ['paid' => $item->currency->format($item->paidAmount()), 'balance' => $item->currency->format($item->balance())]) }}</span>
                         @endif

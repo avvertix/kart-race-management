@@ -39,6 +39,7 @@ use Illuminate\Validation\ValidationException;
  * @property Currency $currency
  * @property ?int $deposit_amount
  * @property ?CarbonImmutable $balance_due_on
+ * @property ?CarbonImmutable $balance_reminded_at
  * @property EnrollmentPaymentStatus $payment_status
  * @property ?CarbonImmutable $paid_at
  * @property ?int $payment_confirmed_by
@@ -81,6 +82,7 @@ class Enrollment extends Model implements Payable
         'currency',
         'deposit_amount',
         'balance_due_on',
+        'balance_reminded_at',
         'payment_status',
         'paid_at',
         'payment_confirmed_by',
@@ -461,6 +463,46 @@ class Enrollment extends Model implements Payable
     }
 
     /**
+     * Whether the balance is still due after its due date. The Enrollment stays active: the organizer decides.
+     */
+    public function isOverdue(): bool
+    {
+        return $this->status->isActive()
+            && $this->balance_due_on !== null
+            && $this->balance_due_on->toDateString() < self::today()->toDateString()
+            && ! $this->payment_status->isSettled();
+    }
+
+    /**
+     * Only the active Enrollments whose balance is still due after its due date, see isOverdue().
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeOverdue(Builder $query): void
+    {
+        $query->active()
+            ->whereDate('balance_due_on', '<', self::today()->toDateString())
+            ->whereNotIn('payment_status', EnrollmentPaymentStatus::settled());
+    }
+
+    /**
+     * Only the active Enrollments with a balance due within the given days from today, whose User was not reminded yet.
+     * A proof waiting for review may pay the balance: the reminder waits for the organizer's review.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeToRemindOfBalance(Builder $query, int $days): void
+    {
+        $today = self::today();
+
+        $query->active()
+            ->whereNull('balance_reminded_at')
+            ->whereDate('balance_due_on', '>=', $today->toDateString())
+            ->whereDate('balance_due_on', '<=', $today->addDays($days)->toDateString())
+            ->whereNotIn('payment_status', [...EnrollmentPaymentStatus::settled(), EnrollmentPaymentStatus::PaymentSubmitted]);
+    }
+
+    /**
      * Only the Enrollments that count for their Licence, see EnrollmentStatus::active().
      *
      * @param  Builder<self>  $query
@@ -484,8 +526,17 @@ class Enrollment extends Model implements Payable
             'currency' => Currency::class,
             'deposit_amount' => 'integer',
             'balance_due_on' => 'date',
+            'balance_reminded_at' => 'datetime',
             'payment_status' => EnrollmentPaymentStatus::class,
             'paid_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Today in the races' timezone, as due dates are calendar days there.
+     */
+    private static function today(): CarbonImmutable
+    {
+        return now()->setTimezone(config('races.timezone'))->startOfDay();
     }
 }

@@ -12,3 +12,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('licence-requests:prune-documents')->daily()->withoutOverlapping();
 Schedule::command('notifications:prune-read')->daily()->withoutOverlapping();
+Schedule::command('enrollments:remind-balance')->dailyAt('09:00')->timezone(config('races.timezone'))->withoutOverlapping();

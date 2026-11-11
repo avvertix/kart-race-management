@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Enrollments;
 
 use App\Enums\EnrollmentStatus;
-use App\Events\EnrollmentRevoked;
 use App\Models\Enrollment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -13,39 +12,27 @@ use Illuminate\Validation\ValidationException;
 class WithdrawEnrollment
 {
     /**
-     * Withdraw the Enrollment: the driver while it is submitted, the organizer also once confirmed, while no payment proof
-     * waits for review. Releases its race numbers and returns a Licence Request it covered to its own payment.
+     * Withdraw a submitted Enrollment, by its driver or the organizer, while no payment proof waits for review: a confirmed
+     * one is final, so the driver never goes back to wildcard. Releases its race numbers and returns a Licence Request it
+     * covered to its own payment. The organizer can bring it back by recording a payment before the first race, see
+     * RecordEnrollmentPayment, or turn what was paid into race credit, see CreditEnrollmentPayment.
      *
      * @throws ValidationException when the Enrollment can't be withdrawn
      */
-    public function __invoke(Enrollment $enrollment, bool $byOrganizer): Enrollment
+    public function __invoke(Enrollment $enrollment): Enrollment
     {
-        $statuses = $byOrganizer ? EnrollmentStatus::active() : [EnrollmentStatus::Submitted];
-
-        $message = $byOrganizer
-            ? __('The enrollment is already closed.')
-            : __('A confirmed enrollment can only be withdrawn by the organizer.');
-
-        [$enrollment, $wasConfirmed] = DB::transaction(function () use ($enrollment, $statuses, $message) {
-            $locked = $enrollment->lockInStatus($statuses, 'enrollment', $message);
+        return DB::transaction(function () use ($enrollment) {
+            $locked = $enrollment->lockInStatus([EnrollmentStatus::Submitted], 'enrollment', __('Only a submitted enrollment can be withdrawn: a confirmed one is final.'));
 
             if ($locked->hasPaymentUnderReview()) {
                 throw ValidationException::withMessages(['enrollment' => __('A payment proof waits for review: confirm or reject it before withdrawing.')]);
             }
 
-            $wasConfirmed = $locked->status === EnrollmentStatus::Confirmed;
-
             $locked->update(['status' => EnrollmentStatus::Withdrawn]);
 
             $locked->releaseNumbersAndCoverage();
 
-            return [$locked, $wasConfirmed];
+            return $locked;
         });
-
-        if ($wasConfirmed) {
-            EnrollmentRevoked::dispatch($enrollment);
-        }
-
-        return $enrollment;
     }
 }

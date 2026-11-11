@@ -100,7 +100,10 @@
                         </form>
                     </div>
                     <p class="mt-1 text-sm text-zinc-600">{{ __('Type the amount you see on the bank statement.') }}</p>
-                @elseif (in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::AwaitingPayment, \App\Enums\EnrollmentPaymentStatus::DepositPaid], true) && $enrollment->status->isActive())
+                @elseif (in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::AwaitingPayment, \App\Enums\EnrollmentPaymentStatus::DepositPaid], true) && ($enrollment->status->isActive() || $enrollment->canBeBroughtBack()))
+                    @if ($enrollment->status === \App\Enums\EnrollmentStatus::Withdrawn)
+                        <p class="mt-2 text-sm text-zinc-600">{{ __('Recording a payment brings the withdrawn enrollment back, until the first race starts.') }}</p>
+                    @endif
                     <form method="POST" action="{{ route('enrollments.payment.record', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">
                         @csrf
                         <div>
@@ -121,7 +124,15 @@
                 <x-input-error for="amount" class="mt-1" />
                 <x-input-error for="channel" class="mt-1" />
                 <x-input-error for="payment" class="mt-1" />
-                @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && ! in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::Paid, \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted], true) && $enrollment->paidAmount() === 0 && $options->count() > 1)
+                @if ($enrollment->canBeCredited() && $enrollment->championship->entitlements_enabled)
+                    <form method="POST" action="{{ route('enrollments.credit', $enrollment) }}" class="mt-2 space-y-1">
+                        @csrf
+                        <p class="text-sm text-zinc-600">{{ __('Turn the :amount paid into a race fee balance on the licence. Race fee discounts of the option are cancelled where unused, and those already used are taken off. The enrollment can\'t come back afterwards.', ['amount' => $enrollment->currency->format($enrollment->paidAmount())]) }}</p>
+                        <x-secondary-button type="submit">{{ __('Turn into race credit') }}</x-secondary-button>
+                    </form>
+                    <x-input-error for="credit" class="mt-1" />
+                @endif
+                @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && ! in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::Paid, \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted], true) && $options->count() > 1)
                     <form method="POST" action="{{ route('enrollments.option.update', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">
                         @csrf
                         @method('PUT')
@@ -233,12 +244,12 @@
                 @endif
             @endif
 
-            @if ($enrollment->status->isActive() && $enrollment->hasPaymentUnderReview())
+            @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && $enrollment->hasPaymentUnderReview())
                 <p class="text-sm text-zinc-600">{{ __('A payment proof waits for review: confirm or reject it before withdrawing.') }}</p>
-            @elseif ($enrollment->status->isActive())
+            @elseif ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted)
                 <form method="POST" action="{{ route('enrollments.withdraw', $enrollment) }}" class="space-y-2">
                     @csrf
-                    <p class="text-sm text-zinc-600">{{ __('Withdrawing releases the race number and returns a covered licence request to its own payment. Refunds are settled with the driver.') }}</p>
+                    <p class="text-sm text-zinc-600">{{ __('Withdrawing releases the race number and returns a covered licence request to its own payment. Until the first race you can bring it back by recording a payment, or turn what was paid into race credit. Refunds are settled with the driver.') }}</p>
                     <x-danger-button type="submit">{{ __('Withdraw enrollment') }}</x-danger-button>
                 </form>
             @endif

@@ -42,7 +42,7 @@ class EnrollmentBalanceReminderTest extends TestCase
         $dueLater = $this->enrollmentWithDepositPaid($this->today()->addDays(8));
         $paidInFull = $this->enrollmentWithDepositPaid($this->today()->addDays(3), alsoPay: 65000);
         $withdrawn = $this->enrollmentWithDepositPaid($this->today()->addDays(3));
-        app(WithdrawEnrollment::class)($withdrawn, byOrganizer: true);
+        app(WithdrawEnrollment::class)($withdrawn);
         $overdue = $this->enrollmentWithDepositPaid($this->today()->subDay());
 
         $this->artisan('enrollments:remind-balance')->assertSuccessful();

@@ -46,7 +46,7 @@ Rules for every slice (see [backward compatibility](../../docs/explanation/backw
 | [E5](E5-remove-products-and-orders.md) | Remove Products, Packages and Orders | E4 | 2027 season |
 | [F1](F1-payment-records.md) | Payment records with amount, channel and review | E5 | 2027 season |
 | [F2](F2-deposit-and-balance.md) | Deposit and balance due date on Enrollment Options | F1 | 2027 season |
-| [F3](F3-change-option-and-reject-active-enrollment.md) | Change option and reject an active Enrollment (blocked on organizer) | F2 | 2027 season |
+| [F3](F3-change-option-and-reject-active-enrollment.md) | Change option, soft withdrawal and the deposit as race credit | F2 | 2027 season |
 | [F4](F4-balance-reminders.md) | Balance reminders and overdue Enrollments | F2 | 2027 season |
 | [F5](F5-option-next-to-the-driver.md) | Enrollment Option next to the driver | E5 | 2027 season |
 | [F6](F6-instance-licence-configuration.md) | Licence types and renewal price per instance | E5 | 2027 season |

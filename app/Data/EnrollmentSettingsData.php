@@ -36,6 +36,16 @@ class EnrollmentSettingsData extends Data
     }
 
     /**
+     * Whether the period is over at the given time, now by default: nobody enrolls a new Licence anymore.
+     */
+    public function hasClosed(?CarbonInterface $at = null): bool
+    {
+        $at ??= now();
+
+        return $this->closes_at !== null && $at->greaterThan($this->closes_at);
+    }
+
+    /**
      * Whether the period is still to come at the given time, now by default.
      */
     public function opensLater(?CarbonInterface $at = null): bool

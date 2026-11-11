@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Enrollments\ChangeEnrollmentOption;
 use App\Actions\Enrollments\ConfirmEnrollment;
+use App\Actions\Enrollments\CreditEnrollmentPayment;
 use App\Actions\Enrollments\FindPreviousNumbers;
 use App\Actions\Enrollments\PickRaceNumber;
 use App\Actions\Enrollments\RecordEnrollmentPayment;
@@ -93,7 +94,22 @@ class EnrollmentReviewController extends Controller
     }
 
     /**
-     * Move the Enrollment to another option of the championship until its payment is confirmed.
+     * Turn what the withdrawn Enrollment paid into a race fee balance on its Licence, see CreditEnrollmentPayment.
+     */
+    public function credit(Enrollment $enrollment, CreditEnrollmentPayment $creditEnrollmentPayment): RedirectResponse
+    {
+        $this->authorize('review', Enrollment::class);
+
+        $credit = $creditEnrollmentPayment($enrollment);
+
+        return to_route('enrollments.show', $enrollment)
+            ->with('flash.banner', $credit === null
+                ? __('Nothing left to credit: the race fees already discounted cover what was paid.')
+                : __('Race fee balance of :amount given to the licence.', ['amount' => $credit->mode->describe($credit->amount)]));
+    }
+
+    /**
+     * Move the Enrollment to another option of the championship until it is paid in full, also once enrollment closed.
      */
     public function option(Request $request, Enrollment $enrollment, ChangeEnrollmentOption $changeEnrollmentOption): RedirectResponse
     {
@@ -184,13 +200,13 @@ class EnrollmentReviewController extends Controller
     }
 
     /**
-     * Withdraw the Enrollment, also once confirmed, see WithdrawEnrollment.
+     * Withdraw the submitted Enrollment, see WithdrawEnrollment.
      */
     public function withdraw(Enrollment $enrollment, WithdrawEnrollment $withdrawEnrollment): RedirectResponse
     {
         $this->authorize('review', Enrollment::class);
 
-        $withdrawEnrollment($enrollment, byOrganizer: true);
+        $withdrawEnrollment($enrollment);
 
         return to_route('enrollments.show', $enrollment)
             ->with('flash.banner', __('Enrollment withdrawn.'));

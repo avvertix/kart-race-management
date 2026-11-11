@@ -101,6 +101,12 @@ return [
         'covered' => 'Inclusa nell\'iscrizione',
     ],
 
+    'payment_status' => [
+        'submitted' => 'Da verificare',
+        'confirmed' => 'Confermato',
+        'rejected' => 'Respinto',
+    ],
+
     'enrollment_payment_status' => [
         'not_due' => 'Nulla da pagare',
         'awaiting_payment' => 'Da pagare',

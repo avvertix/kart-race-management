@@ -82,6 +82,10 @@ A race number of 1000 or above, used for Participants of special categories that
 
 ### Commerce
 
+**Payment Record**:
+Money received for an Enrollment or a Licence Request: the amount the organizer confirmed, how it arrived (bank transfer, cash, credit card) and its review. A bank transfer usually comes with a proof the driver uploads, which stays To review until the organizer confirms or rejects it; cash and card payments are recorded by the organizer without one. What an Enrollment has paid is the sum of its confirmed records.
+_Avoid_: Transaction, receipt
+
 **Entitlement**:
 A right to a reduction of race fees, held as a number of credits or as a monetary balance, granted by a promo code or by an Enrollment Option. It belongs to one Licence.
 _Avoid_: Voucher

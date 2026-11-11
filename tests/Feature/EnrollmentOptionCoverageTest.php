@@ -151,7 +151,7 @@ class EnrollmentOptionCoverageTest extends TestCase
         $this->assertSame(0, Entitlement::query()->count());
 
         $this->actingAs(User::factory()->organizer()->create())
-            ->post(route('enrollments.payment.confirm', $enrollment))
+            ->post(route('enrollments.payment.confirm', $enrollment), ['amount' => '120'])
             ->assertRedirect(route('enrollments.show', $enrollment));
 
         app(GrantEnrollmentEntitlements::class)($enrollment->fresh());

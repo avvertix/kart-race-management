@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Something paid by bank transfer with a proof the organizer confirms: an Enrollment or a Licence Request.
+ * Something paid through payment records the organizer confirms: bank transfer proofs uploaded by the driver, or payments
+ * the organizer records. An Enrollment or a Licence Request.
  */
 interface Payable
 {
     /**
-     * The payment proofs uploaded, rejected ones included.
+     * The payment records: proofs uploaded, rejected ones included, and payments recorded by the organizer.
      *
      * @return MorphMany<Payment, covariant Model>
      */
@@ -29,7 +30,7 @@ interface Payable
     public function lockAwaitingPayment(string $errorKey): self;
 
     /**
-     * Record that a proof was uploaded and waits for the organizer.
+     * Update the payment status once a proof is uploaded and waits for the organizer.
      */
     public function markPaymentSubmitted(): void;
 }

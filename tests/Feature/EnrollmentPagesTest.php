@@ -9,6 +9,7 @@ use App\Enums\EnrollmentPaymentStatus;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
+use App\Models\Payment;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
@@ -65,7 +66,8 @@ class EnrollmentPagesTest extends TestCase
 
         $enrollment = $championship->enrollments()->sole();
         $enrollment->update(['payment_status' => EnrollmentPaymentStatus::PaymentSubmitted]);
-        app(ReviewEnrollmentPayment::class)($enrollment, User::factory()->organizer()->create(), confirm: true);
+        Payment::factory()->proofFor($enrollment)->create();
+        app(ReviewEnrollmentPayment::class)($enrollment, User::factory()->organizer()->create(), confirm: true, amount: $enrollment->amount);
 
         $this->actingAs($user)
             ->get(route('notifications.open', $user->notifications()->sole()->getKey()))

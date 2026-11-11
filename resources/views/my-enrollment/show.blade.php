@@ -110,13 +110,14 @@
                 @if ($enrollment->option)
                     <section class="space-y-3">
                         <h3 class="font-semibold text-zinc-900">{{ $enrollment->option->title }} &middot; <span class="font-mono tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span> &middot; {{ $enrollment->payment_status->label() }}</h3>
+                        @include('partials.enrollment-payment-records', ['enrollment' => $enrollment])
                         @if ($enrollment->status->isActive())
                             @can('pay', $enrollment)
                                 <div class="prose prose-zinc">
                                     @include('partials.enrollment-payment', ['enrollment' => $enrollment])
                                 </div>
                             @endcan
-                        @elseif (in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::Paid, \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted], true))
+                        @elseif ($enrollment->payment_status === \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted || $enrollment->paidAmount() > 0)
                             <p class="text-sm text-zinc-700">{{ __('For a refund, email the organizer.') }}</p>
                         @endif
                     </section>

@@ -26,7 +26,7 @@ class MyEnrollmentController extends Controller
     {
         $this->authorize('view', $enrollment);
 
-        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'reservations', 'option', 'latestPayment']);
+        $enrollment->load(['championship', 'licence', 'licenceRequest', 'competitorLicence', 'reservations', 'option', 'payments']);
 
         return view('my-enrollment.show', [
             'enrollment' => $enrollment,

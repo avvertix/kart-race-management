@@ -70,20 +70,19 @@
                     &middot; <span class="font-mono tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span>
                     &middot; {{ $enrollment->payment_status->label() }}
                 </p>
-                @if ($enrollment->latestPayment)
-                    @php($proofUrl = $enrollment->latestPayment->downloadUrl)
-                    <p class="text-sm text-zinc-600">
-                        {{ __('Uploaded on') }} <x-time :value="$enrollment->latestPayment->created_at" />
-                        &middot; <a href="{{ $proofUrl }}" target="_blank" class="text-orange-600 hover:text-orange-900">{{ __('Open in a new tab') }}</a>
-                    </p>
-                    @if ($enrollment->payment_status === \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted)
-                        <iframe src="{{ $proofUrl }}" class="mt-2 w-full h-96 rounded-sm border border-zinc-200" title="{{ __('Payment proof') }}"></iframe>
-                    @endif
-                @endif
-                @if ($enrollment->payment_status === \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted && $enrollment->status->isActive())
-                    <div class="mt-2 flex gap-2">
-                        <form method="POST" action="{{ route('enrollments.payment.confirm', $enrollment) }}">
+                <div class="mt-2">
+                    @include('partials.enrollment-payment-records', ['enrollment' => $enrollment])
+                </div>
+                @php($proof = $enrollment->payments->firstWhere('status', \App\Enums\PaymentStatus::Submitted))
+                @if ($proof !== null && $enrollment->status->isActive())
+                    <iframe src="{{ $proof->downloadUrl }}" class="mt-2 w-full h-96 rounded-sm border border-zinc-200" title="{{ __('Payment proof') }}"></iframe>
+                    <div class="mt-2 flex flex-wrap items-end gap-2">
+                        <form method="POST" action="{{ route('enrollments.payment.confirm', $enrollment) }}" class="flex flex-wrap items-end gap-2">
                             @csrf
+                            <div>
+                                <x-label for="confirm_amount" :value="__('Amount received (€)')" />
+                                <x-input id="confirm_amount" name="amount" type="text" inputmode="decimal" class="mt-1 block w-32" :value="old('amount', number_format($enrollment->balance() / 100, 2, '.', ''))" required />
+                            </div>
                             <x-button type="submit">{{ __('Confirm payment') }}</x-button>
                         </form>
                         <form method="POST" action="{{ route('enrollments.payment.reject', $enrollment) }}">
@@ -91,9 +90,29 @@
                             <x-secondary-button type="submit">{{ __('Reject payment') }}</x-secondary-button>
                         </form>
                     </div>
-                    <x-input-error for="payment" class="mt-1" />
+                    <p class="mt-1 text-sm text-zinc-600">{{ __('Type the amount you see on the bank statement.') }}</p>
+                @elseif ($enrollment->payment_status === \App\Enums\EnrollmentPaymentStatus::AwaitingPayment && $enrollment->status->isActive())
+                    <form method="POST" action="{{ route('enrollments.payment.record', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">
+                        @csrf
+                        <div>
+                            <x-label for="record_channel" :value="__('Received by')" />
+                            <select id="record_channel" name="channel" class="mt-1 rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
+                                @foreach (\App\Models\PaymentChannelType::cases() as $channel)
+                                    <option value="{{ $channel->value }}" @selected((int) old('channel') === $channel->value)>{{ $channel->localizedName() }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <x-label for="record_amount" :value="__('Amount received (€)')" />
+                            <x-input id="record_amount" name="amount" type="text" inputmode="decimal" class="mt-1 block w-32" :value="old('amount', number_format($enrollment->balance() / 100, 2, '.', ''))" required />
+                        </div>
+                        <x-secondary-button type="submit">{{ __('Record payment') }}</x-secondary-button>
+                    </form>
                 @endif
-                @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && ! in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::Paid, \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted], true) && $options->count() > 1)
+                <x-input-error for="amount" class="mt-1" />
+                <x-input-error for="channel" class="mt-1" />
+                <x-input-error for="payment" class="mt-1" />
+                @if ($enrollment->status === \App\Enums\EnrollmentStatus::Submitted && ! in_array($enrollment->payment_status, [\App\Enums\EnrollmentPaymentStatus::Paid, \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted], true) && $enrollment->paidAmount() === 0 && $options->count() > 1)
                     <form method="POST" action="{{ route('enrollments.option.update', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">
                         @csrf
                         @method('PUT')

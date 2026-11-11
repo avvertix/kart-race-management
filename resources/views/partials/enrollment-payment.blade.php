@@ -1,4 +1,4 @@
-{{-- What to pay for an Enrollment and the payment proof upload. Expects $enrollment. --}}
+{{-- What to pay for an Enrollment and the payment proof upload. Expects $enrollment with payments loaded. --}}
 @switch($enrollment->payment_status)
     @case(\App\Enums\EnrollmentPaymentStatus::AwaitingPayment)
         <p>{{ __('Pay by bank transfer to:') }}</p>
@@ -12,7 +12,11 @@
         <p>{{ __('Use the following text as the bank transfer reason:') }}</p>
         <p class="not-prose bg-white shadow-sm border border-zinc-200 rounded-sm px-3 py-2 font-mono text-sm select-all">{{ $enrollment->ulid }}</p>
 
-        @if ($enrollment->latestPayment)
+        @if ($enrollment->paidAmount() > 0)
+            <p>{{ __('Still to pay: :amount.', ['amount' => $enrollment->currency->format($enrollment->balance())]) }}</p>
+        @endif
+
+        @if ($enrollment->payments->sortBy('id')->last()?->status === \App\Enums\PaymentStatus::Rejected)
             <p class="not-prose rounded-md text-sm text-amber-700 border border-amber-400 bg-amber-50 px-2 py-1">{{ __('The organizer could not confirm the previous payment proof. Upload a new one.') }}</p>
         @endif
 

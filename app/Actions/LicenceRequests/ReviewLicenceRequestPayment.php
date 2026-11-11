@@ -15,7 +15,8 @@ use Illuminate\Validation\ValidationException;
 class ReviewLicenceRequestPayment
 {
     /**
-     * Confirm the uploaded payment proof, or reject it so the requester uploads a new one. Rejected proofs are kept.
+     * Confirm the uploaded payment proof, recording the request's amount on it, or reject it so the requester uploads a
+     * new one. Rejected proofs are kept.
      *
      * @throws ValidationException when no payment proof awaits confirmation
      */
@@ -28,9 +29,13 @@ class ReviewLicenceRequestPayment
                 __('The payment can be reviewed only once the request is verified.'),
             );
 
-            if ($locked->payment_status !== LicenceRequestPaymentStatus::PaymentSubmitted) {
+            $proof = $locked->payments()->submitted()->latest('id')->first();
+
+            if ($locked->payment_status !== LicenceRequestPaymentStatus::PaymentSubmitted || $proof === null) {
                 throw ValidationException::withMessages(['payment' => __('The request has no payment proof to review.')]);
             }
+
+            $proof->review($organizer, $confirm ? $locked->amount : null);
 
             $locked->update($confirm
                 ? [

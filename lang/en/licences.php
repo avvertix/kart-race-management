@@ -101,6 +101,12 @@ return [
         'covered' => 'Covered by the enrollment',
     ],
 
+    'payment_status' => [
+        'submitted' => 'To review',
+        'confirmed' => 'Confirmed',
+        'rejected' => 'Rejected',
+    ],
+
     'enrollment_payment_status' => [
         'not_due' => 'Nothing to pay',
         'awaiting_payment' => 'To pay',

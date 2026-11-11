@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\Enrollments\GrantEnrollmentEntitlements;
+use App\Actions\Enrollments\RecordEnrollmentPayment;
 use App\Actions\LicenceRequests\RejectLicenceRequest;
 use App\Actions\SubmitPaymentProof;
 use App\Enums\EnrollmentPaymentStatus;
@@ -18,6 +19,7 @@ use App\Models\EnrollmentOption;
 use App\Models\Entitlement;
 use App\Models\Licence;
 use App\Models\LicenceRequest;
+use App\Models\PaymentChannelType;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
@@ -56,13 +58,11 @@ class EnrollmentOptionCoverageTest extends TestCase
         $this->assertTrue($licenceRequest->coveringEnrollment->is($enrollment));
         $this->assertFalse($licenceRequest->isPaymentSettled());
 
-        $enrollment->update(['payment_status' => EnrollmentPaymentStatus::Paid]);
+        app(RecordEnrollmentPayment::class)($enrollment, User::factory()->organizer()->create(), PaymentChannelType::CASH, 18000);
 
         $this->assertTrue($licenceRequest->fresh()->isPaymentSettled());
 
-        $enrollment->update(['payment_status' => EnrollmentPaymentStatus::AwaitingPayment]);
-
-        $this->actingAs($user)->post(route('my-enrollments.withdraw', $enrollment));
+        $this->actingAs($user)->post(route('my-enrollments.withdraw', $enrollment))->assertSessionHasNoErrors();
 
         $licenceRequest = $licenceRequest->fresh();
 

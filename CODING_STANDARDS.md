@@ -10,7 +10,7 @@ Judgement rules for reviewing a diff. Mechanical rules are checked by tools: Pin
 
 ## Payments
 
-- A record covered by another counts as paid only once the covering one is paid (see `LicenceRequest::isPaymentSettled`).
+- A record covered by another counts as paid only once the covering one unlocks it: an Enrollment's deposit, or its full amount without a deposit (see `LicenceRequest::isPaymentSettled`).
 - An action that cancels, rejects or withdraws something with money attached says what happens to a payment proof waiting for review.
 
 ## Server and form agree

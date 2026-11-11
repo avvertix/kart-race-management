@@ -66,6 +66,8 @@ class CreateEnrollment
                 'enrollment_option_id' => $option?->getKey(),
                 'amount' => $option->amount ?? 0,
                 'currency' => $option->currency ?? 'EUR',
+                'deposit_amount' => $option?->deposit_amount,
+                'balance_due_on' => $option?->balance_due_on,
                 'payment_status' => $option === null || $option->isFree() ? EnrollmentPaymentStatus::NotDue : EnrollmentPaymentStatus::AwaitingPayment,
             ]);
 

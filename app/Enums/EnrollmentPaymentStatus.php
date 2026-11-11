@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Enums;
 
 /**
- * Where the payment of an Enrollment stands: the amount of its Enrollment Option, paid by bank transfer with a proof
- * the organizer confirms.
+ * Where the payment of an Enrollment stands: the amount of its Enrollment Option, possibly a deposit first, paid through
+ * payment records the organizer confirms.
  */
 enum EnrollmentPaymentStatus: string
 {
@@ -18,6 +18,11 @@ enum EnrollmentPaymentStatus: string
     case AwaitingPayment = 'awaiting_payment';
 
     case PaymentSubmitted = 'payment_submitted';
+
+    /**
+     * The deposit is paid: the Enrollment gets what its option includes, the balance is still due.
+     */
+    case DepositPaid = 'deposit_paid';
 
     case Paid = 'paid';
 

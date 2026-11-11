@@ -1,6 +1,16 @@
 {{-- What to pay for an Enrollment and the payment proof upload. Expects $enrollment with payments loaded. --}}
 @switch($enrollment->payment_status)
     @case(\App\Enums\EnrollmentPaymentStatus::AwaitingPayment)
+    @case(\App\Enums\EnrollmentPaymentStatus::DepositPaid)
+        @php($dueOn = $enrollment->balance_due_on?->isoFormat('D MMMM YYYY'))
+        @if ($enrollment->deposit_amount !== null && ! $enrollment->isDepositPaid())
+            <p>{{ __('Pay a deposit of :deposit now and the balance of :balance by :date, or :amount at once.', ['deposit' => $enrollment->currency->format($enrollment->deposit_amount - $enrollment->paidAmount()), 'balance' => $enrollment->currency->format($enrollment->amount - $enrollment->deposit_amount), 'date' => $dueOn, 'amount' => $enrollment->currency->format($enrollment->balance())]) }}</p>
+        @elseif ($dueOn !== null)
+            <p>{{ __('Pay the balance of :balance by :date.', ['balance' => $enrollment->currency->format($enrollment->balance()), 'date' => $dueOn]) }}</p>
+        @elseif ($enrollment->paidAmount() > 0)
+            <p>{{ __('Still to pay: :amount.', ['amount' => $enrollment->currency->format($enrollment->balance())]) }}</p>
+        @endif
+
         <p>{{ __('Pay by bank transfer to:') }}</p>
 
         <p class="bg-white p-2 shadow-sm border border-zinc-200 rounded-sm">
@@ -11,10 +21,6 @@
 
         <p>{{ __('Use the following text as the bank transfer reason:') }}</p>
         <p class="not-prose bg-white shadow-sm border border-zinc-200 rounded-sm px-3 py-2 font-mono text-sm select-all">{{ $enrollment->ulid }}</p>
-
-        @if ($enrollment->paidAmount() > 0)
-            <p>{{ __('Still to pay: :amount.', ['amount' => $enrollment->currency->format($enrollment->balance())]) }}</p>
-        @endif
 
         @if ($enrollment->payments->sortBy('id')->last()?->status === \App\Enums\PaymentStatus::Rejected)
             <p class="not-prose rounded-md text-sm text-amber-700 border border-amber-400 bg-amber-50 px-2 py-1">{{ __('The organizer could not confirm the previous payment proof. Upload a new one.') }}</p>

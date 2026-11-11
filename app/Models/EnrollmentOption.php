@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\EntitlementMode;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,8 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * What a driver enrolls in a championship with: free or a fixed amount, optionally covering the licence renewal,
- * reserving a race number and granting race fee discounts, and possibly only for some licence categories.
+ * What a driver enrolls in a championship with: free or a fixed amount, possibly with a deposit first and the balance
+ * due by a date, optionally covering the licence renewal, reserving a race number and granting race fee discounts, and
+ * possibly only for some licence categories.
  *
  * @property string $ulid
  * @property int $championship_id
@@ -23,6 +25,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $sort
  * @property int $amount
  * @property Currency $currency
+ * @property ?int $deposit_amount
+ * @property ?CarbonImmutable $balance_due_on
  * @property bool $covers_licence_renewal
  * @property bool $reserves_race_number
  * @property ?EntitlementMode $entitlement_mode
@@ -53,12 +57,30 @@ class EnrollmentOption extends Model
         'sort',
         'amount',
         'currency',
+        'deposit_amount',
+        'balance_due_on',
         'covers_licence_renewal',
         'reserves_race_number',
         'entitlement_mode',
         'entitlement_amount',
         'licence_categories',
     ];
+
+    /**
+     * The payment terms of a deposit and a balance due date, null without a deposit. Shared with the Enrollment, which
+     * keeps its own copy of the terms.
+     */
+    public static function describePaymentTerms(Currency $currency, ?int $depositAmount, ?CarbonImmutable $balanceDueOn): ?string
+    {
+        if ($depositAmount === null || $balanceDueOn === null) {
+            return null;
+        }
+
+        return (string) __('Deposit :deposit, balance by :date', [
+            'deposit' => $currency->format($depositAmount),
+            'date' => $balanceDueOn->isoFormat('D MMMM YYYY'),
+        ]);
+    }
 
     /**
      * Get the columns that should receive a unique identifier.
@@ -125,6 +147,15 @@ class EnrollmentOption extends Model
     }
 
     /**
+     * How the amount is paid when it asks for a deposit first, e.g. "Deposit €300.00, balance by 31 March 2027"; null
+     * when it is paid at once.
+     */
+    public function paymentTermsLabel(): ?string
+    {
+        return self::describePaymentTerms($this->currency, $this->deposit_amount, $this->balance_due_on);
+    }
+
+    /**
      * Only the options offered to drivers.
      *
      * @param  Builder<self>  $query
@@ -159,6 +190,8 @@ class EnrollmentOption extends Model
             'sort' => 'integer',
             'amount' => 'integer',
             'currency' => Currency::class,
+            'deposit_amount' => 'integer',
+            'balance_due_on' => 'date',
             'covers_licence_renewal' => 'boolean',
             'reserves_race_number' => 'boolean',
             'entitlement_mode' => EntitlementMode::class,

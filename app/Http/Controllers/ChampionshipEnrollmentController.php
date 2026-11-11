@@ -36,7 +36,7 @@ class ChampionshipEnrollmentController extends Controller
         $status = $request->enum('status', EnrollmentStatus::class) ?? EnrollmentStatus::Submitted;
 
         $enrollments = $championship->enrollments()
-            ->with(['licence', 'licenceRequest', 'competitorLicence', 'reservations'])
+            ->with(['licence', 'licenceRequest', 'competitorLicence', 'reservations', 'payments'])
             ->where('status', $status)
             ->oldest()
             ->oldest('id')

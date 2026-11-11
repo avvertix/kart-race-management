@@ -581,13 +581,13 @@ class LicenceRequest extends Model implements Payable
 
     /**
      * Whether nothing is left to pay: the organizer confirmed the payment, or it is covered by an Enrollment whose option
-     * covers the renewal, once that Enrollment is paid.
+     * covers the renewal, once that Enrollment's deposit is paid (or its full amount, without a deposit).
      */
     public function isPaymentSettled(): bool
     {
         return match ($this->payment_status) {
             LicenceRequestPaymentStatus::Paid => true,
-            LicenceRequestPaymentStatus::Covered => $this->coveringEnrollment?->isPaymentSettled() === true,
+            LicenceRequestPaymentStatus::Covered => $this->coveringEnrollment?->isDepositPaid() === true,
             default => false,
         };
     }

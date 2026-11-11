@@ -36,6 +36,11 @@ return new class extends Migration
 
             $table->string('currency', 3)->default('EUR');
 
+            // Deposit in cents that unlocks the Enrollment, the balance due by balance_due_on; null when paid at once
+            $table->unsignedInteger('deposit_amount')->nullable();
+
+            $table->date('balance_due_on')->nullable();
+
             // Whether the amount also pays the Licence Request the Enrollment waits for
             $table->boolean('covers_licence_renewal')->default(false);
 

@@ -56,6 +56,19 @@ class DashboardEnrollmentsTest extends TestCase
             ->assertDontSee(route('public.championships.enrollment', $someoneElse));
     }
 
+    public function test_the_dashboard_lets_drivers_enter_a_promo_code(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Have a promo code?')
+            ->assertSee(route('promo-codes.find'));
+
+        $this->get(route('my-licences.index'))
+            ->assertOk()
+            ->assertDontSee(route('promo-codes.find'));
+    }
+
     public function test_the_dashboard_has_no_enrollments_without_early_access(): void
     {
         Feature::define(LicencesAndEnrollments::class, fn () => false);
@@ -66,7 +79,8 @@ class DashboardEnrollmentsTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertDontSee('Open for enrollment');
+            ->assertDontSee('Open for enrollment')
+            ->assertDontSee(route('promo-codes.find'));
     }
 
     private function championship(string $title, int $opensInDays, int $closesInDays, bool $enabled = true): Championship

@@ -15,15 +15,6 @@
                         <x-button>{{ __('Renew licence') }}</x-button>
                     </form>
                 @endcan
-                <form method="POST" action="{{ route('promo-codes.find') }}" class="flex flex-wrap items-end gap-2">
-                    @csrf
-                    <div>
-                        <x-label for="promo_code_find" value="{{ __('Have a promo code?') }}" />
-                        <x-input id="promo_code_find" type="text" name="code" class="mt-1 block w-44 font-mono uppercase" required />
-                        <x-input-error for="code" class="mt-1" />
-                    </div>
-                    <x-secondary-button type="submit">{{ __('Open') }}</x-secondary-button>
-                </form>
                 @can('create', \App\Models\Licence::class)
                     <x-secondary-button-link href="{{ route('my-licences.create') }}">
                         {{ __('Add a licence I already have') }}

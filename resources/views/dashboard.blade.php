@@ -9,6 +9,10 @@
 
         @feature(\App\Features\LicencesAndEnrollments::class)
             <x-driver-enrollments class="md:col-span-12" />
+
+            @can('create', \App\Models\Enrollment::class)
+                <x-promo-code-find class="md:col-span-12" />
+            @endcan
         @endfeature
 
         @can('viewAny', \App\Models\Race::class)

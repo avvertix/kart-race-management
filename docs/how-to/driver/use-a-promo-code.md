@@ -4,7 +4,7 @@ A promo code reduces your race fees in one championship.
 
 ## With an account
 
-1. Open the code's link, or enter the code in your account.
+1. Open the code's link, or enter the code on your dashboard.
 2. Choose the licence it is for. Once claimed, the code belongs to that licence and nobody else can claim it.
 3. Register for races with that licence. The discount is applied automatically.
 

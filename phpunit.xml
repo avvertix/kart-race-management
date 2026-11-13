@@ -24,6 +24,8 @@
     <env name="TELESCOPE_ENABLED" value="false"/>
     <env name="NIGHTWATCH_ENABLED" value="false"/>
     <env name="APP_REGISTRATION" value="true"/>
+    <env name="LICENCE_TYPES" value="null"/>
+    <env name="LICENCE_RENEWAL_PRICE" value="null"/>
   </php>
   <source>
     <include>

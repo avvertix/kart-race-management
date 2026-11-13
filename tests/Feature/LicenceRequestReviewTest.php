@@ -91,6 +91,8 @@ class LicenceRequestReviewTest extends TestCase
             ->get(route('licence-request-reviews.index'))
             ->assertSuccessful()
             ->assertSeeInOrder(['Older Request', 'Newer Request', 'Verified Request'])
+            ->assertSee('Requests to process (3)')
+            ->assertSee(route('licences.index'))
             ->assertDontSee('Draft Request')
             ->assertDontSee('Rejected Request');
 

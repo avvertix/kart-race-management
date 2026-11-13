@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Features\LicencesAndEnrollments;
+use App\Features\PromoCodes;
 use App\Models\User;
 use Laravel\Pennant\Feature;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
@@ -52,6 +53,44 @@ class LicencesAndEnrollmentsFeatureTest extends TestCase
         Feature::flushCache();
 
         $this->actingAs($organizer)->get(route('licence-request-reviews.index'))->assertNotFound();
+    }
+
+    public function test_an_admin_gives_early_access_to_promo_codes(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $driver = User::factory()->create();
+
+        $this->assertFalse(Feature::for($driver)->active(PromoCodes::class));
+        $this->assertTrue(Feature::for($admin)->active(PromoCodes::class));
+
+        $this->actingAs($admin)
+            ->get(route('users.edit', $driver))
+            ->assertSee('Early access to promo codes');
+
+        $this->actingAs($admin)
+            ->put(route('users.update', $driver), [
+                'name' => $driver->name,
+                'email' => $driver->email,
+                'role' => $driver->role,
+                'promo_codes' => '1',
+            ])
+            ->assertRedirectToRoute('users.index');
+
+        Feature::flushCache();
+
+        $this->assertTrue(Feature::for($driver)->active(PromoCodes::class));
+
+        $this->actingAs($admin)
+            ->put(route('users.update', $driver), [
+                'name' => $driver->name,
+                'email' => $driver->email,
+                'role' => $driver->role,
+                'promo_codes' => '0',
+            ]);
+
+        Feature::flushCache();
+
+        $this->assertFalse(Feature::for($driver)->active(PromoCodes::class));
     }
 
     public function test_the_feature_keeps_the_values_stored_under_its_former_name(): void

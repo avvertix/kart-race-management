@@ -10,7 +10,7 @@ The platform handles renewals of ACI and ASI licences. For a first licence, writ
 2. **Choose the licence.** Pick the provider, if the organizer works with more than one, and the licence you need this year from the list. It can differ from last year's, e.g. moving from a national to an international licence. An ACI driver licence also covers the competitor: tick *The licence is for the driver only* when you need just the driver licence. Check last year's licence number.
 3. **Fill in the holder's details.** If the holder is underage, also fill in at least one parent or guardian; a second one is optional.
 4. **Upload the documents:** the holder's identity document and medical certificate, plus each parent's identity document when the holder is underage.
-5. **Download the pre-filled forms** (privacy, delegation and, for an underage holder, parental authorisation), sign them and upload them. A form marked *Download from <provider>* opens the provider's website: fill it in by hand.
+5. **Download the pre-filled forms** (privacy, delegation for ACI, and parental authorisation for an underage holder), sign them and upload them. A form marked *Download from <provider>* opens the provider's website: fill it in by hand.
 6. **Review and submit.**
 
 You can stop at any step: the request stays saved as a draft for as long as you need.

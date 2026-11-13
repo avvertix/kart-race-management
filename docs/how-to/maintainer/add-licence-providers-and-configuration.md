@@ -67,15 +67,16 @@ Foreign licences are not a provider: they are never managed on the platform and 
 
 ## Change the documents a renewal asks for
 
-The documents are the same for every Licence Type; organizers check that they fit the requested one. They are the cases of `App\Enums\LicenceDocument`:
+The documents are the same for every Licence Type of a provider; organizers check that they fit the requested one. They are the cases of `App\Enums\LicenceDocument`:
 
 - `kind()` says whether it is a file to upload or a form given pre-filled to sign;
+- `isAskedBy()` decides which providers ask for it, e.g. ASI needs no delegation;
 - `isUnderageOnly()` and `isAlsoForEachParent()` decide who it is asked for;
 - `description()` reads the hint under `document_description` in `lang/*/licences.php`.
 
 To add a document, add a case with a lowercase value that never changes, its label under `document` in both `lang/*/licences.php` files, and update `tests/Feature/LicenceEnumsTest.php` and `tests/Feature/LicenceRequestActionsTest.php`.
 
-Forms to sign are rendered by the Blade view returned by `LicenceDocument::formView()`. Until the real paperwork is available, every form uses `licence-forms.placeholder`, which prints the holder's and parents' details.
+Forms to sign are rendered by the Blade view returned by `LicenceDocument::formView()`. The parental authorisation uses `licence-forms.parental-authorisation`, the parents' self-declaration headed with the organizer's name, address and VAT number (`RACE_ORGANIZER_NAME`, `RACE_ORGANIZER_ADDRESS`, `RACE_ORGANIZER_VAT`). Forms without their paperwork yet use `licence-forms.placeholder`, which prints the holder's and parents' details.
 
 When a provider publishes a form in a format the platform cannot generate, link it instead in `config/licences.php`, under `forms`, keyed by the provider value and then by the document value:
 

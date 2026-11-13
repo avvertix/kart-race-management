@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 /**
- * The documents a Licence Request asks for. The same for every Licence Type: the organizer checks they fit the chosen one.
+ * The documents a Licence Request asks for. The same for every Licence Type of a provider: the organizer checks they fit the chosen one.
  */
 enum LicenceDocument: string
 {
@@ -31,6 +31,14 @@ enum LicenceDocument: string
             self::IdentityDocument, self::MedicalCertificate => LicenceDocumentKind::Upload,
             self::Privacy, self::Delegation, self::ParentalAuthorisation => LicenceDocumentKind::SignedForm,
         };
+    }
+
+    /**
+     * Whether the provider asks for it: ASI needs no delegation. Asked for while the provider is not chosen yet.
+     */
+    public function isAskedBy(?LicenceProvider $provider): bool
+    {
+        return ! ($this === self::Delegation && $provider === LicenceProvider::Asi);
     }
 
     /**
@@ -70,10 +78,14 @@ enum LicenceDocument: string
     }
 
     /**
-     * The Blade view that renders the pre-filled form, null for uploads. All forms use a placeholder until the real paperwork is available.
+     * The Blade view that renders the pre-filled form, null for uploads. Forms without their paperwork yet use a placeholder.
      */
     public function formView(): ?string
     {
-        return $this->kind() === LicenceDocumentKind::SignedForm ? 'licence-forms.placeholder' : null;
+        return match ($this) {
+            self::ParentalAuthorisation => 'licence-forms.parental-authorisation',
+            self::Privacy, self::Delegation => 'licence-forms.placeholder',
+            self::IdentityDocument, self::MedicalCertificate => null,
+        };
     }
 }

@@ -401,6 +401,38 @@ class LicenceRequestFormTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_parental_authorisation_is_pre_filled_with_holder_parents_and_organizer(): void
+    {
+        config([
+            'licences.forms' => [],
+            'races.organizer' => ['name' => 'Kart Club Example', 'address' => 'Via Roma 1, Milano', 'vat' => '01234567890'],
+        ]);
+
+        $user = User::factory()->create();
+        $licenceRequest = LicenceRequest::factory()->underage()->for($user)->create();
+        $parent = $licenceRequest->parentHolders()[0];
+
+        $this->actingAs($user)
+            ->get(route('licence-requests.forms.show', [$licenceRequest, LicenceDocument::ParentalAuthorisation]))
+            ->assertSuccessful()
+            ->assertHeader('Content-Type', 'application/pdf');
+
+        $this->view('licence-forms.parental-authorisation', [
+            'document' => LicenceDocument::ParentalAuthorisation,
+            'licenceRequest' => $licenceRequest,
+            'holder' => $licenceRequest->holder,
+            'parents' => $licenceRequest->parentHolders(),
+        ])
+            ->assertSee('Kart Club Example')
+            ->assertSee('Via Roma 1, Milano')
+            ->assertSee('P.IVA 01234567890')
+            ->assertDontSee('ACI')
+            ->assertSee('Luca Rossi')
+            ->assertSee('Mario Rossi')
+            ->assertSee($parent->phone)
+            ->assertSee($licenceRequest->holder?->residence_address->city ?? '');
+    }
+
     public function test_a_parent_identity_document_is_asked_for_before_the_parents_are_entered(): void
     {
         $user = User::factory()->create();
@@ -428,7 +460,7 @@ class LicenceRequestFormTest extends TestCase
 
     public function test_a_form_published_by_the_provider_is_downloaded_from_its_website(): void
     {
-        config(['licences.forms.aci.privacy' => 'https://example.com/aci-privacy.pdf']);
+        config(['licences.forms' => ['aci' => ['privacy' => 'https://example.com/aci-privacy.pdf']]]);
 
         $user = User::factory()->create();
         $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->for($user)->create();

@@ -113,6 +113,28 @@ class LicenceRequestActionsTest extends TestCase
         $this->assertEquals(['privacy', 'delegation'], $this->requiredKeys($licenceRequest, LicenceDocumentKind::SignedForm));
     }
 
+    public function test_asi_asks_for_no_delegation(): void
+    {
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->create(['provider' => LicenceProvider::Asi, 'licence_type' => 'ma']);
+
+        $this->assertEquals(['identity_document', 'medical_certificate'], $this->requiredKeys($licenceRequest, LicenceDocumentKind::Upload));
+        $this->assertEquals(['privacy'], $this->requiredKeys($licenceRequest, LicenceDocumentKind::SignedForm));
+    }
+
+    public function test_uploads_no_longer_asked_for_are_forgotten(): void
+    {
+        Storage::fake('licence-documents');
+
+        $licenceRequest = LicenceRequest::factory()->withLicenceAndHolder()->withAllDocuments()->create();
+        $delegation = $licenceRequest->documents()->where('document', LicenceDocument::Delegation)->sole();
+
+        $licenceRequest->update(['provider' => LicenceProvider::Asi, 'licence_type' => 'ma']);
+        $licenceRequest->forgetUploadsNoLongerAskedFor();
+
+        $this->assertModelMissing($delegation);
+        $this->assertSame(3, $licenceRequest->documents()->count());
+    }
+
     public function test_underage_holders_also_need_parental_authorisation_and_each_parent_identity(): void
     {
         $holder = LicenceFactory::holder('Luca', 'Rossi');

@@ -148,6 +148,10 @@ return [
         'aci' => [
             'privacy' => 'https://www.acisport.it/public_federazione/2019/pdf/Modulistica/informativa_privacy_licenziati_.pdf',
             'parental_authorisation' => 'https://www.acisport.it/public_federazione/2017/pdf/Modulistica/autorizzazione_esercenti_potesta_genitoriale_kart.doc',
+            'delegation' => 'https://www.kartsportcircuit.info/wp-content/uploads/2021/12/DELEGA-3-2-1-1-2-1.docx',
+        ],
+        'asi' => [
+            'privacy' => 'https://www.motosportcircuit.com/wp-content/uploads/2026/11/ASI-GDPR.pdf',
         ],
     ],
 

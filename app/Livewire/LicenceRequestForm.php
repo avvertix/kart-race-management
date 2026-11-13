@@ -131,6 +131,8 @@ class LicenceRequestForm extends Component
             'previous_licence_number' => $validated['previousLicenceNumber'],
         ]);
 
+        $this->licenceRequest->forgetUploadsNoLongerAskedFor();
+
         $this->completeSection(LicenceRequestSection::Licence);
     }
 
@@ -149,7 +151,7 @@ class LicenceRequestForm extends Component
             $this->parents = [];
         }
 
-        $this->licenceRequest->forgetUploadsOfRemovedParents();
+        $this->licenceRequest->forgetUploadsNoLongerAskedFor();
 
         $this->completeSection(LicenceRequestSection::Holder);
     }
@@ -197,7 +199,7 @@ class LicenceRequestForm extends Component
             'parents' => array_map(fn (array $parent) => HolderData::fromValidated($parent), array_values($validated['parents'])),
         ]);
 
-        $this->licenceRequest->forgetUploadsOfRemovedParents();
+        $this->licenceRequest->forgetUploadsNoLongerAskedFor();
 
         $this->completeSection(LicenceRequestSection::Parents);
     }

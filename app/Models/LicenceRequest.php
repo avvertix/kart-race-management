@@ -325,8 +325,9 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * The documents of the given kind the request asks for, the same for every Licence Type: the holder's, plus an identity
-     * document for each parent of an underage holder. Underage-only documents are asked only for underage holders.
+     * The documents of the given kind the request asks for, the same for every Licence Type of a provider: the holder's,
+     * plus an identity document for each parent of an underage holder. Underage-only documents are asked only for
+     * underage holders, and each provider may skip some, see LicenceDocument::isAskedBy().
      *
      * @return Collection<int, RequiredDocument>
      */
@@ -336,7 +337,9 @@ class LicenceRequest extends Model implements Payable
         $parentCount = $this->requiredParentCount();
 
         return collect(LicenceDocument::cases())
-            ->filter(fn (LicenceDocument $document) => $document->kind() === $kind && ($isUnderage || ! $document->isUnderageOnly()))
+            ->filter(fn (LicenceDocument $document) => $document->kind() === $kind
+                && $document->isAskedBy($this->provider)
+                && ($isUnderage || ! $document->isUnderageOnly()))
             ->flatMap(fn (LicenceDocument $document) => [
                 new RequiredDocument($document),
                 ...($document->isAlsoForEachParent() && $parentCount > 0
@@ -475,16 +478,18 @@ class LicenceRequest extends Model implements Payable
     }
 
     /**
-     * Remove the uploads about parents no longer entered, e.g. the second parent was removed or the holder is an adult.
+     * Remove the uploads the request no longer asks for, e.g. the second parent was removed, the holder is an adult, or
+     * the chosen provider needs no delegation.
      */
-    public function forgetUploadsOfRemovedParents(): void
+    public function forgetUploadsNoLongerAskedFor(): void
     {
-        $parentCount = $this->requiredParentCount();
+        $required = $this->allRequiredDocuments();
 
         $this->documents()
-            ->whereNotNull('parent_index')
-            ->where('parent_index', '>=', $parentCount)
             ->get()
+            ->reject(fn (LicenceRequestDocument $document) => $required->contains(
+                fn (RequiredDocument $item) => $item->document === $document->document && $item->parentIndex === $document->parent_index,
+            ))
             ->each(fn (LicenceRequestDocument $document) => $document->deleteWithFile());
 
         $this->unsetRelation('documents');

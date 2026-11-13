@@ -12,19 +12,20 @@
             {{ __('Dashboard') }}
         </x-dynamic-component>
 
+        @feature(\App\Features\LicencesAndEnrollments::class)
+            @can('create', \App\Models\Licence::class)
+                <x-dynamic-component :component="$item" :href="route('my-licences.index')" :current="request()->routeIs('my-licences.*', 'licence-requests.*')">
+                    {{ __('My licences') }}
+                </x-dynamic-component>
+            @endcan
+        @endfeature
+        
         <x-dynamic-component :component="$item" :href="route('drivers.index')" :current="request()->routeIs('drivers.*', 'registration.*')">
             {{ __('Drivers and competitors') }}
         </x-dynamic-component>
+
     @endcan
 
-    @feature(\App\Features\LicencesAndEnrollments::class)
-    @can('create', \App\Models\Licence::class)
-        <x-dynamic-component :component="$item" :href="route('my-licences.index')" :current="request()->routeIs('my-licences.*', 'licence-requests.*')">
-            {{ __('My licences') }}
-        </x-dynamic-component>
-    @endcan
-
-    @endfeature
 
     @can('viewAny', \App\Models\Championship::class)
         <x-dynamic-component :component="$item" :href="route('championships.index')" :current="request()->routeIs('championships.*', 'categories.*', 'races.*', 'participants.*')">

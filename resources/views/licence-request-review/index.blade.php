@@ -9,8 +9,11 @@
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-zinc-800 leading-tight">
-            {{ __('Licence requests') }}
+            {{ __('Licences and requests') }}
         </h2>
+        <div class="mt-3">
+            @include('licence.partials.tabs')
+        </div>
     </x-slot>
 
     <div class="pb-12">

@@ -27,6 +27,7 @@ class LicenceRequestReviewController extends Controller
 
         return view('licence-request-review.index', [
             'status' => $status,
+            'requestsToProcess' => LicenceRequest::query()->toProcess()->count(),
             'licenceRequests' => LicenceRequest::query()
                 ->with('documents')
                 ->when(

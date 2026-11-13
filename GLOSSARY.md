@@ -34,6 +34,9 @@ A Licence obtained through a Licence Request processed by the organizer.
 **Declared Licence**:
 A Licence the User entered themselves, obtained from a Licence Provider outside the platform; the organizer may mark it verified. Foreign licences are never declared: foreign Drivers only type them into the race registration form.
 
+**Transferred Licence**:
+A Licence the User took from a race Participant linked to their account, once the organizer confirmed that participation: it starts verified, for the year of the participation's championship, and only the latest participation of each licence number counts.
+
 **Licence Provider**:
 The sporting body that issues a Licence, e.g. ACI or ASI. It belongs to each Licence: a championship accepts licences from any Licence Provider, plus foreign licences, and its own provider only names who issues local licences in the wording of the forms and rules. Licence numbers are unique across providers.
 _Avoid_: Federation, issuer

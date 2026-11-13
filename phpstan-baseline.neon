@@ -829,12 +829,6 @@ parameters:
 			path: app/Console/Commands/RecalculateParticipantCost.php
 
 		-
-			message: '#^Relation ''championship'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Console/Commands/RecalculateParticipantCost.php
-
-		-
 			message: '#^Relation ''racingCategory'' is not found in App\\Models\\Participant model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -1456,18 +1450,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\Bonus\:\:\$usages\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/ChampionshipBonusController.php
-
-		-
-			message: '#^Cannot access property \$bonus_mode on string\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/ChampionshipBonusController.php
-
-		-
-			message: '#^Cannot access property \$fixed_bonus_amount on string\.$#'
-			identifier: property.nonObject
-			count: 2
 			path: app/Http/Controllers/ChampionshipBonusController.php
 
 		-
@@ -2713,12 +2695,6 @@ parameters:
 			path: app/Http/Controllers/RaceInChampionshipController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$championship\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$race\.$#'
 			identifier: property.notFound
 			count: 6
@@ -2857,12 +2833,6 @@ parameters:
 			path: app/Http/Controllers/RaceParticipantController.php
 
 		-
-			message: '#^Relation ''championship'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Http/Controllers/RaceParticipantController.php
-
-		-
 			message: '#^Relation ''championship'' is not found in App\\Models\\Race model\.$#'
 			identifier: larastan.relationExistence
 			count: 2
@@ -2941,12 +2911,6 @@ parameters:
 			path: app/Http/Controllers/RacePaymentsController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$championship\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/RaceRegistrationController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$race\.$#'
 			identifier: property.notFound
 			count: 2
@@ -2991,12 +2955,6 @@ parameters:
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$participant$#'
 			identifier: parameter.notFound
-			count: 1
-			path: app/Http/Controllers/RaceRegistrationController.php
-
-		-
-			message: '#^Relation ''championship'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/RaceRegistrationController.php
 
@@ -3277,18 +3235,6 @@ parameters:
 			path: app/Http/Controllers/UpdateChampionshipBibSettingsController.php
 
 		-
-			message: '#^Cannot access property \$bonus_mode on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/UpdateChampionshipBonusSettingsController.php
-
-		-
-			message: '#^Cannot access property \$fixed_bonus_amount on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/UpdateChampionshipBonusSettingsController.php
-
-		-
 			message: '#^Method App\\Http\\Controllers\\UpdateChampionshipBonusSettingsController\:\:edit\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -3311,24 +3257,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/UpdateChampionshipLicenceSettingsController.php
-
-		-
-			message: '#^Cannot access property \$bank_account on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/UpdateChampionshipPaymentSettingsController.php
-
-		-
-			message: '#^Cannot access property \$bank_holder on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/UpdateChampionshipPaymentSettingsController.php
-
-		-
-			message: '#^Cannot access property \$bank_name on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/UpdateChampionshipPaymentSettingsController.php
 
 		-
 			message: '#^Method App\\Http\\Controllers\\UpdateChampionshipPaymentSettingsController\:\:__invoke\(\) has no return type specified\.$#'
@@ -3685,12 +3613,6 @@ parameters:
 			path: app/Livewire/DriverSearch.php
 
 		-
-			message: '#^Relation ''championship'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Livewire/DriverSearch.php
-
-		-
 			message: '#^Method App\\Livewire\\EngineInput\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -3790,12 +3712,6 @@ parameters:
 			message: '#^Method App\\Livewire\\LinkedDrivers\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
-			path: app/Livewire/LinkedDrivers.php
-
-		-
-			message: '#^Relation ''championship'' is not found in App\\Models\\Participant model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
 			path: app/Livewire/LinkedDrivers.php
 
 		-
@@ -4916,12 +4832,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Models\\Participant\:\:bonuses\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Participant.php
-
-		-
-			message: '#^Method App\\Models\\Participant\:\:championship\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Models/Participant.php
@@ -6311,12 +6221,6 @@ parameters:
 			identifier: generics.notSubtype
 			count: 1
 			path: database/factories/DriverFactory.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Participant\:\:\$championship\.$#'
-			identifier: property.notFound
-			count: 2
-			path: database/factories/ParticipantFactory.php
 
 		-
 			message: '#^Method Database\\Factories\\ParticipantFactory\:\:category\(\) return type with generic class Illuminate\\Database\\Eloquent\\Factories\\Factory does not specify its types\: TModel$#'

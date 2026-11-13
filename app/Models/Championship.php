@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property LicenceSettingsData $licences
  * @property EnrollmentSettingsData $enrollment
  * @property WildcardSettingsData $wildcard
+ * @property BonusSettingsData $bonuses
+ * @property PaymentSettingsData $payment
  * @property CarbonImmutable $start_at
  * @property ?CarbonImmutable $end_at
  */

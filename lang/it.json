@@ -1667,5 +1667,11 @@
     "Early access to promo codes": "Accesso anticipato ai codici promozionali",
     "Shows the promo code field on the dashboard, still being prepared.": "Mostra il campo del codice promozionale nella dashboard, ancora in preparazione.",
     "Shows licences, licence requests and enrollments, still being prepared for a future championship.": "Mostra licenze, richieste di licenza e iscrizioni, ancora in preparazione per un prossimo campionato.",
-    ":position in category": ":position in categoria"
+    ":position in category": ":position in categoria",
+    "Add to my licences": "Aggiungi alle mie licenze",
+    "Licence added from the race participation.": "Licenza aggiunta dalla partecipazione alla gara.",
+    "From your races": "Dalle tue gare",
+    "Licences used in races the organizer confirmed. Add them to renew them or enroll with them.": "Licenze usate nelle gare confermate dall'organizzatore. Aggiungile per rinnovarle o iscriverti con esse.",
+    "From :driver's participation in :championship, confirmed by the organizer. The licence is added as verified, ready to be renewed or enrolled.": "Dalla partecipazione di :driver a :championship, confermata dall'organizzatore. La licenza viene aggiunta come verificata, pronta per il rinnovo o l'iscrizione.",
+    "The licence used at the race, already checked by the organizer. Choose its licence type and check the holder's details.": "La licenza usata in gara, già controllata dall'organizzatore. Scegli il tipo di licenza e controlla i dati del titolare."
 }

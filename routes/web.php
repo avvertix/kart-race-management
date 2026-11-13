@@ -39,6 +39,7 @@ use App\Http\Controllers\ExportRaceVerifiedDriversController;
 use App\Http\Controllers\LicenceController;
 use App\Http\Controllers\LicenceRequestController;
 use App\Http\Controllers\LicenceRequestReviewController;
+use App\Http\Controllers\LicenceTransferController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
 use App\Http\Controllers\MyEnrollmentController;
 use App\Http\Controllers\MyLicenceController;
@@ -337,6 +338,11 @@ Route::middleware([
     Route::put('my-enrollments/{enrollment}/race-number', [MyEnrollmentController::class, 'updateRaceNumber'])
         ->middleware('throttle:30,1')
         ->name('my-enrollments.race-number.update');
+
+    Route::get('licences/from-participation/{participant}', [LicenceTransferController::class, 'create'])->name('my-licences.transfers.create');
+    Route::post('licences/from-participation/{participant}', [LicenceTransferController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('my-licences.transfers.store');
 
     Route::resource('licences', MyLicenceController::class)->names('my-licences');
 

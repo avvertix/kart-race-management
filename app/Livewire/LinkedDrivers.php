@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Actions\TransferParticipationLicence;
+use App\Features\LicencesAndEnrollments;
+use App\Models\Licence;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Pennant\Feature;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -166,10 +170,15 @@ class LinkedDrivers extends Component
             ]];
         });
 
+        $canTransferLicences = Feature::for($user)->active(LicencesAndEnrollments::class) && $user->can('create', Licence::class);
+
         return view('livewire.linked-drivers', [
             'linkedParticipants' => $linkedParticipants,
             'participants' => $participants,
             'nextRaces' => $nextRaces,
+            'transferableLicences' => $canTransferLicences
+                ? TransferParticipationLicence::candidates($user)->pluck('driver_licence')->all()
+                : [],
         ]);
     }
 

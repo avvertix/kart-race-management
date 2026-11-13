@@ -166,6 +166,12 @@
                                     </a>
                                 @endif
                             @endif
+                            @if (in_array($participant->driver_licence, $transferableLicences, true))
+                                <form method="POST" action="{{ route('my-licences.transfers.store', $participant) }}" class="mt-1">
+                                    @csrf
+                                    <button type="submit" class="text-sm font-medium text-orange-600 hover:text-orange-900">{{ __('Add to my licences') }}</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

@@ -1,4 +1,4 @@
-@if ($licence->source === \App\Enums\LicenceSource::Emitted)
+@if ($licence->source === \App\Enums\LicenceSource::Emitted || $licence->source === \App\Enums\LicenceSource::Participation)
     <span class="inline-block px-2 py-1 text-sm rounded-full bg-lime-100 text-lime-800">{{ $licence->source->label() }}</span>
 @elseif ($licence->isVerified())
     <span class="inline-block px-2 py-1 text-sm rounded-full bg-lime-100 text-lime-800">{{ __('Declared, verified') }}</span>

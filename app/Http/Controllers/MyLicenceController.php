@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\TransferParticipationLicence;
 use App\Data\HolderData;
 use App\Enums\LicenceProvider;
 use App\Enums\LicenceSource;
@@ -55,6 +56,7 @@ class MyLicenceController extends Controller
             'licences' => $licences,
             'renewableLicenceIds' => $this->renewableLicenceIds($licences, $licenceRequests, $renewalYear),
             'renewalYear' => $renewalYear,
+            'participations' => TransferParticipationLicence::candidates($request->user()),
         ]);
     }
 

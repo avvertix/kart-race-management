@@ -1,10 +1,15 @@
+{{--
+    The licence fields. $licence: the declared licence being changed. $transfer: the licence taken from a race
+    participation, with its fixed number and validity year and the defaults to start from, see TransferParticipationLicence.
+--}}
 @php
     $licence = $licence ?? null;
+    $transfer = $transfer ?? null;
 
     $holder = old('holder', $licence ? [
         ...$licence->holder->toArray(),
         'sex' => $licence->holder->sex->value,
-    ] : []);
+    ] : ($transfer['defaults']['holder'] ?? []));
 
     $types = collect($licenceTypes)->map(fn ($providerTypes) => $providerTypes->map(fn ($type) => [
         'code' => $type->code,
@@ -22,8 +27,8 @@
 <div
     x-data="{
         types: @js($types),
-        provider: @js(old('provider', $licence?->provider->value ?? (count($providers) === 1 ? $providers[0] : ''))),
-        licenceType: @js(old('licence_type', $licence?->licence_type ?? '')),
+        provider: @js(old('provider', $licence?->provider->value ?? $transfer['defaults']['provider'] ?? (count($providers) === 1 ? $providers[0] : ''))),
+        licenceType: @js(old('licence_type', $licence?->licence_type ?? $transfer['defaults']['licence_type'] ?? '')),
         get providerTypes() { return this.types[this.provider] ?? [] },
         get type() { return this.providerTypes.find(type => type.code === this.licenceType) ?? null },
     }"
@@ -31,7 +36,7 @@
     <div class="md:grid md:grid-cols-3 md:gap-6">
         <x-section-title>
             <x-slot name="title">{{ __('Licence') }}</x-slot>
-            <x-slot name="description">{{ __('An ACI or ASI licence obtained elsewhere, e.g. renewed directly with the provider. The organizer verifies it before confirming an enrollment with it.') }}</x-slot>
+            <x-slot name="description">{{ $transfer ? __('The licence used at the race, already checked by the organizer. Choose its licence type and check the holder\'s details.') : __('An ACI or ASI licence obtained elsewhere, e.g. renewed directly with the provider. The organizer verifies it before confirming an enrollment with it.') }}</x-slot>
         </x-section-title>
 
         <div class="mt-5 md:mt-0 md:col-span-2">
@@ -72,21 +77,34 @@
                         <x-input-error for="driver_only" class="mt-2" />
                     </div>
 
-                    <div class="col-span-6 sm:col-span-3">
-                        <x-label for="number" value="{{ __('Licence number') }}*" />
-                        <x-input id="number" type="text" name="number" :value="old('number', $licence?->number)" class="mt-1 block w-full" required />
-                        <x-input-error for="number" class="mt-2" />
-                    </div>
+                    @if ($transfer)
+                        <div class="col-span-6 sm:col-span-3">
+                            <p class="text-sm font-medium text-zinc-700">{{ __('Licence number') }}</p>
+                            <p class="mt-1 font-mono text-zinc-900">{{ $transfer['number'] }}</p>
+                            <x-input-error for="number" class="mt-2" />
+                        </div>
 
-                    <div class="col-span-6 sm:col-span-3">
-                        <x-label for="validity_year" value="{{ __('Valid for the year') }}*" />
-                        <select id="validity_year" name="validity_year" class="mt-1 {{ $inputClass }}">
-                            @foreach ([$currentYear, $currentYear + 1] as $year)
-                                <option value="{{ $year }}" @selected((int) old('validity_year', $licence?->validity_year ?? $currentYear) === $year)>{{ $year }}</option>
-                            @endforeach
-                        </select>
-                        <x-input-error for="validity_year" class="mt-2" />
-                    </div>
+                        <div class="col-span-6 sm:col-span-3">
+                            <p class="text-sm font-medium text-zinc-700">{{ __('Valid for the year') }}</p>
+                            <p class="mt-1 text-zinc-900">{{ $transfer['validity_year'] }}</p>
+                        </div>
+                    @else
+                        <div class="col-span-6 sm:col-span-3">
+                            <x-label for="number" value="{{ __('Licence number') }}*" />
+                            <x-input id="number" type="text" name="number" :value="old('number', $licence?->number)" class="mt-1 block w-full" required />
+                            <x-input-error for="number" class="mt-2" />
+                        </div>
+
+                        <div class="col-span-6 sm:col-span-3">
+                            <x-label for="validity_year" value="{{ __('Valid for the year') }}*" />
+                            <select id="validity_year" name="validity_year" class="mt-1 {{ $inputClass }}">
+                                @foreach ([$currentYear, $currentYear + 1] as $year)
+                                    <option value="{{ $year }}" @selected((int) old('validity_year', $licence?->validity_year ?? $currentYear) === $year)>{{ $year }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error for="validity_year" class="mt-2" />
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

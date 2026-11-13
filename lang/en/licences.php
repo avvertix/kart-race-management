@@ -52,6 +52,7 @@ return [
     'source' => [
         'emitted' => 'Emitted',
         'declared' => 'Declared',
+        'participation' => 'From a race',
     ],
 
     'request_status' => [

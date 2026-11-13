@@ -5,6 +5,8 @@
 
     <div class="py-6 px-4 sm:px-6 lg:px-8 grid md:grid-cols-12 gap-8">
 
+        @can('drivers:view')
+
         <x-welcome-new-user class="md:col-span-12" />
 
         @feature(\App\Features\LicencesAndEnrollments::class)
@@ -14,6 +16,8 @@
                 <x-promo-code-find class="md:col-span-12" />
             @endcan
         @endfeature
+
+        @endcan
 
         @can('viewAny', \App\Models\Race::class)
             <x-next-races class="md:col-span-7 lg:col-span-8" />

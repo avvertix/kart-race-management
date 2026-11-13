@@ -33,17 +33,18 @@
     @endcan
 
     @feature(\App\Features\LicencesAndEnrollments::class)
-    @can('viewAny', \App\Models\LicenceRequest::class)
-        <x-dynamic-component :component="$item" :href="route('licence-request-reviews.index')" :current="request()->routeIs('licence-request-reviews.*')">
-            {{ __('Licence requests') }}
+    @php
+        $licencesHome = match (true) {
+            auth()->user()->can('viewAny', \App\Models\LicenceRequest::class) => route('licence-request-reviews.index'),
+            auth()->user()->can('viewAny', \App\Models\Licence::class) => route('licences.index'),
+            default => null,
+        };
+    @endphp
+    @if ($licencesHome !== null)
+        <x-dynamic-component :component="$item" :href="$licencesHome" :current="request()->routeIs('licence-request-reviews.*', 'licences.*')">
+            {{ __('Licences and requests') }}
         </x-dynamic-component>
-    @endcan
-
-    @can('viewAny', \App\Models\Licence::class)
-        <x-dynamic-component :component="$item" :href="route('licences.index')" :current="request()->routeIs('licences.*')">
-            {{ __('All licences') }}
-        </x-dynamic-component>
-    @endcan
+    @endif
     @endfeature
 
     @can('viewAny', \App\Models\CommunicationMessage::class)

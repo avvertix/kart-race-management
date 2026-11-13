@@ -20,6 +20,11 @@ enum LicenceSource: string
     case Declared = 'declared';
 
     /**
+     * Taken by the User from a race participation the organizer confirmed, see TransferParticipationLicence.
+     */
+    case Participation = 'participation';
+
+    /**
      * The human readable name of the source.
      */
     public function label(): string

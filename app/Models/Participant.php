@@ -120,8 +120,10 @@ class Participant extends Model implements HasLocalePreference
 
     /**
      * Get the championship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Championship, $this>
      */
-    public function championship()
+    public function championship(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Championship::class);
     }

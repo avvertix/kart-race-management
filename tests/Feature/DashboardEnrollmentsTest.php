@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Features\LicencesAndEnrollments;
+use App\Features\PromoCodes;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\User;
@@ -56,9 +57,18 @@ class DashboardEnrollmentsTest extends TestCase
             ->assertDontSee(route('public.championships.enrollment', $someoneElse));
     }
 
-    public function test_the_dashboard_lets_drivers_enter_a_promo_code(): void
+    public function test_the_dashboard_lets_drivers_with_early_access_enter_a_promo_code(): void
     {
-        $this->actingAs(User::factory()->create())
+        $driver = User::factory()->create();
+
+        $this->actingAs($driver)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertDontSee(route('promo-codes.find'));
+
+        Feature::for($driver)->activate(PromoCodes::class);
+
+        $this->actingAs($driver)
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Have a promo code?')

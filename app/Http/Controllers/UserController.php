@@ -8,6 +8,7 @@ use App\Actions\DeleteUser;
 use App\Actions\Fortify\CreateNewUserWithRole;
 use App\Enums\Role;
 use App\Features\LicencesAndEnrollments;
+use App\Features\PromoCodes;
 use App\Models\User;
 use App\Rules\ValidRole;
 use Illuminate\Http\Request;
@@ -74,6 +75,7 @@ class UserController extends Controller
             'user' => $user,
             'roles' => $this->availableRoles(),
             'hasLicencesAndEnrollments' => Feature::for($user)->active(LicencesAndEnrollments::class),
+            'hasPromoCodes' => Feature::for($user)->active(PromoCodes::class),
         ]);
     }
 
@@ -87,6 +89,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'role' => ['required', 'string', new ValidRole],
             'licences_and_enrollments' => ['sometimes', 'boolean'],
+            'promo_codes' => ['sometimes', 'boolean'],
         ]);
 
         $user->update([
@@ -99,6 +102,12 @@ class UserController extends Controller
             $request->boolean('licences_and_enrollments')
                 ? Feature::for($user)->activate(LicencesAndEnrollments::class)
                 : Feature::for($user)->deactivate(LicencesAndEnrollments::class);
+        }
+
+        if ($request->has('promo_codes')) {
+            $request->boolean('promo_codes')
+                ? Feature::for($user)->activate(PromoCodes::class)
+                : Feature::for($user)->deactivate(PromoCodes::class);
         }
 
         return redirect()->route('users.index')

@@ -52,6 +52,7 @@ return [
     'source' => [
         'emitted' => 'Emessa',
         'declared' => 'Dichiarata',
+        'participation' => 'Da una gara',
     ],
 
     'request_status' => [

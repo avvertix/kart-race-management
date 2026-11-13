@@ -51,6 +51,27 @@
                 </section>
             @endif
 
+            @if ($participations->isNotEmpty())
+                <section class="space-y-2">
+                    <h3 class="font-semibold text-zinc-800">{{ __('From your races') }}</h3>
+                    <p class="text-sm text-zinc-600 max-w-prose">{{ __('Licences used in races the organizer confirmed. Add them to renew them or enroll with them.') }}</p>
+                    <ul class="divide-y divide-zinc-200 rounded-md border border-zinc-200 bg-white">
+                        @foreach ($participations as $participation)
+                            <li class="flex flex-wrap items-center gap-2 p-3">
+                                <div class="flex-1 min-w-48">
+                                    <p class="font-medium text-zinc-900">{{ $participation->first_name }} {{ $participation->last_name }}</p>
+                                    <p class="text-sm text-zinc-500">{{ $participation->championship->title }} &middot; {{ __('For :year', ['year' => \App\Actions\TransferParticipationLicence::validityYear($participation)]) }}</p>
+                                </div>
+                                <form method="POST" action="{{ route('my-licences.transfers.store', $participation) }}">
+                                    @csrf
+                                    <button type="submit" class="text-sm font-medium text-orange-600 hover:text-orange-900">{{ __('Add to my licences') }}</button>
+                                </form>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
             <x-table>
                 <x-slot name="head">
                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ __('Holder') }}</th>

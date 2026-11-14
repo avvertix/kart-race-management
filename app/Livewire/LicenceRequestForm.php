@@ -76,7 +76,7 @@ class LicenceRequestForm extends Component
         $this->licenceType = $licenceRequest->licence_type ?? '';
         $this->driverOnly = $licenceRequest->licence_type !== null && ! $licenceRequest->includes_competitor;
         $this->previousLicenceNumber = $licenceRequest->previous_licence_number ?? '';
-        $this->holder = $licenceRequest->holder?->toArray() ?? ['residence_address' => []];
+        $this->holder = $licenceRequest->holder?->toArray() ?? $this->blankPerson();
         $this->parents = array_map(fn (HolderData $parent) => $parent->toArray(), $licenceRequest->parentHolders());
 
         $this->openSection = $this->nextSection();
@@ -159,7 +159,7 @@ class LicenceRequestForm extends Component
     public function addParent(): void
     {
         if (count($this->parents) < 2) {
-            $this->parents[] = ['residence_address' => []];
+            $this->parents[] = $this->blankPerson();
         }
     }
 
@@ -323,6 +323,24 @@ class LicenceRequestForm extends Component
             LicenceRequestSection::Documents => $this->uploadedCount(LicenceDocumentKind::Upload),
             LicenceRequestSection::Forms => $this->uploadedCount(LicenceDocumentKind::SignedForm),
         };
+    }
+
+    /**
+     * An empty person whose address already has its keys. An empty array reaches the browser as a JSON array,
+     * where the address fields set by wire:model are dropped when sent back, so the first save failed validation.
+     *
+     * @return array{residence_address: array{address: string, city: string, province: string, postal_code: string}}
+     */
+    private function blankPerson(): array
+    {
+        return [
+            'residence_address' => [
+                'address' => '',
+                'city' => '',
+                'province' => '',
+                'postal_code' => '',
+            ],
+        ];
     }
 
     private function uploadedCount(LicenceDocumentKind $kind): string

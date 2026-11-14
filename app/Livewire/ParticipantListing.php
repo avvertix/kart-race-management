@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Enums\ItalianRegion;
+use App\Models\Enrollment;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Support\Collection;
@@ -176,6 +177,9 @@ class ParticipantListing extends Component
             ->orderBy($sortField, 'asc')
             ->get();
 
-        return view('livewire.participant-listing');
+        return view('livewire.participant-listing', [
+            'canOpenEnrollments' => Enrollment::isReviewableBy(auth()->user()),
+            'enrollments' => Enrollment::activeByLicenceHash($this->race->championship_id, $this->participants->pluck('driver_licence')->filter()->unique()->values()->all()),
+        ]);
     }
 }

@@ -23,6 +23,21 @@
             <x-button-link href="{{ route('championships.licence-settings.edit', $championship) }}">
                 {{ __('Accepted licences') }}
             </x-button-link>
+            @feature(\App\Features\LicencesAndEnrollments::class)
+                <x-button-link href="{{ route('championships.enrollment-settings.edit', $championship) }}">
+                    {{ __('Enrollment') }}
+                </x-button-link>
+                @if ($championship->entitlements_enabled)
+                    <x-button-link href="{{ route('championships.promo-codes.index', $championship) }}">
+                        {{ __('Promo codes') }}
+                    </x-button-link>
+                @endif
+                @if ($championship->enrollment->enabled)
+                    <x-button-link href="{{ route('championships.enrollments.index', $championship) }}">
+                        {{ __('Enrollments') }}
+                    </x-button-link>
+                @endif
+            @endfeature
             <x-button-link href="{{ route('championships.edit', $championship) }}">
                 {{ __('Edit championship') }}
             </x-button-link>

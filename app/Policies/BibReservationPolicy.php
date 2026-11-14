@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\BibReservationStatus;
 use App\Models\BibReservation;
 use App\Models\User;
 
@@ -34,11 +35,27 @@ class BibReservationPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determine whether the user can update the model. A released reservation can't be changed.
      */
     public function update(User $user, BibReservation $bibReservation): bool
     {
-        return $user->hasPermission('championship:update');
+        return $bibReservation->status->holdsTheNumber() && $user->hasPermission('championship:update');
+    }
+
+    /**
+     * Determine whether the user can confirm a reservation picked by a driver.
+     */
+    public function confirm(User $user, BibReservation $bibReservation): bool
+    {
+        return $bibReservation->status === BibReservationStatus::Pending && $user->hasPermission('championship:update');
+    }
+
+    /**
+     * Determine whether the user can release the reservation, freeing its number.
+     */
+    public function release(User $user, BibReservation $bibReservation): bool
+    {
+        return $this->update($user, $bibReservation);
     }
 
     /**

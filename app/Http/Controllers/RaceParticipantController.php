@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Championship;
 use App\Models\CompetitorLicence;
 use App\Models\DriverLicence;
+use App\Models\Enrollment;
 use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -139,6 +140,8 @@ class RaceParticipantController extends Controller
             'championship' => $participant->championship,
             'participant' => $participant,
             'activities' => $activities,
+            'canOpenEnrollments' => Enrollment::isReviewableBy(auth()->user()),
+            'enrollment' => Enrollment::activeByLicenceHash($participant->championship_id, array_filter([$participant->driver_licence]))->first(),
         ]);
     }
 

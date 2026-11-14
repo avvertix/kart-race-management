@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\BibReservationStatus;
 use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Participant;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -14,9 +16,11 @@ use Illuminate\Validation\ValidationException;
 class CreateBibReservation
 {
     /**
+     * Create a confirmed reservation. Released reservations don't hold their number nor driver.
+     *
      * @param  array{bib: int, driver: string, driver_licence_number: string, contact_email: ?string, reservation_expiration_date: ?string}  $input
      */
-    public function __invoke(Championship $championship, array $input): BibReservation
+    public function __invoke(Championship $championship, array $input, ?User $createdBy = null): BibReservation
     {
         Validator::make($input, [
             'bib' => [
@@ -24,9 +28,7 @@ class CreateBibReservation
                 'integer',
                 'min:'.BibReservation::MIN_BIB,
                 'max:'.BibReservation::MAX_BIB,
-                Rule::unique((new BibReservation())->getTable(), 'bib')->where(function ($query) use ($championship) {
-                    return $query->where('championship_id', $championship->getKey());
-                }),
+                BibReservation::uniqueAmongHolding($championship, 'bib'),
                 Rule::unique('participants', 'bib')
                     ->where(fn ($query) => $query->where('championship_id', $championship->getKey())),
             ],
@@ -34,9 +36,7 @@ class CreateBibReservation
                 'required',
                 'string',
                 'max:250',
-                Rule::unique((new BibReservation())->getTable(), 'driver')->where(function ($query) use ($championship) {
-                    return $query->where('championship_id', $championship->getKey());
-                }),
+                BibReservation::uniqueAmongHolding($championship, 'driver'),
             ],
             'driver_licence_number' => ['required', 'string', 'max:250'],
             'contact_email' => 'nullable|string|email',
@@ -70,6 +70,8 @@ class CreateBibReservation
             'driver_licence_hash' => $licenceHash,
             'driver_licence' => $input['driver_licence_number'] ?? null,
             'reservation_expires_at' => $expiresAt,
+            'status' => BibReservationStatus::Confirmed,
+            'created_by_user_id' => $createdBy?->getKey(),
         ]);
     }
 }

@@ -1,3 +1,7 @@
+@php
+    $licenceProviderName = $race->championship->licenceProviderName();
+@endphp
+
 <x-validation-errors class="mb-4" />
 
 <div class="md:grid md:grid-cols-3 md:gap-6">
@@ -72,12 +76,12 @@
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="driver_licence_type" class="mt-2" />
-                    <x-options-selector :options="$driverLicences ?? \App\Models\DriverLicence::cases()" id="driver_licence_type" name="driver_licence_type" class="mt-1" :value="old('driver_licence_type', $driver['licence_type'] ?? null)"  />
+                    <x-options-selector :options="$driverLicences ?? \App\Models\DriverLicence::cases()" id="driver_licence_type" name="driver_licence_type" :licence-provider="$licenceProviderName" class="mt-1" :value="old('driver_licence_type', $driver['licence_type'] ?? null)"  />
                 </div>
                 @enduseStandardRegistrationForm
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="driver_licence_number" value="{{ __('Licence Number') }}*" />
-                    <p class="text-sm text-zinc-700">{{ __('Use a licence number provided by :provider.', ['provider' => config('races.licence.provider')]) }} <a class="underline" href="mailto:{{config('races.organizer.email')}}?subject=Non%20ho%20una%20licenza%20valida%20per%20l'iscrizione">{{ __('Don\'t have a licence, contact the organizer!') }}</a></p>
+                    <p class="text-sm text-zinc-700">{{ __('Use a licence number provided by :provider.', ['provider' => $licenceProviderName]) }} <a class="underline" href="mailto:{{config('races.organizer.email')}}?subject=Non%20ho%20una%20licenza%20valida%20per%20l'iscrizione">{{ __('Don\'t have a licence, contact the organizer!') }}</a></p>
                     <x-input id="driver_licence_number" type="text" name="driver_licence_number" class="mt-1 block w-full" :value="old('driver_licence_number', $driver['licence_number'] ?? null)"  />
                     <x-input-error for="driver_licence_number" class="mt-2" />
                 </div>
@@ -183,7 +187,7 @@
                 <div class="col-span-6 sm:col-span-4">
                     <x-label for="competitor_licence_type" value="{{ __('Licence Type') }}*" />
                     <x-input-error for="competitor_licence_type" class="mt-2" />
-                    <x-options-selector :options="$competitorLicences ?? \App\Models\CompetitorLicence::cases()" id="competitor_licence_type" name="competitor_licence_type" class="mt-1  " :value="old('competitor_licence_type', $competitor['licence_type'] ?? null)"  />
+                    <x-options-selector :options="$competitorLicences ?? \App\Models\CompetitorLicence::cases()" id="competitor_licence_type" name="competitor_licence_type" :licence-provider="$licenceProviderName" class="mt-1  " :value="old('competitor_licence_type', $competitor['licence_type'] ?? null)"  />
                 </div>
                 @enduseStandardRegistrationForm
                 <div class="col-span-6 sm:col-span-4">

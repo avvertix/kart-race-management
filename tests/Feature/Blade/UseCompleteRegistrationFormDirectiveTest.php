@@ -7,12 +7,12 @@ namespace Tests\Feature\Blade;
 use App\Models\Championship;
 use App\Models\Race;
 use App\Models\RegistrationForm;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\TestCase;
 
 class UseCompleteRegistrationFormDirectiveTest extends TestCase
 {
-    use RefreshDatabase;
+    use FastRefreshDatabase;
 
     public function test_falls_back_to_config_when_race_has_no_registration_form(): void
     {

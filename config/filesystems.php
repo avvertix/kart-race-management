@@ -70,6 +70,12 @@ return [
             'prefix' => 'federation-authorizations',
         ],
 
+        'licence-documents' => [
+            'driver' => 'scoped',
+            'disk' => 'local',
+            'prefix' => 'licence-documents',
+        ],
+
         'championship-banners' => [
             'driver' => 'scoped',
             'disk' => 'local',

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\ReleaseEntitlements;
 use App\Enums\ItalianRegion;
+use App\Models\Participant;
 use App\Models\Race;
 use App\Models\RaceType;
 use App\Models\RegistrationForm;
@@ -98,6 +100,7 @@ class RaceController extends Controller
             'registration_closes_at' => ['nullable', 'date', 'after:registration_opens_at'],
             'registration_form' => ['nullable', new Enum(RegistrationForm::class)],
             'bonus_enabled' => ['nullable', 'in:true,false'],
+            'entitlements_enabled' => ['nullable', 'in:false'],
             'zone_regions' => ['nullable', 'array'],
             'zone_regions.*' => ['string', new Enum(ItalianRegion::class)],
         ]);
@@ -127,6 +130,7 @@ class RaceController extends Controller
             'type' => $validated['race_type'] ?? RaceType::LOCAL,
             'registration_form' => blank($validated['registration_form'] ?? null) ? null : RegistrationForm::from($validated['registration_form']),
             'bonus_enabled' => blank($validated['bonus_enabled'] ?? null) ? null : ($validated['bonus_enabled'] === 'true'),
+            'entitlements_enabled' => ($validated['entitlements_enabled'] ?? null) === 'false' ? false : null,
             'zone_regions' => filled($validated['zone_regions'] ?? null) ? $validated['zone_regions'] : null,
         ]);
 
@@ -141,10 +145,18 @@ class RaceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Race $race)
+    public function destroy(Race $race, ReleaseEntitlements $releaseEntitlements)
     {
-        $race->canceled_at = now();
-        $race->save();
+        DB::transaction(function () use ($race, $releaseEntitlements) {
+            $race->canceled_at = now();
+            $race->save();
+
+            $race->participants()->whereHas('entitlements')->get()->each(function (Participant $participant) use ($releaseEntitlements) {
+                $releaseEntitlements($participant);
+
+                $participant->forceFill(['cost' => $participant->calculateParticipationCost()])->save();
+            });
+        });
 
         return to_route('races.show', $race)
             ->with('flash.banner', __(':race canceled.', [

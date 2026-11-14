@@ -1,0 +1,81 @@
+# Statuses and lifecycles
+
+## Licence Request
+
+| Status | Meaning | Next |
+|---|---|---|
+| Draft | Being filled in; kept for as long as needed. The User can delete it | Submitted |
+| Submitted | Sent to the organizer | In review, Rejected |
+| In review | Set on the organizer's first action (marking a document as viewed, or commenting). The organizer reviews the documents and sections, like a pull request review | Changes requested, Verified, Rejected |
+| Changes requested | The organizer finished the review sending the comments to fix | Submitted |
+| Verified | The organizer finished the review with every document viewed and nothing to fix, and set the amount to pay | With the provider, Emitted, Rejected |
+| With the provider | Optional: handed to the Licence Provider, waiting for the licence. Requires the payment to be paid or covered | Emitted, Rejected |
+| Emitted | The temporary licence PDF is uploaded and the Licence is created. Requires the payment to be paid or covered | — |
+| Rejected | Closed without a licence | — |
+
+A Licence Request is for one validity year, chosen when it is started: the year renewals are open for (the next one from December), or the next year while a championship of that year is open for enrollment. The emitted Licence is for that year when Enrollments wait for the request.
+
+A Licence Request is a renewal and is paid on its own, unless the Enrollment waiting for it covers it:
+
+| Payment status | Meaning | Next |
+|---|---|---|
+| Awaiting the amount | The organizer sets the amount when verifying the request. No payment proof can be uploaded yet | To pay |
+| To pay | The amount is set; no payment proof yet. The organizer can still change it | Proof uploaded, Paid |
+| Proof uploaded | A payment proof is uploaded | Paid, To pay |
+| Paid | The organizer confirmed the bank transfer proof, or recorded a cash or credit card payment at the office | — |
+| Covered | The Enrollment the request waits for pays the renewal, as its option covers it. It counts as paid once that Enrollment's deposit, or its full amount without a deposit, is paid; if the request is rejected, it covers a new one. Withdrawing or rejecting the Enrollment, or moving it to an option that doesn't cover the renewal, returns the request to its own payment | — |
+
+## Licence
+
+| Status | Meaning |
+|---|---|
+| Emitted | Created from a Licence Request |
+| Declared | Entered by the User, not yet verified |
+| Declared, verified | Entered by the User and checked by the organizer |
+
+## Enrollment
+
+| Status | Meaning | Next |
+|---|---|---|
+| Submitted | Created when the driver submits the form. Waiting for the organizer. When it names an open Licence Request instead of a Licence, it also waits for the licence | Confirmed, Rejected, Withdrawn |
+| Confirmed | Accepted by the organizer, once paid in full. Confirms the race number reservation. Final: only confirmed Enrollments take part in the championship, and the driver never goes back to wildcard | — |
+| Rejected | Not accepted | — |
+| Withdrawn | Cancelled by the driver or the organizer while submitted, but not while a payment proof waits for review. Until the championship's first race starts, the organizer brings it back to Submitted, also by recording a payment, unless what was paid was turned into a promo code | Submitted |
+
+The organizer always confirms an Enrollment by hand. Free enrollments only skip the payment step. A Driver has at most one submitted or confirmed Enrollment per championship, matched by licence number or by the holder (fiscal code, or name and birth date). Only a driver Licence valid in the championship's year, or a driver Licence Request for that year, can be enrolled. Underage is judged on the championship start date; the Competitor of an underage Driver is an adult other than the Driver, and can be named until confirmation. An Enrollment can't be withdrawn or rejected while a payment proof waits for review, and its declared Licences can't be changed or removed while it is active. A Declared Licence must be verified before its Enrollment is confirmed. When the Licence Request an Enrollment waits for is emitted, the Licence must be for the request's year, and the Enrollment moves to the new Licence, unless the Driver is already enrolled in that championship, which rejects it; when it is rejected, the Enrollment stays submitted until the organizer rejects it or the User picks another Licence or starts a new request, keeping its payment and race number; an option that covered the rejected request covers the new one. An Enrollment can also wait for a draft request, started while enrolling. Refunds for withdrawn or rejected paid enrollments, and for rejected licence requests, are settled by email with the organizer, outside the platform.
+
+### Enrollment payment
+
+| Status | Meaning |
+|---|---|
+| Nothing to pay | A free option, or enrolled by the organizer |
+| To pay | The amount of the option chosen, or what is left of it, by bank transfer with the Enrollment as reason |
+| Proof uploaded | Waiting for the organizer to confirm it with the amount received, or reject it |
+| Deposit paid | The option asks for a deposit and the confirmed Payment Records reach it: the covered Licence Request counts as paid and the option's race fee discount is granted; confirming waits for the balance, due by the option's date |
+| Paid | The confirmed Payment Records reach the amount: the Enrollment can be confirmed. Without a deposit, only now a Licence Request the option covers counts as paid and the option's race fee discount is granted once the Licence exists |
+
+The status follows the Enrollment's Payment Records. The driver uploads one bank transfer proof at a time; the organizer confirms it with the amount read on the bank statement, which may be less than what is due, or rejects it, and rejected proofs are kept. The organizer can also record a payment received by cash, credit card or bank transfer, with its amount and no proof, while no proof waits for review. Payments add up: the Enrollment stays To pay until they reach the deposit, when the option asks for one, then Deposit paid until they reach its amount. When the balance is due within a week the User who enrolled is reminded once, unless a payment proof waits for review that day. After that date an Enrollment not paid in full is *Overdue* in the organizer's list: it stays active, and the organizer decides what to do.
+
+A submitted Enrollment can move to another option until it is paid in full: by the driver while enrollment is open, by the organizer also afterwards. What was paid counts towards the new amount; paying more than it leaves the difference to refund outside the platform. A race fee discount already granted follows the new option: of the same kind its amount changes, keeping what was used; otherwise its unused part is cancelled and the new one is granted. After the enrollment period closes nobody enrolls a new Licence, the organizer included.
+
+When a withdrawn or rejected Enrollment paid something, the organizer can instead turn it into a race fee balance promo code to hand to the driver: at most the Enrollment's amount, less the price of a licence renewal it paid and that was emitted, less the race fees its option's discounts already covered, whose unused part is cancelled. The Enrollment can't come back afterwards.
+
+## BIB Reservation
+
+| Status | Meaning | Next |
+|---|---|---|
+| Pending | Picked by a driver during enrollment; blocks the number for others. The driver can change their pick | Confirmed, Released |
+| Confirmed | Confirmed with the Enrollment, or created by the organizer. Only the organizer can change it | Released |
+| Released | Freed by the organizer | — |
+
+Pending reservations don't expire. Reservations created by the organizer may have an expiry date. Reservations created before statuses existed are confirmed. A released reservation can't be changed.
+
+## Promo Code
+
+| Status | Meaning |
+|---|---|
+| Unclaimed | Issued, not yet claimed. Anyone with the code can claim it. The organizer can revoke it |
+| Revoked | Withdrawn by the organizer before being claimed |
+| Claimed | Claimed for one Licence valid in the championship's year, or for a licence number typed in a race registration; has become an Entitlement |
+
+A licence number claim moves to a Licence with that number once the Licence is emitted or verified. The championship's year is the year it starts.

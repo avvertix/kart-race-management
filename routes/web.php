@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Features\LicencesAndEnrollments;
 use App\Http\Controllers\BibReservationController;
 use App\Http\Controllers\BibReservationImportController;
+use App\Http\Controllers\BibReservationStatusController;
 use App\Http\Controllers\ChampionshipAwardController;
 use App\Http\Controllers\ChampionshipBannerController;
 use App\Http\Controllers\ChampionshipBonusController;
@@ -11,10 +13,13 @@ use App\Http\Controllers\ChampionshipBonusImportController;
 use App\Http\Controllers\ChampionshipCategoryController;
 use App\Http\Controllers\ChampionshipController;
 use App\Http\Controllers\ChampionshipDuplicateDriverController;
+use App\Http\Controllers\ChampionshipEnrollmentController;
+use App\Http\Controllers\ChampionshipEnrollmentOptionController;
 use App\Http\Controllers\ChampionshipParticipantController;
 use App\Http\Controllers\ChampionshipPenaltyController;
 use App\Http\Controllers\ChampionshipPenaltyImportController;
 use App\Http\Controllers\ChampionshipPointSchemeController;
+use App\Http\Controllers\ChampionshipPromoCodeController;
 use App\Http\Controllers\ChampionshipTireController;
 use App\Http\Controllers\CommunicationMessageController;
 use App\Http\Controllers\ConfigureRacePenaltySheetController;
@@ -23,14 +28,22 @@ use App\Http\Controllers\ConfirmParticipantPaymentController;
 use App\Http\Controllers\CopyChampionshipBibReservationsController;
 use App\Http\Controllers\CopyChampionshipCategoriesController;
 use App\Http\Controllers\CopyChampionshipTiresController;
+use App\Http\Controllers\EnrollmentReviewController;
 use App\Http\Controllers\ExportChampionshipParticipantsController;
 use App\Http\Controllers\ExportRaceHeatGridController;
 use App\Http\Controllers\ExportRaceParticipantsController;
-use App\Http\Controllers\ExportRaceParticipantsForAciPromotionController;
 use App\Http\Controllers\ExportRaceParticipantsForSigningController;
 use App\Http\Controllers\ExportRaceParticipantsForTimingController;
 use App\Http\Controllers\ExportRacePrefinaleGridController;
+use App\Http\Controllers\ExportRaceVerifiedDriversController;
+use App\Http\Controllers\LicenceController;
+use App\Http\Controllers\LicenceRequestController;
+use App\Http\Controllers\LicenceRequestReviewController;
+use App\Http\Controllers\LicenceTransferController;
 use App\Http\Controllers\ListRacesWithOpenRegistrationController;
+use App\Http\Controllers\MyEnrollmentController;
+use App\Http\Controllers\MyLicenceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrbitsBackupController;
 use App\Http\Controllers\ParticipantFederationAuthorizationController;
 use App\Http\Controllers\ParticipantPaymentController;
@@ -42,7 +55,11 @@ use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\PromoCodeClaimController;
 use App\Http\Controllers\PublicChampionshipAwardController;
+use App\Http\Controllers\PublicChampionshipEnrollmentController;
+use App\Http\Controllers\PublicLicenceRenewalController;
+use App\Http\Controllers\PublicPromoCodeController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceCombinedResultController;
 use App\Http\Controllers\RaceCommunicationImportController;
@@ -57,18 +74,24 @@ use App\Http\Controllers\RaceRegistrationController;
 use App\Http\Controllers\RaceTiresController;
 use App\Http\Controllers\RaceTranspondersController;
 use App\Http\Controllers\RaceTranspondersImportController;
+use App\Http\Controllers\RecalculateRaceWildcardsController;
 use App\Http\Controllers\ResultRaceController;
 use App\Http\Controllers\SwitchLanguageController;
 use App\Http\Controllers\UpdateChampionshipBibSettingsController;
 use App\Http\Controllers\UpdateChampionshipBonusSettingsController;
+use App\Http\Controllers\UpdateChampionshipEnrollmentSettingsController;
+use App\Http\Controllers\UpdateChampionshipEntitlementSettingsController;
 use App\Http\Controllers\UpdateChampionshipLicenceSettingsController;
 use App\Http\Controllers\UpdateChampionshipPaymentSettingsController;
 use App\Http\Controllers\UpdateChampionshipRegistrationFormController;
 use App\Http\Controllers\UpdateRaceScoringController;
 use App\Http\Controllers\UserController;
+use App\Livewire\LicenceRequestForm;
+use App\Livewire\LicenceRequestReview;
 use App\Livewire\LinkedDrivers;
 use Avvertix\AgentRequest\LaravelAgentRequest\Http\Middleware\DenyAgentMiddleware;
 use Illuminate\Support\Facades\Route;
+use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 Route::get('/', ListRacesWithOpenRegistrationController::class)->name('welcome');
 
@@ -99,6 +122,7 @@ Route::middleware([
         Route::resource('races', RaceController::class)->only(['show', 'edit', 'update', 'destroy']);
 
         Route::put('races/{race}/scoring', UpdateRaceScoringController::class)->name('races.scoring.update');
+        Route::post('races/{race}/wildcards/recalculate', RecalculateRaceWildcardsController::class)->name('races.wildcards.recalculate');
 
         Route::get('championships/{championship}/races/import', [RaceImportController::class, 'create'])->name('championships.races.import.create');
 
@@ -217,7 +241,7 @@ Route::middleware([
 
         Route::get('races/{race}/export-transponders', ExportRaceParticipantsForTimingController::class)->name('races.export.transponders');
 
-        Route::get('races/{race}/export-aci', ExportRaceParticipantsForAciPromotionController::class)->name('races.export.aci');
+        Route::get('races/{race}/export-verified-drivers', ExportRaceVerifiedDriversController::class)->name('races.export.verified-drivers');
 
         Route::get('races/{race}/export-signature', ExportRaceParticipantsForSigningController::class)->name('races.export.signature');
 
@@ -235,7 +259,116 @@ Route::middleware([
 
         Route::resource('users', UserController::class)->except(['show']);
 
+        Route::middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))->group(function () {
+            Route::get('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'edit'])->name('championships.enrollment-settings.edit');
+            Route::put('championships/{championship}/enrollment-settings', [UpdateChampionshipEnrollmentSettingsController::class, 'update'])->name('championships.enrollment-settings.update');
+            Route::get('championships/{championship}/enrollment-options/create', [ChampionshipEnrollmentOptionController::class, 'create'])->name('championships.enrollment-options.create');
+            Route::post('championships/{championship}/enrollment-options', [ChampionshipEnrollmentOptionController::class, 'store'])->name('championships.enrollment-options.store');
+            Route::get('enrollment-options/{enrollmentOption}/edit', [ChampionshipEnrollmentOptionController::class, 'edit'])->name('enrollment-options.edit');
+            Route::put('enrollment-options/{enrollmentOption}', [ChampionshipEnrollmentOptionController::class, 'update'])->name('enrollment-options.update');
+            Route::put('championships/{championship}/entitlement-settings', UpdateChampionshipEntitlementSettingsController::class)->name('championships.entitlement-settings.update');
+
+            Route::get('championships/{championship}/promo-codes', [ChampionshipPromoCodeController::class, 'index'])->name('championships.promo-codes.index');
+            Route::get('championships/{championship}/promo-codes/create', [ChampionshipPromoCodeController::class, 'create'])->name('championships.promo-codes.create');
+            Route::post('championships/{championship}/promo-codes', [ChampionshipPromoCodeController::class, 'store'])->name('championships.promo-codes.store');
+            Route::post('promo-codes/{promoCode}/revoke', [ChampionshipPromoCodeController::class, 'revoke'])->name('promo-codes.revoke');
+
+            Route::post('bib-reservations/{bib_reservation}/confirm', [BibReservationStatusController::class, 'confirm'])->name('bib-reservations.confirm');
+            Route::post('bib-reservations/{bib_reservation}/release', [BibReservationStatusController::class, 'release'])->name('bib-reservations.release');
+
+            Route::get('championships/{championship}/enrollments', [ChampionshipEnrollmentController::class, 'index'])->name('championships.enrollments.index');
+            Route::get('championships/{championship}/enrollments/create', [ChampionshipEnrollmentController::class, 'create'])->name('championships.enrollments.create');
+            Route::post('championships/{championship}/enrollments', [ChampionshipEnrollmentController::class, 'store'])->name('championships.enrollments.store');
+            Route::get('enrollments/{enrollment}', [EnrollmentReviewController::class, 'show'])->name('enrollments.show');
+            Route::post('enrollments/{enrollment}/verify-licence', [EnrollmentReviewController::class, 'verifyLicence'])->name('enrollments.verify-licence');
+            Route::post('enrollments/{enrollment}/confirm', [EnrollmentReviewController::class, 'confirm'])->name('enrollments.confirm');
+            Route::post('enrollments/{enrollment}/reject', [EnrollmentReviewController::class, 'reject'])->name('enrollments.reject');
+            Route::post('enrollments/{enrollment}/withdraw', [EnrollmentReviewController::class, 'withdraw'])->name('enrollments.withdraw');
+            Route::put('enrollments/{enrollment}/race-number', [EnrollmentReviewController::class, 'raceNumber'])->name('enrollments.race-number.update');
+            Route::put('enrollments/{enrollment}/competitor', [EnrollmentReviewController::class, 'competitor'])->name('enrollments.competitor.update');
+            Route::post('enrollments/{enrollment}/payment/confirm', [EnrollmentReviewController::class, 'confirmPayment'])->name('enrollments.payment.confirm');
+            Route::post('enrollments/{enrollment}/payment/reject', [EnrollmentReviewController::class, 'rejectPayment'])->name('enrollments.payment.reject');
+            Route::post('enrollments/{enrollment}/payment/record', [EnrollmentReviewController::class, 'recordPayment'])->name('enrollments.payment.record');
+            Route::put('enrollments/{enrollment}/option', [EnrollmentReviewController::class, 'option'])->name('enrollments.option.update');
+            Route::post('enrollments/{enrollment}/credit', [EnrollmentReviewController::class, 'credit'])->name('enrollments.credit');
+            Route::post('enrollments/{enrollment}/bring-back', [EnrollmentReviewController::class, 'bringBack'])->name('enrollments.bring-back');
+
+            Route::resource('licences', LicenceController::class)->only(['index', 'show']);
+            Route::post('licences/{licence}/verify', [LicenceController::class, 'verify'])->name('licences.verify');
+
+            Route::get('licence-requests', [LicenceRequestReviewController::class, 'index'])->name('licence-request-reviews.index');
+            Route::livewire('licence-requests/{licenceRequest}', LicenceRequestReview::class)->name('licence-request-reviews.show');
+        });
+
     });
+
+// Championship enrollment, promo codes, and the licences and enrollments of the signed-in user, while in early access (see App\Features\LicencesAndEnrollments)
+
+Route::get('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'show'])
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
+    ->name('public.championships.enrollment');
+
+Route::get('licence-renewal', PublicLicenceRenewalController::class)
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
+    ->name('public.licence-renewal');
+
+Route::get('promo-codes/{promoCode}', [PublicPromoCodeController::class, 'show'])
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
+    ->name('public.promo-codes.show');
+
+Route::middleware([
+    'auth',
+    'auth.session',
+    'verified',
+    DenyAgentMiddleware::class,
+    EnsureFeaturesAreActive::using(LicencesAndEnrollments::class),
+])->group(function () {
+    Route::post('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'store'])->name('public.championships.enrollment.store');
+    Route::get('my-enrollments/{enrollment}', [MyEnrollmentController::class, 'show'])->name('my-enrollments.show');
+    Route::post('my-enrollments/{enrollment}/withdraw', [MyEnrollmentController::class, 'withdraw'])->name('my-enrollments.withdraw');
+    Route::put('my-enrollments/{enrollment}/licence', [MyEnrollmentController::class, 'updateLicence'])->name('my-enrollments.licence.update');
+    Route::put('my-enrollments/{enrollment}/competitor', [MyEnrollmentController::class, 'updateCompetitor'])->name('my-enrollments.competitor.update');
+    Route::put('my-enrollments/{enrollment}/option', [MyEnrollmentController::class, 'updateOption'])->name('my-enrollments.option.update');
+    Route::post('my-enrollments/{enrollment}/payment', [MyEnrollmentController::class, 'pay'])
+        ->middleware('throttle:10,10')
+        ->name('my-enrollments.payment.store');
+
+    Route::post('promo-codes/find', [PromoCodeClaimController::class, 'find'])
+        ->middleware('throttle:20,1')
+        ->name('promo-codes.find');
+    Route::post('promo-codes/{promoCode}/claim', [PromoCodeClaimController::class, 'claim'])
+        ->middleware('throttle:10,1')
+        ->name('promo-codes.claim');
+    Route::get('my-enrollments/{enrollment}/race-number', [MyEnrollmentController::class, 'editRaceNumber'])->name('my-enrollments.race-number.edit');
+    Route::put('my-enrollments/{enrollment}/race-number', [MyEnrollmentController::class, 'updateRaceNumber'])
+        ->middleware('throttle:30,1')
+        ->name('my-enrollments.race-number.update');
+
+    Route::get('licences/from-participation/{participant}', [LicenceTransferController::class, 'create'])->name('my-licences.transfers.create');
+    Route::post('licences/from-participation/{participant}', [LicenceTransferController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('my-licences.transfers.store');
+
+    Route::resource('licences', MyLicenceController::class)->names('my-licences');
+
+    Route::post('licence-requests', [LicenceRequestController::class, 'store'])->name('licence-requests.store');
+    Route::get('licence-requests/{licenceRequest}', [LicenceRequestController::class, 'show'])->name('licence-requests.show');
+    Route::post('licence-requests/{licenceRequest}/payment', [LicenceRequestController::class, 'pay'])
+        ->middleware('throttle:10,10')
+        ->name('licence-requests.payment.store');
+    Route::livewire('licence-requests/{licenceRequest}/edit', LicenceRequestForm::class)->name('licence-requests.edit');
+    Route::delete('licence-requests/{licenceRequest}', [LicenceRequestController::class, 'destroy'])->name('licence-requests.destroy');
+    Route::get('licence-requests/{licenceRequest}/documents/{document}', [LicenceRequestController::class, 'document'])->name('licence-requests.documents.show');
+    Route::get('licence-requests/{licenceRequest}/forms/{document}', [LicenceRequestController::class, 'form'])->name('licence-requests.forms.show');
+
+    Route::get('licences/{licence}/temporary-licence', [MyLicenceController::class, 'temporaryLicence'])
+        ->middleware('signed')
+        ->name('my-licences.temporary-licence');
+
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/read', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('notifications/{notification}', [NotificationController::class, 'open'])->name('notifications.open');
+});
 
 // Public race results
 

@@ -62,6 +62,8 @@ class DeleteParticipant
 
                 $participant->activitiesAsSubject()->delete();
 
+                app(ReleaseEntitlements::class)($participant);
+
                 $activeBonuses = $participant->bonuses()->get();
 
                 if ($activeBonuses->isNotEmpty()) {

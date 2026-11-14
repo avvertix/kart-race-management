@@ -8,6 +8,7 @@ use App\Models\BonusMode;
 use App\Models\Championship;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\ValidationException;
 
 class UpdateChampionshipBonusSettingsController extends Controller
 {
@@ -35,6 +36,12 @@ class UpdateChampionshipBonusSettingsController extends Controller
             'fixed_bonus_amount' => 'nullable|integer|min:100|max:'.($championship->registration_price ?? config('races.price')),
             'bonus_enabled' => ['nullable', 'in:true,false'],
         ]);
+
+        if ($championship->entitlements_enabled && ($validated['bonus_enabled'] ?? null) !== 'false') {
+            throw ValidationException::withMessages([
+                'bonus_enabled' => __('Disable promo codes and enrollment discounts before enabling bonuses.'),
+            ]);
+        }
 
         $bonusMode = BonusMode::from((int) $validated['bonus_mode']);
 

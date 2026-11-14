@@ -74,7 +74,7 @@
                     <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-zinc-900">
                         {{ $participantResult->name }}
                         @if ($race->isNationalOrInternational() && $participantResult->participant?->isOutOfZone())
-                            <span class="ml-1 inline-flex items-center rounded-md bg-pink-50 px-1.5 py-0.5 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">
+                            <span data-out-of-zone class="ml-1 inline-flex items-center rounded-md bg-pink-50 px-1.5 py-0.5 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">
                                 {{ filled($participantResult->participant->region) ? __('OZ :region', ['region' => $participantResult->participant->region_and_nationality]) : __('OZ') }}
                             </span>
                         @endif

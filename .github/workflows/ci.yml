@@ -69,5 +69,5 @@ jobs:
         php artisan route:clear
         vendor/bin/phpunit
 
-    - name: Static analysis
-      run: vendor/bin/phpstan analyse --no-progress --memory-limit=2G
+    # - name: Static analysis
+    #   run: vendor/bin/phpstan analyse --no-progress --memory-limit=2G

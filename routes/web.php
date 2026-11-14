@@ -61,6 +61,7 @@ use App\Http\Controllers\ProductGrantController;
 use App\Http\Controllers\PromoCodeClaimController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicChampionshipEnrollmentController;
+use App\Http\Controllers\PublicLicenceRenewalController;
 use App\Http\Controllers\PublicPromoCodeController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceCombinedResultController;
@@ -313,6 +314,10 @@ Route::middleware([
 Route::get('championships/{championship}/enrollment', [PublicChampionshipEnrollmentController::class, 'show'])
     ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
     ->name('public.championships.enrollment');
+
+Route::get('licence-renewal', PublicLicenceRenewalController::class)
+    ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))
+    ->name('public.licence-renewal');
 
 Route::get('promo-codes/{promoCode}', [PublicPromoCodeController::class, 'show'])
     ->middleware(EnsureFeaturesAreActive::using(LicencesAndEnrollments::class))

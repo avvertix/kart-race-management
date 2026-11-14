@@ -37,6 +37,5 @@ bootstrap/cache/*.php
 public/storage
 public/build
 .claude
-.opencode
 .github
 dump

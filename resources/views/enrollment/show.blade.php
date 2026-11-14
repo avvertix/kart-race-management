@@ -78,6 +78,9 @@
                     @if ($paymentTerms !== null)
                         <span class="block text-sm text-zinc-600">{{ $paymentTerms }}</span>
                     @endif
+                    @if ($enrollment->amount > 0)
+                        <span class="block text-sm text-zinc-600">{{ __('Bank transfer reason') }}: <span class="font-mono select-all">{{ $enrollment->bankTransferReason() }}</span></span>
+                    @endif
                 </p>
                 <div class="mt-2">
                     @include('partials.enrollment-payment-records', ['enrollment' => $enrollment])

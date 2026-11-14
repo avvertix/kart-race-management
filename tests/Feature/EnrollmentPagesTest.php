@@ -43,7 +43,7 @@ class EnrollmentPagesTest extends TestCase
             ->assertSee($championship->title)
             ->assertSee($licence->number)
             ->assertSee('€180.00')
-            ->assertSee('Iscrizione '.mb_strtoupper(mb_substr($enrollment->ulid, -6)))            ->assertSee(route('my-enrollments.payment.store', $enrollment));
+            ->assertSee('Iscrizione '.mb_strtoupper(mb_substr($enrollment->ulid, -6)))->assertSee(route('my-enrollments.payment.store', $enrollment));
 
         $this->actingAs($user)
             ->post(route('my-enrollments.payment.store', $enrollment), [

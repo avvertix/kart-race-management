@@ -20,7 +20,7 @@
         </p>
 
         <p>{{ __('Use the following text as the bank transfer reason:') }}</p>
-        <p class="not-prose bg-white shadow-sm border border-zinc-200 rounded-sm px-3 py-2 font-mono text-sm select-all">{{ $enrollment->ulid }}</p>
+        <p class="not-prose bg-white shadow-sm border border-zinc-200 rounded-sm px-3 py-2 font-mono text-sm select-all">{{ $enrollment->bankTransferReason() }}</p>
 
         @if ($enrollment->payments->sortBy('id')->last()?->status === \App\Enums\PaymentStatus::Rejected)
             <p class="not-prose rounded-md text-sm text-amber-700 border border-amber-400 bg-amber-50 px-2 py-1">{{ __('The organizer could not confirm the previous payment proof. Upload a new one.') }}</p>

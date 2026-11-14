@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Pennant\Feature;
 
@@ -413,6 +414,25 @@ class Enrollment extends Model implements Payable
             ->where('covering_enrollment_id', $this->getKey())
             ->where('status', LicenceRequestStatus::Emitted)
             ->first();
+    }
+
+    /**
+     * The short code that identifies the Enrollment in a bank transfer: the last characters of its ULID, the random part.
+     */
+    public function paymentCode(): string
+    {
+        return Str::upper(Str::substr($this->ulid, -6));
+    }
+
+    /**
+     * The reason to type in the bank transfer, e.g. "Iscrizione/Tesseramento 7KQ2ZD" when the option also pays the
+     * licence renewal.
+     */
+    public function bankTransferReason(): string
+    {
+        $subject = $this->option?->covers_licence_renewal ? 'Tesseramento' : 'Iscrizione';
+
+        return "{$subject} {$this->paymentCode()}";
     }
 
     /**

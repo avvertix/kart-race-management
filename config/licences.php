@@ -106,6 +106,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public access
+    |--------------------------------------------------------------------------
+    |
+    | Whether licences, licence renewals and championship enrollment are open
+    | to everyone on this instance, guests included: the welcome page then
+    | proposes them. Off: only admins and the users an admin gave early
+    | access, see App\Features\LicencesAndEnrollments.
+    |
+    */
+
+    'public' => (bool) env('LICENCES_AND_ENROLLMENTS_PUBLIC', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Licence Types handled by this instance
     |--------------------------------------------------------------------------
     |

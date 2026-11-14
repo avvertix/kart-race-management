@@ -19,6 +19,7 @@ Organizers set up the **Enrollment Options** of each championship from the appli
 | Licence Types the instance handles, renewal price | `.env` | Whoever deploys |
 | Enrollment Options | Application | Organizer |
 | Who sees licences, licence requests and enrollments (early access) | User page, *Early access to licences and enrollments* | Admin |
+| Licences, renewals and enrollment open to everyone, guests included | `.env`, `LICENCES_AND_ENROLLMENTS_PUBLIC` | Whoever deploys |
 | Who enters promo codes from the dashboard (early access) | User page, *Early access to promo codes* | Admin |
 
 ## Add or change a Licence Type
@@ -101,7 +102,9 @@ Update `tests/Unit/RoleTest.php` with the new permission, and the [roles and per
 
 Licences, licence requests and enrollments are being prepared for a future championship, so they sit behind the `App\Features\LicencesAndEnrollments` feature flag ([Laravel Pennant](https://laravel.com/docs/pennant), stored in the `features` table under its former name `App\Features\LicencesAndProducts`, so the users enabled before the rename keep it). For everyone else their pages answer 404 and their menu items are hidden. Admins always have them; an admin enables other users from the user page with *Early access to licences and enrollments*. Guests never have them, so the public enrollment pages stay hidden.
 
-To go live, remove the flag: delete the feature class, its `EnsureFeaturesAreActive` route middleware and the `@feature` blocks in the navigation, the user page checkbox and the `EnablesLicencesAndEnrollments` test trait.
+To open them on one instance, set `LICENCES_AND_ENROLLMENTS_PUBLIC=true`: everyone has the feature, guests included, whatever is stored for each user. The welcome page then proposes the championships open for enrollment, with their lowest price, and the licence renewal, linking to a public page (`/licence-renewal`) that lists the Licence Types handled, the renewal price, the documents to prepare and the steps. Turning it off again restores early access as stored.
+
+To go live everywhere, remove the flag: delete the feature class, its `EnsureFeaturesAreActive` route middleware and the `@feature` blocks in the navigation, the user page checkbox and the `EnablesLicencesAndEnrollments` test trait.
 
 The promo code field on the dashboard sits behind its own flag, `App\Features\PromoCodes`, with the same rules: off by default, always on for admins, enabled per user with *Early access to promo codes*. It only hides the field: the link of a code still opens it and lets a signed-in user claim it, and the race registration form still accepts codes. To go live, delete the feature class, its `@feature` block in `dashboard.blade.php` and the user page checkbox.
 

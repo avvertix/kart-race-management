@@ -26,6 +26,7 @@
     <env name="APP_REGISTRATION" value="true"/>
     <env name="LICENCE_TYPES" value="null"/>
     <env name="LICENCE_RENEWAL_PRICE" value="null"/>
+    <env name="LICENCES_AND_ENROLLMENTS_PUBLIC" value="false"/>
   </php>
   <source>
     <include>

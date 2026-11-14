@@ -36,13 +36,7 @@ class DriverEnrollments extends Component
             $user = null;
         }
 
-        $this->openChampionships = $user === null ? new Collection : Championship::query()
-            ->where('enrollment->enabled', true)
-            ->orderByDesc('start_at')
-            ->get()
-            ->filter(fn (Championship $championship) => $championship->enrollment->isOpen())
-            ->take($limit)
-            ->values();
+        $this->openChampionships = $user === null ? new Collection : Championship::openForEnrollment($limit);
 
         $this->enrollments = $user === null ? new Collection : Enrollment::query()
             ->where('user_id', $user->getKey())

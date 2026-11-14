@@ -56,6 +56,22 @@ class Championship extends Model
     ];
 
     /**
+     * The championships open for enrollment now, latest first.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, self>
+     */
+    public static function openForEnrollment(int $limit = 5): \Illuminate\Database\Eloquent\Collection
+    {
+        return self::query()
+            ->where('enrollment->enabled', true)
+            ->orderByDesc('start_at')
+            ->get()
+            ->filter(fn (self $championship) => $championship->enrollment->isOpen())
+            ->take($limit)
+            ->values();
+    }
+
+    /**
      * Get the columns that should receive a unique identifier.
      *
      * @return array

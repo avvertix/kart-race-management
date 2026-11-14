@@ -9,7 +9,8 @@ use Laravel\Pennant\Attributes\Name;
 
 /**
  * Early access to licences, licence requests and enrollments, built for a future championship. Off by default: an
- * admin enables it on specific users from the user page. Admins always have it, guests never do.
+ * admin enables it on specific users from the user page. Admins always have it, guests never do; once the instance
+ * goes public (LICENCES_AND_ENROLLMENTS_PUBLIC) everyone has it, guests included.
  *
  * Stored under its former name, so the users enabled before the rename keep it.
  */
@@ -17,17 +18,21 @@ use Laravel\Pennant\Attributes\Name;
 class LicencesAndEnrollments
 {
     /**
-     * Admins always have the feature, whatever is stored for them.
+     * Everyone has the feature on a public instance, and admins always do, whatever is stored for them.
      */
-    public function before(User $user): ?bool
+    public function before(?User $user): ?bool
     {
-        return $user->isAdmin() ? true : null;
+        if (config('licences.public') || $user?->isAdmin()) {
+            return true;
+        }
+
+        return $user === null ? false : null;
     }
 
     /**
      * Resolve the feature's initial value.
      */
-    public function resolve(User $user): bool
+    public function resolve(?User $user): bool
     {
         return false;
     }

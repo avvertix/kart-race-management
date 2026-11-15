@@ -44,6 +44,18 @@
                     <p class="rounded-md border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900">{{ $enrollment->rejection_reason }}</p>
                 @endif
 
+                @if ($heldReservations->isEmpty() && $enrollment->grantsBibReservation())
+                    @can('pickRaceNumber', $enrollment)
+                        <section class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-orange-300 bg-orange-50 p-4">
+                            <div class="max-w-prose space-y-1">
+                                <p class="font-medium text-zinc-900">{{ __('Pick your race number') }}</p>
+                                <p class="text-sm text-zinc-700">{{ __('Your option includes a race number for the whole championship. Pick it now: numbers are held first confirmed, first served.') }}</p>
+                            </div>
+                            <x-button-link href="{{ route('my-enrollments.race-number.edit', $enrollment) }}">{{ __('Pick a race number') }}</x-button-link>
+                        </section>
+                    @endcan
+                @endif
+
                 <dl class="grid gap-x-4 gap-y-3 rounded-md border border-zinc-200 bg-white p-4 sm:grid-cols-3">
                     <dt class="text-sm text-zinc-500">{{ __('Driver') }}</dt>
                     <dd class="sm:col-span-2 text-zinc-900">{{ $enrollment->holder()?->fullName() }}</dd>

@@ -18,7 +18,7 @@
 
             <x-validation-errors />
 
-            <livewire:race-number-picker :championship="$championship" :enrollment="$enrollment" />
+            <x-race-number-picker :championship="$championship" :enrollment="$enrollment" />
 
             <x-button type="submit">{{ __('Save race number') }}</x-button>
         </form>

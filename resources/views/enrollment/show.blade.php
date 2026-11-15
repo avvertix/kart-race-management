@@ -249,7 +249,7 @@
                     <form method="POST" action="{{ route('enrollments.race-number.update', $enrollment) }}" class="space-y-3 rounded-md border border-zinc-200 bg-white p-4">
                         @csrf
                         @method('PUT')
-                        <livewire:race-number-picker :championship="$championship" :enrollment="$enrollment" :show-holders="true" />
+                        <x-race-number-picker :championship="$championship" :enrollment="$enrollment" :show-holders="true" />
                         <x-secondary-button type="submit">{{ __('Save race number') }}</x-secondary-button>
                     </form>
                 @endif

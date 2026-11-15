@@ -141,7 +141,7 @@
                                             <p class="rounded-md border border-lime-300 bg-lime-50 p-2 text-sm text-lime-900" x-text="{{ Js::from(__('This licence already holds race number :bib. No need to pick another one.')) }}.replace(':bib', chosen.heldBib)"></p>
                                         </template>
                                         <div x-show="!chosen?.heldBib">
-                                            <livewire:race-number-picker :championship="$championship" :show-held="false" />
+                                            <x-race-number-picker :championship="$championship" :show-held="false" />
                                         </div>
                                     </div>
                                 @endif
@@ -152,11 +152,12 @@
                                     <p class="text-sm text-zinc-700" x-text="payment ? payment.label : ''"></p>
                                 </div>
 
-                                <p class="text-sm text-zinc-600" x-show="!chosen">{{ __('Choose the licence to enroll.') }}</p>
+                                <p class="text-sm text-zinc-600" x-show="!chosen || payment === null" x-text="!chosen ? {{ Js::from(__('Choose the licence to enroll.')) }} : {{ Js::from(__('Choose what you are buying.')) }}">{{ __('Choose the licence to enroll.') }}</p>
 
                                 <input type="hidden" name="option" x-bind:value="payment ? payment.value : ''" x-bind:disabled="{{ $paymentOptions->count() > 1 ? 'true' : 'false' }}">
 
-                                <x-button type="submit" x-bind:disabled="!chosen || payment === null">
+                                {{-- Disabled until complete: without loading="false", Flux shows its spinner on a disabled submit button. --}}
+                                <x-button type="submit" :loading="false" x-bind:disabled="!chosen || payment === null">
                                     <span x-text="payment?.pays ? {{ Js::from(__('Submit and pay')) }} : {{ Js::from(__('Submit enrollment')) }}">{{ $paysByDefault ? __('Submit and pay') : __('Submit enrollment') }}</span>
                                 </x-button>
                             @endif

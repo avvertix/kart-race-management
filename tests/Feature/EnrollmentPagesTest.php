@@ -111,13 +111,17 @@ class EnrollmentPagesTest extends TestCase
         $other = Licence::factory()->for($user)->create(['number' => 'A100002', 'holder' => LicenceFactory::holder('Luca', 'Bianchi')]);
         $enrollment = Enrollment::factory()->for($championship)->for($user)->create(['licence_id' => $enrolled->getKey()]);
 
-        $this->actingAs($user)
+        $page = $this->actingAs($user)
             ->get(route('public.championships.enrollment', $championship))
             ->assertOk()
             ->assertSee(route('my-enrollments.show', $enrollment))
             ->assertDontSee('value="licence:'.$enrolled->ulid.'"', false)
             ->assertSee('value="licence:'.$other->ulid.'"', false)
-            ->assertSee('Submit enrollment');
+            ->assertSee('Submit enrollment')
+            ->getContent();
+
+        $this->assertSame(1, preg_match('/<button[^>]*type="submit"[^>]*x-bind:disabled[^>]*>.*?<\/button>/s', (string) $page, $submit));
+        $this->assertStringNotContainsString('data-flux-loading-indicator', $submit[0], 'A disabled submit button must not show the Flux loading spinner.');
     }
 
     public function test_withdrawing_and_changing_the_number_lead_back_to_the_enrollment_page(): void

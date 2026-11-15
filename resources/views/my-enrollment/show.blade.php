@@ -110,34 +110,41 @@
                 </dl>
 
                 @if ($enrollment->option)
-                    <section class="space-y-3">
-                        <h3 class="font-semibold text-zinc-900">{{ $enrollment->option->title }} &middot; <span class="font-mono tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span> &middot; {{ $enrollment->payment_status->label() }}</h3>
+                    <section class="space-y-4">
+                        <h3 class="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-zinc-900">
+                            <span>{{ $enrollment->option->title }} &middot; <span class="tabular-nums">{{ $enrollment->amount === 0 ? __('Free') : $enrollment->currency->format($enrollment->amount) }}</span></span>
+                            <span @class([
+                                'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
+                                'bg-lime-100 text-lime-800' => $enrollment->payment_status->isSettled(),
+                                'bg-amber-100 text-amber-800' => ! $enrollment->payment_status->isSettled(),
+                            ])>{{ $enrollment->payment_status->label() }}</span>
+                        </h3>
                         @include('partials.enrollment-payment-records', ['enrollment' => $enrollment])
-                        @if ($options->count() > 1)
-                            <form method="POST" action="{{ route('my-enrollments.option.update', $enrollment) }}" class="flex flex-wrap items-end gap-2">
-                                @csrf
-                                @method('PUT')
-                                <div>
-                                    <x-label for="option" value="{{ __('Switch to') }}" />
-                                    <select id="option" name="option" class="mt-1 rounded-md border-zinc-300 text-sm shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50">
-                                        @foreach ($options as $item)
-                                            <option value="{{ $item->ulid }}" @selected($enrollment->enrollment_option_id === $item->getKey())>{{ $item->title }} &middot; {{ $item->amountLabel() }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <x-secondary-button type="submit">{{ __('Change option') }}</x-secondary-button>
-                            </form>
-                            <p class="text-sm text-zinc-600">{{ __('You can change option until the enrollment is paid in full and enrollment closes: what you already paid counts towards the new one.') }}</p>
-                            <x-input-error for="option" />
-                        @endif
                         @if ($enrollment->status->isActive())
                             @can('pay', $enrollment)
-                                <div class="prose prose-zinc">
-                                    @include('partials.enrollment-payment', ['enrollment' => $enrollment])
-                                </div>
+                                @include('partials.enrollment-payment', ['enrollment' => $enrollment])
                             @endcan
                         @elseif ($enrollment->payment_status === \App\Enums\EnrollmentPaymentStatus::PaymentSubmitted || $enrollment->paidAmount() > 0)
                             <p class="text-sm text-zinc-700">{{ __('For a refund, email the organizer.') }}</p>
+                        @endif
+                        @if ($options->count() > 1)
+                            <div class="space-y-1 border-t border-zinc-200 pt-4">
+                                <form method="POST" action="{{ route('my-enrollments.option.update', $enrollment) }}" class="flex flex-wrap items-end gap-2" x-data="{ current: {{ Js::from($enrollment->option->ulid) }}, picked: {{ Js::from(old('option', $enrollment->option->ulid)) }} }">
+                                    @csrf
+                                    @method('PUT')
+                                    <div>
+                                        <x-label for="option" value="{{ __('Switch to') }}" />
+                                        <select id="option" name="option" x-model="picked" class="mt-1 min-h-11 rounded-md border-zinc-300 text-base shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50 sm:text-sm">
+                                            @foreach ($options as $item)
+                                                <option value="{{ $item->ulid }}" @selected(old('option', $enrollment->option->ulid) === $item->ulid)>{{ $item->title }} &middot; {{ $item->amountLabel() }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <x-secondary-button type="submit">{{ __('Change option') }}</x-secondary-button>
+                                </form>
+                                <x-input-error for="option" />
+                                <p class="max-w-prose text-sm text-zinc-600">{{ __('You can change option until the enrollment is paid in full and enrollment closes: what you already paid counts towards the new one.') }}</p>
+                            </div>
                         @endif
                     </section>
                 @endif
@@ -147,10 +154,19 @@
                 @endif
 
                 @can('withdraw', $enrollment)
-                    <form method="POST" action="{{ route('my-enrollments.withdraw', $enrollment) }}">
-                        @csrf
-                        <x-secondary-button type="submit">{{ __('Withdraw') }}</x-secondary-button>
-                    </form>
+                    <section class="border-t border-zinc-200 pt-6" x-data="{ confirming: false }">
+                        <button type="button" x-show="!confirming" @click="confirming = true; $nextTick(() => $refs.cancel.focus())" class="min-h-11 rounded-md text-sm font-medium text-red-700 hover:text-red-900 focus:outline-none focus-visible:ring-3 focus-visible:ring-red-200">
+                            {{ __('Withdraw the enrollment…') }}
+                        </button>
+                        <form method="POST" action="{{ route('my-enrollments.withdraw', $enrollment) }}" x-show="confirming" x-cloak class="max-w-prose space-y-3 rounded-md border border-red-200 bg-red-50 p-4" @keydown.escape="confirming = false">
+                            @csrf
+                            <p class="text-sm text-red-900">{{ __('Withdraw the enrollment? Until the first race only the organizer can bring it back, or turn what you paid into a promo code.') }}</p>
+                            <div class="flex flex-wrap gap-2">
+                                <x-danger-button type="submit">{{ __('Withdraw') }}</x-danger-button>
+                                <x-secondary-button x-ref="cancel" @click="confirming = false">{{ __('Cancel') }}</x-secondary-button>
+                            </div>
+                        </form>
+                    </section>
                 @endcan
             </div>
 

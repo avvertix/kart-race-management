@@ -1021,7 +1021,6 @@
     "Balance due by": "Saldo entro il",
     "Optional. Paying the deposit gives the driver everything the option includes; the balance is due by the date.": "Facoltativo. Con l'acconto il pilota ottiene tutto ciò che l'opzione include; il saldo va pagato entro la data.",
     "Deposit :deposit, balance by :date": "Acconto :deposit, saldo entro il :date",
-    "Pay a deposit of :deposit now and the balance of :balance by :date, or :amount at once.": "Paga ora un acconto di :deposit e il saldo di :balance entro il :date, oppure :amount in un'unica soluzione.",
     "Pay the balance of :balance by :date.": "Paga il saldo di :balance entro il :date.",
     ":paid paid, :balance due": ":paid pagati, :balance da pagare",
     "Overdue": "Scaduto",
@@ -1706,5 +1705,19 @@
     "Enrollment open until": "Iscrizioni aperte fino al",
     "Licence renewal": "Rinnovo licenza",
     "Renew your licence for :year": "Rinnova la tua licenza per il :year",
-    "Online, with the documents uploaded from home.": "Online, caricando i documenti da casa."
+    "Online, with the documents uploaded from home.": "Online, caricando i documenti da casa.",
+    "Payment proof uploaded": "Ricevuta di pagamento caricata",
+    "It may take up to five business days for the organizer to confirm the payment.": "L'organizzatore può impiegare fino a cinque giorni lavorativi per confermare il pagamento.",
+    "Withdraw the enrollment…": "Ritira l'iscrizione…",
+    "Withdraw the enrollment? Until the first race only the organizer can bring it back, or turn what you paid into a promo code.": "Ritirare l'iscrizione? Fino alla prima gara solo l'organizzatore può ripristinarla, o trasformare quanto pagato in un codice promozionale.",
+    "Deposit, now": "Acconto, ora",
+    "Balance, by :date": "Saldo, entro il :date",
+    "Or all at once": "Oppure tutto subito",
+    "Still to pay": "Ancora da pagare",
+    "Account holder": "Intestatario",
+    "Bank": "Banca",
+    "IBAN": "IBAN",
+    "Copy :what": "Copia :what",
+    "Copied": "Copiato",
+    "Then upload the transfer receipt: the sender, amount, reason, date and IBAN must be readable.": "Poi carica la ricevuta del bonifico: ordinante, importo, causale, data e IBAN devono essere leggibili."
 }

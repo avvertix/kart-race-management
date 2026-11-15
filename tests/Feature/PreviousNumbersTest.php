@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\BibReservationStatus;
-use App\Livewire\RaceNumberPicker;
 use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Enrollment;
@@ -13,8 +12,8 @@ use App\Models\Licence;
 use App\Models\Participant;
 use App\Models\Race;
 use App\Models\User;
+use App\View\Components\RaceNumberPicker;
 use Database\Factories\LicenceFactory;
-use Livewire\Livewire;
 use Plannr\Laravel\FastRefreshDatabase\Traits\FastRefreshDatabase;
 use Tests\EnablesLicencesAndEnrollments;
 use Tests\TestCase;
@@ -97,13 +96,15 @@ class PreviousNumbersTest extends TestCase
         BibReservation::factory()->recycle($championship)->withLicence('COPIED-1')->create(['bib' => 5]);
         $enrollment = Enrollment::factory()->recycle($championship)->for($driver)->create(['licence_id' => $licence->getKey()]);
 
-        Livewire::actingAs($driver)
-            ->test(RaceNumberPicker::class, ['championship' => $championship])
-            ->assertSee(__('Number :bib is reserved for :driver.', ['bib' => 5, 'driver' => $licence->holder->fullName()]));
+        $this->actingAs($driver);
 
-        Livewire::actingAs($driver)
-            ->test(RaceNumberPicker::class, ['championship' => $championship, 'enrollment' => $enrollment])
-            ->assertSee(__('Number :bib is reserved for :driver.', ['bib' => 5, 'driver' => $licence->holder->fullName()]));
+        $held = __('Number :bib is reserved for :driver.', ['bib' => 5, 'driver' => $licence->holder->fullName()]);
+
+        $this->assertSame([$held], (new RaceNumberPicker($championship))->heldNumbers->all());
+        $this->assertSame([$held], (new RaceNumberPicker($championship, $enrollment))->heldNumbers->all());
+
+        $this->blade('<x-race-number-picker :championship="$championship" />', ['championship' => $championship])
+            ->assertSee($held);
     }
 
     private function championship(): Championship

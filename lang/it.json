@@ -1482,9 +1482,6 @@
     "your pick": "la tua scelta",
     ":count free": ":count liberi",
     "Race numbers :from to :to": "Numeri di gara da :from a :to",
-    "Or type a number": "Oppure scrivi un numero",
-    "Go": "Vai",
-    "First free numbers": "Primi numeri liberi",
     "Numbers you used before": "Numeri che hai usato in passato",
     "Your pick: :bib. It is held for you until the organizer confirms the enrollment; numbers are first confirmed, first served.": "La tua scelta: :bib. È tenuto per te finché l'organizzatore non conferma l'iscrizione; i numeri vanno a chi viene confermato per primo.",
     "Pick a free number.": "Scegli un numero libero.",
@@ -1710,5 +1707,12 @@
     "IBAN": "IBAN",
     "Copy :what": "Copia :what",
     "Copied": "Copiato",
-    "Then upload the transfer receipt: the sender, amount, reason, date and IBAN must be readable.": "Poi carica la ricevuta del bonifico: ordinante, importo, causale, data e IBAN devono essere leggibili."
+    "Then upload the transfer receipt: the sender, amount, reason, date and IBAN must be readable.": "Poi carica la ricevuta del bonifico: ordinante, importo, causale, data e IBAN devono essere leggibili.",
+    "Pick your race number": "Scegli il tuo numero di gara",
+    "Your option includes a race number for the whole championship. Pick it now: numbers are held first confirmed, first served.": "La tua opzione include un numero di gara per tutto il campionato. Sceglilo ora: i numeri vengono assegnati in ordine di conferma.",
+    "Choose what you are buying.": "Scegli cosa acquisti.",
+    "Reserved for :driver.": "Riservato per :driver.",
+    "Taken by another driver.": "Preso da un altro pilota.",
+    "Or browse the numbers": "Oppure sfoglia i numeri",
+    "your pick: :bib": "la tua scelta: :bib"
 }

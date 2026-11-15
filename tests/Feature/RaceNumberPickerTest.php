@@ -9,8 +9,8 @@ use App\Actions\LicenceRequests\EmitLicence;
 use App\Enums\BibReservationStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LicenceRequestPaymentStatus;
+use App\Enums\RaceNumberState;
 use App\Livewire\FreeRaceNumbers;
-use App\Livewire\RaceNumberPicker;
 use App\Models\BibReservation;
 use App\Models\Championship;
 use App\Models\Enrollment;
@@ -18,6 +18,7 @@ use App\Models\Licence;
 use App\Models\LicenceRequest;
 use App\Models\Participant;
 use App\Models\User;
+use App\View\Components\RaceNumberPicker;
 use Database\Factories\LicenceFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
@@ -39,27 +40,41 @@ class RaceNumberPickerTest extends TestCase
         BibReservation::factory()->released()->recycle($championship)->create(['bib' => 8]);
         Participant::factory()->recycle($championship)->create(['bib' => 9, 'first_name' => 'Used', 'last_name' => 'Holder']);
 
-        Livewire::actingAs(User::factory()->create())
-            ->test(RaceNumberPicker::class, ['championship' => $championship])
+        $this->actingAs(User::factory()->create());
+
+        $picker = new RaceNumberPicker($championship);
+
+        $this->assertSame(1000, mb_strlen($picker->states));
+        $this->assertSame(['r', 'f', 'u', 'f'], [$picker->states[7], $picker->states[8], $picker->states[9], $picker->states[777]]);
+        $this->assertSame([], $picker->holders);
+
+        $this->blade('<x-race-number-picker :championship="$championship" />', ['championship' => $championship])
             ->assertSee('1–99')
             ->assertSee('900–999')
             ->assertSee(__(':count free', ['count' => 97]))
-            ->assertSeeHtml('aria-label="7, '.__('reserved').'"')
-            ->assertSeeHtml('aria-label="8, '.__('free').'"')
-            ->assertSeeHtml('aria-label="9, '.__('already used').'"')
+            ->assertSee(__('Pick a free number.'))
+            ->assertSee('name="bib"', escape: false)
             ->assertDontSee('Reserved Holder')
-            ->assertDontSee('Used Holder')
-            ->call('zoom', 7)
-            ->assertSeeHtml('aria-label="777, '.__('free').'"')
-            ->call('pick', 7)
-            ->assertSet('selected', null)
-            ->call('pick', 777)
-            ->assertSet('selected', 777)
-            ->assertSeeHtml('name="bib" value="777"')
-            ->set('jumpTo', '12')
-            ->call('jump')
-            ->assertSet('hundred', 0)
-            ->assertSet('selected', 12);
+            ->assertDontSee('Used Holder');
+    }
+
+    public function test_the_current_pick_opens_its_hundred(): void
+    {
+        $championship = $this->championship();
+        $driver = User::factory()->create();
+        $enrollment = Enrollment::factory()->recycle($championship)->for($driver)->create();
+        app(PickRaceNumber::class)($enrollment, 777, $driver);
+
+        $this->actingAs($driver);
+
+        $picker = new RaceNumberPicker($championship, $enrollment);
+
+        $this->assertSame(777, $picker->selected);
+        $this->assertSame(7, $picker->hundred);
+        $this->assertSame('f', $picker->states[777]);
+
+        $this->blade('<x-race-number-picker :championship="$championship" :enrollment="$enrollment" />', ['championship' => $championship, 'enrollment' => $enrollment])
+            ->assertSee('name="bib" value="777"', escape: false);
     }
 
     public function test_organizers_also_see_who_holds_each_number(): void
@@ -67,13 +82,11 @@ class RaceNumberPickerTest extends TestCase
         $championship = $this->championship();
         BibReservation::factory()->recycle($championship)->create(['bib' => 7, 'driver' => 'Reserved Holder']);
 
-        Livewire::actingAs(User::factory()->organizer()->create())
-            ->test(RaceNumberPicker::class, ['championship' => $championship, 'showHolders' => true])
-            ->assertSee('Reserved Holder');
+        $this->actingAs(User::factory()->organizer()->create());
+        $this->assertSame([7 => 'Reserved Holder'], (new RaceNumberPicker($championship, showHolders: true))->holders);
 
-        Livewire::actingAs(User::factory()->create())
-            ->test(RaceNumberPicker::class, ['championship' => $championship, 'showHolders' => true])
-            ->assertDontSee('Reserved Holder');
+        $this->actingAs(User::factory()->create());
+        $this->assertSame([], (new RaceNumberPicker($championship, showHolders: true))->holders);
     }
 
     public function test_the_numbers_used_before_are_suggested(): void
@@ -84,18 +97,23 @@ class RaceNumberPickerTest extends TestCase
         Participant::factory()->recycle($past)->create(['bib' => 44, 'claimed_by' => $driver->getKey(), 'first_name' => 'Mario', 'last_name' => 'Rossi']);
         Participant::factory()->recycle($past)->create(['bib' => 55, 'added_by' => $driver->getKey()]);
         Participant::factory()->recycle($past)->create(['bib' => 66, 'first_name' => 'Other', 'last_name' => 'Driver']);
-        BibReservation::factory()->recycle($championship)->create(['bib' => 55]);
+        Participant::factory()->recycle($past)->create(['bib' => 84, 'claimed_by' => $driver->getKey(), 'first_name' => 'Andre', 'last_name' => 'Martinho']);
+        BibReservation::factory()->recycle($championship)->create(['bib' => 55, 'driver' => 'Someone Else']);
+        BibReservation::factory()->recycle($championship)->create(['bib' => 84, 'driver' => 'Andre Martinho']);
 
-        Livewire::actingAs($driver)
-            ->test(RaceNumberPicker::class, ['championship' => $championship])
+        $this->actingAs($driver);
+
+        $previous = (new RaceNumberPicker($championship))->previousNumbers->keyBy('bib');
+
+        $this->assertSame([RaceNumberState::Free, null], [$previous[44]['state'], $previous[44]['note']]);
+        $this->assertSame([RaceNumberState::Reserved, __('Taken by another driver.')], [$previous[55]['state'], $previous[55]['note']]);
+        $this->assertSame(__('Reserved for :driver.', ['driver' => 'Andre Martinho']), $previous[84]['note']);
+
+        $this->blade('<x-race-number-picker :championship="$championship" />', ['championship' => $championship])
             ->assertSee(__('Numbers you used before'))
             ->assertSee('Past championship')
             ->assertSee('Mario Rossi')
-            ->assertDontSee('Other Driver')
-            ->call('pick', 44)
-            ->assertSet('selected', 44)
-            ->call('pick', 55)
-            ->assertSet('selected', 44);
+            ->assertDontSee('Other Driver');
     }
 
     public function test_the_picked_number_is_held_for_the_enrollment(): void
@@ -106,7 +124,7 @@ class RaceNumberPickerTest extends TestCase
 
         $this->actingAs($driver)
             ->get(route('public.championships.enrollment', $championship))
-            ->assertSeeLivewire(RaceNumberPicker::class);
+            ->assertSee(__('your pick'));
 
         $this->actingAs($driver)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$licence->ulid, 'bib' => '77'])
@@ -145,9 +163,13 @@ class RaceNumberPickerTest extends TestCase
         $enrollment = Enrollment::factory()->recycle($championship)->for($driver)->create();
 
         $this->actingAs($driver)
+            ->get(route('my-enrollments.show', $enrollment))
+            ->assertSee(__('Pick your race number'));
+
+        $this->actingAs($driver)
             ->get(route('my-enrollments.race-number.edit', $enrollment))
             ->assertSuccessful()
-            ->assertSeeLivewire(RaceNumberPicker::class);
+            ->assertSee(__('your pick'));
 
         $this->actingAs($driver)
             ->put(route('my-enrollments.race-number.update', $enrollment), ['bib' => '12'])
@@ -158,6 +180,10 @@ class RaceNumberPickerTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame([13], $enrollment->reservations()->pluck('bib')->map(fn ($bib) => (int) $bib)->all());
+
+        $this->actingAs($driver)
+            ->get(route('my-enrollments.show', $enrollment))
+            ->assertDontSee(__('Pick your race number'));
 
         $enrollment->update(['status' => EnrollmentStatus::Confirmed]);
 
@@ -210,11 +236,13 @@ class RaceNumberPickerTest extends TestCase
 
     public function test_the_picker_stays_within_the_championship_numbers(): void
     {
-        Livewire::actingAs(User::factory()->create())
-            ->test(RaceNumberPicker::class, ['championship' => $this->championship()])
-            ->set('hundred', 50)
-            ->assertSet('hundred', 9)
-            ->assertDontSeeHtml('aria-label="5000,');
+        $this->actingAs(User::factory()->create());
+
+        $picker = new RaceNumberPicker($this->championship());
+
+        $this->assertSame(range(0, 9), array_column($picker->hundreds, 'hundred'));
+        $this->assertSame([1, 999], [$picker->hundreds[0]['from'], $picker->hundreds[9]['to']]);
+        $this->assertSame(1000, mb_strlen($picker->states));
     }
 
     public function test_a_number_is_picked_only_when_enrollment_grants_it(): void
@@ -224,7 +252,7 @@ class RaceNumberPickerTest extends TestCase
 
         $this->actingAs($driver)
             ->get(route('public.championships.enrollment', $championship))
-            ->assertDontSeeLivewire(RaceNumberPicker::class);
+            ->assertDontSee(__('your pick'));
 
         $this->actingAs($driver)
             ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.Licence::factory()->for($driver)->create(['holder' => LicenceFactory::holder('Luca', 'Bianchi')])->ulid, 'bib' => '77'])

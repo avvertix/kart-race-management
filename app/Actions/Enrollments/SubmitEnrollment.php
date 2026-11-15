@@ -69,7 +69,7 @@ class SubmitEnrollment
 
         $holder = $licence->holder ?? $licenceRequest->holder ?? $previous?->holder;
 
-        if ($competitorLicence === null && $holder !== null && $championship->requiresCompetitorFor($holder)) {
+        if ($competitorLicence === null && $holder !== null && $championship->requiresCompetitorFor($holder) && ! self::hasParentAsCompetitor($licence)) {
             throw ValidationException::withMessages(['competitor_licence' => __('The driver is underage: name the competitor.')]);
         }
 
@@ -100,6 +100,16 @@ class SubmitEnrollment
         ($this->grantEnrollmentEntitlements)($enrollment);
 
         return $enrollment;
+    }
+
+    /**
+     * Whether a parent or guardian of the driver's licence request will act as Competitor, so an underage driver needs no
+     * Competitor Licence now: always when the Enrollment waits for a licence request, which asks for a parent of an
+     * underage holder; for a Licence, when the request it was emitted from names one. See Enrollment::competitorParent().
+     */
+    public static function hasParentAsCompetitor(?Licence $licence): bool
+    {
+        return $licence === null || ($licence->licenceRequest?->parentHolders() ?? []) !== [];
     }
 
     /**

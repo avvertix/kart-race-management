@@ -9,6 +9,7 @@
                         <div class="space-y-1">
                             <h2 class="font-bold">{{ $championship->title }}</h2>
                             <p class="text-sm text-zinc-700">{{ __('Enrollment open until :date', ['date' => $championship->enrollment->closes_at->setTimezone($timezone)->isoFormat('D MMMM YYYY')]) }}</p>
+                            <p class="text-sm text-zinc-600">{{ __('Needs the driver\'s :year licence: you can renew it while enrolling.', ['year' => $championship->start_at->year]) }}</p>
                         </div>
                         <a href="{{ route('public.championships.enrollment', $championship) }}"
                             class="font-medium px-3 py-2 rounded-sm ring-0 hover:ring-2 focus-visible:ring-2 ring-orange-500 bg-zinc-100 hover:bg-orange-100">

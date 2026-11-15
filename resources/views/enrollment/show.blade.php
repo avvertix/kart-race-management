@@ -47,7 +47,13 @@
             </p>
             <p>
                 <span class="block text-zinc-500">{{ __('Competitor') }}</span>
-                {{ $enrollment->competitorLicence ? $enrollment->competitorLicence->holder->fullName().' · '.$enrollment->competitorLicence->number : __('No competitor') }}
+                @if ($enrollment->competitorLicence)
+                    {{ $enrollment->competitorLicence->holder->fullName() }} &middot; {{ $enrollment->competitorLicence->number }}
+                @elseif ($enrollment->requiresCompetitor() && $enrollment->competitorParent())
+                    {{ $enrollment->competitorParent()->fullName() }} &middot; <span class="text-zinc-600">{{ __('parent or guardian, from the licence request') }}</span>
+                @else
+                    {{ __('No competitor') }}
+                @endif
                 @can('changeCompetitor', $enrollment)
                     @if ($competitorLicences->isNotEmpty())
                         <form method="POST" action="{{ route('enrollments.competitor.update', $enrollment) }}" class="mt-2 flex flex-wrap items-end gap-2">

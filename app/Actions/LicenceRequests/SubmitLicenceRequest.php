@@ -46,7 +46,7 @@ class SubmitLicenceRequest
         });
 
         $submitted->enrollments()->active()->whereNull('competitor_licence_id')->with(['championship', 'user', 'licenceRequest'])->get()
-            ->filter(fn (Enrollment $enrollment) => $enrollment->requiresCompetitor())
+            ->filter(fn (Enrollment $enrollment) => $enrollment->isMissingCompetitor())
             ->each(fn (Enrollment $enrollment) => $enrollment->user->notify(new EnrollmentNeedsAction($enrollment, needsLicence: false)));
 
         $submitted->user->notify(new LicenceRequestReceived($submitted));

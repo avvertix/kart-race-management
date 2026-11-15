@@ -12,6 +12,7 @@ use App\Enums\EnrollmentStatus;
 use App\Models\Championship;
 use App\Models\Enrollment;
 use App\Models\Licence;
+use App\Models\LicenceRequest;
 use App\Models\User;
 use Database\Factories\LicenceFactory;
 use Illuminate\Validation\ValidationException;
@@ -48,6 +49,57 @@ class EnrollmentCompetitorTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertTrue($championship->enrollments()->sole()->competitorLicence->is($parent));
+    }
+
+    public function test_the_parent_in_the_licence_request_acts_as_competitor(): void
+    {
+        $championship = $this->championship();
+        $user = User::factory()->create();
+        $previous = Licence::factory()->for($user)->create(['holder' => $this->holder('Luca', 15), 'validity_year' => $championship->start_at->year - 1]);
+
+        $this->actingAs($user)
+            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'renew:'.$previous->ulid])
+            ->assertSessionHasNoErrors();
+
+        $renewing = $championship->enrollments()->sole();
+
+        $this->assertNull($renewing->competitor_licence_id);
+        $this->assertNotContains(__('The driver is underage and no competitor is named.'), $renewing->missingForConfirmation());
+
+        $this->actingAs($user)
+            ->get(route('my-enrollments.show', $renewing))
+            ->assertSee(__('The driver is underage: the parent or guardian you enter in the licence request acts as competitor.'));
+
+        $emitted = Licence::factory()->verified()->for($user)->create([
+            'holder' => $this->holder('Anna', 14),
+            'licence_request_id' => LicenceRequest::factory()->underage()->for($user)->create()->getKey(),
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$emitted->ulid])
+            ->assertSessionHasNoErrors();
+
+        $enrollment = $championship->enrollments()->where('licence_id', $emitted->getKey())->sole();
+
+        $this->assertSame('Mario Rossi', $enrollment->competitorParent()?->fullName());
+        $this->assertFalse($enrollment->isMissingCompetitor());
+        $this->assertNotContains(__('The driver is underage and no competitor is named.'), $enrollment->missingForConfirmation());
+
+        $this->actingAs($user)
+            ->get(route('my-enrollments.show', $enrollment))
+            ->assertSee('Mario Rossi')
+            ->assertSee(__('parent or guardian, from the licence request'));
+    }
+
+    public function test_an_underage_driver_with_a_declared_licence_still_names_a_competitor(): void
+    {
+        $championship = $this->championship();
+        $user = User::factory()->create();
+        $declared = Licence::factory()->for($user)->create(['holder' => $this->holder('Luca', 15)]);
+
+        $this->actingAs($user)
+            ->post(route('public.championships.enrollment.store', $championship), ['subject' => 'licence:'.$declared->ulid])
+            ->assertSessionHasErrors(['competitor_licence' => __('The driver is underage: name the competitor.')]);
     }
 
     public function test_the_driver_and_the_organizer_set_the_competitor_until_confirmation(): void

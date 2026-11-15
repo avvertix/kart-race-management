@@ -17,7 +17,7 @@ A Driver can race unenrolled and enroll later. When the organizer confirms (or r
 
 ## Enrollment and the Competitor
 
-An Enrollment can name a Competitor, and must name one when the Driver is underage. The Competitor is usually the parent's competitor licence, managed by the same User. It is not fixed: each race registration can name a different Competitor, and the form pre-fills the one used in the previous race.
+An Enrollment can name a Competitor, and must have one when the Driver is underage. The Competitor is usually the parent's competitor licence, managed by the same User. When none is named, the parent or guardian entered in the Driver's licence request acts as Competitor: the request the Enrollment waits for, or the one its Licence was emitted from. This covers parents without a licence, common with ASI, without holding the Enrollment until one is added. It is not fixed: each race registration can name a different Competitor, and the form pre-fills the one used in the previous race.
 
 ## When the licence is not valid yet
 

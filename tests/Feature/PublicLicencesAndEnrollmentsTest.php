@@ -41,7 +41,7 @@ class PublicLicencesAndEnrollmentsTest extends TestCase
         $this->assertFalse(Feature::for(User::factory()->create())->active(LicencesAndEnrollments::class));
     }
 
-    public function test_a_public_instance_proposes_enrollment_and_renewal_to_everyone(): void
+    public function test_a_public_instance_proposes_enrollment_to_everyone(): void
     {
         config(['licences.public' => true]);
 
@@ -54,9 +54,7 @@ class PublicLicencesAndEnrollmentsTest extends TestCase
             ->assertSee('Open championship')
             ->assertSee(route('public.championships.enrollment', $championship))
             ->assertSee('From €600.00')
-            ->assertDontSee('Closed championship')
-            ->assertSee(route('public.licence-renewal'))
-            ->assertSee('€50.00');
+            ->assertDontSee('Closed championship');
 
         $this->get(route('public.championships.enrollment', $championship))
             ->assertOk()

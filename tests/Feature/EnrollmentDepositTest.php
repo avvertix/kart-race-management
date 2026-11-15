@@ -100,7 +100,8 @@ class EnrollmentDepositTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('my-enrollments.show', $enrollment))
-            ->assertSee(__('Pay the balance of :balance by :date.', ['balance' => '€650.00', 'date' => '31 March 2027']));
+            ->assertSeeInOrder(['Balance, by 31 March 2027', '€650.00'])
+            ->assertDontSee('Deposit, now');
     }
 
     public function test_the_driver_pays_the_deposit_first_or_everything_at_once(): void
@@ -112,7 +113,7 @@ class EnrollmentDepositTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('my-enrollments.show', $enrollment))
-            ->assertSee(__('Pay a deposit of :deposit now and the balance of :balance by :date, or :amount at once.', ['deposit' => '€300.00', 'balance' => '€650.00', 'date' => '31 March 2027', 'amount' => '€950.00']));
+            ->assertSeeInOrder(['Deposit, now', '€300.00', 'Balance, by 31 March 2027', '€650.00', 'Or all at once', '€950.00']);
 
         Storage::fake('payments');
         app(SubmitPaymentProof::class)($enrollment, UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'));

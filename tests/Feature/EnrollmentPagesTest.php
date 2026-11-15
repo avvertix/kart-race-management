@@ -43,7 +43,9 @@ class EnrollmentPagesTest extends TestCase
             ->assertSee($championship->title)
             ->assertSee($licence->number)
             ->assertSee('€180.00')
-            ->assertSee('Iscrizione '.mb_strtoupper(mb_substr($enrollment->ulid, -6)))->assertSee(route('my-enrollments.payment.store', $enrollment));
+            ->assertSee('Iscrizione '.mb_strtoupper(mb_substr($enrollment->ulid, -6)))->assertSee(route('my-enrollments.payment.store', $enrollment))
+            ->assertSee('Choose payment proof')
+            ->assertDontSee('Submit payment receipt');
 
         $this->actingAs($user)
             ->post(route('my-enrollments.payment.store', $enrollment), [
@@ -53,6 +55,13 @@ class EnrollmentPagesTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame(EnrollmentPaymentStatus::PaymentSubmitted, $enrollment->fresh()->payment_status);
+
+        $this->actingAs($user)
+            ->get(route('my-enrollments.show', $enrollment))
+            ->assertOk()
+            ->assertSee('Payment proof uploaded')
+            ->assertSee(route('payment-verification.show', $enrollment->payments()->sole()).'?expires=', escape: false)
+            ->assertDontSee('Choose payment proof');
     }
 
     public function test_the_bank_transfer_reason_names_the_licence_renewal_when_the_option_covers_it(): void

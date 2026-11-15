@@ -62,7 +62,7 @@
                 </div>
             @endif
 
-            @if ($offersLicenceRenewal)
+            {{-- @if ($offersLicenceRenewal)
                 <div class="mt-10">
                     <p class="uppercase tracking-widest text-sm mb-2">{{ __('Licence renewal') }}</p>
 
@@ -76,7 +76,7 @@
                         </article>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
         </div>
     </div>

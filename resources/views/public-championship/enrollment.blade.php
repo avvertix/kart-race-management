@@ -88,24 +88,68 @@
                                 get showsNumber() { return this.chosen !== null && this.payment !== null && this.payment.grantsNumber },
                             }">
                             @csrf
-                            <h3 class="font-semibold text-zinc-900">{{ __('Enroll a licence') }}</h3>
+                            @php
+                                $year = $championship->start_at->year;
+                                $card = 'flex min-h-11 cursor-pointer items-start gap-3 rounded-md border bg-white p-3 hover:border-orange-300 has-[:checked]:border-orange-400 has-[:checked]:bg-orange-50';
+                                $radio = 'mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300';
+                                $groups = [
+                                    'ready' => __('Ready to enroll'),
+                                    'waiting' => __('Waiting for the licence'),
+                                    'renewal' => __('Renew and enroll'),
+                                    'other' => null,
+                                ];
+                                $hasLicence = $subjects->contains(fn (array $item) => in_array($item['group'], ['ready', 'waiting'], true));
+                            @endphp
+
+                            <h3 class="font-semibold text-zinc-900">{{ __('Enroll a driver') }}</h3>
 
                             <x-validation-errors />
 
                             @if ($subjects->isEmpty())
                                 <p class="text-sm text-zinc-600">
-                                    {{ __('You have no driver licence valid for :year that is not enrolled yet.', ['year' => $championship->start_at->year]) }}
+                                    {{ __('You have no driver licence valid for :year that is not enrolled yet.', ['year' => $year]) }}
                                     <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('Add or request a licence') }}</a>
                                 </p>
                             @else
-                                <fieldset class="space-y-2">
-                                    <legend class="text-sm font-medium text-zinc-900">{{ __('Licence') }}</legend>
-                                    @foreach ($subjects as $item)
-                                        <label class="flex items-start gap-3">
-                                            <input type="radio" name="subject" value="{{ $item['value'] }}" x-model="subject" @checked(old('subject') === $item['value']) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
-                                            <span class="text-sm text-zinc-900">{{ $item['label'] }}</span>
-                                        </label>
+                                <fieldset class="space-y-3">
+                                    <legend class="font-medium text-zinc-900">{{ __('Driver and licence') }}</legend>
+                                    <p class="max-w-prose text-sm text-zinc-600">{{ __('Enrolling needs the driver\'s :year licence. Choose one in your account, or renew one here: the enrollment then waits until the licence is issued.', ['year' => $year]) }}</p>
+
+                                    @unless ($hasLicence)
+                                        <p class="max-w-prose rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">{{ __('There is no :year licence in your account yet: choose the driver to renew below.', ['year' => $year]) }}</p>
+                                    @endunless
+
+                                    @foreach ($groups as $group => $title)
+                                        @php($items = $subjects->where('group', $group))
+                                        @continue($items->isEmpty())
+                                        <div class="space-y-2">
+                                            @if ($title)
+                                                <p class="text-sm font-medium text-zinc-800">{{ $title }}</p>
+                                            @endif
+                                            <div class="grid gap-2 sm:grid-cols-2">
+                                                @foreach ($items as $item)
+                                                    <label @class([$card, 'border-dashed border-zinc-300' => $group === 'other', 'border-zinc-200' => $group !== 'other'])>
+                                                        <input type="radio" name="subject" value="{{ $item['value'] }}" x-model="subject" @checked(old('subject') === $item['value']) class="{{ $radio }}">
+                                                        <span class="text-sm">
+                                                            <span class="block font-medium text-zinc-900">{{ $item['name'] }}</span>
+                                                            <span class="block text-zinc-600">{{ $item['detail'] }}</span>
+                                                        </span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
                                     @endforeach
+
+                                    @if ($hasLicencesFromRaces)
+                                        <p class="max-w-prose text-sm text-zinc-600">
+                                            {{ __('Raced here before with a licence that is not listed? Add it to your account from your races, then renew it here.') }}
+                                            <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('My licences') }}</a>
+                                        </p>
+                                    @endif
+
+                                    <p class="max-w-prose rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700" x-show="chosen?.kind === 'renewal'" x-cloak>
+                                        {{ __('After submitting, complete the licence request with the driver\'s details and documents. The organizer checks it, then confirms the enrollment once the licence is issued.') }}
+                                    </p>
                                 </fieldset>
 
                                 @if ($competitorLicences->isNotEmpty())
@@ -117,23 +161,35 @@
                                                 <option value="{{ $competitor->ulid }}" @selected(old('competitor_licence') === $competitor->ulid) x-bind:hidden="subject === {{ Js::from('licence:'.$competitor->ulid) }}">{{ $competitor->holder->fullName() }} &middot; {{ $competitor->number }}</option>
                                             @endforeach
                                         </select>
-                                        <p class="mt-1 text-sm text-zinc-600" x-show="needsCompetitor" x-cloak>{{ __('Required for underage drivers.') }}</p>
+                                        <p class="mt-1 text-sm text-zinc-600" x-show="needsCompetitor && !chosen.parentCompetitor" x-cloak>{{ __('Required for underage drivers.') }}</p>
+                                        <p class="mt-1 max-w-prose text-sm text-zinc-600" x-show="needsCompetitor && chosen.parentCompetitor" x-cloak>{{ __('Optional: the parent or guardian entered in the licence request acts as competitor.') }}</p>
                                     </div>
                                 @elseif ($subjects->contains('underage', true))
-                                    <p class="text-sm text-zinc-600" x-show="needsCompetitor" x-cloak>{{ __('The driver is underage: add the competitor\'s licence to your account first.') }} <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('My licences') }}</a></p>
+                                    <p class="text-sm text-zinc-600" x-show="needsCompetitor && !chosen.parentCompetitor" x-cloak>{{ __('The driver is underage: add the competitor\'s licence to your account first.') }} <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('My licences') }}</a></p>
+                                    <p class="max-w-prose text-sm text-zinc-600" x-show="needsCompetitor && chosen.parentCompetitor" x-cloak>{{ __('The driver is underage: the parent or guardian you enter in the licence request acts as competitor.') }}</p>
                                 @endif
 
                                 @if ($paymentOptions->count() > 1)
-                                    <fieldset class="space-y-2">
-                                        <legend class="text-sm font-medium text-zinc-900">{{ __('What you are buying') }}</legend>
-                                        @foreach ($paymentOptions as $option)
-                                            <label class="flex items-start gap-3" x-show="offered({{ Js::from($option) }})">
-                                                <input type="radio" name="option" value="{{ $option['value'] }}" x-model="option" x-bind:disabled="!offered({{ Js::from($option) }})" @checked(old('option', '') === $option['value']) class="mt-0.5 border-zinc-300 text-orange-600 focus:ring-orange-300">
-                                                <span class="text-sm text-zinc-900">{{ $option['label'] }}</span>
-                                            </label>
-                                        @endforeach
+                                    <fieldset class="space-y-3">
+                                        <legend class="font-medium text-zinc-900">{{ __('What you are buying') }}</legend>
+                                        <div class="grid gap-2 sm:grid-cols-2">
+                                            @foreach ($paymentOptions as $option)
+                                                <label class="{{ $card }} border-zinc-200" x-show="offered({{ Js::from($option) }})">
+                                                    <input type="radio" name="option" value="{{ $option['value'] }}" x-model="option" x-bind:disabled="!offered({{ Js::from($option) }})" @checked(old('option', '') === $option['value']) class="{{ $radio }}">
+                                                    <span class="text-sm">
+                                                        <span class="block font-medium text-zinc-900">{{ $option['label'] }}</span>
+                                                        @if ($option['coversRenewal'])
+                                                            <span class="block text-lime-800" x-show="chosen?.kind === 'renewal'" x-cloak>{{ __('Licence renewal included') }}</span>
+                                                        @endif
+                                                    </span>
+                                                </label>
+                                            @endforeach
+                                        </div>
                                     </fieldset>
                                 @endif
+
+                                <p class="max-w-prose text-sm text-zinc-700" x-show="chosen?.kind === 'renewal' && payment !== null" x-cloak
+                                    x-text="payment?.coversRenewal ? {{ Js::from(__('The licence renewal is included in the option: nothing more to pay for it.')) }} : {{ Js::from($renewalPrice ? __('The licence renewal is not included: it is paid separately, :price.', ['price' => $renewalPrice]) : __('The licence renewal is not included: it is paid separately.')) }}"></p>
 
                                 @if ($paymentOptions->contains('grantsNumber', true))
                                     <div x-show="showsNumber" x-cloak class="space-y-2">

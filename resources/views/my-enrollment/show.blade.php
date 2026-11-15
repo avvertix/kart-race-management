@@ -78,8 +78,13 @@
                     @if ($enrollment->competitorLicence || $enrollment->requiresCompetitor() || $competitorLicences->isNotEmpty())
                         <dt class="text-sm text-zinc-500">{{ __('Competitor') }}</dt>
                         <dd class="sm:col-span-2 text-zinc-900 space-y-2">
+                            @php($competitorParent = $enrollment->competitorParent())
                             @if ($enrollment->competitorLicence)
                                 <p>{{ $enrollment->competitorLicence->holder->fullName() }} &middot; <span class="font-mono">{{ $enrollment->competitorLicence->number }}</span></p>
+                            @elseif ($competitorParent && $enrollment->requiresCompetitor())
+                                <p>{{ $competitorParent->fullName() }} &middot; <span class="text-zinc-600">{{ __('parent or guardian, from the licence request') }}</span></p>
+                            @elseif ($enrollment->requiresCompetitor() && $enrollment->licence === null)
+                                <p class="text-zinc-600">{{ __('The driver is underage: the parent or guardian you enter in the licence request acts as competitor.') }}</p>
                             @elseif ($enrollment->requiresCompetitor())
                                 <p class="text-amber-800">{{ __('The driver is underage: name the competitor before the organizer confirms.') }}</p>
                             @endif
@@ -97,7 +102,7 @@
                                         <x-secondary-button type="submit">{{ __('Save competitor') }}</x-secondary-button>
                                     </form>
                                     <x-input-error for="competitor_licence" />
-                                @elseif ($enrollment->requiresCompetitor())
+                                @elseif ($enrollment->isMissingCompetitor() && $enrollment->licence !== null)
                                     <p class="text-sm text-zinc-600">{{ __('Add the competitor\'s licence to your account first.') }} <a href="{{ route('my-licences.index') }}" class="text-orange-600 hover:text-orange-900">{{ __('My licences') }}</a></p>
                                 @endif
                             @endcan

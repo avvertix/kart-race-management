@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Enrollments\SubmitEnrollment;
+use App\Actions\TransferParticipationLicence;
 use App\Enums\EnrollmentPaymentStatus;
 use App\Enums\LicenceRequestStatus;
 use App\Models\Championship;
@@ -13,6 +14,7 @@ use App\Models\EnrollmentOption;
 use App\Models\Licence;
 use App\Models\User;
 use App\Support\EnrollmentSubjects;
+use App\Support\LicenceCatalogue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -49,6 +51,8 @@ class PublicChampionshipEnrollmentController extends Controller
             'paymentOptions' => $this->paymentOptions($options),
             'options' => $options,
             'competitorLicences' => $user === null ? collect() : Enrollment::competitorCandidates($championship, $user, null),
+            'renewalPrice' => LicenceCatalogue::renewalPriceLabel(),
+            'hasLicencesFromRaces' => $user !== null && TransferParticipationLicence::candidates($user)->isNotEmpty(),
         ]);
     }
 
@@ -85,11 +89,11 @@ class PublicChampionshipEnrollmentController extends Controller
     }
 
     /**
-     * The options offered to drivers, with whether each is paid, reserves a race number, and the licence categories it
-     * is limited to (empty for any).
+     * The options offered to drivers, with whether each is paid, reserves a race number, covers the licence renewal, and
+     * the licence categories it is limited to (empty for any).
      *
      * @param  \Illuminate\Database\Eloquent\Collection<int, EnrollmentOption>  $options
-     * @return Collection<int, array{value: string, label: string, description: ?string, pays: bool, grantsNumber: bool, categories: array<int, int>}>
+     * @return Collection<int, array{value: string, label: string, description: ?string, pays: bool, grantsNumber: bool, coversRenewal: bool, categories: array<int, int>}>
      */
     private function paymentOptions(\Illuminate\Database\Eloquent\Collection $options): Collection
     {
@@ -99,6 +103,7 @@ class PublicChampionshipEnrollmentController extends Controller
             'description' => $option->description,
             'pays' => ! $option->isFree(),
             'grantsNumber' => $option->reserves_race_number,
+            'coversRenewal' => $option->covers_licence_renewal,
             'categories' => $option->licence_categories ?? [],
         ])->values();
     }

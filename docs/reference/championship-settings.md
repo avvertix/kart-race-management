@@ -18,7 +18,7 @@ The licence provider only decides the wording of local licences on the registrat
 |---|---|---|
 | Enabled | Drivers can enroll in the championship; needs at least one enrollment option offered | Off |
 | Opens / closes | Period in which enrollment is accepted, in the races' timezone. Both are required to turn enrollment on | — |
-| Competitor required when underage | An underage Driver must name a Competitor to enroll | On |
+| Competitor required when underage | An underage Driver must have a Competitor: a competitor licence, or the parent or guardian from the licence request | On |
 
 ### Enrollment options
 

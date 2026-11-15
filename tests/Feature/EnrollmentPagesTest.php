@@ -8,6 +8,7 @@ use App\Actions\Enrollments\ReviewEnrollmentPayment;
 use App\Enums\EnrollmentPaymentStatus;
 use App\Models\Championship;
 use App\Models\Enrollment;
+use App\Models\EnrollmentOption;
 use App\Models\Licence;
 use App\Models\Payment;
 use App\Models\User;
@@ -132,6 +133,32 @@ class EnrollmentPagesTest extends TestCase
         $this->actingAs($enrollment->user)
             ->post(route('my-enrollments.withdraw', $enrollment))
             ->assertRedirect(route('my-enrollments.show', $enrollment));
+    }
+
+    public function test_the_licence_step_says_a_licence_of_the_year_is_needed_and_groups_the_choices(): void
+    {
+        $championship = Championship::factory()->openForEnrollment(amount: 95000, coversRenewal: true)->create();
+        EnrollmentOption::factory()->for($championship)->create(['title' => 'Without renewal', 'amount' => 60000]);
+        $year = $championship->start_at->year;
+        $user = User::factory()->create();
+        Licence::factory()->for($user)->create(['validity_year' => $year - 1, 'holder' => LicenceFactory::holder('Beatrice', 'Martinho')]);
+
+        $this->actingAs($user)
+            ->get(route('public.championships.enrollment', $championship))
+            ->assertOk()
+            ->assertSee('Enroll a driver')
+            ->assertSee(__('Enrolling needs the driver\'s :year licence. Choose one in your account, or renew one here: the enrollment then waits until the licence is issued.', ['year' => $year]))
+            ->assertSee(__('There is no :year licence in your account yet: choose the driver to renew below.', ['year' => $year]))
+            ->assertSeeInOrder(['Renew and enroll', 'Beatrice Martinho', 'The driver is not listed'])
+            ->assertDontSee('Ready to enroll')
+            ->assertSee('Licence renewal included');
+
+        Licence::factory()->for($user)->create(['validity_year' => $year, 'holder' => LicenceFactory::holder('Luca', 'Bianchi')]);
+
+        $this->actingAs($user)
+            ->get(route('public.championships.enrollment', $championship))
+            ->assertSeeInOrder(['Ready to enroll', 'Luca Bianchi'])
+            ->assertDontSee(__('There is no :year licence in your account yet: choose the driver to renew below.', ['year' => $year]));
     }
 
     private function championship(bool $withFee = false): Championship

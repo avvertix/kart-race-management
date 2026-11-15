@@ -525,6 +525,27 @@ class Enrollment extends Model implements Payable
     }
 
     /**
+     * The parent or guardian entered in the driver's licence request, the one the Enrollment waits for or the one its
+     * Licence was emitted from: they act as Competitor when no Competitor Licence is named, e.g. for an ASI licence,
+     * where the parent often has no licence.
+     */
+    public function competitorParent(): ?HolderData
+    {
+        $licenceRequest = $this->licenceRequest ?? $this->licence?->licenceRequest;
+
+        return $licenceRequest?->parentHolders()[0] ?? null;
+    }
+
+    /**
+     * Whether the championship asks for a Competitor and none acts as one: no Competitor Licence, and no parent or
+     * guardian in the driver's licence request.
+     */
+    public function isMissingCompetitor(): bool
+    {
+        return $this->requiresCompetitor() && $this->competitor_licence_id === null && $this->competitorParent() === null;
+    }
+
+    /**
      * What is still missing before the organizer can confirm the Enrollment, as human readable reasons.
      *
      * @return array<int, string>
@@ -537,7 +558,7 @@ class Enrollment extends Model implements Payable
             $this->licence !== null && $this->licence->role !== LicenceRole::Driver ? (string) __('The licence is not a driver licence.') : null,
             $this->licence !== null && $this->licence->validity_year !== $this->championship->start_at->year ? (string) __('The licence is not valid in the championship year.') : null,
             ! $this->isPaymentSettled() ? (string) ($this->paidAmount() > 0 ? __('The balance is not paid yet.') : __('The payment is not confirmed yet.')) : null,
-            $this->requiresCompetitor() && $this->competitor_licence_id === null ? (string) __('The driver is underage and no competitor is named.') : null,
+            $this->licence !== null && $this->isMissingCompetitor() ? (string) __('The driver is underage and no competitor is named.') : null,
         ]));
     }
 

@@ -16,6 +16,7 @@
     <env name="BROADCAST_CONNECTION" value="null"/>
     <env name="CACHE_STORE" value="array"/>
     <env name="DB_DATABASE" value="testing"/>
+    <env name="DB_EMULATE_PREPARES" value="true"/>
     <env name="MAIL_MAILER" value="array"/>
     <env name="QUEUE_CONNECTION" value="sync"/>
     <env name="PULSE_ENABLED" value="false"/>
@@ -23,6 +24,9 @@
     <env name="TELESCOPE_ENABLED" value="false"/>
     <env name="NIGHTWATCH_ENABLED" value="false"/>
     <env name="APP_REGISTRATION" value="true"/>
+    <env name="LICENCE_TYPES" value="null"/>
+    <env name="LICENCE_RENEWAL_PRICE" value="null"/>
+    <env name="LICENCES_AND_ENROLLMENTS_PUBLIC" value="false"/>
   </php>
   <source>
     <include>

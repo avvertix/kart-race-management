@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Features\LicencesAndEnrollments;
 use App\Models\Championship;
 use App\Models\WildcardStrategy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Enum;
+use Laravel\Pennant\Feature;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -52,7 +54,7 @@ class WildcardSettings extends Component
             'bonus_amount' => $this->wildcardForm['bonus_amount'],
         ], [
             'wildcard_enabled' => ['required', 'boolean'],
-            'wildcard_strategy' => ['required', 'integer', new Enum(WildcardStrategy::class)],
+            'wildcard_strategy' => ['required', 'integer', (new Enum(WildcardStrategy::class))->only($this->getStrategiesProperty())],
             'bonus_amount' => ['required_if:wildcard_strategy,'.WildcardStrategy::BASED_ON_BONUS->value, 'integer', 'min:1'],
         ])->validateWithBag('updateWildcardSettings');
 
@@ -60,7 +62,7 @@ class WildcardSettings extends Component
 
         $this->championship->wildcard->enabled = $this->wildcardForm['enabled'];
         $this->championship->wildcard->strategy = WildcardStrategy::from((int) ($this->wildcardForm['strategy']));
-        $this->championship->wildcard->requiredBonusAmount = (int) $this->wildcardForm['bonus_amount'] ?? null;
+        $this->championship->wildcard->requiredBonusAmount = (int) $this->wildcardForm['bonus_amount'];
         $this->championship->save();
 
         $this->dispatch('saved');
@@ -81,9 +83,20 @@ class WildcardSettings extends Component
         return Championship::find($this->championship_id);
     }
 
-    public function getStrategiesProperty()
+    /**
+     * The rules the organizer can choose; the one based on enrollment only with early access to licences and enrollments,
+     * or when the championship already uses it.
+     *
+     * @return array<int, WildcardStrategy>
+     */
+    public function getStrategiesProperty(): array
     {
-        return WildcardStrategy::cases();
+        return collect(WildcardStrategy::cases())
+            ->reject(fn (WildcardStrategy $strategy): bool => $strategy === WildcardStrategy::BASED_ON_ENROLLMENT
+                && $this->getChampionshipProperty()?->wildcard->strategy !== WildcardStrategy::BASED_ON_ENROLLMENT
+                && ! Feature::active(LicencesAndEnrollments::class))
+            ->values()
+            ->all();
     }
 
     public function render()

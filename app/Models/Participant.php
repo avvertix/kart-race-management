@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -30,6 +32,10 @@ use Illuminate\Support\Facades\URL;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
+/**
+ * @property ?DriverLicence $licence_type
+ * @property ?array<string, mixed> $driver
+ */
 class Participant extends Model implements HasLocalePreference
 {
     use HasFactory;
@@ -51,6 +57,7 @@ class Participant extends Model implements HasLocalePreference
         'last_name',
         'added_by',
         'claimed_by',
+        'licence_id',
         'confirmed_at',
         'consents',
         'race_id',
@@ -113,8 +120,10 @@ class Participant extends Model implements HasLocalePreference
 
     /**
      * Get the championship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Championship, $this>
      */
-    public function championship()
+    public function championship(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Championship::class);
     }
@@ -153,8 +162,10 @@ class Participant extends Model implements HasLocalePreference
 
     /**
      * Get the federation authorizations linked to the participation
+     *
+     * @return HasMany<FederationAuthorization, $this>
      */
-    public function federationAuthorizations()
+    public function federationAuthorizations(): HasMany
     {
         return $this->hasMany(FederationAuthorization::class);
     }
@@ -189,9 +200,21 @@ class Participant extends Model implements HasLocalePreference
             ->withTimestamps();
     }
 
+    /**
+     * The Entitlements that discounted the race fee, with the discount in the pivot `amount`.
+     *
+     * @return BelongsToMany<Entitlement, $this>
+     */
+    public function entitlements(): BelongsToMany
+    {
+        return $this->belongsToMany(Entitlement::class, 'participant_entitlement')
+            ->withPivot('amount')
+            ->withTimestamps();
+    }
+
     public function reservations()
     {
-        return $this->hasMany(BibReservation::class, 'bib', 'bib');
+        return $this->hasMany(BibReservation::class, 'bib', 'bib')->notReleased();
     }
 
     /**
@@ -418,6 +441,8 @@ class Participant extends Model implements HasLocalePreference
 
             $totalBonusDiscount = $bonusMode === BonusMode::BALANCE ? $this->bonuses->sum('pivot.amount') : ($this->bonuses->count() * $fixedBonusAmount);
         }
+
+        $totalBonusDiscount += (int) $this->entitlements()->sum('participant_entitlement.amount');
 
         $tire = $this->racingCategory->tire;
 

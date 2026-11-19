@@ -89,6 +89,7 @@
                         @if ($item->wildcard)
                             <span class="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">{{ __('wildcard') }}</span>
                         @endif
+                        @include('participant.partials.enrollment-option', ['enrollment' => $enrollments->get($item->driver_licence), 'canOpenEnrollments' => $canOpenEnrollments])
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">{{ $item->licence_type?->localizedName() }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-zinc-900">

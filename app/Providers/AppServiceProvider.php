@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Events\EnrollmentConfirmed;
 use App\Listeners\LogNotification;
+use App\Listeners\ReevaluateWildcardsForEnrollment;
 use App\Models\Category;
 use App\Models\Championship;
 use App\Models\ChampionshipTire;
+use App\Models\Enrollment;
+use App\Models\LicenceRequest;
 use App\Models\Participant;
+use App\Models\PromoCode;
 use App\Models\Race;
 use App\Models\RegistrationForm;
 use App\Models\User;
@@ -28,6 +33,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Nightwatch\Records\Request;
+use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -55,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->configureAuthorization();
         $this->configureEvents();
+        $this->configureFeatures();
         $this->configureRateLimiting();
 
         Relation::enforceMorphMap([
@@ -64,6 +72,9 @@ class AppServiceProvider extends ServiceProvider
             'category' => Category::class,
             'championship' => Championship::class,
             'race' => Race::class,
+            'promo_code' => PromoCode::class,
+            'licence_request' => LicenceRequest::class,
+            'enrollment' => Enrollment::class,
         ]);
 
         Blade::if('useStandardRegistrationForm', function (?Race $race = null): bool {
@@ -123,6 +134,18 @@ class AppServiceProvider extends ServiceProvider
     private function configureEvents(): void
     {
         Event::listen(NotificationSent::class, LogNotification::class);
+        Event::listen(EnrollmentConfirmed::class, ReevaluateWildcardsForEnrollment::class);
+    }
+
+    /**
+     * Pages behind a feature not active for the user don't exist for them. Livewire applies the check to the
+     * component updates too, not only to the page load.
+     */
+    private function configureFeatures(): void
+    {
+        EnsureFeaturesAreActive::whenInactive(fn () => abort(404));
+
+        Livewire::addPersistentMiddleware([EnsureFeaturesAreActive::class]);
     }
 
     /**

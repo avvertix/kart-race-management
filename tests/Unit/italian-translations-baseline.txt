@@ -1,0 +1,342 @@
+...
+:address :city :province :postal_code
+:category created.
+:category updated.
+:championship BIB settings updated.
+:championship bonus configuration updated.
+:championship cost and payment updated.
+:championship registration form updated.
+:count messages imported.
+:count penalty templates imported.
+:count transponders imported.
+:name deleted.
+:tire created.
+:tire updated.
+Active
+Activity
+Add a bonus
+Add new category
+Add new participant
+Add new tire
+Add penalty template
+After
+Alias
+All results published.
+All tires
+Allow different BIBs for the same driver
+Allow participants to select this category
+Allow to hide the race from public listing even if registrations are open.
+Allowed tires
+Alternative category name
+Alternative name
+Alternative race number
+As a race manager you cannot express privacy consents for the driver, the competitor and the mechanic.
+Assign fixed points
+BIB
+Back to awards
+Backup file deleted.
+Backup file uploaded.
+Balance
+Bank account
+Bank account holder
+Bank name
+Banner
+Banner image
+Banner removed.
+Banner uploaded.
+Before
+Best lap
+Bonus
+Bonus activated for :driver.
+Bonus discount (in Euro)
+Bonus enabled
+Bonus for :driver updated.
+Bonus mode
+Cancel race
+Category Pos.
+Category alias
+Category name, description and allowed tires.
+Championship awards
+Championship details
+Channel
+Chassis Homologation
+Chassis Number
+Check
+Check the "View the participation" in the confirmation email you received.
+Choose the registration form to use for this championship. Leave blank to use the application default.
+Clear
+Competitor email
+Configure how BIB (race number) assignment is enforced across the championship.
+Confirmed at
+Control bonus usage for races in this championship. Individual races can override this setting.
+Control bonus usage for this race. Leave blank to use the championship setting or the default.
+Copy IBAN
+Copy message
+Cost
+Cost and payment
+Create a category
+Create a race
+Create a tire
+Create a user
+Create bonus
+Create category
+Create penalty template
+Create tire
+Credit value (in Euro)
+Credits
+Delete this message?
+Delete this penalty template?
+Delete user
+Disabled
+Disabled, all drivers must use the same BIB
+Discount
+Dismiss
+Download calendar
+Draft
+Driver Fiscal Code
+Driver email
+Driver_alias
+Edit :name
+Edit :race
+Edit Communication
+Edit Transponders
+Edit assigned transponder
+Edit bonus for participant :name
+Edit category
+Edit penalty template
+Edit user
+Email verified
+Empty
+Enabled
+Enabled, different BIBs allowed
+Engine Homologation
+Engine Number
+English
+Expired
+Export
+Export all championship participants
+Field
+File
+First available race numbers
+Gap
+Hide race
+Hide the race from public listing
+How points are assigned to wildcard participants.
+If participants are allowed to select this category during registration. Disabling a category hides it from new registrations but keeps existing ones.
+Image file (jpg, png). Maximum 1200x600 pixels or 10 MB.
+Import communications
+Import messages
+Import multiple messages
+Import multiple penalty templates
+Import multiple transponders
+Import penalty templates
+Import transponders
+In case you received this link via email you can request a new one by clicking on the "View the participation" link at the bottom of the received email.
+Insert
+Insert discount for participant
+Insert the amount of discount, in Euro, that each bonus grants to the racer. This amount will be deduced from the registration fee. Use the decimal notation, e.g. for a cost of 80,00 € insert 8000.
+Insert the amount of discount, in Euro, that each credit grants to the racer. This amount will be deduced from the registration fee. Use the decimal notation, e.g. for a cost of 80,00 € insert 8000.
+Insert the cost of each race registration. Use the decimal notation, e.g. for a cost of 80,00 € insert 8000.
+Insert the total monetary balance available for this bonus. Use the decimal notation, e.g. for a balance of 80,00 € insert 8000.
+Interval
+Invalid participant link
+Invalid tire verification url
+Italiano
+Laps
+Line :line (:racer_hash) contains invalid data
+Link Expired
+Link all participants
+Link participants
+Manage
+Mark as read
+Mark as unread
+Mark read
+Message deleted.
+Messages to import
+Modify :category
+Modify :tire
+Move to next group
+Move to previous group
+Name alias
+No aliases defined
+No awards.
+No backups.
+No bonus or discounts
+No categories at the moment
+No changes recorded.
+No confirmed participants found for this race.
+No driver matching your search ":terms"
+No email
+No messages yet.
+No notes
+No participant results.
+No participants at the moment.
+No participants with assigned tires
+No participants with assigned transponders
+No penalty templates yet.
+No published results.
+No race numbers available within 1 and 999
+No races at the moment
+No results uploaded.
+No tire required
+No tires at the moment
+No usage history yet
+No users found matching ":search".
+No users.
+Notes
+Once a user is deleted, all of their resources and data will be permanently deleted.
+One driver licence number per line (or comma separated). Leave empty to disable this behaviour.
+Open in another window
+Orbits Backup
+Participant
+Participant already have 5 tires assigned
+Participant bonus
+Participant id
+Participant linking queued for all results.
+Participant linking queued.
+Participant with racer hash :racer_hash not found in this race.
+Participant with same licence has the race number :bib.
+Participation history
+Penalty template
+Penalty template created.
+Penalty template deleted.
+Penalty template updated.
+Penalty templates to import
+Pending
+Permanently delete this user account.
+Please perform a search first.
+Please remind them to look for the privacy policy on the organizer's website.
+Point multiplier
+Pos.
+Post
+Post a message
+Posted!
+Powered by
+Public page
+Public results
+Publish
+Publish all
+Published
+Race number alias
+Race type
+Racer Hash
+Races for :championship
+Ranked from first in category
+Read
+Receipt uploaded on
+Region
+Registration Price
+Registration failed. Please try again.
+Registration form
+Registration price
+Remove banner
+Remove group
+Required Amount of bonuses (minimum 1)
+Required if fiscal code is not provided.
+Required if licence number is not provided.
+Result deleted.
+Result published.
+Result unpublished.
+Results uploaded successfully.
+Results: 
+Same as other drivers
+Save bonus
+Save category
+Save changes
+Save race
+Save tire
+Saved Penalties
+Saved penalties help quickly compile penalty messages during a race.
+Saved templates
+Saved!
+Scheduled
+Scheduled message for :date
+Search by name or email...
+Search by name, surname or licence number
+Search for existing driver
+Search participant within championship
+Searching driver...
+Select a strategy
+Select how bonuses should be managed for this championship.
+Select the Italian regions that belong to this race zone. Participants residing outside these regions will be flagged as out of zone.
+Select the registration form to use for this race. Leave blank to use the championship setting or the default.
+Select the type of bonus
+Set a multiplier for the championship points awarded in this race. Leave blank for default.
+Shared BIB
+Shared BIB driver licences
+Short name
+Specify each message on its own line.
+Specify each penalty template on its own line.
+Specify each transponder assignment on its own line.
+Specify the price in cents. For example if the price is 140,15 € specify 14015.
+Start typing to search for existing drivers across all championships
+The :attribute must be a valid role.
+The BIB always assigned to the driver licences listed below, regardless of the BIB submitted at registration or used in previous races. These drivers may still not share a BIB with anyone else within the same race.
+The alternate name for this category, usually for timekeeping services.
+The championship banner image
+The link you followed does not correspond to a participant or was altered. Please contact the race direction.
+The organizer might issue bonus or discounts for racers. Here you can configure the behavior of each bonus type.
+The race registration cost and how to make payments.
+The tires that are allowed in this category. Leave empty for allowing all tires.
+This text will be pre-filled when the template is selected while composing a race message.
+Tire code updated.
+Tire model name and price.
+Total balance (in Euro)
+Total time
+Track wildcards in this championship
+Transponder
+Transponder :number
+Transponder code appears more than once in the import.
+Transponder code is already assigned in this race.
+Transponders
+Transponders to import
+Type
+Unknown category (#:id)
+Unknown tire (#:id)
+Unpublish
+Update message
+Update the user account information.
+Update transponder
+Updated message :date
+Upload date
+Upload result files
+Upload results
+Usage history
+Use championship / default
+Use default
+Use default (enabled)
+User details
+View bonuses
+View transponders
+We cannot verify your identity to retrieve the correct participation.
+When enabled, a driver is allowed to register with a different BIB than the one already used elsewhere in the championship. When disabled, a driver must keep using the same BIB across all races of the championship.
+Whoops! Something went wrong.
+Wildcard points mode
+Wildcard strategy
+Write your message here…
+XML result files
+You are not authorized to link this participation.
+You cannot delete the last administrator.
+You cannot delete your own account.
+Zone regions
+assigned
+description is optional.
+edit
+id
+no category
+paused
+pts
+races
+registered
+registered at
+remaining
+session: warm up, qualify, race 1, race 2 (or leave empty)
+transponders
+type: communication or penalty
+unlinked
+unspecified
+updated
+wildcard
+— not identified —
+€/bonus
+← Back to results

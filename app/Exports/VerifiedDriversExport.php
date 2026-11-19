@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
+use App\Models\Participant;
 use App\Models\Race;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -12,12 +13,15 @@ use Maatwebsite\Excel\Concerns\WithDrawings;
 use PhpOffice\PhpSpreadsheet\Worksheet\BaseDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
-class AciParticipantPromotionExport implements FromView, WithDrawings
+/**
+ * The confirmed participants of a race with a transponder, for the national and international race organizers.
+ */
+class VerifiedDriversExport implements FromView, WithDrawings
 {
     public function __construct(private Race $race) {}
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return EloquentCollection<int, Participant>
      */
     public function query(): EloquentCollection
     {
@@ -41,7 +45,7 @@ class AciParticipantPromotionExport implements FromView, WithDrawings
 
     public function view(): View
     {
-        return view('exports.aci', [
+        return view('exports.verified-drivers', [
             'participants' => $this->query()->groupBy('racingCategory.name')->sortKeys(),
             'race' => $this->race,
         ]);

@@ -5,15 +5,27 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Data\BonusSettingsData;
+use App\Data\EnrollmentSettingsData;
+use App\Data\HolderData;
 use App\Data\LicenceSettingsData;
 use App\Data\PaymentSettingsData;
 use App\Data\RegistrationSettingsData;
 use App\Data\WildcardSettingsData;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property LicenceSettingsData $licences
+ * @property EnrollmentSettingsData $enrollment
+ * @property WildcardSettingsData $wildcard
+ * @property BonusSettingsData $bonuses
+ * @property PaymentSettingsData $payment
+ * @property CarbonImmutable $start_at
+ * @property ?CarbonImmutable $end_at
+ */
 class Championship extends Model
 {
     use HasFactory;
@@ -31,6 +43,7 @@ class Championship extends Model
         'description',
         'registration_form',
         'bonus_enabled',
+        'entitlements_enabled',
     ];
 
     /**
@@ -41,6 +54,22 @@ class Championship extends Model
     protected $hidden = [
         'id',
     ];
+
+    /**
+     * The championships open for enrollment now, latest first.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, self>
+     */
+    public static function openForEnrollment(int $limit = 5): \Illuminate\Database\Eloquent\Collection
+    {
+        return self::query()
+            ->where('enrollment->enabled', true)
+            ->orderByDesc('start_at')
+            ->get()
+            ->filter(fn (self $championship) => $championship->enrollment->isOpen())
+            ->take($limit)
+            ->values();
+    }
 
     /**
      * Get the columns that should receive a unique identifier.
@@ -95,7 +124,19 @@ class Championship extends Model
     }
 
     /**
+     * The options drivers enroll with, in the organizer's order.
+     *
+     * @return HasMany<EnrollmentOption, $this>
+     */
+    public function enrollmentOptions(): HasMany
+    {
+        return $this->hasMany(EnrollmentOption::class)->orderBy('sort')->orderBy('id');
+    }
+
+    /**
      * Get the awards.
+     *
+     * @return HasMany<ChampionshipAward, $this>
      */
     public function awards(): HasMany
     {
@@ -103,7 +144,46 @@ class Championship extends Model
     }
 
     /**
+     * Whether the holder is underage when the championship starts.
+     */
+    public function isUnderageAtStart(HolderData $holder): bool
+    {
+        return CarbonImmutable::parse($holder->birth_date)->diffInYears($this->start_at) < LicenceRequest::ADULT_AGE;
+    }
+
+    /**
+     * Whether enrolling the holder needs a Competitor Licence: underage when the championship starts, and the
+     * championship asks for it.
+     */
+    public function requiresCompetitorFor(HolderData $holder): bool
+    {
+        return $this->enrollment->requires_competitor_when_underage && $this->isUnderageAtStart($holder);
+    }
+
+    /**
+     * The promo codes issued for the championship.
+     *
+     * @return HasMany<PromoCode, $this>
+     */
+    public function promoCodes(): HasMany
+    {
+        return $this->hasMany(PromoCode::class);
+    }
+
+    /**
+     * The Licences enrolled in the championship.
+     *
+     * @return HasMany<Enrollment, $this>
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    /**
      * Get the BIB reservations.
+     *
+     * @return HasMany<BibReservation, $this>
      */
     public function reservations(): HasMany
     {
@@ -126,6 +206,15 @@ class Championship extends Model
         return $this->hasMany(ChampionshipPenalty::class)->orderBy('title');
     }
 
+    /**
+     * The name of who issues the licences, as shown in licence descriptions and the race rules: the championship's
+     * Licence Provider, or the platform-wide provider when none is chosen.
+     */
+    public function licenceProviderName(): string
+    {
+        return $this->licences->provider?->label() ?? config('races.licence.provider');
+    }
+
     protected function period(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
@@ -146,8 +235,10 @@ class Championship extends Model
             'payment' => PaymentSettingsData::class.':default',
             'bonuses' => BonusSettingsData::class.':default',
             'licences' => LicenceSettingsData::class.':default',
+            'enrollment' => EnrollmentSettingsData::class.':default',
             'registration_form' => RegistrationForm::class,
             'bonus_enabled' => 'boolean',
+            'entitlements_enabled' => 'boolean',
             'registration_settings' => RegistrationSettingsData::class.':default',
         ];
     }

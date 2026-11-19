@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Actions\Wildcard\AttributeWildcardBasedOnBibReservation;
 use App\Actions\Wildcard\AttributeWildcardBasedOnBonus;
+use App\Actions\Wildcard\AttributeWildcardBasedOnEnrollment;
 use App\Actions\Wildcard\AttributeWildcardBasedOnFirstRace;
 
 enum WildcardStrategy: int
@@ -27,6 +28,11 @@ enum WildcardStrategy: int
      */
     case BASED_ON_BONUS = 30;
 
+    /**
+     * Racers whose licence has a confirmed Enrollment in the championship can gain points for the championship
+     */
+    case BASED_ON_ENROLLMENT = 40;
+
     public function localizedName(): string
     {
         return trans("wildcard-options.{$this->name}");
@@ -38,6 +44,7 @@ enum WildcardStrategy: int
             self::BASED_ON_BONUS => app()->make(AttributeWildcardBasedOnBonus::class),
             self::BASED_ON_BIB_RESERVATION => app()->make(AttributeWildcardBasedOnBibReservation::class),
             self::BASED_ON_FIRST_RACE => app()->make(AttributeWildcardBasedOnFirstRace::class),
+            self::BASED_ON_ENROLLMENT => app()->make(AttributeWildcardBasedOnEnrollment::class),
         };
     }
 }

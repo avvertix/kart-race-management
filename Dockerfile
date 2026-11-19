@@ -26,7 +26,7 @@ RUN \
 
 ## second step, assemble the image
 
-FROM php:8.4.27-fpm-trixie AS php
+FROM php:8.4.28-fpm-trixie AS php
 
 LABEL maintainer="Alessio <alessio@avsoft.it>" \
   org.label-schema.name="avvertix/kart-race-management" \
@@ -79,7 +79,7 @@ RUN locale-gen "en_US.UTF-8" \
 
 ## NGINX installation
 ### The installation procedure is heavily inspired from https://github.com/nginxinc/docker-nginx
-ENV NGINX_VERSION="1.30.6-1~trixie"
+ENV NGINX_VERSION="1.30.7-1~trixie"
 RUN set -ex \
     && apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -y gnupg1 \

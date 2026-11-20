@@ -38,6 +38,12 @@ class CombineHeatResults
             throw new InvalidArgumentException(__('Heats can only be classified as a race.'));
         }
 
+        $promoted = $race->results()->where('run_type', RunType::HEAT->value)->where('promoted_to', $runType->value)->exists();
+
+        if ($promoted) {
+            throw new InvalidArgumentException(__('The heats are already promoted as :run.', ['run' => $runType->localizedName()]));
+        }
+
         $prefinale = $this->buildGrids->prefinale($race);
 
         if ($prefinale === null) {

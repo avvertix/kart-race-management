@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Data\WildcardPointsMode;
 use App\Models\ChampionshipPointScheme;
+use App\Models\ParticipantResult;
 use App\Models\RunResult;
 use Illuminate\Support\Collection;
 
@@ -13,19 +14,19 @@ class AssignPointsToRunResult
 {
     public function __invoke(RunResult $runResult, ChampionshipPointScheme $pointScheme): void
     {
-        if ($runResult->run_type->isWorkingSession()) {
+        if (! $runResult->isScored()) {
             return;
         }
 
         $runResult->loadMissing('race');
 
         $race = $runResult->race;
-        $runType = $runResult->run_type;
+        $runType = $runResult->scoringRunType();
         $config = $pointScheme->points_config;
 
         $participantResults = $runResult->participantResults()->with('participant')->get();
 
-        $categoryCounts = $participantResults->countBy('category');
+        $categoryCounts = $this->categoryCounts($runResult, $participantResults);
 
         $needsReranking = $config->wildcardPointsMode !== WildcardPointsMode::AsOtherDrivers;
         $rankedPositions = $needsReranking
@@ -76,10 +77,32 @@ class AssignPointsToRunResult
     }
 
     /**
+     * Number of drivers of each category in the session. A category split across the heats
+     * promoted to the same race is counted across all of them, as they form a single race.
+     *
+     * @param  Collection<int, ParticipantResult>  $participantResults
+     * @return Collection<string, int>
+     */
+    private function categoryCounts(RunResult $runResult, Collection $participantResults): Collection
+    {
+        if (! $runResult->isPromoted()) {
+            return $participantResults->countBy('category');
+        }
+
+        return ParticipantResult::query()
+            ->whereHas('runResult', fn ($query) => $query
+                ->where('race_id', $runResult->race_id)
+                ->where('run_type', $runResult->run_type->value)
+                ->where('promoted_to', $runResult->promoted_to->value))
+            ->pluck('category')
+            ->countBy();
+    }
+
+    /**
      * Compute per-result ranked positions for RankedFromFirst mode.
      * Within each category, wildcards and non-wildcards are ranked independently from 1.
      *
-     * @param  Collection<int, \App\Models\ParticipantResult>  $participantResults
+     * @param  Collection<int, ParticipantResult>  $participantResults
      * @return array<mixed, int>
      */
     private function computeRankedFromFirstPositions(Collection $participantResults): array

@@ -196,9 +196,12 @@ class ResultRaceController extends Controller
             'participant_results.*.participant_id' => ['nullable', 'integer', 'exists:participants,id'],
         ]);
 
+        $runType = RunType::from((int) $validated['run_type']);
+
         $result->update([
             'title' => $validated['title'],
-            'run_type' => $validated['run_type'],
+            'run_type' => $runType,
+            'promoted_to' => $runType->isHeat() ? $result->promoted_to : null,
         ]);
 
         $participantIds = collect($validated['participant_results'] ?? [])
@@ -279,7 +282,7 @@ class ResultRaceController extends Controller
 
         $race->results()
             ->whereNull('published_at')
-            ->whereNotIn('run_type', RunType::workingSessionValues())
+            ->publishable()
             ->update(['published_at' => now()]);
 
         return redirect()->back()->with('flash.banner', __('All results published.'));
@@ -320,7 +323,7 @@ class ResultRaceController extends Controller
 
         $this->authorize('update', $result);
 
-        abort_unless($result->canBePublished(), 422, __('Series and heats are not published, publish their combined results.'));
+        abort_unless($result->canBePublished(), 422, __('Series and heats are not published, publish their combined results or promote the heats.'));
 
         $result->update([
             'published_at' => $result->isPublished() ? null : now(),

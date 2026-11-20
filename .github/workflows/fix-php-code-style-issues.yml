@@ -11,6 +11,9 @@ permissions:
 jobs:
   php-code-styling:
     runs-on: ubuntu-latest
+    container: 
+      image: klinktechnology/k-box-ci-pipeline-php:8.4
+      options: --user root 
     timeout-minutes: 5
 
     steps:

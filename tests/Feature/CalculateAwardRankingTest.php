@@ -773,6 +773,44 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertEquals(34.0, $ranking[0]['total_points']);
     }
 
+    public function test_day_award_counts_heats_promoted_to_a_race_as_that_race(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->recycle($championship)->create();
+        $race = Race::factory()->recycle($championship)->create();
+
+        $drivers = Participant::factory()->count(4)->recycle($championship)->recycle($race)->category($category)->create();
+
+        $notPromotedHeat = RunResult::factory()->recycle($race)->create(['run_type' => RunType::HEAT]);
+        $this->createResult($notPromotedHeat, $drivers[0], 100);
+
+        $heatOne = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::HEAT, 'promoted_to' => RunType::RACE_1]);
+        $this->createResult($heatOne, $drivers[0], 25, bestLapTime: '54.000');
+        $this->createResult($heatOne, $drivers[1], 18, bestLapTime: '54.500');
+
+        $heatTwo = RunResult::factory()->published()->recycle($race)->create(['run_type' => RunType::HEAT, 'promoted_to' => RunType::RACE_1]);
+        $this->createResult($heatTwo, $drivers[2], 18, bestLapTime: '54.100');
+        $this->createResult($heatTwo, $drivers[3], 10, bestLapTime: '55.000');
+
+        $award = ChampionshipAward::factory()->dayAward()->recycle($championship)->create();
+        $award->categories()->sync([$category->getKey()]);
+        $award->races()->sync([$race->getKey()]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertSame(
+            [$drivers[0]->getKey(), $drivers[2]->getKey(), $drivers[1]->getKey(), $drivers[3]->getKey()],
+            $ranking->pluck('participant_id')->all(),
+        );
+        $this->assertEquals([4, 4, 4, 4], $ranking->pluck('session_bonus')->all());
+        $this->assertEquals(29.0, $ranking[0]['total_points']);
+        $this->assertSame('race_1_best_lap_time', $ranking[1]['tie_breaks'][0]['criterion']);
+
+        $breakdown = app(CalculateAwardRanking::class)->breakdown($award, $drivers[0]->racer_hash);
+
+        $this->assertSame(RunType::RACE_1, $breakdown['entries_by_race']->get($race->getKey())->sole()['run_type']);
+    }
+
     public function test_day_award_breaks_ties_by_session_size_then_race_and_qualifying_best_lap(): void
     {
         $championship = Championship::factory()->create();

@@ -923,7 +923,7 @@
     "Classify heats": "Classifica batterie",
     "Combined qualifying created.": "Qualifiche combinate create.",
     "Heats classification created.": "Classifica delle batterie creata.",
-    "Series and heats are not published, publish their combined results.": "Le serie e le batterie non sono pubblicate, pubblica i risultati combinati.",
+    "Series and heats are not published, publish their combined results or promote the heats.": "Le serie e le batterie non sono pubblicate, pubblica i risultati combinati o promuovi le batterie.",
     "No qualifying series uploaded.": "Nessuna serie di qualifica caricata.",
     "Already in an uploaded qualifying: :categories.": "Già presenti in una qualifica caricata: :categories.",
     "Heats can only be classified as a race.": "Le batterie possono essere classificate solo come gara.",
@@ -939,5 +939,14 @@
     ":count qualifying series|:count qualifying series": ":count serie di qualifica|:count serie di qualifica",
     ":count driver|:count drivers": ":count pilota|:count piloti",
     "Export for timing": "Esporta per cronometraggio",
-    "Available once the heats have been run and their results uploaded.": "Disponibile dopo aver disputato le batterie e caricato i loro risultati."
+    "Available once the heats have been run and their results uploaded.": "Disponibile dopo aver disputato le batterie e caricato i loro risultati.",
+    "Already in a :run result: :categories.": "Già presenti in un risultato :run: :categories.",
+    "Only heats can be promoted.":"Solo le batterie possono essere promosse.",
+    "The heats are already promoted as :run.": "Le batterie sono già promosse come :run.",
+    "Heat promoted.": "Batteria promossa.",
+    "Heat promotion removed.": "Promozione della batteria rimossa.",
+    "Scored as :run": "Vale come :run",
+    "Remove promotion": "Rimuovi promozione",
+    "Promote as": "Promuovi come",
+    "Promote": "Promuovi"
 }

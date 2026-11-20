@@ -42,6 +42,7 @@ use App\Http\Controllers\PrintRaceParticipantReceiptsController;
 use App\Http\Controllers\PrintRaceParticipantsController;
 use App\Http\Controllers\PrintRacePenaltySheetController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\PromoteHeatResultController;
 use App\Http\Controllers\PublicChampionshipAwardController;
 use App\Http\Controllers\PublicRaceResultController;
 use App\Http\Controllers\RaceCombinedResultController;
@@ -173,6 +174,10 @@ Route::middleware([
         Route::post('races/{race}/results/combine-heats', [RaceCombinedResultController::class, 'heats'])->name('races.results.combine-heats');
 
         Route::get('races/{race}/heat-grids', [RaceHeatGridController::class, 'index'])->name('races.heat-grids.index');
+
+        Route::post('results/{result}/promotion', [PromoteHeatResultController::class, 'store'])->name('results.promotion.store');
+
+        Route::delete('results/{result}/promotion', [PromoteHeatResultController::class, 'destroy'])->name('results.promotion.destroy');
 
         Route::post('results/{result}/toggle-publish', [ResultRaceController::class, 'togglePublish'])->name('results.toggle-publish');
 

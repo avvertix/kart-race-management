@@ -72,6 +72,10 @@
         </div>
 
 
+        @error('promote')
+            <p class="text-sm text-red-700 mt-4">{{ $message }}</p>
+        @enderror
+
         @forelse ($runResults as $runType => $group)
             <h4 class="font-semibold text-lg text-zinc-700 mt-6 mb-2 flex items-center gap-2">
                 {{ $group->first()->run_type->localizedName() }}
@@ -95,6 +99,9 @@
                             <a href="{{ route('results.show', $runResult) }}" class="text-orange-600 hover:text-orange-900">{{ $runResult->title }}</a>
                             @if ($runResult->is_generated)
                                 <span class="ml-2 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">{{ __('Calculated') }}</span>
+                            @endif
+                            @if ($runResult->isPromoted())
+                                <span class="ml-2 inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800">{{ __('Scored as :run', ['run' => $runResult->promoted_to->localizedName()]) }}</span>
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
@@ -123,6 +130,23 @@
                                     @csrf
                                     <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Link') }}</button>
                                 </form>
+                                @if ($runResult->isPromoted())
+                                    <form class="inline" action="{{ route('results.promotion.destroy', $runResult) }}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Remove promotion') }}</button>
+                                    </form>
+                                @elseif ($runResult->run_type->isHeat())
+                                    <form class="inline-flex items-center gap-1" action="{{ route('results.promotion.store', $runResult) }}" method="post">
+                                        @csrf
+                                        <select name="run_type" aria-label="{{ __('Promote as') }}" class="rounded-md border-zinc-300 py-0.5 text-sm">
+                                            @foreach ([\App\Models\RunType::RACE_1, \App\Models\RunType::RACE_2] as $type)
+                                                <option value="{{ $type->value }}">{{ $type->localizedName() }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="text-orange-600 hover:text-orange-900 cursor-pointer">{{ __('Promote') }}</button>
+                                    </form>
+                                @endif
                                 @if ($runResult->canBePublished())
                                     <form class="inline" action="{{ route('results.toggle-publish', $runResult) }}" method="post">
                                         @csrf

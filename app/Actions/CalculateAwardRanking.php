@@ -32,6 +32,11 @@ class CalculateAwardRanking
     private const DAY_AWARD_RUN_TYPES = [RunType::QUALIFY, RunType::RACE_1, RunType::RACE_2];
 
     /**
+     * The run type a session counts as: a heat promoted to pre-final or final counts as that race.
+     */
+    private const SCORING_RUN_TYPE = 'COALESCE(run_results.promoted_to, run_results.run_type)';
+
+    /**
      * Calculate the ranking for a given award.
      *
      * Day awards also include the `session_bonus` already added to `total_points`, the lap
@@ -117,7 +122,9 @@ class CalculateAwardRanking
         $this->applyWildcardFilter($query, $award->wildcard_filter);
 
         if ($award->isDayAward()) {
-            $query->whereIn('run_results.run_type', array_map(fn (RunType $type) => $type->value, self::DAY_AWARD_RUN_TYPES));
+            $runTypes = array_map(fn (RunType $type) => $type->value, self::DAY_AWARD_RUN_TYPES);
+
+            $query->whereRaw(self::SCORING_RUN_TYPE.' IN ('.implode(', ', array_fill(0, count($runTypes), '?')).')', $runTypes);
         }
 
         return $query;
@@ -144,7 +151,7 @@ class CalculateAwardRanking
         return $query
             ->selectRaw('
                 run_results.race_id as race_id,
-                run_results.run_type as run_type_value,
+                '.self::SCORING_RUN_TYPE.' as run_type_value,
                 run_results.title as run_title,
                 participant_results.points as points_value,
                 participant_results.position as position_value,
@@ -223,7 +230,8 @@ class CalculateAwardRanking
      * times of race 1, race 2 and qualifying, all used to rank and break ties.
      *
      * When a race result is generated from the heats, its size (the sum of the heats) is the
-     * session size of that race, so a smaller final does not lower the bonus.
+     * session size of that race, so a smaller final does not lower the bonus. The same applies
+     * to heats promoted to a race: the session size is the sum of the heats promoted to it.
      */
     private function fetchPerRacePoints(Builder $query, bool $forDayAward = false): Collection
     {
@@ -232,13 +240,22 @@ class CalculateAwardRanking
                 ->selectRaw('run_result_id, COUNT(*) as session_size')
                 ->groupBy('run_result_id');
 
+            $promotedHeatsSizes = ParticipantResult::query()
+                ->join('run_results', 'run_results.id', '=', 'participant_results.run_result_id')
+                ->whereNotNull('run_results.promoted_to')
+                ->selectRaw('run_results.race_id, run_results.promoted_to, COUNT(*) as session_size')
+                ->groupBy('run_results.race_id', 'run_results.promoted_to');
+
             $query
                 ->joinSub($sessionSizes, 'session_sizes', 'session_sizes.run_result_id', '=', 'participant_results.run_result_id')
+                ->leftJoinSub($promotedHeatsSizes, 'promoted_heats_sizes', fn ($join) => $join
+                    ->on('promoted_heats_sizes.race_id', '=', 'run_results.race_id')
+                    ->on('promoted_heats_sizes.promoted_to', '=', 'run_results.promoted_to'))
                 ->selectRaw('MIN(session_sizes.session_size) as session_size')
-                ->selectRaw('MAX(CASE WHEN run_results.is_generated = 1 AND run_results.run_type IN (?, ?) THEN session_sizes.session_size END) as heats_session_size', [RunType::RACE_1->value, RunType::RACE_2->value])
-                ->selectRaw('MAX(CASE WHEN run_results.run_type = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_1_best_lap_time', [RunType::RACE_1->value])
-                ->selectRaw('MAX(CASE WHEN run_results.run_type = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_2_best_lap_time', [RunType::RACE_2->value])
-                ->selectRaw('MAX(CASE WHEN run_results.run_type = ? THEN participant_results.best_lap_time END) as qualifying_best_lap_time', [RunType::QUALIFY->value]);
+                ->selectRaw('MAX(CASE WHEN run_results.is_generated = 1 AND run_results.run_type IN (?, ?) THEN session_sizes.session_size ELSE promoted_heats_sizes.session_size END) as heats_session_size', [RunType::RACE_1->value, RunType::RACE_2->value])
+                ->selectRaw('MAX(CASE WHEN '.self::SCORING_RUN_TYPE.' = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_1_best_lap_time', [RunType::RACE_1->value])
+                ->selectRaw('MAX(CASE WHEN '.self::SCORING_RUN_TYPE.' = ? AND participant_results.is_dns = 0 AND participant_results.is_dnf = 0 THEN participant_results.best_lap_time END) as race_2_best_lap_time', [RunType::RACE_2->value])
+                ->selectRaw('MAX(CASE WHEN '.self::SCORING_RUN_TYPE.' = ? THEN participant_results.best_lap_time END) as qualifying_best_lap_time', [RunType::QUALIFY->value]);
         }
 
         return $query

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class RunResult extends Model
     protected $fillable = [
         'race_id',
         'run_type',
+        'promoted_to',
         'title',
         'file_name',
         'published_at',
@@ -82,10 +84,48 @@ class RunResult extends Model
 
     /**
      * Series and heats are working sessions, only their combined classification is published.
+     * A heat promoted to pre-final or final is published as that race.
      */
     public function canBePublished(): bool
     {
-        return ! $this->run_type->isWorkingSession();
+        return $this->isScored();
+    }
+
+    /**
+     * The run type the result is scored, published and counted in awards as.
+     */
+    public function scoringRunType(): RunType
+    {
+        return $this->promoted_to ?? $this->run_type;
+    }
+
+    /**
+     * Determine if the result receives points: working sessions do not, unless promoted.
+     */
+    public function isScored(): bool
+    {
+        return ! $this->scoringRunType()->isWorkingSession();
+    }
+
+    /**
+     * Determine if the heat is promoted to pre-final or final.
+     */
+    public function isPromoted(): bool
+    {
+        return $this->promoted_to !== null;
+    }
+
+    /**
+     * Scope a query to the results that can be published: not working sessions, or promoted ones.
+     *
+     * @param  Builder<RunResult>  $query
+     * @return Builder<RunResult>
+     */
+    public function scopePublishable(Builder $query): Builder
+    {
+        return $query->where(fn (Builder $query) => $query
+            ->whereNotIn('run_type', RunType::workingSessionValues())
+            ->orWhereNotNull('promoted_to'));
     }
 
     /**
@@ -97,6 +137,7 @@ class RunResult extends Model
     {
         return [
             'run_type' => RunType::class,
+            'promoted_to' => RunType::class,
             'published_at' => 'datetime',
             'is_generated' => 'boolean',
         ];

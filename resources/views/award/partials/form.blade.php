@@ -116,6 +116,21 @@
                 <x-label for="best_n" value="{{ __('Best N races') }}" />
                 <x-input id="best_n" type="number" name="best_n" :value="old('best_n', optional($currentAward)->best_n)" class="mt-1 block w-32!" min="1" />
                 <x-input-error for="best_n" class="mt-2" />
+
+                @if($isCategory)
+                    <label class="mt-4 flex items-start">
+                        <input type="hidden" name="best_n_is_minimum" value="0">
+                        <input type="checkbox" name="best_n_is_minimum" value="1"
+                            class="mt-0.5 rounded-sm border-zinc-300 text-orange-600 shadow-xs focus:border-orange-300 focus:ring-3 focus:ring-orange-200/50"
+                            @checked(old('best_n_is_minimum', $currentAward?->best_n_is_minimum ?? false))
+                        >
+                        <span class="ml-2 text-sm text-zinc-600">
+                            {{ __('Require at least N races to qualify') }}
+                            <span class="block text-xs text-zinc-500">{{ __('Drivers with fewer races are ranked after the qualified drivers.') }}</span>
+                        </span>
+                    </label>
+                    <x-input-error for="best_n_is_minimum" class="mt-2" />
+                @endif
             </div>
 
             <div x-show="rankingMode === 'specific'" x-cloak class="mt-4">

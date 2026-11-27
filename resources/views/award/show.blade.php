@@ -9,6 +9,10 @@
                 {{ __('Public page') }}
             </a>
         @endif
+        <a class="inline-flex items-center gap-2" target="_blank" href="{{ route('awards.show', ['award' => $award, 'format' => 'pdf']) }}">
+            <x-ri-printer-line class="size-4 text-zinc-500 shrink-0" />
+            {{ __('Print PDF') }}
+        </a>
         @can('update', $award)
             <form action="{{ route('awards.toggle-publish', $award) }}" method="post">
                 @csrf
@@ -66,7 +70,7 @@
                 <dd class="mt-1 text-sm text-zinc-900">
                     {{ $award->ranking_mode->localizedName() }}
                     @if($award->ranking_mode === \App\Models\AwardRankingMode::BestN)
-                        ({{ $award->best_n }})
+                        ({{ $award->best_n }}@if($award->requiresMinimumRaces()), {{ __('minimum to qualify') }}@endif)
                     @endif
                 </dd>
             </div>
@@ -100,7 +104,12 @@
             </x-slot>
 
             @forelse ($ranking as $index => $entry)
-                <tr>
+                @if(! ($entry['qualified'] ?? true) && ($ranking->get($index - 1)['qualified'] ?? true))
+                    <tr>
+                        <th scope="colgroup" colspan="{{ 3 + $races->count() }}" class="bg-zinc-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 sm:pl-6">{{ trans_choice('Less than :count race|Less than :count races', $award->best_n, ['count' => $award->best_n]) }}</th>
+                    </tr>
+                @endif
+                <tr @class(['opacity-75' => ! ($entry['qualified'] ?? true)])>
                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-zinc-500 sm:pl-6">{{ $index + 1 }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-zinc-900">
                         <a href="{{ route('awards.participants.breakdown', ['award' => $award, 'participant' => $entry['uuid']]) }}" class="text-orange-600 hover:text-orange-900">

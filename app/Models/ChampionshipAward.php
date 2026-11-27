@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property AwardType $type
+ * @property AwardRankingMode $ranking_mode
+ * @property ?int $best_n
+ * @property bool $best_n_is_minimum
  */
 class ChampionshipAward extends Model
 {
@@ -28,6 +31,7 @@ class ChampionshipAward extends Model
         'type',
         'ranking_mode',
         'best_n',
+        'best_n_is_minimum',
         'wildcard_filter',
         'category_id',
         'published_at',
@@ -104,6 +108,17 @@ class ChampionshipAward extends Model
         return $this->type === AwardType::Day;
     }
 
+    /**
+     * A best N category award can require drivers to race at least N races to qualify.
+     * Drivers with fewer races are ranked after the qualified ones.
+     */
+    public function requiresMinimumRaces(): bool
+    {
+        return $this->isCategoryAward()
+            && $this->ranking_mode === AwardRankingMode::BestN
+            && $this->best_n_is_minimum;
+    }
+
     public function isPublished(): bool
     {
         return $this->published_at !== null;
@@ -116,6 +131,7 @@ class ChampionshipAward extends Model
             'ranking_mode' => AwardRankingMode::class,
             'wildcard_filter' => WildcardFilter::class,
             'best_n' => 'integer',
+            'best_n_is_minimum' => 'boolean',
             'published_at' => 'datetime',
         ];
     }

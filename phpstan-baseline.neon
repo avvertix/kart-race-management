@@ -223,18 +223,6 @@ parameters:
 			path: app/Actions/CalculateAwardRanking.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardRankingMode\:\:BestN will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Actions/CalculateAwardRanking.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardRankingMode\:\:SpecificRaces will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Actions/CalculateAwardRanking.php
-
-		-
 			message: '#^Property App\\Models\\Participant\:\:\$cost \(string\|null\) does not accept App\\Data\\RegistrationCostData\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -1417,12 +1405,6 @@ parameters:
 			path: app/Http/Controllers/ChampionshipAwardController.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardRankingMode\:\:SpecificRaces will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Http/Controllers/ChampionshipAwardController.php
-
-		-
 			message: '#^Method App\\Http\\Controllers\\ChampionshipBannerController\:\:destroy\(\) should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse\.$#'
 			identifier: return.type
 			count: 1
@@ -2487,12 +2469,6 @@ parameters:
 		-
 			message: '#^Method App\\Http\\Controllers\\PublicChampionshipAwardController\:\:show\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/PublicChampionshipAwardController.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and App\\Models\\AwardRankingMode\:\:SpecificRaces will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: app/Http/Controllers/PublicChampionshipAwardController.php
 

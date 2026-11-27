@@ -41,7 +41,8 @@ class CalculateAwardRanking
      * Calculate the ranking for a given award.
      *
      * Each entry has `participant_id`, `racer_hash`, `first_name`, `last_name`, `bib`, `total_points`, `races_counted` and
-     * `points_per_race`. Day awards also include the `session_bonus` already added to `total_points`, the lap
+     * `points_per_race`. Best N awards also include `counted_race_ids` and `qualified`, false when the driver
+     * raced fewer than the minimum races required. Day awards also include the `session_bonus` already added to `total_points`, the lap
      * times used as tie-breaks and, in `tie_breaks`, how ties with adjacent drivers were resolved.
      *
      * @return Collection<int, array<string, mixed>>
@@ -145,7 +146,7 @@ class CalculateAwardRanking
         }
 
         if ($award->ranking_mode === AwardRankingMode::BestN) {
-            return $this->rankByBestN($perRacePoints, $award->best_n);
+            return $this->rankByBestN($perRacePoints, $award->best_n, $award->requiresMinimumRaces());
         }
 
         return $this->rankByTotal($perRacePoints);
@@ -448,11 +449,17 @@ class CalculateAwardRanking
         return ((int) $matches[1]) * 60 + (float) $matches[2];
     }
 
-    private function rankByBestN(Collection $perRacePoints, int $bestN): Collection
+    /**
+     * Rank by the points of each driver's best N races.
+     *
+     * When N is also the minimum number of races, drivers who raced at least N races
+     * are ranked first; the others follow, marked as not qualified. Both groups are sorted by points.
+     */
+    private function rankByBestN(Collection $perRacePoints, int $bestN, bool $bestNIsMinimum = false): Collection
     {
         return $perRacePoints
             ->groupBy('racer_hash')
-            ->map(function (Collection $raceRows) use ($bestN) {
+            ->map(function (Collection $raceRows) use ($bestN, $bestNIsMinimum) {
                 $first = $raceRows->first();
                 $allPointsPerRace = $raceRows
                     ->mapWithKeys(fn ($row) => [$row->race_id => (float) $row->race_points])
@@ -471,9 +478,10 @@ class CalculateAwardRanking
                     'races_counted' => $allPointsPerRace->take($bestN)->count(),
                     'points_per_race' => $allPointsPerRace->all(),
                     'counted_race_ids' => $bestRaceIds->values()->all(),
+                    'qualified' => ! $bestNIsMinimum || $raceRows->count() >= $bestN,
                 ];
             })
-            ->sortByDesc('total_points')
+            ->sort(fn (array $a, array $b) => [$b['qualified'], $b['total_points']] <=> [$a['qualified'], $a['total_points']])
             ->values();
     }
 }

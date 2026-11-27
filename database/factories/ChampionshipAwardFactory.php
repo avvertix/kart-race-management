@@ -67,6 +67,13 @@ class ChampionshipAwardFactory extends Factory
         ]);
     }
 
+    public function bestNAsMinimum(int $n): static
+    {
+        return $this->bestN($n)->state(fn () => [
+            'best_n_is_minimum' => true,
+        ]);
+    }
+
     public function specificRaces(): static
     {
         return $this->state(fn () => [

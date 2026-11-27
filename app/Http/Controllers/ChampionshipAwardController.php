@@ -11,6 +11,7 @@ use App\Models\Championship;
 use App\Models\ChampionshipAward;
 use App\Models\Participant;
 use App\Models\WildcardFilter;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -61,6 +62,7 @@ class ChampionshipAwardController extends Controller
             'type' => $validated['type'],
             'ranking_mode' => $validated['ranking_mode'] ?? AwardRankingMode::All->value,
             'best_n' => $validated['best_n'] ?? null,
+            'best_n_is_minimum' => $this->isBestNMinimum($validated),
             'wildcard_filter' => $validated['wildcard_filter'] ?? WildcardFilter::All->value,
             'category_id' => $validated['category_id'] ?? null,
         ]);
@@ -78,21 +80,32 @@ class ChampionshipAwardController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource, or print it as PDF with the same data when the format is pdf.
      */
-    public function show(ChampionshipAward $award)
+    public function show(Request $request, ChampionshipAward $award)
     {
         $award->load(['category', 'categories', 'races']);
 
-        $ranking = app(CalculateAwardRanking::class)($award, publishedOnly: false);
-        $championship = $award->championship;
-
-        return view('award.show', [
-            'championship' => $championship,
+        $data = [
+            'championship' => $award->championship,
             'award' => $award,
-            'ranking' => $ranking,
+            'ranking' => app(CalculateAwardRanking::class)($award, publishedOnly: false),
             'races' => $this->resolveScopedRaces($award),
-        ]);
+        ];
+
+        if ($request->input('format') === 'pdf') {
+            return Pdf::loadView('award.show-pdf', $data)
+                ->setPaper('a4', 'landscape')
+                ->addInfo([
+                    'Title' => $award->name,
+                    'Author' => config('app.name'),
+                    'Creator' => config('app.name'),
+                    'PDFProducer' => config('app.name'),
+                ])
+                ->stream($award->name.'.pdf');
+        }
+
+        return view('award.show', $data);
     }
 
     /**
@@ -145,6 +158,7 @@ class ChampionshipAwardController extends Controller
             'type' => $validated['type'],
             'ranking_mode' => $validated['ranking_mode'] ?? AwardRankingMode::All->value,
             'best_n' => $validated['best_n'] ?? null,
+            'best_n_is_minimum' => $this->isBestNMinimum($validated),
             'wildcard_filter' => $validated['wildcard_filter'] ?? WildcardFilter::All->value,
             'category_id' => $validated['category_id'] ?? null,
         ]);
@@ -206,6 +220,18 @@ class ChampionshipAwardController extends Controller
     }
 
     /**
+     * Whether best N is the minimum number of races to qualify, only available for best N category awards.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function isBestNMinimum(array $validated): bool
+    {
+        return $validated['type'] === AwardType::Category->value
+            && ($validated['ranking_mode'] ?? null) === AwardRankingMode::BestN->value
+            && (bool) ($validated['best_n_is_minimum'] ?? false);
+    }
+
+    /**
      * Validate the award input. Day awards always rank exactly one specific race.
      *
      * @return array<string, mixed>
@@ -227,6 +253,7 @@ class ChampionshipAwardController extends Controller
             'category_id' => ['required_if:type,category', 'nullable', 'exists:categories,id'],
             'ranking_mode' => ['nullable', Rule::in(array_column(AwardRankingMode::cases(), 'value'))],
             'best_n' => ['required_if:ranking_mode,best_n', 'nullable', 'integer', 'min:1'],
+            'best_n_is_minimum' => ['nullable', 'boolean'],
             'wildcard_filter' => ['nullable', Rule::in(array_column(WildcardFilter::cases(), 'value'))],
             'race_ids' => ['required_if:ranking_mode,specific', 'nullable', 'array', Rule::when($isDayAward, ['size:1'])],
             'race_ids.*' => ['exists:races,id'],

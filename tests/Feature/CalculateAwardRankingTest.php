@@ -642,6 +642,64 @@ class CalculateAwardRankingTest extends TestCase
         $this->assertEqualsCanonicalizing([5.0, 20.0], $entries->pluck('points')->all());
     }
 
+    public function test_best_n_as_minimum_ranks_drivers_with_fewer_races_after_qualified_ones(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $runResults = collect(range(1, 3))->map(fn () => RunResult::factory()->published()->create([
+            'race_id' => Race::factory()->create(['championship_id' => $championship->getKey()])->getKey(),
+        ]));
+
+        $regular = Participant::factory()->create(['championship_id' => $championship->getKey(), 'first_name' => 'Regular', 'bib' => 1]);
+        $occasional = Participant::factory()->create(['championship_id' => $championship->getKey(), 'first_name' => 'Occasional', 'bib' => 2]);
+        $lowScorer = Participant::factory()->create(['championship_id' => $championship->getKey(), 'first_name' => 'Low', 'bib' => 3]);
+
+        foreach ([[$regular, [10, 10, 5]], [$occasional, [25]], [$lowScorer, [1, 1]]] as [$participant, $points]) {
+            foreach ($points as $index => $racePoints) {
+                ParticipantResult::factory()->forParticipant($participant)->create([
+                    'run_result_id' => $runResults[$index]->getKey(),
+                    'category_id' => $category->getKey(),
+                    'points' => $racePoints,
+                ]);
+            }
+        }
+
+        $award = ChampionshipAward::factory()->bestNAsMinimum(2)->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $ranking = app(CalculateAwardRanking::class)($award);
+
+        $this->assertEquals(['Regular', 'Low', 'Occasional'], $ranking->pluck('first_name')->all());
+        $this->assertEquals([true, true, false], $ranking->pluck('qualified')->all());
+        $this->assertEquals([20.0, 2.0, 25.0], $ranking->pluck('total_points')->all());
+    }
+
+    public function test_best_n_without_minimum_qualifies_every_driver(): void
+    {
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+        $runResult = RunResult::factory()->published()->create([
+            'race_id' => Race::factory()->create(['championship_id' => $championship->getKey()])->getKey(),
+        ]);
+        $participant = Participant::factory()->create(['championship_id' => $championship->getKey()]);
+
+        ParticipantResult::factory()->forParticipant($participant)->create([
+            'run_result_id' => $runResult->getKey(),
+            'category_id' => $category->getKey(),
+            'points' => 25,
+        ]);
+
+        $award = ChampionshipAward::factory()->bestN(2)->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+        ]);
+
+        $this->assertTrue(app(CalculateAwardRanking::class)($award)->first()['qualified']);
+    }
+
     public function test_breakdown_marks_races_excluded_by_best_n(): void
     {
         $championship = Championship::factory()->create();

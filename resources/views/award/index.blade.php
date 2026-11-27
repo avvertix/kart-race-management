@@ -42,7 +42,7 @@
                         {{ $item->ranking_mode->localizedName() }}
                     @endif
                     @if($item->ranking_mode === \App\Models\AwardRankingMode::BestN)
-                        ({{ $item->best_n }})
+                        ({{ $item->best_n }}@if($item->requiresMinimumRaces()), {{ __('minimum to qualify') }}@endif)
                     @endif
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm">

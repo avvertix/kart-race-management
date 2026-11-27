@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Actions\CalculateAwardRanking;
 use App\Models\AwardRankingMode;
 use App\Models\AwardType;
 use App\Models\Category;
@@ -151,6 +152,50 @@ class ChampionshipAwardControllerTest extends TestCase
         $award = ChampionshipAward::first();
         $this->assertEquals(AwardRankingMode::BestN, $award->ranking_mode);
         $this->assertEquals(5, $award->best_n);
+        $this->assertFalse($award->best_n_is_minimum);
+    }
+
+    public function test_category_award_created_with_best_n_as_minimum_races(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $this
+            ->actingAs($user)
+            ->post(route('championships.awards.store', $championship), [
+                'type' => 'category',
+                'name' => 'At least 5 races',
+                'category_id' => $category->getKey(),
+                'ranking_mode' => 'best_n',
+                'best_n' => 5,
+                'best_n_is_minimum' => '1',
+                'wildcard_filter' => 'all',
+            ])
+            ->assertRedirectToRoute('championships.awards.index', $championship);
+
+        $this->assertTrue(ChampionshipAward::first()->requiresMinimumRaces());
+    }
+
+    public function test_best_n_as_minimum_races_ignored_for_other_ranking_modes(): void
+    {
+        $user = User::factory()->organizer()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $this
+            ->actingAs($user)
+            ->post(route('championships.awards.store', $championship), [
+                'type' => 'category',
+                'name' => 'All races',
+                'category_id' => $category->getKey(),
+                'ranking_mode' => 'all',
+                'best_n_is_minimum' => '1',
+                'wildcard_filter' => 'all',
+            ])
+            ->assertRedirectToRoute('championships.awards.index', $championship);
+
+        $this->assertFalse(ChampionshipAward::first()->best_n_is_minimum);
     }
 
     public function test_category_award_created_with_specific_races(): void
@@ -334,6 +379,12 @@ class ChampionshipAwardControllerTest extends TestCase
             ->get(route('awards.participants.breakdown', ['award' => $award, 'participant' => $runnerUp]))
             ->assertSuccessful()
             ->assertSeeInOrder(['Behind 11 Winner', 'Race 1 best lap', '48.227', '48.040']);
+
+        $this
+            ->actingAs($user)
+            ->get(route('awards.show', ['award' => $award, 'format' => 'pdf']))
+            ->assertSuccessful()
+            ->assertHeader('Content-Type', 'application/pdf');
     }
 
     public function test_overall_award_requires_categories(): void
@@ -533,6 +584,102 @@ class ChampionshipAwardControllerTest extends TestCase
 
         $response->assertSuccessful();
         $response->assertSee('3 races');
+    }
+
+    public function test_award_show_page_groups_drivers_below_minimum_races_under_a_heading(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey()]);
+
+        $runResults = collect(range(1, 2))->map(fn () => RunResult::factory()->published()->create([
+            'race_id' => Race::factory()->create(['championship_id' => $championship->getKey()])->getKey(),
+        ]));
+
+        $regular = Participant::factory()->create(['championship_id' => $championship->getKey(), 'last_name' => 'Regular']);
+        $occasional = Participant::factory()->create(['championship_id' => $championship->getKey(), 'last_name' => 'Occasional']);
+
+        foreach ([[$regular, $runResults], [$occasional, $runResults->take(1)]] as [$participant, $participantRunResults]) {
+            foreach ($participantRunResults as $runResult) {
+                ParticipantResult::factory()->forParticipant($participant)->create([
+                    'run_result_id' => $runResult->getKey(),
+                    'category_id' => $category->getKey(),
+                    'points' => 10,
+                ]);
+            }
+        }
+
+        $award = ChampionshipAward::factory()->bestNAsMinimum(2)->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+            'published_at' => now(),
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('awards.show', $award))
+            ->assertSuccessful()
+            ->assertSeeInOrder(['Regular', 'Less than 2 races', 'Occasional']);
+
+        $this
+            ->get(route('public.awards.show', $award))
+            ->assertSuccessful()
+            ->assertSeeInOrder(['Regular', 'Less than 2 races', 'Occasional']);
+    }
+
+    public function test_award_can_be_printed_as_pdf_with_award_type_and_category_in_the_page_header(): void
+    {
+        $user = User::factory()->racemanager()->create();
+        $championship = Championship::factory()->create();
+        $category = Category::factory()->create(['championship_id' => $championship->getKey(), 'name' => 'Mini 60']);
+
+        $runResults = collect(range(1, 2))->map(fn () => RunResult::factory()->create([
+            'race_id' => Race::factory()->create(['championship_id' => $championship->getKey()])->getKey(),
+        ]));
+
+        $regular = Participant::factory()->create(['championship_id' => $championship->getKey(), 'last_name' => 'Regular']);
+        $occasional = Participant::factory()->create(['championship_id' => $championship->getKey(), 'last_name' => 'Occasional']);
+
+        foreach ([[$regular, $runResults], [$occasional, $runResults->take(1)]] as [$participant, $participantRunResults]) {
+            foreach ($participantRunResults as $runResult) {
+                ParticipantResult::factory()->forParticipant($participant)->create([
+                    'run_result_id' => $runResult->getKey(),
+                    'category_id' => $category->getKey(),
+                    'points' => 10,
+                ]);
+            }
+        }
+
+        $award = ChampionshipAward::factory()->bestNAsMinimum(2)->create([
+            'championship_id' => $championship->getKey(),
+            'category_id' => $category->getKey(),
+            'name' => 'Mini trophy',
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->get(route('awards.show', ['award' => $award, 'format' => 'pdf']))
+            ->assertSuccessful()
+            ->assertHeader('Content-Type', 'application/pdf');
+
+        $this
+            ->view('award.show-pdf', [
+                'championship' => $championship,
+                'award' => $award,
+                'ranking' => app(CalculateAwardRanking::class)($award, publishedOnly: false),
+                'races' => $championship->races()->orderBy('event_start_at')->get(),
+            ])
+            ->assertSeeInOrder(['<header>', 'Category', 'Mini trophy', 'Mini 60', '</header>'], escape: false)
+            ->assertSeeInOrder(['Regular', 'Less than 2 races', 'Occasional']);
+    }
+
+    public function test_award_pdf_requires_login(): void
+    {
+        $award = ChampionshipAward::factory()->create();
+
+        $this
+            ->get(route('awards.show', ['award' => $award, 'format' => 'pdf']))
+            ->assertRedirect(route('login'));
     }
 
     public function test_award_show_page_does_not_display_races_participated_for_all_races_mode(): void

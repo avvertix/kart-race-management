@@ -74,6 +74,11 @@
         </thead>
         <tbody>
             @forelse ($ranking as $index => $entry)
+                @if(! ($entry['qualified'] ?? true) && ($ranking->get($index - 1)['qualified'] ?? true))
+                    <tr>
+                        <td colspan="{{ 3 + $races->count() }}"><strong>{{ trans_choice('Less than :count race|Less than :count races', $award->best_n, ['count' => $award->best_n]) }}</strong></td>
+                    </tr>
+                @endif
                 <tr>
                     <td >{{ $index + 1 }}</td>
                     <td class="col-name">{{ $entry['bib'] }}&nbsp;{{ $entry['first_name'] }} {{ $entry['last_name'] }}</td>

@@ -44,7 +44,12 @@
                 </thead>
                 <tbody>
                     @forelse ($ranking as $index => $entry)
-                        <tr>
+                        @if(! ($entry['qualified'] ?? true) && ($ranking->get($index - 1)['qualified'] ?? true))
+                            <tr>
+                                <th colspan="{{ 3 + $races->count() }}" class="px-2 pt-6 pb-2 border-b text-left text-sm font-semibold">{{ trans_choice('Less than :count race|Less than :count races', $award->best_n, ['count' => $award->best_n]) }}</th>
+                            </tr>
+                        @endif
+                        <tr @class(['opacity-75' => ! ($entry['qualified'] ?? true)])>
                             <td class="px-2 py-2 border-b text-zinc-500">{{ $index + 1 }}</td>
                             <td class="px-2 py-2 border-b font-medium"><span class="inline-block font-mono font-normal mr-2 w-7">{{ $entry['bib'] }}</span>{{ $entry['first_name'] }} {{ $entry['last_name'] }}</td>
                             <td class="px-2 py-2 border-b text-right font-semibold">{{ $entry['total_points'] }}</td>

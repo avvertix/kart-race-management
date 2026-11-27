@@ -8,6 +8,20 @@
                 {{ __('Edit reservation') }}
             </x-button-link>
         @endcan
+        @feature(\App\Features\LicencesAndEnrollments::class)
+            @can('confirm', $reservation)
+                <form method="POST" action="{{ route('bib-reservations.confirm', $reservation) }}">
+                    @csrf
+                    <x-button type="submit">{{ __('Confirm reservation') }}</x-button>
+                </form>
+            @endcan
+            @can('release', $reservation)
+                <form method="POST" action="{{ route('bib-reservations.release', $reservation) }}">
+                    @csrf
+                    <x-danger-button type="submit">{{ __('Release the number') }}</x-danger-button>
+                </form>
+            @endcan
+        @endfeature
     </x-slot>
 
         <div class="grid md:grid-cols-2 gap-4">
@@ -16,6 +30,15 @@
                 <p class="text-2xl font-bold">
                     <span class="font-mono px-2 py-1 rounded-sm bg-orange-100 text-orange-700 print:bg-orange-100">{{ $reservation->bib }}</span> {{ $reservation->driver }}
                 </p>
+                @feature(\App\Features\LicencesAndEnrollments::class)
+                    <p>
+                        <span class="block text-zinc-500">{{ __('Status') }}</span>
+                        {{ $reservation->status->label() }}
+                        @if ($reservation->released_at)
+                            &middot; <x-time :value="$reservation->released_at" />
+                        @endif
+                    </p>
+                @endfeature
                 <p>
                     <span class="block text-zinc-500">{{ __('Contact email')}}</span>
                     {{ $reservation->contact_email }}

@@ -27,6 +27,6 @@ class AttributeWildcardBasedOnBibReservation
             return false;
         }
 
-        return $championship->reservations()->licenceHash($participant->driver_licence)->exists() === false;
+        return $championship->reservations()->notReleased()->licenceHash($participant->driver_licence)->exists() === false;
     }
 }

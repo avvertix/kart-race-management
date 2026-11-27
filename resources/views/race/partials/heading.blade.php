@@ -48,9 +48,9 @@
                                 @endcan
 
                                 @if ($race->isNationalOrInternational())
-                                    <x-menu-item :href="route('races.export.aci', $race)" :description="__('Export confirmed participants as requested by ACI Karting')">
+                                    <x-menu-item :href="route('races.export.verified-drivers', $race)" :description="__('Export the confirmed participants with a transponder')">
                                         <x-slot:icon><x-ri-table-2 /></x-slot:icon>
-                                        {{ __('Export for ACI Italian Cup') }}
+                                        {{ __('Export verified drivers') }}
                                     </x-menu-item>
 
                                     <flux:menu.separator />
@@ -69,6 +69,15 @@
                     </flux:dropdown>
 
                     
+                    @if ($championship->wildcard?->enabled)
+                        @can('update', $race)
+                            <form method="POST" action="{{ route('races.wildcards.recalculate', $race) }}">
+                                @csrf
+                                <x-secondary-button type="submit" title="{{ __('Evaluate again who races as a wildcard, also when the race has results.') }}">{{ __('Recalculate wildcards') }}</x-secondary-button>
+                            </form>
+                        @endcan
+                    @endif
+
                     @can('update', $race)
                         <x-button-link href="{{ route('races.edit', $race) }}">
                             {{ __('Edit race') }}

@@ -65,6 +65,7 @@ class ParticipantPaymentController extends Controller
      */
     public function show(Request $request, Payment $payment)
     {
+        abort_unless($payment->hasProof(), 404);
 
         return response()
             ->file(Storage::disk('payments')->path($payment->path));

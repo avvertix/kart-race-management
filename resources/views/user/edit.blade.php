@@ -28,6 +28,32 @@
 
                     @include('user.partials.form')
 
+                    <div class="mt-4">
+                        <input type="hidden" name="licences_and_enrollments" value="0">
+                        <label class="flex items-start gap-2">
+                            <x-checkbox name="licences_and_enrollments" value="1" class="mt-0.5" :checked="old('licences_and_enrollments', $hasLicencesAndEnrollments)" :disabled="$user->isAdmin()" />
+                            <span>
+                                <span class="block font-medium text-sm text-zinc-800">{{ __('Early access to licences and enrollments') }}</span>
+                                <span class="block text-sm text-zinc-600">
+                                    {{ $user->isAdmin() ? __('Admins always have it.') : __('Shows licences, licence requests and enrollments, still being prepared for a future championship.') }}
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="mt-4">
+                        <input type="hidden" name="promo_codes" value="0">
+                        <label class="flex items-start gap-2">
+                            <x-checkbox name="promo_codes" value="1" class="mt-0.5" :checked="old('promo_codes', $hasPromoCodes)" :disabled="$user->isAdmin()" />
+                            <span>
+                                <span class="block font-medium text-sm text-zinc-800">{{ __('Early access to promo codes') }}</span>
+                                <span class="block text-sm text-zinc-600">
+                                    {{ $user->isAdmin() ? __('Admins always have it.') : __('Shows the promo code field on the dashboard, still being prepared.') }}
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+
                     <div class="flex items-center justify-end mt-4">
                         <x-button class="ml-4">
                             {{ __('Save') }}

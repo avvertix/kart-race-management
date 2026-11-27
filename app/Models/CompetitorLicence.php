@@ -17,7 +17,10 @@ enum CompetitorLicence: int implements Describable
         return Str::title($this->name);
     }
 
-    public function description(): string
+    /**
+     * @param  ?string  $provider  The name of who issues the licence, the platform-wide provider by default
+     */
+    public function description(?string $provider = null): string
     {
         $country = country(config('races.licence.country'));
 
@@ -28,7 +31,7 @@ enum CompetitorLicence: int implements Describable
         }
 
         return __('Licence issued by :provider in :country', [
-            'provider' => config('races.licence.provider'),
+            'provider' => $provider ?? config('races.licence.provider'),
             'country' => $country->getName(),
         ]);
     }

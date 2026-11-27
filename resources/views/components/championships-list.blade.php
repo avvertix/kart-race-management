@@ -31,6 +31,11 @@
             <p class="text-sm text-zinc-700 tabular-nums">
                 {{ trans_choice(':value race|:value races', $championship->races_count, ['value' => $championship->races_count]) }}
             </p>
+            @if ($championship->overdue_enrollments_count ?? 0)
+                <a href="{{ route('championships.enrollments.index', [$championship, 'overdue' => 1]) }}" class="relative z-20 block text-sm font-medium text-red-700 hover:text-red-900">
+                    {{ trans_choice(':count overdue balance|:count overdue balances', $championship->overdue_enrollments_count, ['count' => $championship->overdue_enrollments_count]) }}
+                </a>
+            @endif
             <p class="text-sm text-zinc-700"></p>
             <p class="hidden md:block text-sm text-zinc-700"></p>
 

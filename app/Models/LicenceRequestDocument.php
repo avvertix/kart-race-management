@@ -1,0 +1,102 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Enums\LicenceDocument;
+use App\Enums\LicenceRequestDocumentStatus;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+/**
+ * A file uploaded for a Licence Request: a document or a signed form.
+ *
+ * @property int $licence_request_id
+ * @property LicenceDocument $document
+ * @property ?int $parent_index
+ * @property string $path
+ * @property string $original_name
+ * @property string $mime
+ * @property int $size
+ * @property string $hash
+ * @property ?CarbonImmutable $uploaded_at
+ * @property LicenceRequestDocumentStatus $status
+ * @property ?string $note
+ * @property-read LicenceRequest $licenceRequest
+ */
+class LicenceRequestDocument extends Model
+{
+    /** @use HasFactory<\Database\Factories\LicenceRequestDocumentFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'document',
+        'parent_index',
+        'path',
+        'original_name',
+        'mime',
+        'size',
+        'hash',
+        'uploaded_at',
+        'status',
+        'note',
+    ];
+
+    /**
+     * @return BelongsTo<LicenceRequest, $this>
+     */
+    public function licenceRequest(): BelongsTo
+    {
+        return $this->belongsTo(LicenceRequest::class);
+    }
+
+    /**
+     * Delete the record and, once the transaction commits, its file.
+     */
+    public function deleteWithFile(): void
+    {
+        $path = $this->path;
+
+        $this->delete();
+
+        DB::afterCommit(fn () => Storage::disk('licence-documents')->delete($path));
+    }
+
+    /**
+     * Whether the organizer flagged it, including once replaced and waiting to be reviewed again.
+     */
+    public function wasFlagged(): bool
+    {
+        return $this->status === LicenceRequestDocumentStatus::Flagged
+            || ($this->status === LicenceRequestDocumentStatus::Pending && $this->note !== null);
+    }
+
+    /**
+     * Whether the file was uploaded after the organizer last asked for changes: a replacement, or a document added then.
+     */
+    public function isUploadedAfter(?CarbonImmutable $changesRequestedAt): bool
+    {
+        return $changesRequestedAt !== null && $this->uploaded_at?->greaterThan($changesRequestedAt) === true;
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'parent_index' => 'integer',
+            'document' => LicenceDocument::class,
+            'size' => 'integer',
+            'uploaded_at' => 'datetime',
+            'status' => LicenceRequestDocumentStatus::class,
+        ];
+    }
+}
